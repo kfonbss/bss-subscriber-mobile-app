@@ -153,7 +153,7 @@ class _ForgotPasswordState extends State<ForgotPassword>
         resizeToAvoidBottomInset: false,
         body: LoginBackground(
           heading: 'Forgot Password',
-          height: 420,
+          height: 435,
           bottomMargin: 150,
           child: PageView(
             controller: _pageController,

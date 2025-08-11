@@ -66,7 +66,7 @@ class _LoginPageState extends State<LoginPage> {
         resizeToAvoidBottomInset: false,
         body: LoginBackground(
           heading: 'Log in',
-          height: 650,
+          height: 655,
           bottomMargin: 100,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
