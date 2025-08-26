@@ -1,11 +1,15 @@
 import 'package:flutter/material.dart';
-import 'package:kfon_subscriber/core/constant/constant.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 
 class CommonTextField extends StatelessWidget {
   final String label;
   final String hintText;
   final TextEditingController textEditingController;
   final TextInputType? textInputType;
+  final Function(String)? onTextChanged;
+  final int? maxLength;
+  final TextCapitalization? textCapitalization;
+  final bool? obscureText;
 
   const CommonTextField({
     super.key,
@@ -13,12 +17,16 @@ class CommonTextField extends StatelessWidget {
     required this.hintText,
     required this.textEditingController,
     this.textInputType,
+    this.onTextChanged,
+    this.maxLength,
+    this.textCapitalization,
+    this.obscureText,
   });
 
   @override
   Widget build(BuildContext context) {
     return Column(
-      spacing: 5,
+      spacing: 6,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
@@ -26,7 +34,7 @@ class CommonTextField extends StatelessWidget {
           style: TextStyle(
             fontSize: 14,
             fontWeight: FontWeight.w400,
-            color: kTextFiledLabelColor,
+            color: AppColor.kTextFiledLabelColor,
           ),
         ),
         TextField(
@@ -34,9 +42,12 @@ class CommonTextField extends StatelessWidget {
           onTapOutside: (PointerDownEvent event) {
             FocusManager.instance.primaryFocus?.unfocus();
           },
-          minLines: 1,
+          obscureText: obscureText??false,
+          maxLines: 1,
+          maxLength: maxLength,
           textAlignVertical: TextAlignVertical.center,
           keyboardType: textInputType ?? TextInputType.text,
+          textCapitalization:textCapitalization?? TextCapitalization.words,
           autofocus: false,
           style: TextStyle(
             color: Colors.black,
@@ -48,26 +59,25 @@ class CommonTextField extends StatelessWidget {
             filled: true,
             counterText: '',
             hintText: hintText,
-            contentPadding: EdgeInsets.symmetric(
-              vertical: 12.0,
-              horizontal: 12.0,
-            ),
+            contentPadding: EdgeInsets.all(12),
             hintStyle: TextStyle(
-              color: kTextFiledHintColor,
+              color: AppColor.kTextFiledHintColor,
               fontSize: 14.0,
               fontWeight: FontWeight.w400,
               letterSpacing: 0.0,
             ),
             focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: kPrimaryColor, width: 1.5),
-              borderRadius: BorderRadius.all(Radius.circular(10.0)),
+              borderSide: BorderSide(color: AppColor.kPrimaryColor, width: 1.5),
+              borderRadius: BorderRadius.all(Radius.circular(6.0)),
             ),
             enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: kTextFiledBorderColor, width: 1.0),
-              borderRadius: BorderRadius.all(Radius.circular(10.0)),
+              borderSide: BorderSide(color: AppColor.kTextFiledBorderColor, width: 1.0),
+              borderRadius: BorderRadius.all(Radius.circular(6.0)),
             ),
           ),
-          onChanged: (String newText) {},
+          onChanged: (String newText) {
+            if (onTextChanged != null) onTextChanged!(newText);
+          },
         ),
       ],
     );

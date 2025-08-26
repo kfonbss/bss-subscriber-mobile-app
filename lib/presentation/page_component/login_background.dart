@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
-import 'package:kfon_subscriber/core/constant/constant.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 
 class LoginBackground extends StatelessWidget {
   final String heading;
@@ -26,7 +26,7 @@ class LoginBackground extends StatelessWidget {
               flex: 6,
               child: Container(
                 decoration: BoxDecoration(
-                  color: kPrimaryColor,
+                  color: AppColor.kPrimaryColor,
                   image: DecorationImage(
                     image: AssetImage('assets/images/white_doodle.png'),
                     fit: BoxFit.cover,
@@ -50,11 +50,11 @@ class LoginBackground extends StatelessWidget {
                 ),
                 child: Align(
                   alignment: Alignment.bottomLeft,
-                  child: SvgPicture.asset(
-                    'assets/images/login_page_bottom_image.svg',
-                    height: 100,
-                    fit: BoxFit.cover, // Optional: apply a color filter
-                  ),
+                  // child: SvgPicture.asset(
+                  //   'assets/images/login_page_bottom_image.svg',
+                  //   height: 100,
+                  //   fit: BoxFit.cover, // Optional: apply a color filter
+                  // ),
                 ),
               ),
             ),

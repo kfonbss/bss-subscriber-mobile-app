@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:kfon_subscriber/core/constant/constant.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+
+import '../../core/constant/constant_dimensions.dart';
 
 class PrimaryButton extends StatelessWidget {
   final Widget? icon;
@@ -19,20 +21,38 @@ class PrimaryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FilledButton.icon(
       onPressed: isLoading ? null : onClicked,
-      icon: isLoading ? null : icon,
+      icon:
+          isLoading
+              ? null
+              : SizedBox(
+                height: AppDimensions.kButtonIconSize,
+                width: AppDimensions.kButtonIconSize,
+                child: icon,
+              ),
       label:
           isLoading
-              ? SizedBox(height:20,width:20,child: CircularProgressIndicator(color: Colors.white,strokeWidth: 3))
+              ? SizedBox(
+                height: 30,
+                width: 30,
+                child: CircularProgressIndicator(
+                  color: Colors.white,
+                  strokeWidth: 3,
+                ),
+              )
               : Text(label),
       iconAlignment: IconAlignment.end,
       style: FilledButton.styleFrom(
+        elevation: 2,
         minimumSize: Size(double.infinity, 50),
         fixedSize: Size(double.infinity, 50),
         disabledBackgroundColor: Colors.grey,
-        backgroundColor: kPrimaryColor,
+        backgroundColor: AppColor.kPrimaryColor,
         foregroundColor: Colors.white,
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-        textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        padding: EdgeInsets.zero,
+        textStyle: TextStyle(
+          fontSize: AppDimensions.kButtonTextSize,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
-import 'package:kfon_subscriber/core/constant/constant.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+
+import '../../core/constant/constant_dimensions.dart';
 
 class SecondaryButton extends StatelessWidget {
   final Widget? icon;
@@ -17,19 +19,31 @@ class SecondaryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FilledButton.icon(
       onPressed: onClicked,
-      icon:icon,
+      icon:
+          icon == null
+              ? icon
+              : SizedBox(
+                height: AppDimensions.kButtonIconSize,
+                width: AppDimensions.kButtonIconSize,
+                child: icon,
+              ),
       label: Text(label),
       iconAlignment: IconAlignment.start,
       style: FilledButton.styleFrom(
+        elevation: 2,
         minimumSize: Size(double.infinity, 50),
+        fixedSize: Size(double.infinity, 50),
         backgroundColor: Colors.white,
-        foregroundColor: kPrimaryColor,
+        foregroundColor: AppColor.kPrimaryColor,
         side: BorderSide(
-          color: kPrimaryColor, // Border color
+          color: AppColor.kPrimaryColor, // Border color
           width: 1, // Border width
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 15),
-        textStyle: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
+        padding: EdgeInsets.zero,
+        textStyle: TextStyle(
+          fontSize: AppDimensions.kButtonTextSize,
+          fontWeight: FontWeight.w500,
+        ),
       ),
     );
   }
