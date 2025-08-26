@@ -21,17 +21,21 @@ class AuthRepositoryImp extends AuthRepository {
   }
 
   @override
-  Future<Either> forgotPasswordGetOTP(ForgotPasswordGetOtpParams sendOTPReq)async {
-    return await sl<AuthApiService>().getOTP(sendOTPReq);
+  Future<Either> forgotPasswordGetOTP(
+    ForgotPasswordGetOtpParams sendOTPReq,
+  ) async {
+    return await sl<AuthApiService>().forgotPasswordGetOTP(sendOTPReq);
   }
 
   @override
-  Future<Either> forgotPasswordVerifyOTP(ForgotPasswordVerifyOtpParams verifyOTPReq)async {
+  Future<Either> forgotPasswordVerifyOTP(
+    ForgotPasswordVerifyOtpParams verifyOTPReq,
+  ) async {
     return await sl<AuthApiService>().verifyOTP(verifyOTPReq);
   }
 
   @override
-  Future<Either> setNewPassword(SetNewPasswordParams setNewPasswordReq)async {
+  Future<Either> setNewPassword(SetNewPasswordParams setNewPasswordReq) async {
     return await sl<AuthApiService>().setNewPassword(setNewPasswordReq);
   }
 }

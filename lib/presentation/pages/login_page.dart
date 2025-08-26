@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/common/bloc/login/login_state.dart';
 import 'package:kfon_subscriber/common/bloc/login/login_state_cubit.dart';
-import 'package:kfon_subscriber/core/constant/constant.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/data/auth/model/login_req_params.dart';
 import 'package:kfon_subscriber/domain/auth/usecases/login.dart';
 import 'package:kfon_subscriber/presentation/page_component/login_background.dart';
@@ -11,7 +11,6 @@ import 'package:kfon_subscriber/presentation/ui_component/primary_button.dart';
 import 'package:kfon_subscriber/presentation/ui_component/secondary_button.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 import 'package:kfon_subscriber/util/dialog_util.dart';
-
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
 
@@ -62,11 +61,11 @@ class _LoginPageState extends State<LoginPage> {
               currentState is LoginSuccessState ||
               currentState is LoginFailureState,
       child: Scaffold(
-        backgroundColor: kPrimaryColor,
+        backgroundColor: AppColor.kPrimaryColor,
         resizeToAvoidBottomInset: false,
         body: LoginBackground(
           heading: 'Log in',
-          height: 655,
+          height: 670,
           bottomMargin: 100,
           child: Column(
             crossAxisAlignment: CrossAxisAlignment.end,
@@ -80,6 +79,7 @@ class _LoginPageState extends State<LoginPage> {
               CommonTextField(
                 label: 'Password',
                 hintText: 'Enter password here',
+                obscureText: true,
                 textEditingController: _passwordTextFieldController,
               ),
               SizedBox(height: 10),
@@ -94,7 +94,7 @@ class _LoginPageState extends State<LoginPage> {
                 child: Text(
                   'Forgot Password?',
                   style: TextStyle(
-                    color: kPrimaryColor,
+                    color: AppColor.kPrimaryColor,
                     fontSize: 14,
                     fontWeight: FontWeight.w400,
                   ),
@@ -109,8 +109,7 @@ class _LoginPageState extends State<LoginPage> {
                   return PrimaryButton(
                     isLoading: state is LoadingState,
                     icon: Image.asset(
-                      'assets/images/login_icon.png',
-                      height: 24,
+                      'assets/images/login_icon.png'
                     ),
                     label: 'Login',
                     onClicked: () => _doLogin(),
@@ -118,7 +117,7 @@ class _LoginPageState extends State<LoginPage> {
                 },
               ),
               SizedBox(height: 50),
-              SecondaryButton(label: 'Register', onClicked: () {}),
+              SecondaryButton(label: 'Register', onClicked: ()=>  Navigator.pushNamed(context, '/enquiry_list_page')),
               SizedBox(height: 10),
               SecondaryButton(label: 'FAQ', onClicked: () {}),
             ],

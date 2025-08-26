@@ -3,7 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/common/bloc/forgot_password/forgot_password_cubit.dart';
 import 'package:kfon_subscriber/common/bloc/forgot_password/forgot_password_state.dart';
-import 'package:kfon_subscriber/core/constant/constant.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/data/auth/model/forgot_password_get_OTP_params.dart';
 import 'package:kfon_subscriber/data/auth/model/forgot_password_verify_OTP_params.dart';
 import 'package:kfon_subscriber/data/auth/model/set_new_password_params.dart';
@@ -16,6 +16,9 @@ import 'package:kfon_subscriber/presentation/ui_component/primary_button.dart';
 import 'package:kfon_subscriber/presentation/ui_component/secondary_button.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 import 'package:kfon_subscriber/util/dialog_util.dart';
+import 'package:kfon_subscriber/util/extensions.dart';
+
+import '../../core/constant/constant_dimensions.dart';
 
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({super.key});
@@ -55,7 +58,7 @@ class _ForgotPasswordState extends State<ForgotPassword>
   _getOTP() {
     String mobile = _mobileFieldController.text;
     String email = _emailTextFieldController.text;
-    if (mobile.length != 10 && !isValidEmail(email)) {
+    if (mobile.length != 10 && !email.isValidEmail) {
       _dialogUtil.showMessage("Enter valid mobile number of email", context);
       return;
     }
@@ -82,12 +85,6 @@ class _ForgotPasswordState extends State<ForgotPassword>
   void _stopTimer() {
     _timer?.cancel();
     _timer = null;
-  }
-
-  bool isValidEmail(String email) {
-    String pattern = r'^[a-zA-Z0-9._%+-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,4}$';
-    RegExp regex = RegExp(pattern);
-    return regex.hasMatch(email);
   }
 
   _verifyOTP() {
@@ -149,7 +146,7 @@ class _ForgotPasswordState extends State<ForgotPassword>
               currentState is SetNewPasswordFailureState ||
               currentState is SetNewPasswordSuccessState,
       child: Scaffold(
-        backgroundColor: kPrimaryColor,
+        backgroundColor: AppColor.kPrimaryColor,
         resizeToAvoidBottomInset: false,
         body: LoginBackground(
           heading: 'Forgot Password',
@@ -180,6 +177,7 @@ class _ForgotPasswordState extends State<ForgotPassword>
               hintText: 'Enter Mobile Number',
               textInputType: TextInputType.number,
               textEditingController: _mobileFieldController,
+              maxLength: 10,
             ),
             SizedBox(height: 20),
             Row(
@@ -230,7 +228,7 @@ class _ForgotPasswordState extends State<ForgotPassword>
                 label: 'Back',
                 icon: Icon(
                   Icons.arrow_circle_left_outlined,
-                  color: kPrimaryColor,
+                  color: AppColor.kPrimaryColor,
                   size: 24,
                 ),
                 onClicked: () => Navigator.of(context).pop(),
@@ -241,15 +239,14 @@ class _ForgotPasswordState extends State<ForgotPassword>
                 bloc: _forgotPasswordCubit,
                 buildWhen:
                     (previous, current) =>
-                        current is SendOTPLoadingState ||
+                        current is GetOTPLoadingState ||
                         current is GetOTPFailureState ||
                         current is GetOTPSuccessState,
                 builder: (context, state) {
                   return PrimaryButton(
-                    isLoading: state is SendOTPLoadingState,
+                    isLoading: state is GetOTPLoadingState,
                     icon: Image.asset(
-                      'assets/images/send_otp_button.png',
-                      height: 24,
+                      'assets/images/send_otp_button.png'
                     ),
                     label: 'Send OTP',
                     onClicked: () => _getOTP(),
@@ -288,7 +285,7 @@ class _ForgotPasswordState extends State<ForgotPassword>
                   child: Text(
                     'Resend OTP',
                     style: TextStyle(
-                      color: kPrimaryColor,
+                      color: AppColor.kPrimaryColor,
                       fontSize: 14,
                       fontWeight: FontWeight.w600,
                     ),
@@ -324,8 +321,8 @@ class _ForgotPasswordState extends State<ForgotPassword>
                 label: 'Back',
                 icon: Icon(
                   Icons.arrow_circle_left_outlined,
-                  color: kPrimaryColor,
-                  size: 24,
+                  color: AppColor.kPrimaryColor,
+                  size: AppDimensions.kButtonIconSize,
                 ),
                 onClicked: () => _pageController.jumpToPage(0),
               ),
@@ -343,7 +340,6 @@ class _ForgotPasswordState extends State<ForgotPassword>
                     isLoading: state is VerifyOTPLoadingState,
                     icon: Image.asset(
                       'assets/images/verify_otp_icon.png',
-                      height: 24,
                     ),
                     label: 'Verify OTP',
                     onClicked: () => _verifyOTP(),
@@ -384,8 +380,8 @@ class _ForgotPasswordState extends State<ForgotPassword>
                 label: 'Back',
                 icon: Icon(
                   Icons.arrow_circle_left_outlined,
-                  color: kPrimaryColor,
-                  size: 24,
+                  color: AppColor.kPrimaryColor,
+                  size: AppDimensions.kButtonIconSize,
                 ),
                 onClicked: () => _pageController.jumpToPage(1),
               ),
@@ -402,8 +398,7 @@ class _ForgotPasswordState extends State<ForgotPassword>
                   return PrimaryButton(
                     isLoading: state is SetNewPasswordLoadingState,
                     icon: Image.asset(
-                      'assets/images/verify_otp_icon.png',
-                      height: 24,
+                      'assets/images/verify_otp_icon.png'
                     ),
                     label: 'Reset',
                     onClicked: () => _resetPassword(),

@@ -6,7 +6,6 @@ import 'package:kfon_subscriber/common/bloc/auth/auth_state.dart';
 import 'package:kfon_subscriber/common/bloc/auth/auth_state_cubit.dart';
 import 'package:kfon_subscriber/domain/auth/usecases/is_logged_in.dart';
 import 'package:kfon_subscriber/service_locator.dart';
-import 'package:kfon_subscriber/util/dialog_util.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});

@@ -9,7 +9,6 @@ class LoginStateCubit extends Cubit<LoginState> {
   Future<void> doLogin({dynamic params, required UseCase useCase}) async {
     try {
       emit(LoadingState());
-      await Future.delayed(const Duration(seconds: 3));
       Either result = await useCase.call(param: params);
       result.fold(
         (error) {

@@ -42,6 +42,8 @@ dependencies:
   dartz:
   logger:
   shared_preferences:
+  file_picker:
+  path_provider:
 
 dev_dependencies:
   flutter_test:

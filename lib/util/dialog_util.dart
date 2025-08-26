@@ -1,6 +1,6 @@
 import 'package:flutter/cupertino.dart';
 import 'package:flutter/material.dart';
-import 'package:kfon_subscriber/core/constant/constant.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 
 class DialogUtil {
   final TextStyle _contentStyle = TextStyle(
@@ -89,7 +89,7 @@ class DialogUtil {
               spacing: 15,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                CircularProgressIndicator(color: kPrimaryColor),
+                CircularProgressIndicator(color: AppColor.kPrimaryColor),
                 Text(label, style: _contentStyle),
               ],
             ),

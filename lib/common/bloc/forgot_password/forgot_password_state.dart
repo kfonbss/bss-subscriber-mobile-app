@@ -2,17 +2,17 @@ abstract class ForgotPasswordState {}
 
 class InitialState extends ForgotPasswordState {}
 
-class SendOTPLoadingState extends ForgotPasswordState {}
-
 class VerifyOTPLoadingState extends ForgotPasswordState {}
 
 class SetNewPasswordLoadingState extends ForgotPasswordState {}
 
-class GetOTPSuccessState extends ForgotPasswordState {}
-
 class VerifyOTPSuccessState extends ForgotPasswordState {}
 
 class SetNewPasswordSuccessState extends ForgotPasswordState {}
+
+class GetOTPLoadingState extends ForgotPasswordState {}
+
+class GetOTPSuccessState extends ForgotPasswordState {}
 
 class GetOTPFailureState extends ForgotPasswordState {
   final String errorMessage;
