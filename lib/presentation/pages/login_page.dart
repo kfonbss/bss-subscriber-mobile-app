@@ -119,7 +119,7 @@ class _LoginPageState extends State<LoginPage> {
               SizedBox(height: 50),
               SecondaryButton(label: 'Register', onClicked: ()=>  Navigator.pushNamed(context, '/enquiry_list_page')),
               SizedBox(height: 10),
-              SecondaryButton(label: 'FAQ', onClicked: () {}),
+              SecondaryButton(label: 'FAQ', onClicked: ()=>Navigator.pushNamed(context, '/faq_page')),
             ],
           ),
         ),
