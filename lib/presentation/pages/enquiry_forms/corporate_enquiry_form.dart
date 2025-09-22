@@ -4,7 +4,7 @@ import 'package:kfon_subscriber/common/bloc/corporate_form/corporate_form_cubit.
 import 'package:kfon_subscriber/common/bloc/corporate_form/corporate_form_state.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/data/enquiry_form/model/corporate_enquiry_form_params.dart';
-import 'package:kfon_subscriber/domain/enquiry_form/usercases/corporate_enquiry_form_submission_user_case.dart';
+import 'package:kfon_subscriber/domain/enquiry_form/usecases/corporate_enquiry_form_submission_use_case.dart';
 import 'package:kfon_subscriber/presentation/page_component/enquiery_form_footer.dart';
 import 'package:kfon_subscriber/presentation/page_component/enquiry_form_header.dart';
 import 'package:kfon_subscriber/presentation/page_component/enquiry_form_preview.dart';

@@ -10,4 +10,5 @@ class AppColor {
   static const Color kBlackHeadingColor = Color(0xFF272727);
   static const Color kRadioButtonTextColor = Color(0xFF4C4C4C);
   static const Color kTransparentColor = Color.fromRGBO(255, 255, 255, 0.19);
+  static const Color shimmerHighlightColor = Color(0xFFF4F4F4);
 }

@@ -7,6 +7,7 @@ import 'package:kfon_subscriber/presentation/pages/enquiry_forms/agnp_enquiry_fo
 import 'package:kfon_subscriber/presentation/pages/enquiry_forms/dark_fibre_enquiry_form.dart';
 import 'package:kfon_subscriber/presentation/pages/enquiry_forms/enquiry_list_page.dart';
 import 'package:kfon_subscriber/presentation/pages/enquiry_forms/subscription_enquiry_form.dart';
+import 'package:kfon_subscriber/presentation/pages/faq_page.dart';
 import 'package:kfon_subscriber/presentation/pages/forgot_password.dart' show ForgotPassword;
 import 'package:kfon_subscriber/presentation/pages/home_page.dart';
 import 'package:kfon_subscriber/presentation/pages/login_page.dart' show LoginPage;
@@ -32,6 +33,8 @@ Future<void> main() async {
 }
 
 class MyApp extends StatelessWidget {
+  const MyApp({super.key});
+
   @override
   Widget build(BuildContext context) {
     return MaterialApp(
@@ -51,6 +54,7 @@ class MyApp extends StatelessWidget {
         '/agnp_enquiry_form': (context) => AGNPEnquiryForm(),
         '/corporate_enquiry_form': (context) => CorporateEnquiryForm(),
         '/dark_fibre_enquiry_form': (context) => DarkFibreEnquiryForm(),
+        '/faq_page': (context) => FaqPage(),
       },
       home:  SplashScreen(),
     );
