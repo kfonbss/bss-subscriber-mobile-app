@@ -11,6 +11,7 @@ import 'package:kfon_subscriber/presentation/pages/faq_page.dart';
 import 'package:kfon_subscriber/presentation/pages/forgot_password.dart' show ForgotPassword;
 import 'package:kfon_subscriber/presentation/pages/home_page.dart';
 import 'package:kfon_subscriber/presentation/pages/login_page.dart' show LoginPage;
+import 'package:kfon_subscriber/presentation/pages/main_page.dart';
 import 'package:kfon_subscriber/presentation/pages/splash_screen.dart' show SplashScreen;
 import 'package:kfon_subscriber/service_locator.dart';
 
@@ -45,7 +46,7 @@ class MyApp extends StatelessWidget {
       routes: {
         '/splash_screen': (context) => SplashScreen(),
         '/login_page': (context) => LoginPage(),
-        '/home_page': (context) => HomePage(),
+        '/main_page': (context) => MainPage(),
         '/forgot_password_page': (context) => ForgotPassword(),
         '/enquiry_list_page': (context) => EnquiryFormList(),
         '/subscription_enquiry_form': (context) => SubscriptionEnquiryForm(),

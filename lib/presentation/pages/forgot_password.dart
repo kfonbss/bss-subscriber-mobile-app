@@ -133,7 +133,7 @@ class _ForgotPasswordState extends State<ForgotPassword>
           _pageController.jumpToPage(2);
         } else if (state is SetNewPasswordSuccessState) {
           Navigator.of(context).pop();
-          //  Navigator.pushReplacementNamed(context, '/home_page');
+          //  Navigator.pushReplacementNamed(context, '/main_page');
         }
 
       },

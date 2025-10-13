@@ -3,10 +3,12 @@ import 'package:flutter/material.dart';
 import '../../core/constant/constant_colors.dart';
 import '../../core/constant/constant_dimensions.dart';
 
-class DefaultAppBar extends StatelessWidget{
+class DefaultAppBar extends StatelessWidget {
   final List<Widget>? actions;
   final VoidCallback? onBackPressed;
   final bool showBackButton;
+  final bool? centerTitle;
+  final Color? backgroundColor;
   final Widget body;
   final Widget logo = SizedBox(
     height: 45.0,
@@ -20,6 +22,8 @@ class DefaultAppBar extends StatelessWidget{
     super.key,
     this.onBackPressed,
     this.actions,
+    this.centerTitle,
+    this.backgroundColor,
     required this.showBackButton,
     required this.body,
   });
@@ -27,6 +31,7 @@ class DefaultAppBar extends StatelessWidget{
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: AppColor.kToolbarBackground,
@@ -34,7 +39,7 @@ class DefaultAppBar extends StatelessWidget{
         actions: actions ?? [],
         title: logo,
         titleSpacing: showBackButton ? 0 : 25,
-        centerTitle: showBackButton ? true : false,
+        centerTitle: centerTitle ?? showBackButton ? true : false,
         automaticallyImplyLeading: showBackButton ? true : false,
         leading:
             showBackButton
@@ -50,9 +55,8 @@ class DefaultAppBar extends StatelessWidget{
                 )
                 : null,
       ),
-      backgroundColor: Colors.white,
+      backgroundColor:backgroundColor?? Colors.white,
       body: body,
     );
   }
-
 }

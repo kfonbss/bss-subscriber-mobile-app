@@ -53,7 +53,7 @@ class _LoginPageState extends State<LoginPage> {
         if (state is LoginFailureState) {
           _dialogUtil.showMessage(state.errorMessage, context);
         } else if (state is LoginSuccessState) {
-          Navigator.pushReplacementNamed(context, '/home_page');
+          Navigator.pushReplacementNamed(context, '/main_page');
         }
       },
       listenWhen:
