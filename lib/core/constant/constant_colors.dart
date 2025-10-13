@@ -1,6 +1,7 @@
 import 'dart:ui';
 class AppColor {
   static const Color kPrimaryColor = Color(0xFF8D0247);
+  static const Color kPrimaryColorTwo = Color(0xFF1095C5);
   static const Color kTextFiledLabelColor = Color(0xFF4C4C4C);
   static const Color kTextFiledHintColor = Color(0xFFA3A3A3);
   static const Color kTextFiledBorderColor = Color(0xFFA2A2A2);

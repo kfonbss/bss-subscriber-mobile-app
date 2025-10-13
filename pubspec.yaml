@@ -45,6 +45,7 @@ dependencies:
   file_picker:
   path_provider:
   shimmer:
+  readmore: ^3.0.0
 
 dev_dependencies:
   flutter_test:
@@ -72,6 +73,7 @@ flutter:
   assets:
    - assets/images/
    - assets/icons/
+   - assets/bottomNaviBarIcons/
   #   - images/a_dot_ham.jpeg
 
   # An image asset can refer to one or more resolution-specific "variants", see

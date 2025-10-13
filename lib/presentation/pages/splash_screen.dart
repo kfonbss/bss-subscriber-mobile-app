@@ -39,7 +39,7 @@ class _SplashScreenState extends State<SplashScreen> {
       bloc: _authStateCubit,
       listener: (context, state) {
         if (state is Authenticated) {
-          Navigator.pushReplacementNamed(context, '/home_page');
+          Navigator.pushReplacementNamed(context, '/main_page');
         } else if (state is UnAuthenticated) {
           Navigator.pushReplacementNamed(context, '/login_page');
         }
