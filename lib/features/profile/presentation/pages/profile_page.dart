@@ -9,6 +9,7 @@ import 'package:kfon_subscriber/features/profile/domain/repository/profile_repos
 import 'package:kfon_subscriber/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:kfon_subscriber/features/profile/presentation/bloc/profile_event.dart';
 import 'package:kfon_subscriber/features/profile/presentation/bloc/profile_state.dart';
+import 'package:kfon_subscriber/features/profile/presentation/pages/security_settings_page.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 
@@ -171,7 +172,12 @@ class ProfilePage extends StatelessWidget {
           ),
           GestureDetector(
             onTap:
-                () => Navigator.pushNamed(context, '/security_settings_page'),
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute<void>(
+                    builder: (context) =>  SecuritySettingsPage(types: [PasswordChangeEnum.bss,PasswordChangeEnum.internet]),
+                  ),
+                ),
             child: _createAccountListItems(
               'security_settings',
               'Security Settings',
@@ -180,7 +186,9 @@ class ProfilePage extends StatelessWidget {
           _createAccountListItems('support_help', 'My Tickets'),
           GestureDetector(onTap:() => Navigator.pushNamed(context, '/settings_page'),
           child: _createAccountListItems('support_help', 'Settings')),
-          _createAccountListItems('support_help', 'Self-Care/Tools'),
+          GestureDetector(
+            onTap:()=>Navigator.pushNamed(context, '/self_care') ,
+              child: _createAccountListItems('support_help', 'Self-Care/Tools')),
           GestureDetector(
             onTap: ()=>showLogoutDialog(context),
               child: _createAccountListItems('logout', 'Logout',textColor: Colors.red)),

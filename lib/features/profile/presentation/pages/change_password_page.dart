@@ -1,13 +1,15 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/features/profile/presentation/pages/security_settings_page.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_password_text_field.dart';
 import 'package:kfon_subscriber/presentation/ui_component/primary_color_button.dart';
 
 class ChangePasswordPage extends StatefulWidget {
-  final bool isBssRequest;
+  final PasswordChangeEnum type;
 
-  const ChangePasswordPage({super.key, required this.isBssRequest});
+  const ChangePasswordPage({super.key, required this.type});
 
   @override
   State<ChangePasswordPage> createState() => _ChangePasswordPageState();
@@ -29,6 +31,14 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     super.dispose();
   }
 
+  String _getLabel(PasswordChangeEnum type) {
+    return switch (type) {
+      PasswordChangeEnum.bss      => 'Change BSS Portal Password',
+      PasswordChangeEnum.internet => 'Change Internet Password',
+      PasswordChangeEnum.ssid     => 'Change SSID Password',
+      PasswordChangeEnum.wifi     => 'Change WiFi Password',
+    };
+  }
   @override
   Widget build(BuildContext context) {
     return CommonAppBar(
@@ -42,9 +52,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           spacing: 40,
           children: [
             Text(
-              widget.isBssRequest
-                  ? 'Change BSS Portal Password'
-                  : 'Change Internet Password',
+             _getLabel(widget.type),
               style: TextStyle(
                 fontFamily: 'General Sans',
                 fontWeight: FontWeight.w600,
