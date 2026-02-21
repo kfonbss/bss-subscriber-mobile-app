@@ -609,8 +609,11 @@ class _PlanCard extends StatelessWidget {
               SizedBox(
                 height: 32.h,
                 width: 145.w,
-                child: SecondaryButton(label: 'Choose Plan', onClicked: () {}),
-              ),
+                child: SecondaryButton(label: 'Choose Plan', onClicked: ()=> Navigator.push(
+                  context,
+                  MaterialPageRoute<void>(builder: (context) => const ChangePlanPage(subscriberUuid: 'subscriberUuid', currentPackageId: 'currentPackageId')),
+                )),
+              )
             ],
           ),
         ],

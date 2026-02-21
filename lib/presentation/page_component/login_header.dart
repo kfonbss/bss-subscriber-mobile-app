@@ -1,6 +1,6 @@
 import 'package:flutter/gestures.dart';
 import 'package:flutter/material.dart';
-
+import 'package:kfon_subscriber/core/util/sizer.dart';
 class LoginHeader extends StatelessWidget {
   final String heading;
   final String description;
@@ -30,7 +30,13 @@ class LoginHeader extends StatelessWidget {
         ),
         Text(
           heading,
-          style: TextStyle(fontSize: 32, fontWeight: FontWeight.w600),
+          style: TextStyle(
+            fontSize: 32.sp,
+            fontFamily: 'General Sans',
+            fontWeight: FontWeight.w500,
+            height: 1.30,
+            color: Colors.white,
+          ),
         ),
         Padding(
           padding: const EdgeInsets.only(
@@ -39,29 +45,28 @@ class LoginHeader extends StatelessWidget {
             top: 12,
             bottom: 45,
           ),
-
           child: RichText(
             textAlign: TextAlign.center,
             text: TextSpan(
               text: description,
               style: TextStyle(
+                fontFamily: 'General Sans',
                 color: Colors.white,
-                fontSize: 12,
+                fontSize: 12.sp,
                 fontWeight: FontWeight.w500,
               ),
               children: <TextSpan>[
                 TextSpan(
                   text: clickableText ?? '',
                   style: TextStyle(
+                    fontFamily: 'General Sans',
                     color: Colors.white,
                     fontWeight: FontWeight.w600,
                     decoration: TextDecoration.underline,
                     decorationColor: Colors.white,
-                    fontSize: 12,
+                    fontSize: 12.sp,
                   ),
-                  recognizer:
-                      TapGestureRecognizer()
-                        ..onTap = onClicked, // Assign the TapGestureRecognizer
+                  recognizer: TapGestureRecognizer()..onTap = onClicked,
                 ),
               ],
             ),
