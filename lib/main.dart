@@ -10,6 +10,7 @@ import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/domain/auth/usecases/is_logged_in.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/account_information_page.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/settings_page.dart';
+import 'package:kfon_subscriber/features/self_care/presentation/pages/diagnostics_page.dart';
 import 'package:kfon_subscriber/presentation/pages/enquiry_forms/bpl_enquiry_form.dart';
 import 'package:kfon_subscriber/presentation/pages/enquiry_forms/agnp_enquiry_form.dart';
 import 'package:kfon_subscriber/presentation/pages/enquiry_forms/dark_fibre_enquiry_form.dart';
@@ -119,11 +120,11 @@ class _MyAppState extends State<MyApp> {
         '/agnp_enquiry_form': (context) => AGNPEnquiryForm(),
         '/dark_fibre_enquiry_form': (context) => DarkFibreEnquiryForm(),
         '/account_information_page': (context) => AccountInformationPage(),
-        '/security_settings_page': (context) => SecuritySettingsPage(),
         '/notification_page': (context) => NotificationPage(),
         '/transaction_history_page': (context) => TransactionHistoryPage(),
         '/invoice_page': (context) => InvoicePage(),
         '/settings_page': (context) => SettingsPage(),
+        '/self_care': (context) => DiagnosticsPage(),
       },
       home: BlocBuilder<AuthStateCubit, AuthState>(
         bloc: _authStateCubit,
