@@ -1,5 +1,8 @@
+import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:kfon_subscriber/core/util/image_util.dart';
 import 'package:kfon_subscriber/presentation/pages/enquiry_forms/lnp_enquiry_form.dart';
+
 
 class LNPEnquiryFormParams {
   final String companyName;
@@ -41,27 +44,32 @@ class LNPEnquiryFormParams {
     required this.totalFiberCount,
     required this.createdBy,
   });
-  Map<String, dynamic> toMap() {
-    return {
-      'company_name': companyName,
-      'partner_name': partnerName,
-      'isp_value': ispValue.name,
-      'mobile_number': mobileNumber,
-      'landline_number': landlineNumber,
-      'email': email,
-      'address': address,
-      'location': location,
-      'latitude': latitude,
-      'longitude': longitude,
-      'pin_code': pinCode,
-      'post_office': postOffice,
+
+  Future<FormData> toFormData() async {
+    String partnerCableTvRegCopy = await ImageUtil().convertImageToBase64(
+      selectedFiles.first,
+    );
+    // MultipartFile routeFormCopy=await MultipartFile.fromFile(selectedFiles.first.path!,filename: selectedFiles.first.path!.split('/').last);
+    return FormData.fromMap({
+      'partnerCompanyName': companyName,
+      'partnerName': partnerName,
+      'partnerAssocAnyOtherIsp': ispValue.name,
+      'partnerMobile': mobileNumber,
+      'partnerPhone': landlineNumber,
+      'partnerEmail': email,
+      'partnerAddress': address,
+      'partnerLocation': location,
+      'partnerLatitude': latitude,
+      'partnerLongitude': longitude,
+      'partnerPincode': pinCode,
+      'partnerPostOffice': postOffice,
       'district': district,
-      'selected_files': selectedFiles.map((file) => file.path).toList(),
-      'total_cable_tv_subscriber_count': totalCableTvSubscriberCount,
-      'total_internet_subscriber_count': totalInternetSubscriberCount,
-      'total_fiber_count': totalFiberCount,
-      'created_by': createdBy,
-    };
+      'partnerCableTvRegCopy': partnerCableTvRegCopy,
+      'partnerCableTvSubCount': totalCableTvSubscriberCount,
+      'partnerInternetSubCount': totalInternetSubscriberCount,
+      'partnerNetworkQty': totalFiberCount,
+      'createdByEmpName': createdBy,
+    });
   }
 
   Map<String, dynamic> personalInfoToMap() {
@@ -76,7 +84,8 @@ class LNPEnquiryFormParams {
       'Pin Code': pinCode,
       'Post Office': postOffice,
       'district': district,
-      'CableTV Registration License': selectedFiles.map((file) => file).toList(),
+      'CableTV Registration License':
+          selectedFiles.map((file) => file).toList(),
       'Total Cable Tv Subscriber Count': totalCableTvSubscriberCount,
       'Total Internet Subscriber Count': totalInternetSubscriberCount,
       'Total Fiber Count': totalFiberCount,
@@ -88,7 +97,7 @@ class LNPEnquiryFormParams {
     return {
       'Company Name': companyName,
       'Partner Name': partnerName,
-      'Currently associated with any other ISP?': ispValue.name
+      'Currently associated with any other ISP?': ispValue.name,
     };
   }
 }

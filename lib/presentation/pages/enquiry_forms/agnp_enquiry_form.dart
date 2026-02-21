@@ -3,17 +3,15 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/common/bloc/agnp_form/agnp_form_cubit.dart';
 import 'package:kfon_subscriber/common/bloc/agnp_form/agnp_form_state.dart';
 import 'package:kfon_subscriber/data/enquiry_form/model/agnp_enquiry_form_params.dart';
-import 'package:kfon_subscriber/domain/enquiry_form/usecases/agnp_enquiry_form_submission_use_case.dart';
-import 'package:kfon_subscriber/domain/enquiry_form/usecases/post_office_district_use_case.dart';
+import 'package:kfon_subscriber/domain/enquiry_form/usecases/agnp_enquiry_form_use_case.dart';
 import 'package:kfon_subscriber/presentation/page_component/enquiery_form_footer.dart';
 import 'package:kfon_subscriber/presentation/page_component/enquiry_form_header.dart';
 import 'package:kfon_subscriber/presentation/page_component/enquiry_form_preview.dart';
 import 'package:kfon_subscriber/presentation/pages/enquiry_forms/lnp_enquiry_form.dart';
-import 'package:kfon_subscriber/presentation/ui_component/common_drop_down.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_text_area.dart';
-import 'package:kfon_subscriber/presentation/ui_component/default_app_bar.dart';
+import 'package:kfon_subscriber/presentation/ui_component/form_app_bar.dart';
 import 'package:kfon_subscriber/service_locator.dart';
-import 'package:kfon_subscriber/util/dialog_util.dart';
+import 'package:kfon_subscriber/core/util/dialog_util.dart';
 
 import '../../../core/constant/constant_colors.dart';
 import '../../ui_component/common_text_field.dart';
@@ -112,6 +110,7 @@ class _AGNPEnquiryFormState extends State<AGNPEnquiryForm> {
           _districtTextFieldController.clear();
           _postOfficeTextFieldController.clear();
         } else if (state is SubmitAGNPFormSuccess) {
+          _dialogUtil.showMessage('Success', context,backgroundColor: Colors.green);
           Navigator.of(context).pop();
         }
       },
@@ -121,7 +120,7 @@ class _AGNPEnquiryFormState extends State<AGNPEnquiryForm> {
               current is ShowGeographicInformationForm ||
               current is ShowPreview,
       builder: (context, state) {
-        return DefaultAppBar(
+        return FormAppBar(
           showBackButton: false,
           body: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -202,66 +201,66 @@ class _AGNPEnquiryFormState extends State<AGNPEnquiryForm> {
                                   textInputType: TextInputType.number,
                                   onTextChanged: (pinCode) {
                                     if (pinCode.length == 6) {
-                                      _agnpFormCubit.getPostOfficeDistrict(
-                                        useCase:
-                                            sl<PostOfficeDistrictsUserCase>(),
-                                        pinCode: pinCode,
-                                      );
+                                      // _agnpFormCubit.getPostOfficeDistrict(
+                                      //   useCase:
+                                      //       sl<PostOfficeDistrictsUseCase>(),
+                                      //   pinCode: pinCode,
+                                      // );
                                     }
                                   },
                                 ),
-                                BlocBuilder<AGNPFormCubit, AGNPFormState>(
-                                  bloc: _agnpFormCubit,
-                                  buildWhen:
-                                      (previousState, state) =>
-                                          state
-                                              is GetPostOfficesDistrictLoading ||
-                                          state
-                                              is GetPostOfficesDistrictSuccess ||
-                                          state is GetPostOfficesDistrictError,
-
-                                  builder:
-                                      (context, state) => CommonDropDown(
-                                        textEditingController:
-                                            _postOfficeTextFieldController,
-                                        items:
-                                            state is GetPostOfficesDistrictSuccess
-                                                ? state.response.postOffices!
-                                                : state
-                                                    is GetPostOfficesDistrictLoading
-                                                ? null
-                                                : [],
-                                        label: 'PostOffice*',
-                                        hintText: 'Choose PostOffice',
-                                        onSelected: (item) {},
-                                      ),
-                                ),
-                                BlocBuilder<AGNPFormCubit, AGNPFormState>(
-                                  bloc: _agnpFormCubit,
-                                  buildWhen:
-                                      (previousState, state) =>
-                                          state
-                                              is GetPostOfficesDistrictLoading ||
-                                          state
-                                              is GetPostOfficesDistrictSuccess ||
-                                          state is GetPostOfficesDistrictError,
-
-                                  builder:
-                                      (context, state) => CommonDropDown(
-                                        textEditingController:
-                                            _districtTextFieldController,
-                                        items:
-                                            state is GetPostOfficesDistrictSuccess
-                                                ? state.response.district!
-                                                : state
-                                                    is GetPostOfficesDistrictLoading
-                                                ? null
-                                                : [],
-                                        label: 'District*',
-                                        hintText: 'Choose District',
-                                        onSelected: (item) {},
-                                      ),
-                                ),
+                                // BlocBuilder<AGNPFormCubit, AGNPFormState>(
+                                //   bloc: _agnpFormCubit,
+                                //   buildWhen:
+                                //       (previousState, state) =>
+                                //           state
+                                //               is GetPostOfficesDistrictLoading ||
+                                //           state
+                                //               is GetPostOfficesDistrictSuccess ||
+                                //           state is GetPostOfficesDistrictError,
+                                //
+                                //   builder:
+                                //       (context, state) => CommonDropDown(
+                                //         textEditingController:
+                                //             _postOfficeTextFieldController,
+                                //         items:
+                                //             state is GetPostOfficesDistrictSuccess
+                                //                 ? state.response.postOffices!
+                                //                 : state
+                                //                     is GetPostOfficesDistrictLoading
+                                //                 ? null
+                                //                 : [],
+                                //         label: 'PostOffice*',
+                                //         hintText: 'Choose PostOffice',
+                                //         onSelected: (item) {},
+                                //       ),
+                                // ),
+                                // BlocBuilder<AGNPFormCubit, AGNPFormState>(
+                                //   bloc: _agnpFormCubit,
+                                //   buildWhen:
+                                //       (previousState, state) =>
+                                //           state
+                                //               is GetPostOfficesDistrictLoading ||
+                                //           state
+                                //               is GetPostOfficesDistrictSuccess ||
+                                //           state is GetPostOfficesDistrictError,
+                                //
+                                //   builder:
+                                //       (context, state) => CommonDropDown(
+                                //         textEditingController:
+                                //             _districtTextFieldController,
+                                //         items:
+                                //             state is GetPostOfficesDistrictSuccess
+                                //                 ? state.response.district!
+                                //                 : state
+                                //                     is GetPostOfficesDistrictLoading
+                                //                 ? null
+                                //                 : [],
+                                //         label: 'District*',
+                                //         hintText: 'Choose District',
+                                //         onSelected: (item) {},
+                                //       ),
+                                // ),
                               ],
                             )
                             : Column(
@@ -449,7 +448,7 @@ class _AGNPEnquiryFormState extends State<AGNPEnquiryForm> {
                               state is ShowPreview
                                   ? _agnpFormCubit.submitForm(
                                     useCase:
-                                        sl<AgnpEnquiryFormSubmissionUserCase>(),
+                                        sl<AgnpEnquiryFormUseCase>(),
                                     params: params,
                                   )
                                   : state is ShowCompanyInformationForm

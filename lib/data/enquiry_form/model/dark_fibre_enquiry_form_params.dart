@@ -1,4 +1,9 @@
+import 'dart:convert';
+import 'dart:io';
+
+import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
+import 'package:kfon_subscriber/core/util/image_util.dart';
 
 class DarkFibreEnquiryFormParams {
   final String firmName;
@@ -33,24 +38,34 @@ class DarkFibreEnquiryFormParams {
     required this.routeLeaseFiles,
   });
 
-  Map<String, dynamic> toMap() {
-    return {
+  Future<FormData> toFormData() async {
+    ImageUtil imageUtil=ImageUtil();
+    String internetServiceLicenseCopy=await imageUtil.convertImageToBase64(internetServiceLicenseFiles.first);
+    String supportExperienceCertificate=await imageUtil.convertImageToBase64(experienceCertificateFiles.first);
+    String coveringLetterCopy=await imageUtil.convertImageToBase64(coveringLetterFiles.first);
+    String routeFormCopy=await imageUtil.convertImageToBase64(routeLeaseFiles.first);
+    // MultipartFile internetServiceLicenseCopy=await MultipartFile.fromFile(internetServiceLicenseFiles.first.path!,filename: internetServiceLicenseFiles.first.path!.split('/').last);
+    // MultipartFile supportExperienceCertificate=await MultipartFile.fromFile(experienceCertificateFiles.first.path!,filename: experienceCertificateFiles.first.path!.split('/').last);
+    // MultipartFile coveringLetterCopy=await MultipartFile.fromFile(coveringLetterFiles.first.path!,filename: coveringLetterFiles.first.path!.split('/').last);
+    // MultipartFile routeFormCopy=await MultipartFile.fromFile(routeLeaseFiles.first.path!,filename: routeLeaseFiles.first.path!.split('/').last);
+       return FormData.fromMap({
       'firmName': firmName,
       'address': address,
-      'firm_contact_number': firmContactNumber,
-      'firm_email': email,
-      'contact_person_name': contactPersonName,
-      'contact_person_phone': contactPersonPhone,
-      'contact_person_email': contactPersonEmail,
-      'leasing_purpose': leasingPurpose,
-      'telecom_service_provided_area': telecomServiceProvidedArea,
-      'behalf_lease_company': behalfLeaseCompany,
-      'internet_service_license_files': internetServiceLicenseFiles.map((file) => file.path).toList(),
-      'experience_certificate_files': experienceCertificateFiles.map((file) => file.path).toList(),
-      'covering_letter_files': coveringLetterFiles.map((file) => file.path).toList(),
-      'route_lease_files': routeLeaseFiles.map((file) => file.path).toList(),
-    };
+      'firmContactNo': firmContactNumber,
+      'firmEmail': email,
+      'contactPersonName': contactPersonName,
+      'contactMobileNo': contactPersonPhone,
+      'contactEmail': contactPersonEmail,
+      'leasePurpose': leasingPurpose,
+      'telecomAreaCircle': telecomServiceProvidedArea,
+      'behalfCompanyLease': behalfLeaseCompany,
+      'internetServiceLicenseCopy': internetServiceLicenseCopy,
+      'supportExperienceCertificate': supportExperienceCertificate,
+      'coveringLetterCopy': coveringLetterCopy,
+      'routeFormCopy': routeFormCopy,
+    });
   }
+
 
   Map<String, dynamic> getCompanyInfoPreview() {
     return {

@@ -1,6 +1,7 @@
 import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_otp_text_field/flutter_otp_text_field.dart';
 import 'package:kfon_subscriber/common/bloc/forgot_password/forgot_password_cubit.dart';
 import 'package:kfon_subscriber/common/bloc/forgot_password/forgot_password_state.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
@@ -10,15 +11,12 @@ import 'package:kfon_subscriber/data/auth/model/set_new_password_params.dart';
 import 'package:kfon_subscriber/domain/auth/usecases/get_OTP.dart';
 import 'package:kfon_subscriber/domain/auth/usecases/set_new_password.dart';
 import 'package:kfon_subscriber/domain/auth/usecases/verify_otp.dart';
-import 'package:kfon_subscriber/presentation/page_component/login_background.dart';
-import 'package:kfon_subscriber/presentation/ui_component/common_text_field.dart';
-import 'package:kfon_subscriber/presentation/ui_component/primary_button.dart';
-import 'package:kfon_subscriber/presentation/ui_component/secondary_button.dart';
+import 'package:kfon_subscriber/presentation/page_component/login_header.dart';
+import 'package:kfon_subscriber/presentation/ui_component/login_text_field.dart';
+import 'package:kfon_subscriber/presentation/ui_component/password_text_field.dart';
+import 'package:kfon_subscriber/presentation/ui_component/white_button.dart';
 import 'package:kfon_subscriber/service_locator.dart';
-import 'package:kfon_subscriber/util/dialog_util.dart';
-import 'package:kfon_subscriber/util/extensions.dart';
-
-import '../../core/constant/constant_dimensions.dart';
+import 'package:kfon_subscriber/core/util/dialog_util.dart';
 
 class ForgotPassword extends StatefulWidget {
   const ForgotPassword({super.key});
@@ -32,8 +30,6 @@ class _ForgotPasswordState extends State<ForgotPassword>
   final DialogUtil _dialogUtil = DialogUtil();
   final ForgotPasswordCubit _forgotPasswordCubit = ForgotPasswordCubit();
   final _mobileFieldController = TextEditingController();
-  final _emailTextFieldController = TextEditingController();
-  final _otpFieldController = TextEditingController();
   final _newPasswordController = TextEditingController();
   final _conformPasswordController = TextEditingController();
   final PageController _pageController = PageController(initialPage: 0);
@@ -41,13 +37,12 @@ class _ForgotPasswordState extends State<ForgotPassword>
   final ValueNotifier<Duration> _otpTimer = ValueNotifier<Duration>(
     Duration.zero,
   );
+  String _otp = '';
 
   @override
   void dispose() {
     _forgotPasswordCubit.close();
     _mobileFieldController.dispose();
-    _emailTextFieldController.dispose();
-    _otpFieldController.dispose();
     _newPasswordController.dispose();
     _conformPasswordController.dispose();
     _pageController.dispose();
@@ -57,15 +52,14 @@ class _ForgotPasswordState extends State<ForgotPassword>
 
   _getOTP() {
     String mobile = _mobileFieldController.text;
-    String email = _emailTextFieldController.text;
-    if (mobile.length != 10 && !email.isValidEmail) {
+    if (mobile.isEmpty) {
       _dialogUtil.showMessage("Enter valid mobile number of email", context);
       return;
     }
     _startTimer();
     _forgotPasswordCubit.sendOTP(
       useCase: sl<GetOtpUseCase>(),
-      params: ForgotPasswordGetOtpParams(mobile: mobile, email: email),
+      params: ForgotPasswordGetOtpParams(mobile: mobile, email: ''),
     );
   }
 
@@ -88,8 +82,7 @@ class _ForgotPasswordState extends State<ForgotPassword>
   }
 
   _verifyOTP() {
-    String otp = _otpFieldController.text;
-    if (otp.isEmpty) {
+    if (_otp.isEmpty) {
       _dialogUtil.showMessage("Enter OTP", context);
       return;
     }
@@ -97,8 +90,8 @@ class _ForgotPasswordState extends State<ForgotPassword>
       useCase: sl<VerifyOtpUseCase>(),
       params: ForgotPasswordVerifyOtpParams(
         mobile: _mobileFieldController.text,
-        email: _emailTextFieldController.text,
-        otp: otp,
+        email: '',
+        otp: _otp,
       ),
     );
   }
@@ -112,7 +105,7 @@ class _ForgotPasswordState extends State<ForgotPassword>
     }
     _forgotPasswordCubit.setNewPassword(
       useCase: sl<SetNewPasswordUseCase>(),
-      params: SetNewPasswordParams(userId: '', password: newPassword),
+      params: SetNewPasswordParams(userName: '', password: newPassword),
     );
   }
 
@@ -135,7 +128,6 @@ class _ForgotPasswordState extends State<ForgotPassword>
           Navigator.of(context).pop();
           //  Navigator.pushReplacementNamed(context, '/main_page');
         }
-
       },
       listenWhen:
           (previousState, currentState) =>
@@ -146,12 +138,16 @@ class _ForgotPasswordState extends State<ForgotPassword>
               currentState is SetNewPasswordFailureState ||
               currentState is SetNewPasswordSuccessState,
       child: Scaffold(
-        backgroundColor: AppColor.kPrimaryColor,
+        backgroundColor: Colors.red,
         resizeToAvoidBottomInset: false,
-        body: LoginBackground(
-          heading: 'Forgot Password',
-          height: 435,
-          bottomMargin: 150,
+        body: Container(
+          decoration: BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage("assets/images/login_background.png"),
+              // Path to your image
+              fit: BoxFit.cover,
+            ),
+          ),
           child: PageView(
             controller: _pageController,
             physics: const NeverScrollableScrollPhysics(),
@@ -168,74 +164,25 @@ class _ForgotPasswordState extends State<ForgotPassword>
 
   _mobileInputLayout() {
     return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
       children: [
-        Column(
-          children: [
-            CommonTextField(
-              label: 'Mobile Number',
-              hintText: 'Enter Mobile Number',
-              textInputType: TextInputType.number,
-              textEditingController: _mobileFieldController,
-              maxLength: 10,
-            ),
-            SizedBox(height: 20),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Divider(
-                    height: 1,
-                    thickness: 1,
-                    color: Colors.grey.shade400,
-                  ),
-                ),
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 8),
-                  child: Text(
-                    'or',
-                    style: TextStyle(
-                      color: Colors.black,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w500,
-                    ),
-                  ),
-                ),
-                Expanded(
-                  child: Divider(
-                    height: 1,
-                    thickness: 1,
-                    color: Colors.grey.shade400,
-                  ),
-                ),
-              ],
-            ),
-            SizedBox(height: 20),
-            CommonTextField(
-              label: 'Email ID',
-              hintText: 'Enter Email ID',
-              textInputType: TextInputType.emailAddress,
-              textEditingController: _emailTextFieldController,
-            ),
-            SizedBox(height: 30),
-          ],
+        LoginHeader(
+          heading: 'Forgot Password?',
+          description:
+              'Don’t worry! Enter your registered email or phone number to reset your password.',
+          onClicked: () {},
         ),
-        Row(
-          spacing: 15,
-          children: [
-            Expanded(
-              child: SecondaryButton(
-                label: 'Back',
-                icon: Icon(
-                  Icons.arrow_circle_left_outlined,
-                  color: AppColor.kPrimaryColor,
-                  size: 24,
-                ),
-                onClicked: () => Navigator.of(context).pop(),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 24),
+          child: Column(
+            spacing: 60,
+            children: [
+              LoginTextField(
+                hintText: 'Enter Email / Mobile Number',
+                textEditingController: _mobileFieldController,
+                iconName: 'mobile.png',
+                showBorder: true,
               ),
-            ),
-            Expanded(
-              child: BlocBuilder<ForgotPasswordCubit, ForgotPasswordState>(
+              BlocBuilder<ForgotPasswordCubit, ForgotPasswordState>(
                 bloc: _forgotPasswordCubit,
                 buildWhen:
                     (previous, current) =>
@@ -243,113 +190,105 @@ class _ForgotPasswordState extends State<ForgotPassword>
                         current is GetOTPFailureState ||
                         current is GetOTPSuccessState,
                 builder: (context, state) {
-                  return PrimaryButton(
+                  return WhiteButton(
                     isLoading: state is GetOTPLoadingState,
-                    icon: Image.asset(
-                      'assets/images/send_otp_button.png'
-                    ),
-                    label: 'Send OTP',
+                    label: 'Get OTP',
+                    borderRadius: 10,
+                    textColor: AppColor.kPrimaryColor,
                     onClicked: () => _getOTP(),
                   );
                 },
               ),
-            ),
-          ],
+            ],
+          ),
         ),
       ],
     );
   }
 
   _otpLayout() {
-    return Column(
-      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-      children: [
-        Column(
-          spacing: 10,
-          children: [
-            CommonTextField(
-              label: 'Enter OTP',
-              hintText: 'Enter OTP',
-              textInputType: TextInputType.number,
-              textEditingController: _otpFieldController,
-            ),
-            Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              spacing: 5,
-              children: [
-                GestureDetector(
-                  onTap: () {
-                    if (_timer != null && _timer!.isActive) return;
-                    _getOTP();
-                  },
-                  child: Text(
-                    'Resend OTP',
-                    style: TextStyle(
-                      color: AppColor.kPrimaryColor,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w600,
-                    ),
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 24),
+      child: Column(
+        children: [
+          LoginHeader(
+            heading: 'Verify Your Account',
+            description:
+                'We have sent you 6 digits verification code to ${_mobileFieldController.text}',
+            onClicked: () {},
+          ),
+          OtpTextField(
+            numberOfFields: 6,
+            borderColor: Colors.white,
+            filled: true,
+            fillColor: Colors.white,
+            showFieldAsBox: true,
+            textStyle: TextStyle(color: AppColor.kPrimaryColor),
+            borderRadius: BorderRadius.all(Radius.circular(10.0)),
+            onCodeChanged: (String code) {},
+            onSubmit: (String verificationCode) {
+              _otp = verificationCode;
+            },
+          ),
+          SizedBox(height: 24),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            spacing: 5,
+            children: [
+              GestureDetector(
+                onTap: () {
+                  if (_timer != null && _timer!.isActive) return;
+                  _getOTP();
+                },
+                child: Text(
+                  'Resend OTP',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: 14,
+                    fontWeight: FontWeight.w600,
                   ),
                 ),
-                ValueListenableBuilder<Duration>(
-                  valueListenable: _otpTimer,
-                  builder: (
-                    BuildContext context,
-                    Duration duration,
-                    Widget? child,
-                  ) {
-                    return Text(
-                      duration.inSeconds > 0
-                          ? 'in ${(duration.inSeconds).toString().padLeft(2, '0')}s'
-                          : '',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.normal,
-                        color: Colors.black,
-                      ), // Overrides default
-                    );
-                  },
-                ),
-              ],
-            ),
-          ],
-        ),
-        Row(
-          spacing: 15,
-          children: [
-            Expanded(
-              child: SecondaryButton(
-                label: 'Back',
-                icon: Icon(
-                  Icons.arrow_circle_left_outlined,
-                  color: AppColor.kPrimaryColor,
-                  size: AppDimensions.kButtonIconSize,
-                ),
-                onClicked: () => _pageController.jumpToPage(0),
               ),
-            ),
-            Expanded(
-              child: BlocBuilder<ForgotPasswordCubit, ForgotPasswordState>(
-                bloc: _forgotPasswordCubit,
-                buildWhen:
-                    (previous, current) =>
-                        current is VerifyOTPLoadingState ||
-                        current is VerifyOTPFailureState ||
-                        current is VerifyOTPSuccessState,
-                builder: (context, state) {
-                  return PrimaryButton(
-                    isLoading: state is VerifyOTPLoadingState,
-                    icon: Image.asset(
-                      'assets/images/verify_otp_icon.png',
-                    ),
-                    label: 'Verify OTP',
-                    onClicked: () => _verifyOTP(),
+              ValueListenableBuilder<Duration>(
+                valueListenable: _otpTimer,
+                builder: (
+                  BuildContext context,
+                  Duration duration,
+                  Widget? child,
+                ) {
+                  return Text(
+                    duration.inSeconds > 0
+                        ? 'in ${(duration.inSeconds).toString().padLeft(2, '0')}s'
+                        : '',
+                    style: const TextStyle(
+                      fontWeight: FontWeight.normal,
+                      color: Colors.white,
+                    ), // Overrides default
                   );
                 },
               ),
-            ),
-          ],
-        ),
-      ],
+            ],
+          ),
+          SizedBox(height: 60),
+          BlocBuilder<ForgotPasswordCubit, ForgotPasswordState>(
+            bloc: _forgotPasswordCubit,
+            buildWhen:
+                (previous, current) =>
+                    current is VerifyOTPLoadingState ||
+                    current is VerifyOTPFailureState ||
+                    current is VerifyOTPSuccessState,
+            builder: (context, state) {
+              return WhiteButton(
+                isLoading: state is VerifyOTPLoadingState,
+                label: 'Verify Now',
+                borderRadius: 10,
+                textColor: AppColor.kPrimaryColor,
+                onClicked: () => _verifyOTP(),
+              );
+            },
+          ),
+        ],
+      ),
     );
   }
 
@@ -359,34 +298,40 @@ class _ForgotPasswordState extends State<ForgotPassword>
       children: [
         Column(
           children: [
-            CommonTextField(
-              label: 'New Password',
-              hintText: 'Enter New Password',
-              textEditingController: _newPasswordController,
+            LoginHeader(
+              heading: 'Welcome to KFON',
+              description: 'Don’t have an Account?  ',
+              onClicked:
+                  () => Navigator.pushReplacementNamed(context, '/sign_up'),
+              clickableText: 'Sign Up',
             ),
-            SizedBox(height: 20),
-            CommonTextField(
-              label: 'Confirm Password',
-              hintText: 'Re-enter New Password',
-              textEditingController: _conformPasswordController,
-            ),
-          ],
-        ),
-        Row(
-          spacing: 15,
-          children: [
-            Expanded(
-              child: SecondaryButton(
-                label: 'Back',
-                icon: Icon(
-                  Icons.arrow_circle_left_outlined,
-                  color: AppColor.kPrimaryColor,
-                  size: AppDimensions.kButtonIconSize,
-                ),
-                onClicked: () => _pageController.jumpToPage(1),
+            Container(
+              margin: EdgeInsets.symmetric(horizontal: 24),
+              padding: EdgeInsets.symmetric(vertical: 10, horizontal: 17),
+              decoration: BoxDecoration(
+                color: Colors.white,
+                borderRadius: BorderRadius.circular(20.0),
+              ),
+              child: Column(
+                children: [
+                  PasswordTextField(
+                    textEditingController: _newPasswordController,
+                    hintText: 'Enter New Password',
+                    showBorder: false,
+                    showIcon: true,
+                  ),
+                  Divider(color: Colors.grey.shade200, thickness: 1.5),
+                  PasswordTextField(
+                    textEditingController: _conformPasswordController,
+                    hintText: 'Enter Confirm Password',
+                    showBorder: false,
+                    showIcon: true,
+                  ),
+                ],
               ),
             ),
-            Expanded(
+            Padding(
+              padding: const EdgeInsets.only(left: 24, right: 24, top: 60),
               child: BlocBuilder<ForgotPasswordCubit, ForgotPasswordState>(
                 bloc: _forgotPasswordCubit,
                 buildWhen:
@@ -395,12 +340,11 @@ class _ForgotPasswordState extends State<ForgotPassword>
                         current is SetNewPasswordFailureState ||
                         current is SetNewPasswordSuccessState,
                 builder: (context, state) {
-                  return PrimaryButton(
+                  return WhiteButton(
                     isLoading: state is SetNewPasswordLoadingState,
-                    icon: Image.asset(
-                      'assets/images/verify_otp_icon.png'
-                    ),
-                    label: 'Reset',
+                    label: 'Upadate',
+                    borderRadius: 10,
+                    textColor: AppColor.kPrimaryColor,
                     onClicked: () => _resetPassword(),
                   );
                 },

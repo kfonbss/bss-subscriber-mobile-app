@@ -1,0 +1,197 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entity.dart';
+import 'package:kfon_subscriber/features/change_plan/domain/enums/subscriber_enums.dart';
+import 'package:kfon_subscriber/features/change_plan/domain/repository/change_plan_repository.dart';
+import 'package:kfon_subscriber/features/change_plan/domain/params/get_all_packages_parms.dart';
+import 'package:kfon_subscriber/features/change_plan/presentation/bloc/change_plan_event.dart';
+import 'package:kfon_subscriber/features/change_plan/presentation/bloc/change_plan_state.dart';
+import 'package:kfon_subscriber/features/change_plan/presentation/bloc/tab_plan_state.dart';
+
+class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
+  final ChangePlanRepository repository;
+
+  ChangePlanBloc({required this.repository}) : super(const ChangePlanState()) {
+    on<LoadPackages>(_onLoadPackages);
+    // on<LoadMorePackages>(_onLoadMorePackages);
+    on<SwitchTab>(_onSwitchTab);
+    on<SearchPackages>(_onSearchPackages);
+    on<FilterBySpeed>(_onFilterBySpeed);
+    on<SelectPackage>(_onSelectPackage);
+    on<ChangePlan>(_onChangePlan);
+  }
+
+  bool? _ottForTab(PlanTab tab) {
+    switch (tab) {
+      case PlanTab.all:
+        return null;
+      case PlanTab.ottPlans:
+        return true;
+    }
+  }
+
+  Future<void> _onLoadPackages(
+      LoadPackages event,
+      Emitter<ChangePlanState> emit,
+      ) async {
+    final tab = event.tab;
+    final currentTabStates = Map<PlanTab, TabPlanState>.from(state.tabStates);
+    currentTabStates[tab] = const TabPlanState(status: ListPlanStatus.loading);
+
+    emit(state.copyWith(tabStates: currentTabStates));
+    //
+    // final result = await repository.getPackages(
+    //   GetAllPackagesParams(
+    //     type: 'retail',
+    //     search: tab == PlanTab.all ? state.searchQuery : null,
+    //     speedMbps: tab == PlanTab.all ? state.speedFilter : null,
+    //     ott: _ottForTab(tab),
+    //   ),
+    // );
+
+    final updatedTabStates = Map<PlanTab, TabPlanState>.from(state.tabStates);
+
+    // result.fold(
+    //       (failure) {
+    //     updatedTabStates[tab] = TabPlanState(
+    //       status: ListPlanStatus.error,
+    //       errorMessage: failure.toString(),
+    //     );
+    //   },
+    //       (packages) {
+    //     final filtered = packages
+    //         .where((p) => p.packageId != event.packageId)
+    //         .toList();
+    //     updatedTabStates[tab] = TabPlanState(
+    //       status: ListPlanStatus.success,
+    //       packages: filtered,
+    //       hasMore: false,
+    //     );
+    //   },
+    // );
+    const List<PackageEntity> packages = [
+      PackageEntity(
+        packageId:   'PKG001',
+        packageName: 'Basic Home',
+        price:       299.0,
+        speed:       '25 Mbps',
+        data:        '100 GB',
+        validity:    30,
+        planType:    'FTTH',
+      ),
+      PackageEntity(
+        packageId:   'PKG002',
+        packageName: 'Internet Extra Combo Plus',
+        price:       499.0,
+        speed:       '50 Mbps',
+        data:        '200 GB',
+        validity:    30,
+        planType:    'FTTH',
+      ),
+      PackageEntity(
+        packageId:   'PKG003',
+        packageName: 'Mega Extra Plus',
+        price:       799.0,
+        speed:       '100 Mbps',
+        data:        '500 GB',
+        validity:    30,
+        planType:    'FTTH',
+      ),
+      PackageEntity(
+        packageId:   'PKG004',
+        packageName: 'Unlimited Pro',
+        price:       999.0,
+        speed:       '200 Mbps',
+        data:        'Unlimited',
+        validity:    30,
+        planType:    'FTTH',
+      ),
+      PackageEntity(
+        packageId:   'PKG005',
+        packageName: 'Business Starter',
+        price:       1499.0,
+        speed:       '100 Mbps',
+        data:        'Unlimited',
+        validity:    30,
+        planType:    'ILL',
+      ),
+      PackageEntity(
+        packageId:   'PKG006',
+        packageName: 'Business Pro',
+        price:       2999.0,
+        speed:       '500 Mbps',
+        data:        'Unlimited',
+        validity:    30,
+        planType:    'ILL',
+      ),
+    ];
+    final filtered = packages
+            .where((p) => p.packageId != event.packageId)
+            .toList();
+        updatedTabStates[tab] = TabPlanState(
+          status: ListPlanStatus.success,
+          packages: filtered,
+          hasMore: false,
+        );
+    emit(state.copyWith(tabStates: updatedTabStates));
+  }
+  //   // No pagination in the new API
+
+  // Future<void> _onLoadMorePackages(
+  //   LoadMorePackages event,
+  //   Emitter<ChangePlanState> emit,
+  // ) async {
+  //   return;
+  // }
+
+  void _onSwitchTab(SwitchTab event, Emitter<ChangePlanState> emit) {
+    emit(state.copyWith(activeTab: event.tab));
+
+    // Load data for the tab if it hasn't been loaded yet
+    final tabState = state.tabStates[event.tab];
+    if (tabState == null || tabState.status == ListPlanStatus.initial) {
+      add(LoadPackages(tab: event.tab, packageId: event.packageId));
+    }
+  }
+
+  Future<void> _onSearchPackages(
+      SearchPackages event,
+      Emitter<ChangePlanState> emit,
+      ) async {
+    emit(state.copyWith(searchQuery: event.query));
+    add(LoadPackages(tab: PlanTab.all, packageId: event.packageId));
+  }
+
+  Future<void> _onFilterBySpeed(
+      FilterBySpeed event,
+      Emitter<ChangePlanState> emit,
+      ) async {
+    emit(state.copyWith(speedFilter: event.speed));
+    add(LoadPackages(tab: PlanTab.all, packageId: event.packageId));
+  }
+
+  void _onSelectPackage(SelectPackage event, Emitter<ChangePlanState> emit) {
+    emit(state.copyWith(selectedPackageId: event.packageId));
+  }
+
+  Future<void> _onChangePlan(
+      ChangePlan event,
+      Emitter<ChangePlanState> emit,
+      ) async {
+    emit(state.copyWith(actionStatus: ActionStatus.loading));
+
+    final result = await repository.changePlan(
+      event.subscriberUuid,
+      event.params,
+    );
+
+    result.fold(
+          (failure) => emit(
+        state.copyWith(
+          actionStatus: ActionStatus.error,
+          errorMessage: failure.toString(),
+        ),
+      ),
+          (_) => emit(state.copyWith(actionStatus: ActionStatus.success)),
+    );
+  }
+}

@@ -1,5 +1,5 @@
 
-import '../../../util/preference_util.dart';
+import '../../../core/util/preference_util.dart';
 
 abstract class AuthLocalService {
   Future<bool> isLoggedIn();

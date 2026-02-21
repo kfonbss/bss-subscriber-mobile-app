@@ -13,7 +13,8 @@ class DioClient {
     : _dio = Dio(
         BaseOptions(
           baseUrl: ApiUrls.baseURL,
-          headers: {'Content-Type': 'application/json; charset=UTF-8'},
+          // contentType: 'multipart/form-data',
+          // headers: {'Content-Type': 'application/json; charset=UTF-8'},
           responseType: ResponseType.json,
           sendTimeout: const Duration(seconds: 10),
           receiveTimeout: const Duration(seconds: 10),
@@ -36,7 +37,7 @@ class DioClient {
         cancelToken: cancelToken,
         onReceiveProgress: onReceiveProgress,
       );
-      return APIResponse.fromJson(json.decode(response.data));
+      return APIResponse.fromJson(response.data);
     } catch (e) {
       //  rethrow;
       return APIResponse.fromError(e);
@@ -60,9 +61,9 @@ class DioClient {
         onSendProgress: onSendProgress,
         onReceiveProgress: onReceiveProgress,
       );
-      return APIResponse.fromJson(json.decode(response.data));
+      return APIResponse.fromJson(response.data);
     } catch (e) {
-      //  rethrow;
+      print('Remya: $e');
       return APIResponse.fromError(e);
     }
   }
@@ -87,7 +88,7 @@ class DioClient {
         onSendProgress: onSendProgress,
         onReceiveProgress: onReceiveProgress,
       );
-      return APIResponse.fromJson(json.decode(response.data));
+      return APIResponse.fromJson(response.data);
     } catch (e) {
       //  rethrow;
       return APIResponse.fromError(e);
@@ -115,15 +116,39 @@ class DioClient {
       rethrow;
     }
   }
-// DOWNLOAD METHOD
-  Future<APIResponse> download(
-      String url,
-      String downloadPath, {
+
+  // PATCH METHOD
+  Future<APIResponse> patch(
+      String url, {
+        data,
         Map<String, dynamic>? queryParameters,
         Options? options,
-        CancelToken? cancelToken,
+        ProgressCallback? onSendProgress,
         ProgressCallback? onReceiveProgress,
       }) async {
+    try {
+      final Response response = await _dio.patch(
+        url,
+        data: data,
+        options: options,
+        onSendProgress: onSendProgress,
+        onReceiveProgress: onReceiveProgress,
+      );
+
+      return APIResponse.fromJson(response.data);
+    } catch (e) {
+      return APIResponse.fromError(e);
+    }
+  }
+  // DOWNLOAD METHOD
+  Future<APIResponse> download(
+    String url,
+    String downloadPath, {
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    CancelToken? cancelToken,
+    ProgressCallback? onReceiveProgress,
+  }) async {
     try {
       final Response response = await Dio().download(
         url,
@@ -138,7 +163,7 @@ class DioClient {
         cancelToken: cancelToken,
         onReceiveProgress: onReceiveProgress,
       );
-      return APIResponse.fromJson(json.decode(response.data));
+      return APIResponse.fromJson(response.data);
     } catch (e) {
       return APIResponse.fromError(e);
     }

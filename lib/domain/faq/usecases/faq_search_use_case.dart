@@ -1,5 +1,5 @@
 import 'package:dartz/dartz.dart';
-import 'package:kfon_subscriber/core/usercase/usecase.dart';
+import 'package:kfon_subscriber/core/usecase/usecase.dart';
 import 'package:kfon_subscriber/domain/faq/repository/faq_repository.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 

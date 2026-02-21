@@ -1,0 +1,11 @@
+import 'package:dartz/dartz.dart';
+import 'package:kfon_subscriber/core/usecase/usecase.dart';
+import 'package:kfon_subscriber/domain/home/repository/home_repository.dart';
+import 'package:kfon_subscriber/service_locator.dart';
+
+class HomeUseCase implements UseCase<Either, String> {
+  @override
+  Future<Either> call({String? param}) async {
+    return await sl<HomeRepository>().getHomePageData(param!);
+  }
+}
