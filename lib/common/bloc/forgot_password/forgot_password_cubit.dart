@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/common/bloc/forgot_password/forgot_password_state.dart';
-import 'package:kfon_subscriber/core/usercase/usecase.dart';
+import 'package:kfon_subscriber/core/usecase/usecase.dart';
 
 class ForgotPasswordCubit extends Cubit<ForgotPasswordState> {
   ForgotPasswordCubit() : super(InitialState());

@@ -1,10 +1,10 @@
 import 'package:dartz/dartz.dart';
 import 'package:kfon_subscriber/data/enquiry_form/model/agnp_enquiry_form_params.dart';
 import 'package:kfon_subscriber/data/enquiry_form/model/bpl_enquiry_form_params.dart';
-import 'package:kfon_subscriber/data/enquiry_form/model/corporate_enquiry_form_params.dart';
 import 'package:kfon_subscriber/data/enquiry_form/model/dark_fibre_enquiry_form_params.dart';
+import 'package:kfon_subscriber/data/enquiry_form/model/gov_and_corp_enquiry_form_params.dart';
 import 'package:kfon_subscriber/data/enquiry_form/model/lnp_enquiry_form_params.dart';
-import 'package:kfon_subscriber/data/enquiry_form/model/subscription_enquiry_form_params.dart';
+import 'package:kfon_subscriber/data/enquiry_form/model/home_enquiry_form_params.dart';
 import 'package:kfon_subscriber/domain/enquiry_form/repository/enquiery_form.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 
@@ -12,17 +12,8 @@ import '../source/enquiry_form_api_service.dart';
 
 class EnquiryFormRepositoryImp extends EnquiryFormRepository {
   @override
-  Future<Either> submitSubscriptionEnquiryForm(
-    SubscriptionEnquiryFormParams params,
-  ) async {
-    return await sl<EnquiryFormApiService>().submitSubscriptionEnquiryForm(
-      params,
-    );
-  }
-
-  @override
-  Future<Either> getPostOfficesDistricts(String pinCode) async {
-    return await sl<EnquiryFormApiService>().getPostOfficesDistricts(pinCode);
+  Future<Either> submitHomeEnquiryForm(HomeEnquiryFormParams params) async {
+    return await sl<EnquiryFormApiService>().submitHomeEnquiryForm(params);
   }
 
   @override
@@ -36,10 +27,12 @@ class EnquiryFormRepositoryImp extends EnquiryFormRepository {
   }
 
   @override
-  Future<Either> submitCorporateEnquiryForm(
-    CorporateEnquiryFormParams params,
+  Future<Either> submitGovAndCorpEnquiryForm(
+    GovAndCorpEnquiryFormParams params,
   ) async {
-    return await sl<EnquiryFormApiService>().submitCorporateEnquiryForm(params);
+    return await sl<EnquiryFormApiService>().submitGovAndCorpEnquiryForm(
+      params,
+    );
   }
 
   @override
@@ -55,7 +48,7 @@ class EnquiryFormRepositoryImp extends EnquiryFormRepository {
   }
 
   @override
-  Future<Either> submitBPLEnquiryForm(BplEnquiryFormParams params)async {
+  Future<Either> submitBPLEnquiryForm(BplEnquiryFormParams params) async {
     return await sl<EnquiryFormApiService>().submitBPLEnquiryForm(params);
   }
 }

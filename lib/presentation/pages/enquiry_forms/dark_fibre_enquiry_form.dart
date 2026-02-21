@@ -5,7 +5,7 @@ import 'package:kfon_subscriber/common/bloc/dark_fibre_form/dark_fibre_form_cubi
 import 'package:kfon_subscriber/common/bloc/dark_fibre_form/dark_fibre_form_state.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/data/enquiry_form/model/dark_fibre_enquiry_form_params.dart';
-import 'package:kfon_subscriber/domain/enquiry_form/usecases/dark_fibre_enquiry_form_submission_use_case.dart';
+import 'package:kfon_subscriber/domain/enquiry_form/usecases/dark_fibre_enquiry_form_use_case.dart';
 import 'package:kfon_subscriber/domain/enquiry_form/usecases/download_letter_format_use_case.dart';
 import 'package:kfon_subscriber/presentation/page_component/enquiery_form_footer.dart';
 import 'package:kfon_subscriber/presentation/page_component/enquiry_form_header.dart';
@@ -14,9 +14,9 @@ import 'package:kfon_subscriber/presentation/ui_component/common_file_uploader.d
 import 'package:kfon_subscriber/presentation/ui_component/common_text_area.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_text_button.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_text_field.dart';
-import 'package:kfon_subscriber/presentation/ui_component/default_app_bar.dart';
+import 'package:kfon_subscriber/presentation/ui_component/form_app_bar.dart';
 import 'package:kfon_subscriber/service_locator.dart';
-import 'package:kfon_subscriber/util/dialog_util.dart';
+import 'package:kfon_subscriber/core/util/dialog_util.dart';
 
 class DarkFibreEnquiryForm extends StatefulWidget {
   const DarkFibreEnquiryForm({super.key});
@@ -96,6 +96,7 @@ class _DarkFibreEnquiryFormState extends State<DarkFibreEnquiryForm> {
         } else if (state is SubmitDarkFibreFormError) {
           _dialogUtil.showMessage(state.errorMessage, context);
         } else if (state is SubmitDarkFibreFormSuccess) {
+          _dialogUtil.showMessage('Success', context,backgroundColor: Colors.green);
           Navigator.of(context).pop();
         }
       },
@@ -105,7 +106,7 @@ class _DarkFibreEnquiryFormState extends State<DarkFibreEnquiryForm> {
               current is ShowDocumentCollectionForm ||
               current is ShowPreview,
       builder: (context, state) {
-        return DefaultAppBar(
+        return FormAppBar(
           showBackButton: false,
           body: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -206,7 +207,7 @@ class _DarkFibreEnquiryFormState extends State<DarkFibreEnquiryForm> {
                                                     'https://selfcare.kfon.co.in/new-Format-covering%20letter.pdf',
                                                 useCase:
                                                     sl<
-                                                      DownloadLetterFormatUserCase
+                                                      DownloadLetterFormatUseCase
                                                     >(),
                                               ),
                                     ),
@@ -231,7 +232,7 @@ class _DarkFibreEnquiryFormState extends State<DarkFibreEnquiryForm> {
                                                     'https://selfcare.kfon.co.in/new-Format-route-details.pdf',
                                                 useCase:
                                                     sl<
-                                                      DownloadLetterFormatUserCase
+                                                      DownloadLetterFormatUseCase
                                                     >(),
                                               ),
                                     ),
@@ -332,7 +333,7 @@ class _DarkFibreEnquiryFormState extends State<DarkFibreEnquiryForm> {
                                   ? _darkFibreFormCubit.submitForm(
                                     useCase:
                                         sl<
-                                          DarkFibreEnquiryFormSubmissionUserCase
+                                          DarkFibreEnquiryFormUseCase
                                         >(),
                                     params: params,
                                   )

@@ -34,20 +34,21 @@ class AGNPEnquiryFormParams {
   });
   Map<String, dynamic> toMap() {
     return {
-      'name': name,
-      'contact_name': contactName,
-      'isp_value': ispValue.name,
-      'mobile_number': mobileNumber,
-      'alternative_mobile_number': alternativeMobileNumber,
-      'landline_number': landlineNumber,
-      'email': email,
-      'address': address,
-      'location': location,
-      'latitude': latitude,
-      'longitude': longitude,
-      'pin_code': pinCode,
-      'post_office': postOffice,
-      'district': district,
+      'agnpName': name,
+      'agnpContactName': contactName,
+      'agnpAssocAnyOtherIsp': ispValue.name,
+      'agnpMobileNumber': mobileNumber,
+      'agnpAltrContactNumber': alternativeMobileNumber,
+      'agnpLandlineNumber': landlineNumber,
+      'agnpEmail': email,
+      'agnpAddress': address,
+      'agnpLocation': location,
+      'agnpLatitude': latitude,
+      'agnpLongitude': longitude,
+      'agnpPincode': pinCode,
+      'agnpPostoffice': postOffice,
+      'agnpDistrict': district,
+      'isActive': true
     };
   }
   Map<String, dynamic> geoGraphicInfoToMap() {

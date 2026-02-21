@@ -2,12 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 
 class TabBarMaterialWidget extends StatefulWidget {
-  final int index;
   final ValueChanged<int> onChangedTab;
 
   const TabBarMaterialWidget({
     super.key,
-    required this.index,
     required this.onChangedTab,
   });
 
@@ -16,6 +14,9 @@ class TabBarMaterialWidget extends StatefulWidget {
 }
 
 class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
+
+  int selectedIndex = 0;
+
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
@@ -28,11 +29,23 @@ class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          _buildTabItem(index: 0, icon: 'home', label: 'Home'),
-          _buildTabItem(index: 1, icon: 'broadband', label: 'Broadband'),
-
-          _buildTabItem(index: 2, icon: 'chat', label: 'FAQ'),
-          _buildTabItem(index: 3, icon: 'profile', label: 'Profile'),
+          Padding(
+            padding: const EdgeInsets.only(left: 8.0),
+            child: _buildTabItem(index: 0, icon: 'home', label: 'Home'),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 20.0),
+            child: _buildTabItem(
+                index: 1, icon: 'broadband', label: 'Broadband'),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(left: 20.0),
+            child: _buildTabItem(index: 2, icon: 'chat', label: 'FAQ'),
+          ),
+          Padding(
+            padding: const EdgeInsets.only(right: 8.0),
+            child: _buildTabItem(index: 3, icon: 'profile', label: 'Profile'),
+          ),
         ],
       ),
     );
@@ -43,24 +56,26 @@ class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
     required String icon,
     required String label,
   }) {
-    final isSelected = index == widget.index;
-
     return InkWell(
-      onTap: () => widget.onChangedTab(index),
+      onTap: () =>
+          setState(() {
+            selectedIndex=index;
+            widget.onChangedTab(index);
+          }),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           ImageIcon(
             size: 25,
             AssetImage('assets/bottomNaviBarIcons/$icon.png'),
-            color: isSelected ? AppColor.kPrimaryColor : Colors.black,
+            color: index==selectedIndex ? AppColor.kPrimaryColor : Colors.black,
           ),
           Column(
             children: [
               Text(
                 label,
                 style: TextStyle(
-                  color: isSelected ? AppColor.kPrimaryColor : Colors.black,
+                  color: index==selectedIndex ? AppColor.kPrimaryColor : Colors.black,
                   fontSize: 10,
                   fontWeight: FontWeight.w600,
                 ),
@@ -69,14 +84,13 @@ class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
                 height: 2,
                 width: 5,
                 decoration: BoxDecoration(
-                  color: isSelected ? AppColor.kPrimaryColor : Colors.white,
+                  color: index==selectedIndex ? AppColor.kPrimaryColor : Colors.white,
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
             ],
           ),
         ],
-      ),
-    );
+      ),);
   }
 }

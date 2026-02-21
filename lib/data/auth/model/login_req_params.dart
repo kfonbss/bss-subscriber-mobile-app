@@ -6,7 +6,7 @@ class LoginRequestParams{
 
   Map<String, dynamic> toMap() {
     return {
-      'userName': userName,
+      'username': userName,
       'password': password
     };
   }

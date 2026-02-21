@@ -1,61 +1,43 @@
 import 'dart:io';
 
 import 'package:dartz/dartz.dart';
-import 'package:dio/dio.dart';
 import 'package:kfon_subscriber/core/constant/api_urls.dart';
 import 'package:kfon_subscriber/core/constant/mis_constant.dart';
 import 'package:kfon_subscriber/core/network/dio_client.dart';
 import 'package:kfon_subscriber/data/enquiry_form/model/agnp_enquiry_form_params.dart';
 import 'package:kfon_subscriber/data/enquiry_form/model/bpl_enquiry_form_params.dart';
-import 'package:kfon_subscriber/data/enquiry_form/model/corporate_enquiry_form_params.dart';
 import 'package:kfon_subscriber/data/enquiry_form/model/dark_fibre_enquiry_form_params.dart';
+import 'package:kfon_subscriber/data/enquiry_form/model/gov_and_corp_enquiry_form_params.dart';
 import 'package:kfon_subscriber/data/enquiry_form/model/lnp_enquiry_form_params.dart';
-import 'package:kfon_subscriber/data/enquiry_form/model/subscription_enquiry_form_params.dart';
+import 'package:kfon_subscriber/data/enquiry_form/model/home_enquiry_form_params.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 import 'package:path_provider/path_provider.dart';
 
 abstract class EnquiryFormApiService {
-  Future<Either> submitSubscriptionEnquiryForm(
-    SubscriptionEnquiryFormParams params,
-  );
+  Future<Either> submitHomeEnquiryForm(HomeEnquiryFormParams params);
 
   Future<Either> submitLNPEnquiryForm(LNPEnquiryFormParams params);
 
   Future<Either> submitAGNPEnquiryForm(AGNPEnquiryFormParams params);
 
-  Future<Either> submitCorporateEnquiryForm(CorporateEnquiryFormParams params);
+  Future<Either> submitGovAndCorpEnquiryForm(
+      GovAndCorpEnquiryFormParams params,);
 
   Future<Either> submitDarkFibreEnquiryForm(DarkFibreEnquiryFormParams params);
-  Future<Either> submitBPLEnquiryForm( BplEnquiryFormParams params);
 
-  Future<Either> getPostOfficesDistricts(String pinCode);
+  Future<Either> submitBPLEnquiryForm(BplEnquiryFormParams params);
 
   Future<Either> downloadLetterFormat(String url);
 }
 
 class EnquiryFormApiServiceImp extends EnquiryFormApiService {
   @override
-  Future<Either> submitSubscriptionEnquiryForm(
-    SubscriptionEnquiryFormParams params,
-  ) async {
+  Future<Either> submitHomeEnquiryForm(HomeEnquiryFormParams params) async {
     var response = await sl<DioClient>().post(
       ApiUrls.subscriptionEnquiryFormURL,
       data: params.toMap(),
     );
-    if (response.status == 'success') {
-      return Right(response.data);
-    } else {
-      return Left(response.message);
-    }
-  }
-
-  @override
-  Future<Either> getPostOfficesDistricts(String pinCode) async {
-    var response = await sl<DioClient>().post(
-      ApiUrls.getPostOfficesDistrictURL,
-      data: FormData.fromMap({'pincode': pinCode}),
-    );
-    if (response.status == 'success') {
+    if (response.error.isEmpty) {
       return Right(response.data);
     } else {
       return Left(response.message);
@@ -66,12 +48,12 @@ class EnquiryFormApiServiceImp extends EnquiryFormApiService {
   Future<Either> submitLNPEnquiryForm(LNPEnquiryFormParams params) async {
     var response = await sl<DioClient>().post(
       ApiUrls.lnpEnquiryFormURL,
-      data: params.toMap(),
+      data: await params.toFormData(),
     );
-    if (response.status == 'success') {
+    if (response.error.isEmpty) {
       return Right(response.data);
     } else {
-      return Left(response.message);
+      return Left(response.error);
     }
   }
 
@@ -81,40 +63,38 @@ class EnquiryFormApiServiceImp extends EnquiryFormApiService {
       ApiUrls.agnpEnquiryFormURL,
       data: params.toMap(),
     );
-    if (response.status == 'success') {
+    if (response.error.isEmpty) {
       return Right(response.data);
     } else {
-      return Left(response.message);
+      return Left(response.error);
     }
   }
 
   @override
-  Future<Either> submitCorporateEnquiryForm(
-    CorporateEnquiryFormParams params,
-  ) async {
+  Future<Either> submitGovAndCorpEnquiryForm(
+      GovAndCorpEnquiryFormParams params) async {
     var response = await sl<DioClient>().post(
-      ApiUrls.corporateEnquiryFormURL,
-      data: params.toMap(),
-    );
-    if (response.status == 'success') {
-      return Right(response.data);
+        ApiUrls.govAndCorpEnquiryFormURL,
+        data: params.toMap()
+    ,);
+    if (response.error.isEmpty) {
+    return Right(response.data);
     } else {
-      return Left(response.message);
+    return Left(response.error);
     }
   }
 
   @override
   Future<Either> submitDarkFibreEnquiryForm(
-    DarkFibreEnquiryFormParams params,
-  ) async {
+      DarkFibreEnquiryFormParams params,) async {
     var response = await sl<DioClient>().post(
       ApiUrls.darkFibreEnquiryFormURL,
-      data: params.toMap(),
+      data: await params.toFormData(),
     );
-    if (response.status == 'success') {
+    if (response.error.isEmpty) {
       return Right(response.data);
     } else {
-      return Left(response.message);
+      return Left(response.error);
     }
   }
 
@@ -127,10 +107,12 @@ class EnquiryFormApiServiceImp extends EnquiryFormApiService {
       downloadsDir = await getApplicationDocumentsDirectory();
     }
 
-    final File file = File('${downloadsDir.path}/${url.split('/').last}');
+    final File file = File('${downloadsDir.path}/${url
+        .split('/')
+        .last}');
 
     var response = await sl<DioClient>().download(url, file.path);
-    if (response.status == 'success') {
+    if (response.error.isEmpty) {
       return Right(true);
     } else {
       return Left(response.message);
@@ -138,15 +120,15 @@ class EnquiryFormApiServiceImp extends EnquiryFormApiService {
   }
 
   @override
-  Future<Either> submitBPLEnquiryForm(BplEnquiryFormParams params) async{
+  Future<Either> submitBPLEnquiryForm(BplEnquiryFormParams params) async {
     var response = await sl<DioClient>().post(
       ApiUrls.bplEnquiryFormURL,
       data: params.toMap(),
     );
-    if (response.status == 'success') {
+    if (response.error.isEmpty) {
       return Right(response.data);
     } else {
-      return Left(response.message);
+      return Left(response.error);
     }
   }
 }

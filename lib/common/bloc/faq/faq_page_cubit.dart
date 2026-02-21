@@ -1,7 +1,7 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/common/bloc/faq/faq_page_state.dart';
-import 'package:kfon_subscriber/core/usercase/usecase.dart';
+import 'package:kfon_subscriber/core/usecase/usecase.dart';
 import 'package:kfon_subscriber/data/faq/model/faq_question.dart';
 
 class FaqPageCubit extends Cubit<FaqPageState> {
@@ -13,7 +13,6 @@ class FaqPageCubit extends Cubit<FaqPageState> {
   }) async {
     try {
       emit(QuestionLoading());
-      await Future.delayed(Duration(seconds: 2));
       Either result = await useCase.call(param: keyword);
       result.fold(
         (error) {

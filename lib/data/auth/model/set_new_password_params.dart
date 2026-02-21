@@ -1,13 +1,13 @@
 class SetNewPasswordParams{
-  final String userId;
+  final String userName;
   final String password;
 
-  SetNewPasswordParams({required this.userId, required this.password});
+  SetNewPasswordParams({required this.userName, required this.password});
 
   Map<String, dynamic> toMap() {
     return {
-      'userId': userId,
-      'email': password
+      'username': userName,
+      'newPassword': password
     };
   }
 }

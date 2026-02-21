@@ -1,714 +1,721 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
-import 'package:readmore/readmore.dart';
+import 'package:kfon_subscriber/core/constant/constant_dimensions.dart';
+import 'package:kfon_subscriber/core/helper/bottom_sheet_helper.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/features/change_plan/presentation/pages/change_plan.dart';
+import 'package:kfon_subscriber/features/data_usage/presentation/pages/data_usage_view.dart';
+import 'package:kfon_subscriber/features/top_up/presentation/pages/topup_page.dart';
+import 'package:kfon_subscriber/presentation/pages/active_package_page.dart';
+import 'package:kfon_subscriber/presentation/ui_component/primary_button.dart';
+import 'package:kfon_subscriber/presentation/ui_component/secondary_button.dart';
+
+import '../page_component/recharge_bottom_sheet.dart';
+
+const kTeal = Color(0xFF00A896);
+const kOrange = Color(0xFFFF6B2C);
+const kRed = Color(0xFFE84040);
+const kYellow = Color(0xFFFFD600);
 
 class HomePage extends StatelessWidget {
   HomePage({super.key});
 
-  final Color kLightPrimaryColor = Color(0xFFFFF5E3);
-  final Color kYellowAccent = Color(0xFFF4F19A);
-  final Color kLightGrey = Color(0xFFCBCBCB);
-  final Color kDarkText = Color(0xFF0F1121);
-  final Color kMediumGreyText = Color(0xFF67697A);
-  final List<Map<String, dynamic>> services = [
-    {'title': 'Fiber to Home (FTTH)', 'icon': 'thunder.png'},
-    {'title': 'Internet Leased Line (ILL)', 'icon': 'internet_leased_line.png'},
-    {'title': 'Dark Fiber for Leased (DFL)', 'icon': 'dark_fiber.png'},
-    {'title': 'Co-Location', 'icon': 'ip_location.png'},
-    {'title': 'WiFi Services', 'icon': 'wifi.png'},
-    {'title': 'Over-the-Top (OTT)', 'icon': 'ott.png'},
-  ];
+  void _showRechargeSheet(BuildContext context) {
+    BottomSheetHelper.show(
+      context: context,
+      title: 'Recharge',
+      child: const RechargeBottomSheet(),
+    );
+  }
 
-  Widget _buildServiceCard({
-    required Color color,
-    required String icon,
-    required String label,
-  }) {
-    return Expanded(
-      child: Container(
-        width: 100,
-        height: 100,
-        decoration: BoxDecoration(
-          color: color,
-          borderRadius: BorderRadius.circular(16),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.12),
-              blurRadius: 16,
-              offset: const Offset(0, 0),
+  @override
+  Widget build(BuildContext context) {
+    return Scaffold(
+      backgroundColor: AppColor.kMainBackgroundColor,
+      appBar: AppBar(
+        backgroundColor: AppColor.kToolbarBackground,
+        toolbarHeight: AppDimensions.kDefaultToolbarHeights,
+        actionsPadding: EdgeInsets.only(right: 15),
+        actions: [
+          GestureDetector(
+            onTap: () => Navigator.pushNamed(context, '/notification_page'),
+            child: Image.asset(
+              'assets/icons/notification_white.png',
+              width: AppDimensions.kActionButtonSize,
+              height: AppDimensions.kActionButtonSize,
+              fit: BoxFit.cover,
             ),
-          ],
+          ),
+          SizedBox(width: 15),
+          Container(
+            width: 42,
+            height: 42,
+            decoration: ShapeDecoration(
+              image: DecorationImage(
+                image: NetworkImage("https://placehold.co/42x42"),
+                fit: BoxFit.cover,
+              ),
+              shape: OvalBorder(
+                side: BorderSide(
+                  width: 3,
+                  strokeAlign: BorderSide.strokeAlignOutside,
+                  color: Colors.white,
+                ),
+              ),
+            ),
+          ),
+        ],
+        title: SizedBox(
+          height: 45.0,
+          child: Image.asset(
+            'assets/images/logo_white.png',
+            fit: BoxFit.fitHeight,
+          ),
         ),
-        child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+      ),
+      body: SingleChildScrollView(
+        child: Stack(
           children: [
-            Container(
-              width: 46,
-              height: 46,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                shape: BoxShape.circle,
-              ),
-              child: Padding(
-                padding: const EdgeInsets.all(10.0),
-                child: Image.asset('assets/icons/$icon'),
+            SizedBox(
+              height: 250,
+              child: ClipRRect(
+                borderRadius: BorderRadius.only(
+                  bottomLeft: Radius.circular(30.0),
+                  bottomRight: Radius.circular(30.0),
+                ),
+                child: SvgPicture.asset(
+                  'assets/images/home_background.svg',
+                  width: double.infinity,
+                  fit: BoxFit.fitWidth,
+                ),
               ),
             ),
-            const SizedBox(height: 10),
-            // Label
-            Text(
-              label,
-              style: const TextStyle(
-                fontWeight: FontWeight.w500,
-                fontSize: 12,
-                color: Colors.white,
-              ),
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                _WalletCard(),
+                _ComboCard(),
+                const SizedBox(height: 16),
+                _QuickActions(
+                  onRechargeTap: () => _showRechargeSheet(context),
+                  onTransactionsTap:
+                      () => Navigator.pushNamed(
+                        context,
+                        '/transaction_history_page',
+                      ),
+                  onInvoiceTap:
+                      () => Navigator.pushNamed(context, '/invoice_page'),
+                ),
+                const SizedBox(height: 24),
+                _PlanChangeSection(),
+                const SizedBox(height: 24),
+                _ServicesSection(),
+                const SizedBox(height: 80),
+              ],
             ),
           ],
         ),
       ),
     );
   }
+}
 
-  Widget _buildServiceOfferedCard({
-    required String icon,
-    required String title,
-  }) {
-    return Card(
-      elevation: 0,
-      color: Colors.white,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: InkWell(
-        onTap: () {},
-        child: Container(
-          height: 72,
-          padding: const EdgeInsets.symmetric(horizontal: 16.0, vertical: 8.0),
-          decoration: BoxDecoration(
-            color: Colors.white,
-            borderRadius: BorderRadius.circular(12),
-          ),
-          child: Row(
+class _WalletCard extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 40, 20, 28),
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Icon
-              Image.asset('assets/icons/$icon', height: 32, width: 32),
-              const SizedBox(width: 8),
-              // Title
-              Expanded(
-                child: Text(
-                  title,
-                  style: TextStyle(
-                    fontWeight: FontWeight.w500,
-                    fontSize: 12,
-                    height: 1.65,
-                    // equivalent to 20px line height
-                    color: kDarkText,
-                  ),
-                  overflow: TextOverflow.ellipsis,
-                  maxLines: 2,
+              Text(
+                'Wallet Balance',
+                style: TextStyle(
+                  color: Colors.white70,
+                  fontSize: 14.sp,
+                  fontFamily: 'General Sans',
+                  fontWeight: FontWeight.w500,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                '₹ 38,200',
+                style: TextStyle(
+                  color: Colors.white,
+                  fontSize: 30.sp,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 4),
+              Text(
+                'Updated 03 Nov 2025',
+                style: TextStyle(
+                  color: Colors.white54,
+                  fontSize: 8.sp,
+                  fontFamily: 'General Sans',
+                  fontWeight: FontWeight.w500,
                 ),
               ),
             ],
           ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildPlanCard({
-    required String title,
-    required String data,
-    required String price,
-    required String description,
-  }) {
-    return Container(
-      height: 150,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        border: Border.all(color: Color(0xFFCBCBCB), width: 1.0),
-        borderRadius: BorderRadius.circular(16.0),
-        
-      ),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Padding(
-            padding: const EdgeInsets.only(left: 16.0, top: 12.0, bottom: 12.0),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                Row(
-                  children: [
-                    Container(
-                      width: 32,
-                      height: 32,
-                      decoration: BoxDecoration(
-                        color: const Color(0xFFF5F5F5),
-                        borderRadius: BorderRadius.circular(32),
-                      ),
-                      child: Padding(
-                        padding: const EdgeInsets.all(5.0),
-                        child: Image.asset(
-                          'assets/icons/glob.png',
-                          color: AppColor.kPrimaryColor,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(width: 9),
-                    Text(
-                      title,
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 12,
-                        color: kDarkText,
-                      ),
-                    ),
-                  ],
+          ElevatedButton(
+            onPressed:
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute<void>(
+                    builder: (context) => const TopupPage(),
+                  ),
                 ),
-                Stack(
-                  alignment: Alignment.center,
-                  children: [
-                    SvgPicture.asset(
-                      'assets/images/ribon_price_tag.svg',
-                      width: 64,
-                      height: 28,
-                    ),
-                    Text(
-                      '₹ $price',
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16,
-                        color: Color(0xFF1C1C1C),
-                      ),
-                    ),
-                  ],
-                ),
-              ],
+            style: ElevatedButton.styleFrom(
+              backgroundColor: kYellow,
+              foregroundColor: AppColor.kBlackHeadingColor,
+              shape: StadiumBorder(),
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+              minimumSize: Size.zero,
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
             ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 16.0),
             child: Text(
-              data,
+              'Top up',
               style: TextStyle(
+                fontSize: 12.sp,
+                fontFamily: 'General Sans',
                 fontWeight: FontWeight.w600,
-                fontSize: 14,
-                color: kDarkText,
+                height: 1.3,
               ),
-            ),
-          ),
-          Padding(
-            padding: const EdgeInsets.symmetric(
-              horizontal: 16.0,
-              vertical: 12.0,
-            ),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                Expanded(
-                  child: Row(
-                    spacing: 15,
-                    children: [
-                      Row(
-                        children: [
-                          Align(
-                            widthFactor: 0.5,
-                            child: CircleAvatar(
-                              radius: 15,
-                              backgroundColor: Colors.white,
-                              backgroundImage: AssetImage(
-                                'assets/icons/prime.png',
-                              ),
-                            ),
-                          ),
-                          Align(
-                            widthFactor: 0.5,
-                            child: CircleAvatar(
-                              radius: 15,
-                              backgroundColor: Colors.white,
-                              backgroundImage: AssetImage(
-                                'assets/icons/netflix.png',
-                              ),
-                            ),
-                          ),
-                          Align(
-                            widthFactor: 0.5,
-                            child: CircleAvatar(
-                              radius: 15,
-                              backgroundColor: Colors.white,
-                              backgroundImage: AssetImage(
-                                'assets/icons/zeetv.png',
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                      Expanded(
-                        child: ReadMoreText(
-                          description,
-                          style: TextStyle(
-                            fontWeight: FontWeight.w500,
-                            fontSize: 10,
-                            color: kMediumGreyText,
-                          ),
-                          trimMode: TrimMode.Line,
-                          trimLines: 1,
-                          colorClickableText: AppColor.kPrimaryColor,
-
-                          trimCollapsedText: 'Show more',
-                          trimExpandedText: 'Show less',
-                          moreStyle: TextStyle(
-                            fontSize: 10,
-                            fontWeight: FontWeight.bold,
-                            color: AppColor.kPrimaryColor
-                          ),
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-                TextButton(
-                  onPressed: () {},
-                  child: const Text(
-                    'Choose Plan',
-                    style: TextStyle(
-                      fontWeight: FontWeight.w600,
-                      fontSize: 12,
-                      color: AppColor.kPrimaryColor,
-                    ),
-                  ),
-                ),
-              ],
             ),
           ),
         ],
       ),
     );
   }
+}
 
+class _ComboCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
-    return SingleChildScrollView(
-      child: Stack(
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 2)),
+        ],
+      ),
+      child: Column(
         children: [
-          Container(height: 250, color: AppColor.kPrimaryColor),
           Padding(
-            padding: const EdgeInsets.all(20.0),
-            child: Column(
+            padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 Row(
-                  spacing: 8,
                   children: [
-                    Container(
-                      width: 40,
-                      height: 40,
-                      decoration: BoxDecoration(
-                        shape: BoxShape.circle,
-                        // Makes the container circular
-                        border: Border.all(
-                          color: Colors.white, // Border color
-                          width: 4, // Border thickness
-                        ),
-                        image: const DecorationImage(
-                          image: NetworkImage(
-                            'https://picsum.photos/seed/picsum/200/300', // Your image URL
-                          ),
-                          fit:
-                              BoxFit.cover, // How the image fills the container
-                        ),
+                    CircleAvatar(
+                      radius: 22,
+                      backgroundColor: AppColor.kPrimaryColor.withOpacity(0.1),
+                      child: Icon(
+                        Icons.language,
+                        color: AppColor.kPrimaryColor,
                       ),
                     ),
-                    Text(
-                      'Albert John',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                        color: Colors.white,
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20),
-                Container(
-                  height: 44,
-                  decoration: BoxDecoration(
-                    color: const Color.fromRGBO(218, 218, 218, 0.22),
-                    borderRadius: BorderRadius.circular(16.0),
-                    border: Border.all(
-                      color: Colors.white.withAlpha(50), // Color of the border
-                      width: 1.0, // Width of the border
-                    ),
-                  ),
-                  // Use Padding for the inner content's left/right spacing
-                  child: Padding(
-                    padding: const EdgeInsets.only(left: 20.0),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: const [
-                            Text(
-                              'Wallet',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 12.0,
-                                color: Colors.white,
-                              ),
-                            ),
-                            SizedBox(width: 4),
-                            Text(
-                              '₹1000',
-                              style: TextStyle(
-                                fontWeight: FontWeight.w600,
-                                fontSize: 18.0,
-                                color: Color(0xFFFDE933),
-                              ),
-                            ),
-                          ],
-                        ),
-                        TextButton.icon(
-                          onPressed: () {},
-                          iconAlignment: IconAlignment.end,
-                          icon: Icon(
-                            Icons.arrow_forward_ios_outlined,
-                            size: 12,
-                            color: Colors.white,
-                          ),
-                          label: Text(
-                            'Top up',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w600,
-                              fontSize: 12.0,
-                              color: Colors.white,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                SizedBox(height: 20),
-                Card(
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(16.0),
-                    side: const BorderSide(
-                      color: Color.fromRGBO(0, 0, 0, 0.1),
-                      width: 2.0,
-                    ),
-                  ),
-                  elevation: 0,
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(16.0),
-                    ),
-                    child: Column(
+                    const SizedBox(width: 12),
+                    Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        Container(
-                          decoration: BoxDecoration(
-                            borderRadius: BorderRadius.circular(10),
-                            color: Color(0xFFF8F8F8),
-                          ),
-                          margin: const EdgeInsets.all(6.0),
-                          padding: EdgeInsets.all(12),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                            crossAxisAlignment: CrossAxisAlignment.start,
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  Text(
-                                    '100 Mbps',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 22,
-                                      color: Colors.grey.shade800,
-                                    ),
-                                  ),
-                                  const SizedBox(width: 4),
-                                  const Text(
-                                    '(Unlimited)',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 10,
-                                      color: Color.fromRGBO(51, 51, 51, 0.8),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 8,
-                                ),
-                                decoration: BoxDecoration(
-                                  color: const Color(0xFFFDE933),
-                                  borderRadius: BorderRadius.circular(50),
-                                ),
-                                child: const Text(
-                                  '20 Days left',
-                                  style: TextStyle(
-                                    fontWeight: FontWeight.w600,
-                                    fontSize: 12,
-                                    color: Colors.black,
-                                  ),
-                                ),
-                              ),
-                            ],
+                        Text(
+                          'Combo Plan',
+                          style: TextStyle(
+                            fontFamily: 'General Sans',
+                            fontWeight: FontWeight.w500,
+                            height: 1.3,
+                            fontSize: 16.sp,
+                            color: AppColor.kBlackHeadingColor,
                           ),
                         ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            left: 16,
-                            right: 16,
-                            top: 14,
-                            bottom: 20,
-                          ),
-                          child: Column(
-                            children: [
-                              Row(
-                                crossAxisAlignment: CrossAxisAlignment.center,
-                                children: [
-                                  // Icon
-                                  Container(
-                                    width: 38,
-                                    height: 38,
-                                    decoration: BoxDecoration(
-                                      color: AppColor.kPrimaryColor,
-                                      shape: BoxShape.circle,
-                                    ),
-                                    child: Padding(
-                                      padding: const EdgeInsets.all(8.0),
-                                      child: Image.asset(
-                                        'assets/icons/glob.png',
-                                        height: 20,
-                                        width: 20,
-                                      ),
-                                    ),
-                                  ),
-                                  const SizedBox(width: 10),
-                                  // Text
-                                  Expanded(
-                                    child: Column(
-                                      crossAxisAlignment:
-                                          CrossAxisAlignment.start,
-                                      children: const [
-                                        Text(
-                                          'Combo Plan',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 14,
-                                            color: Color(0xFF333333),
-                                          ),
-                                        ),
-                                        Text(
-                                          'Active until Aug 25, 2025',
-                                          style: TextStyle(
-                                            fontWeight: FontWeight.w500,
-                                            fontSize: 10,
-                                            color: Color.fromRGBO(
-                                              51,
-                                              51,
-                                              51,
-                                              0.8,
-                                            ),
-                                          ),
-                                        ),
-                                      ],
-                                    ),
-                                  ),
-                                  // +3 Pack button
-                                  Container(
-                                    padding: const EdgeInsets.symmetric(
-                                      horizontal: 10,
-                                      vertical: 5,
-                                    ),
-                                    decoration: BoxDecoration(
-                                      color: const Color(0xFFF2F2F2),
-                                      borderRadius: BorderRadius.circular(80),
-                                    ),
-                                    child: const Text(
-                                      '+ 3 Pack',
-                                      style: TextStyle(
-                                        fontWeight: FontWeight.w500,
-                                        fontSize: 12,
-                                        color: Colors.black,
-                                      ),
-                                    ),
-                                  ),
-                                ],
-                              ),
-                              const SizedBox(height: 17),
-                              ClipRRect(
-                                borderRadius: BorderRadius.circular(30.0),
-                                // Adjust the radius as needed
-                                child: LinearProgressIndicator(
-                                  minHeight: 6,
-                                  value: 0.7, // Example progress value
-                                  backgroundColor: Color(0xFFE3E3E3),
-                                  valueColor:
-                                      const AlwaysStoppedAnimation<Color>(
-                                        AppColor.kPrimaryColor,
-                                      ),
-                                ),
-                              ),
-                              const SizedBox(height: 20),
-                              Row(
-                                mainAxisAlignment:
-                                    MainAxisAlignment.spaceBetween,
-                                children: [
-                                  Text(
-                                    '21 GB Available / 100 GB',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w600,
-                                      fontSize: 14,
-                                      color: Colors.grey.shade800,
-                                    ),
-                                  ),
-                                  Text(
-                                    'View Usage',
-                                    style: TextStyle(
-                                      fontWeight: FontWeight.w500,
-                                      fontSize: 12,
-                                      color: AppColor.kPrimaryColor,
-                                    ),
-                                  ),
-                                ],
-                              ),
-                            ],
+                        Text(
+                          'Active until Aug 25, 2025',
+                          style: TextStyle(
+                            color: AppColor.kTextFiledHintColor,
+                            fontSize: 10.sp,
+                            fontFamily: 'General Sans',
+                            fontWeight: FontWeight.w500,
+                            height: 1.6,
                           ),
                         ),
                       ],
                     ),
+                  ],
+                ),
+                Container(
+                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
+                  decoration: BoxDecoration(
+                    color: kYellow,
+                    borderRadius: BorderRadius.circular(20),
                   ),
-                ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  spacing: 10,
-                  children: [
-                    _buildServiceCard(
-                      color: Color(0xFFEC4899),
-                      icon: 'recharge_icon.png',
-                      label: 'Recharge',
+                  child: Text(
+                    '20 Days left',
+                    style: TextStyle(
+                      fontFamily: 'General Sans',
+                      fontWeight: FontWeight.w500,
+                      height: 1.3,
+                      fontSize: 12.sp,
+                      color: AppColor.kBlackHeadingColor,
                     ),
-                    _buildServiceCard(
-                      color: Color(0xFFF59E0B),
-                      icon: 'money_icon.png',
-                      label: 'Transactions',
-                    ),
-                    _buildServiceCard(
-                      color: Color(0xFF3B82F6),
-                      icon: 'invoice_icon.png',
-                      label: 'Invoice',
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20),
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    // Left side: Plan Change title
-                    const Text(
-                      'Plan Change',
-                      style: TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 16.0,
-                        height: 22 / 16,
-                        color: Color(0xFF121212),
-                      ),
-                    ),
-                    // Right side: "See all" link
-                    InkWell(
-                      onTap: () {
-                        // Add your navigation logic here
-                      },
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min, // Wrap content
-                        children: [
-                          Text(
-                            'See all',
-                            style: TextStyle(
-                              fontWeight: FontWeight.w500,
-                              fontSize: 14.0,
-                              height: 19 / 14,
-                              color: AppColor.kPrimaryColor,
-                            ),
-                          ),
-                          const SizedBox(width: 4),
-                          // You'll need an icon for the arrow
-                          Icon(
-                            Icons.arrow_right_alt,
-                            size: 16,
-                            color: AppColor.kPrimaryColor,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-                SizedBox(height: 20),
-                Column(
-                  children: [
-                    _buildPlanCard(
-                      title: 'Internet Extra Combo Plus',
-                      data: '500 GB / 30 days',
-                      price: '182',
-                      description: '30+ OTT, Unlimited Internet More iufdibfidbfiudbifubdiubfiudbiufbdiufbiudbfiudbuifbdibui..',
-                    ),
-                    SizedBox(height: 16),
-                    _buildPlanCard(
-                      title: 'Mega Extra Plus',
-                      data: '1000 GB / 30 days',
-                      price: '400',
-                      description: '30+ OTT, Unlimited Internet More..',
-                    ),
-                  ],
-                ),
-                Padding(
-                  padding: const EdgeInsets.only(top: 30, bottom: 12),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    children: [
-                      const Text(
-                        'Services Offered',
-                        style: TextStyle(
-                          fontWeight: FontWeight.w600,
-                          fontSize: 16.0,
-                          color: Color(0xFF121212),
-                        ),
-                      ),
-                      const SizedBox(height: 16),
-                      // Grid of Service Cards
-                      GridView.builder(
-                        gridDelegate:
-                            const SliverGridDelegateWithFixedCrossAxisCount(
-                              crossAxisCount: 2,
-                              crossAxisSpacing: 16.0,
-                              mainAxisSpacing: 16.0,
-                              childAspectRatio:
-                                  2.2, // Adjust to control card height
-                            ),
-                        shrinkWrap: true,
-                        physics: const NeverScrollableScrollPhysics(),
-                        itemCount: services.length,
-                        itemBuilder: (context, index) {
-                          return _buildServiceOfferedCard(
-                            title: services[index]['title'],
-                            icon: services[index]['icon'],
-                          );
-                        },
-                      ),
-                    ],
                   ),
                 ),
               ],
             ),
+          ),
+          Container(
+            margin: EdgeInsets.symmetric(horizontal: 16),
+            padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+            height: 60.h,
+            decoration: ShapeDecoration(
+              color: const Color(0xFFF5F5F5),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(12),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _Stat(label: 'Amount', value: '₹499'),
+                _Stat(label: 'Speed', value: '100 Mbps'),
+                _Stat(label: 'FPU', value: 'Unlimited'),
+                _Stat(label: 'Usage', value: '21 GB / 100 GB'),
+              ],
+            ),
+          ),
+          Padding(
+            padding: const EdgeInsets.all(12),
+            child: SizedBox(
+              height: 32.h,
+              child: Row(
+                children: [
+                  Expanded(
+                    child: SecondaryButton(
+                      label: '+2 Pack Active',
+                      onClicked:
+                          () => Navigator.push(
+                            context,
+                            MaterialPageRoute<void>(
+                              builder: (context) => const ActivePackagePage(),
+                            ),
+                          ),
+                    ),
+                  ),
+                  const SizedBox(width: 12),
+                  Expanded(
+                    child: PrimaryButton(
+                      label: 'View Usage',
+                      isLoading: false,
+                      onClicked:
+                          () => Navigator.push(
+                            context,
+                            MaterialPageRoute<void>(
+                              builder:
+                                  (context) => DataUsageView(
+                                    subscriberUuid: 'subscriberUuid',
+                                  ),
+                            ),
+                          ),
+                    ),
+                  ),
+                ],
+              ),
+            ),
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _Stat extends StatelessWidget {
+  final String label, value;
+
+  const _Stat({required this.label, required this.value});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Text(
+          label,
+          style: TextStyle(
+            color: AppColor.kTextFiledHintColor,
+            fontSize: 10.sp,
+            fontFamily: 'General Sans',
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+        const SizedBox(height: 2),
+        Text(
+          value,
+          style: TextStyle(
+            fontSize: 11.sp,
+            color: AppColor.kBlackHeadingColor,
+            fontFamily: 'General Sans',
+            fontWeight: FontWeight.w500,
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _QuickActions extends StatelessWidget {
+  final VoidCallback onRechargeTap;
+  final VoidCallback onTransactionsTap;
+  final VoidCallback onInvoiceTap;
+
+  const _QuickActions({
+    super.key,
+    required this.onRechargeTap,
+    required this.onTransactionsTap,
+    required this.onInvoiceTap,
+  });
+
+  List<Map<String, dynamic>> get _actions => [
+    {
+      'label': 'Recharge',
+      'color': kTeal,
+      'icon': 'recharge_icon.svg',
+      'onTap': onRechargeTap,
+    },
+    {
+      'label': 'Transactions',
+      'color': kOrange,
+      'icon': 'money_icon.svg',
+      'onTap': onTransactionsTap,
+    },
+    {
+      'label': 'Invoice',
+      'color': kRed,
+      'icon': 'invoice_icon.svg',
+      'onTap': onInvoiceTap,
+    },
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(horizontal: 16),
+      child: Row(
+        children:
+            _actions
+                .map(
+                  (a) => Expanded(
+                    child: GestureDetector(
+                      onTap: a['onTap'] as VoidCallback,
+                      child: Container(
+                        margin: EdgeInsets.symmetric(horizontal: 4),
+                        height: 110.h,
+                        decoration: BoxDecoration(
+                          color: a['color'] as Color,
+                          borderRadius: BorderRadius.circular(16),
+                        ),
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: 46.h,
+                              height: 46.h,
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: SvgPicture.asset(
+                                  'assets/icons/${a['icon']}',
+                                ),
+                              ),
+                            ),
+
+                            const SizedBox(height: 10),
+                            Text(
+                              a['label'] as String,
+                              style: TextStyle(
+                                color: Colors.white,
+                                fontFamily: 'General Sans',
+                                fontWeight: FontWeight.w500,
+                                fontSize: 12.sp,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+                .toList(),
+      ),
+    );
+  }
+}
+
+class _PlanChangeSection extends StatelessWidget {
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Text(
+                'Plan Change',
+                style: TextStyle(
+                  fontSize: 16.sp,
+                  fontFamily: 'General Sans',
+                  fontWeight: FontWeight.w600,
+                  color: AppColor.kBlackHeadingColor,
+                ),
+              ),
+              TextButton(
+                onPressed:
+                    () => Navigator.push(
+                      context,
+                      MaterialPageRoute<void>(
+                        builder:
+                            (context) => const ChangePlanPage(
+                              subscriberUuid: 'subscriberUuid',
+                              currentPackageId: 'currentPackageId',
+                            ),
+                      ),
+                    ),
+                child: Row(
+                  children: [
+                    Text(
+                      'See all',
+                      style: TextStyle(
+                        color: AppColor.kPrimaryColor,
+                        fontSize: 13.sp,
+                      ),
+                    ),
+                    Icon(
+                      Icons.arrow_forward,
+                      size: 16,
+                      color: AppColor.kPrimaryColor,
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          ),
+        ),
+        const SizedBox(height: 8),
+        _PlanCard(name: 'Internet Extra Combo Plus', price: '₹ 182'),
+        const SizedBox(height: 12),
+        _PlanCard(name: 'Mega Extra Plus', price: '₹ 182'),
+      ],
+    );
+  }
+}
+
+class _PlanCard extends StatelessWidget {
+  final String name, price;
+
+  const _PlanCard({required this.name, required this.price});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      margin: const EdgeInsets.symmetric(horizontal: 16),
+      padding: const EdgeInsets.all(16),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Row(
+            children: [
+              CircleAvatar(
+                radius: 18,
+                backgroundColor: AppColor.kPrimaryColor.withOpacity(0.1),
+                child: Icon(
+                  Icons.language,
+                  color: AppColor.kPrimaryColor,
+                  size: 18,
+                ),
+              ),
+              const SizedBox(width: 10),
+              Text(
+                name,
+                style: TextStyle(
+                  fontFamily: 'General Sans',
+                  fontWeight: FontWeight.w600,
+                  height: 1.3,
+                  fontSize: 14.sp,
+                  color: AppColor.kBlackHeadingColor,
+                ),
+              ),
+            ],
+          ),
+          const SizedBox(height: 12),
+          Container(
+            height: 55.h,
+            padding: EdgeInsets.all(8),
+            decoration: ShapeDecoration(
+              color: const Color(0xFFF5F5F5),
+              shape: RoundedRectangleBorder(
+                borderRadius: BorderRadius.circular(11),
+              ),
+            ),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              children: [
+                _Stat(label: 'Data', value: '100 GB'),
+                _Stat(label: 'Speed', value: '100 Mbps'),
+                _Stat(label: 'FPU', value: 'Unlimited'),
+                _Stat(label: 'validity', value: '30 Days'),
+              ],
+            ),
+          ),
+          const SizedBox(height: 12),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Container(
+                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+                decoration: BoxDecoration(
+                  color: AppColor.kPrimaryColor,
+                  borderRadius: BorderRadius.circular(8),
+                ),
+                child: Text(
+                  price,
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontWeight: FontWeight.bold,
+                    fontSize: 14.sp,
+                  ),
+                ),
+              ),
+              SizedBox(
+                height: 32.h,
+                width: 145.w,
+                child: SecondaryButton(label: 'Choose Plan', onClicked: () {}),
+              ),
+            ],
+          ),
+        ],
+      ),
+    );
+  }
+}
+
+class _ServicesSection extends StatelessWidget {
+  final _services = const [
+    {'title': 'Fiber to Home\n(FTTH)', 'icon': 'thunder.svg'},
+    {
+      'title': 'Internet Leased\nline (IIL)',
+      'icon': 'internet_leased_line.svg',
+    },
+    {'title': 'Dark Fiber for\nLeased (DFL)', 'icon': 'dark_fiber.svg'},
+    {'title': 'Co-Location', 'icon': 'ip_location.svg'},
+    {'title': 'WiFi Services', 'icon': 'wifi.svg'},
+    {'title': 'Over-the-Top\n(OTT)', 'icon': 'ott.svg'},
+  ];
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      children: [
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: Text(
+            'Services Offered',
+            style: TextStyle(
+              fontSize: 16.sp,
+              fontFamily: 'General Sans',
+              fontWeight: FontWeight.w600,
+              height: 1.3,
+              color: AppColor.kBlackHeadingColor,
+            ),
+          ),
+        ),
+        const SizedBox(height: 12),
+        Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 16),
+          child: GridView.builder(
+            shrinkWrap: true,
+            physics: NeverScrollableScrollPhysics(),
+            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+              crossAxisCount: 2,
+              crossAxisSpacing: 12,
+              mainAxisSpacing: 12,
+              childAspectRatio: 1.4,
+            ),
+            itemCount: _services.length,
+            itemBuilder:
+                (_, i) => _ServiceCard(
+                  title: _services[i]['title'] as String,
+                  icon: _services[i]['icon'] as String,
+                ),
+          ),
+        ),
+      ],
+    );
+  }
+}
+
+class _ServiceCard extends StatelessWidget {
+  final String title;
+  final String icon;
+
+  const _ServiceCard({required this.title, required this.icon});
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.all(14),
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(14),
+        boxShadow: [
+          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
+        ],
+      ),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(
+            title,
+            style: TextStyle(
+              fontFamily: 'General Sans',
+              fontWeight: FontWeight.w500,
+              height: 1.5,
+              fontSize: 14.sp,
+              color: AppColor.kBlackHeadingColor,
+            ),
+          ),
+          Spacer(),
+          Row(
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              SvgPicture.asset('assets/icons/$icon', height: 34.h, width: 34.w),
+              Icon(
+                Icons.arrow_forward,
+                color: AppColor.kTextFiledHintColor,
+                size: 18,
+              ),
+            ],
           ),
         ],
       ),

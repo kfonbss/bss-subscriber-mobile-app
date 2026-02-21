@@ -1,38 +1,12 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/common/bloc/agnp_form/agnp_form_state.dart';
-import 'package:kfon_subscriber/core/usercase/usecase.dart';
+import 'package:kfon_subscriber/core/usecase/usecase.dart';
 import 'package:kfon_subscriber/data/enquiry_form/model/agnp_enquiry_form_params.dart';
-import 'package:kfon_subscriber/util/extensions.dart';
-
-import '../../../data/enquiry_form/model/post_office_district_response.dart';
+import 'package:kfon_subscriber/core/util/extensions.dart';
 
 class AGNPFormCubit extends Cubit<AGNPFormState> {
   AGNPFormCubit() : super(ShowCompanyInformationForm());
-
-  Future<void> getPostOfficeDistrict({
-    required String pinCode,
-    required UseCase useCase,
-  }) async {
-    try {
-      emit(GetPostOfficesDistrictLoading());
-      Either result = await useCase.call(param: pinCode);
-      result.fold(
-        (error) {
-          emit(GetPostOfficesDistrictError(errorMessage: error));
-        },
-        (data) {
-          emit(
-            GetPostOfficesDistrictSuccess(
-              response: PostOfficeDistrictResponse.fromJson(data),
-            ),
-          );
-        },
-      );
-    } catch (e) {
-      emit(GetPostOfficesDistrictError(errorMessage: e.toString()));
-    }
-  }
 
   Future<void> submitForm({
     required AGNPEnquiryFormParams params,
@@ -40,7 +14,6 @@ class AGNPFormCubit extends Cubit<AGNPFormState> {
   }) async {
     try {
       emit(SubmitAGNPFormLoading());
-      await Future.delayed(const Duration(seconds: 3));
       Either result = await useCase.call(param: params);
       result.fold(
         (error) {

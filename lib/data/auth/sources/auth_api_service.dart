@@ -26,7 +26,7 @@ class AuthApiServiceImp extends AuthApiService {
       ApiUrls.loginURL,
       data: loginReq.toMap(),
     );
-    if (response.status == 'success') {
+    if (response.error.isEmpty) {
       return Right(response.data);
     } else {
       return Left(response.message);
@@ -41,7 +41,7 @@ class AuthApiServiceImp extends AuthApiService {
       ApiUrls.forgotPasswordSendOTPURL,
       data: forgotPasswordSendOTPParams.toMap(),
     );
-    if (response.status == 'success') {
+    if (response.error.isEmpty) {
       return Right(response.data);
     } else {
       return Left(response.message);
@@ -56,7 +56,7 @@ class AuthApiServiceImp extends AuthApiService {
       ApiUrls.setNewPasswordURL,
       data: setNewPasswordParams.toMap(),
     );
-    if (response.status == 'success') {
+    if (response.error.isEmpty) {
       return Right(response.data);
     } else {
       return Left(response.message);
@@ -71,7 +71,7 @@ class AuthApiServiceImp extends AuthApiService {
       ApiUrls.forgotPasswordVerifyOTPURL,
       data: forgotPasswordVerityParams.toMap(),
     );
-    if (response.status == 'success') {
+    if (response.error.isEmpty) {
       return Right(response.data);
     } else {
       return Left(response.message);

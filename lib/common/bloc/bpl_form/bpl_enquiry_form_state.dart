@@ -1,13 +1,6 @@
-import 'package:kfon_subscriber/data/enquiry_form/model/post_office_district_response.dart';
-
 abstract class BplEnquiryFormState {}
 
 class GetPostOfficesDistrictLoading extends BplEnquiryFormState {}
-
-class GetPostOfficesDistrictSuccess extends BplEnquiryFormState {
-  final PostOfficeDistrictResponse response;
-  GetPostOfficesDistrictSuccess({required this.response});
-}
 
 class GetPostOfficesDistrictError extends BplEnquiryFormState {
   final String errorMessage;

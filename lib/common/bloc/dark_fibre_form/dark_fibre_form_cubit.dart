@@ -2,9 +2,9 @@ import 'package:dartz/dartz.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/common/bloc/dark_fibre_form/dark_fibre_form_state.dart';
-import 'package:kfon_subscriber/core/usercase/usecase.dart';
+import 'package:kfon_subscriber/core/usecase/usecase.dart';
 import 'package:kfon_subscriber/data/enquiry_form/model/dark_fibre_enquiry_form_params.dart';
-import 'package:kfon_subscriber/util/extensions.dart';
+import 'package:kfon_subscriber/core/util/extensions.dart';
 
 class DarkFibreFormCubit extends Cubit<DarkFibreFormState> {
   DarkFibreFormCubit() : super(ShowCompanyInfoForm());

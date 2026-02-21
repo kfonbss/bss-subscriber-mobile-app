@@ -18,80 +18,13 @@ class LoginBackground extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Stack(
+    return Column(
       children: [
-        Column(
-          children: [
-            Expanded(
-              flex: 6,
-              child: Container(
-                decoration: BoxDecoration(
-                  color: AppColor.kPrimaryColor,
-                  image: DecorationImage(
-                    image: AssetImage('assets/images/white_doodle.png'),
-                    fit: BoxFit.cover,
-                  ),
-                ),
-              ),
-            ),
-            Expanded(
-              flex: 4,
-              child: Container(
-                decoration: BoxDecoration(
-                  image: DecorationImage(
-                    image: AssetImage('assets/images/dark_doodle.png'),
-                    fit: BoxFit.cover,
-                  ),
-                  color: Colors.white,
-                  borderRadius: const BorderRadius.only(
-                    topLeft: Radius.circular(100.0),
-                    topRight: Radius.circular(100.0),
-                  ),
-                ),
-                child: Align(
-                  alignment: Alignment.bottomLeft,
-                  // child: SvgPicture.asset(
-                  //   'assets/images/login_page_bottom_image.svg',
-                  //   height: 100,
-                  //   fit: BoxFit.cover, // Optional: apply a color filter
-                  // ),
-                ),
-              ),
-            ),
-          ],
+        Padding(
+          padding: const EdgeInsets.only(left: 120.0,right: 120,bottom: 16),
+          child: Image.asset('assets/images/kfone_white.png'),
         ),
-        Positioned(
-          left: 0,
-          right: 0,
-          bottom: bottomMargin,
-          child: SizedBox(
-            height: height,
-            child: Card(
-              color: Colors.white,
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(30.0), // Adjust the radius as needed
-              ),
-              margin: const EdgeInsets.only(left: 15,right: 15),
-              child: Padding(
-                padding: const EdgeInsets.all(30.0),
-                child: Column(
-                  children: [
-                    Text(
-                      heading,
-                      style: TextStyle(
-                        color: Colors.black,
-                        fontSize: 32,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    SizedBox(height: 20,),
-                    Expanded(child: child),
-                  ],
-                ),
-              ),
-            ),
-          ),
-        ),
+        Text('Welcome to KFON')
       ],
     );
   }

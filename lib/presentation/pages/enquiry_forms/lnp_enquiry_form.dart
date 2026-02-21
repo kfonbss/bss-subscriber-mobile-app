@@ -5,8 +5,8 @@ import 'package:kfon_subscriber/common/bloc/lnp_enquiry_form/lnp_enquiry_form_cu
 import 'package:kfon_subscriber/common/bloc/lnp_enquiry_form/lnp_enquiry_form_state.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/data/enquiry_form/model/lnp_enquiry_form_params.dart';
-import 'package:kfon_subscriber/domain/enquiry_form/usecases/lnp_enquiry_form_submission_use_case.dart';
-import 'package:kfon_subscriber/domain/enquiry_form/usecases/post_office_district_use_case.dart';
+import 'package:kfon_subscriber/domain/enquiry_form/usecases/lnp_enquiry_form_use_case.dart';
+
 import 'package:kfon_subscriber/presentation/page_component/enquiery_form_footer.dart';
 import 'package:kfon_subscriber/presentation/page_component/enquiry_form_header.dart';
 import 'package:kfon_subscriber/presentation/page_component/enquiry_form_preview.dart';
@@ -15,9 +15,9 @@ import 'package:kfon_subscriber/presentation/ui_component/common_drop_down.dart'
 import 'package:kfon_subscriber/presentation/ui_component/common_file_uploader.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_text_area.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_text_field.dart';
-import 'package:kfon_subscriber/presentation/ui_component/default_app_bar.dart';
+import 'package:kfon_subscriber/presentation/ui_component/form_app_bar.dart';
 import 'package:kfon_subscriber/service_locator.dart';
-import 'package:kfon_subscriber/util/dialog_util.dart';
+import 'package:kfon_subscriber/core/util/dialog_util.dart';
 
 enum SIPStatus { yes, no }
 
@@ -129,6 +129,7 @@ class _LNPEnquiryFormState extends State<LNPEnquiryForm> {
           _districtTextFieldController.clear();
           _postOfficeTextFieldController.clear();
         } else if (state is SubmitLnpFormSuccess) {
+          _dialogUtil.showMessage('Success', context,backgroundColor: Colors.green);
           Navigator.of(context).pop();
         }
       },
@@ -138,7 +139,7 @@ class _LNPEnquiryFormState extends State<LNPEnquiryForm> {
               current is ShowPersonalInformationForm ||
               current is ShowPreview,
       builder: (context, state) {
-        return DefaultAppBar(
+        return FormAppBar(
           showBackButton: false,
           body: Column(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -151,7 +152,7 @@ class _LNPEnquiryFormState extends State<LNPEnquiryForm> {
                         ? _pageCount
                         : state is ShowCompanyInformationForm
                         ? _pageCount - 2
-                        : _pageCount - 1,
+                        : _pageCount - 3,
               ),
               Expanded(
                 child: Scrollbar(
@@ -252,73 +253,6 @@ class _LNPEnquiryFormState extends State<LNPEnquiryForm> {
                                   textInputType: TextInputType.number,
                                   textEditingController:
                                       _pinCodeTextFieldController,
-                                  onTextChanged: (pinCode) {
-                                    if (pinCode.length == 6) {
-                                      _enquiryFormCubit.getPostOfficeDistrict(
-                                        useCase:
-                                            sl<PostOfficeDistrictsUserCase>(),
-                                        pinCode: pinCode,
-                                      );
-                                    }
-                                  },
-                                ),
-                                BlocBuilder<
-                                  LnpEnquiryFormCubit,
-                                  LnpEnquiryFormState
-                                >(
-                                  bloc: _enquiryFormCubit,
-                                  buildWhen:
-                                      (previousState, state) =>
-                                          state
-                                              is GetPostOfficesDistrictLoading ||
-                                          state
-                                              is GetPostOfficesDistrictSuccess ||
-                                          state is GetPostOfficesDistrictError,
-
-                                  builder:
-                                      (context, state) => CommonDropDown(
-                                        textEditingController:
-                                            _postOfficeTextFieldController,
-                                        items:
-                                            state is GetPostOfficesDistrictSuccess
-                                                ? state.response.postOffices!
-                                                : state
-                                                    is GetPostOfficesDistrictLoading
-                                                ? null
-                                                : [],
-                                        label: 'PostOffice*',
-                                        hintText: 'Choose PostOffice',
-                                        onSelected: (item) {},
-                                      ),
-                                ),
-                                BlocBuilder<
-                                  LnpEnquiryFormCubit,
-                                  LnpEnquiryFormState
-                                >(
-                                  bloc: _enquiryFormCubit,
-                                  buildWhen:
-                                      (previousState, state) =>
-                                          state
-                                              is GetPostOfficesDistrictLoading ||
-                                          state
-                                              is GetPostOfficesDistrictSuccess ||
-                                          state is GetPostOfficesDistrictError,
-
-                                  builder:
-                                      (context, state) => CommonDropDown(
-                                        textEditingController:
-                                            _districtTextFieldController,
-                                        items:
-                                            state is GetPostOfficesDistrictSuccess
-                                                ? state.response.district!
-                                                : state
-                                                    is GetPostOfficesDistrictLoading
-                                                ? null
-                                                : [],
-                                        label: 'District*',
-                                        hintText: 'Choose District',
-                                        onSelected: (item) {},
-                                      ),
                                 ),
                                 CommonFileUploader(
                                   selectedFiles: _selectedFiles,
@@ -502,7 +436,7 @@ class _LNPEnquiryFormState extends State<LNPEnquiryForm> {
                             state is ShowPreview
                                 ? _enquiryFormCubit.submitForm(
                                   useCase:
-                                      sl<LnpEnquiryFormSubmissionUserCase>(),
+                                      sl<LnpEnquiryFormUseCase>(),
                                   params: params,
                                 )
                                 : state is ShowCompanyInformationForm

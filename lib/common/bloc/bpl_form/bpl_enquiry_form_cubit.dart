@@ -1,36 +1,12 @@
 import 'package:dartz/dartz.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/common/bloc/bpl_form/bpl_enquiry_form_state.dart';
-import 'package:kfon_subscriber/core/usercase/usecase.dart';
+import 'package:kfon_subscriber/core/usecase/usecase.dart';
 import 'package:kfon_subscriber/data/enquiry_form/model/bpl_enquiry_form_params.dart';
-import 'package:kfon_subscriber/data/enquiry_form/model/post_office_district_response.dart';
+
 
 class BplEnquiryFormCubit extends Cubit<BplEnquiryFormState> {
   BplEnquiryFormCubit() : super(ShowPersonalInformationForm());
-
-  Future<void> getPostOfficeDistrict({
-    required String pinCode,
-    required UseCase useCase,
-  }) async {
-    try {
-      emit(GetPostOfficesDistrictLoading());
-      Either result = await useCase.call(param: pinCode);
-      result.fold(
-        (error) {
-          emit(GetPostOfficesDistrictError(errorMessage: error));
-        },
-        (data) {
-          emit(
-            GetPostOfficesDistrictSuccess(
-              response: PostOfficeDistrictResponse.fromJson(data),
-            ),
-          );
-        },
-      );
-    } catch (e) {
-      emit(GetPostOfficesDistrictError(errorMessage: e.toString()));
-    }
-  }
 
   Future<void> submitForm({
     required BplEnquiryFormParams params,
@@ -38,7 +14,6 @@ class BplEnquiryFormCubit extends Cubit<BplEnquiryFormState> {
   }) async {
     try {
       emit(SubmitBplFormLoading());
-      await Future.delayed(const Duration(seconds: 3));
       Either result = await useCase.call(param: params);
       result.fold(
         (error) {
