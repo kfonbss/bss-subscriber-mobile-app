@@ -74,24 +74,29 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 ),
               ],
             ),
-            PrimaryColorButton(
-              label: 'Update Password',
-              borderRadius: 10,
-              onClicked: () => _passwordChanged(),
-              isLoading: false,
-            ),
-            Center(
-              child: Text(
-                'Forgot password',
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  color: const Color(0xFF67697A),
-                  fontSize: 14,
-                  fontFamily: 'General Sans',
-                  fontWeight: FontWeight.w400,
-                  height: 1.60,
+            Column(
+              spacing: 16,
+              children: [
+                PrimaryColorButton(
+                  label: 'Update Password',
+                  borderRadius: 10,
+                  onClicked: () => _passwordChanged(),
+                  isLoading: false,
                 ),
-              ),
+                Center(
+                  child: Text(
+                    'Forgot password',
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      color: const Color(0xFF67697A),
+                      fontSize: 14,
+                      fontFamily: 'General Sans',
+                      fontWeight: FontWeight.w400,
+                      height: 1.60,
+                    ),
+                  ),
+                ),
+              ],
             ),
           ],
         ),

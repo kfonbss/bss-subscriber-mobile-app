@@ -18,7 +18,6 @@ class DataUsageBloc
     Emitter<DataUsageState> emit,
   ) async {
     emit(state.copyWith(status: DataUsageStatus.loading));
-    await Future.delayed(const Duration(seconds: 3));
 
    // final result = await repository.getSubscriberDataUsage(event.params);
 
