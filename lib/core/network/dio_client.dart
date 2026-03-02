@@ -3,23 +3,27 @@ import 'dart:convert';
 import 'package:dio/dio.dart';
 import 'package:kfon_subscriber/core/constant/api_urls.dart';
 import 'package:kfon_subscriber/core/network/api_response.dart';
-
-import 'interceptors.dart';
+import 'package:kfon_subscriber/core/network/interceptors/auth_interceptor.dart';
+import 'package:kfon_subscriber/core/network/interceptors/logger_interceptor.dart';
 
 class DioClient {
   late final Dio _dio;
 
   DioClient()
     : _dio = Dio(
-        BaseOptions(
-          baseUrl: ApiUrls.baseURL,
-          // contentType: 'multipart/form-data',
-          // headers: {'Content-Type': 'application/json; charset=UTF-8'},
-          responseType: ResponseType.json,
-          sendTimeout: const Duration(seconds: 10),
-          receiveTimeout: const Duration(seconds: 10),
-        ),
-      )..interceptors.addAll([LoggerInterceptor()]);
+          BaseOptions(
+            baseUrl: ApiUrls.baseURL,
+            // contentType: 'multipart/form-data',
+            // headers: {'Content-Type': 'application/json; charset=UTF-8'},
+            responseType: ResponseType.json,
+            sendTimeout: const Duration(seconds: 10),
+            receiveTimeout: const Duration(seconds: 10),
+          ),
+        )
+        ..interceptors.addAll([
+          AuthInterceptor(), // Add auth token and auto-refresh
+          LoggerInterceptor(),
+        ]);
 
   // GET METHOD
   Future<APIResponse> get(
@@ -119,13 +123,13 @@ class DioClient {
 
   // PATCH METHOD
   Future<APIResponse> patch(
-      String url, {
-        data,
-        Map<String, dynamic>? queryParameters,
-        Options? options,
-        ProgressCallback? onSendProgress,
-        ProgressCallback? onReceiveProgress,
-      }) async {
+    String url, {
+    data,
+    Map<String, dynamic>? queryParameters,
+    Options? options,
+    ProgressCallback? onSendProgress,
+    ProgressCallback? onReceiveProgress,
+  }) async {
     try {
       final Response response = await _dio.patch(
         url,
@@ -140,6 +144,7 @@ class DioClient {
       return APIResponse.fromError(e);
     }
   }
+
   // DOWNLOAD METHOD
   Future<APIResponse> download(
     String url,

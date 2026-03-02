@@ -1,20 +1,69 @@
-import 'package:shared_preferences/shared_preferences.dart';
+import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class PreferenceUtils {
+  static const _storage = FlutterSecureStorage();
 
-  static void setLoginToken(String token) async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    await prefs.setString('accessToken', token);
+  static const _keyAccessToken = 'accessToken';
+  static const _keyRefreshToken = 'refreshToken';
+  static const _keyTokenExpiryAt = 'tokenExpiryAt';
+  static const _keyUserId = 'userId';
+  static const _introScreenStatus = 'introScreenStatus';
+
+  static Future<String?> getAccessToken() async =>
+      await _storage.read(key: _keyAccessToken);
+
+  static Future<String?> getRefreshToken() async =>
+      await _storage.read(key: _keyRefreshToken);
+
+  static Future<bool> showIntroScreen() async {
+    final value = await _storage.read(key: _introScreenStatus);
+    if (value == null) return true;
+    return false;
   }
 
-  static Future<String> getLoginToken() async {
-    SharedPreferences prefs = await SharedPreferences.getInstance();
-    return prefs.getString('accessToken') ?? '';
+  static Future<void> setIntroScreenStatus(bool status) async =>
+      await _storage.write(key: _introScreenStatus, value: status.toString());
+
+
+  /// Returns the expiry timestamp in milliseconds since epoch
+  static Future<int?> getTokenExpiryAt() async {
+    final expiryStr = await _storage.read(key: _keyTokenExpiryAt);
+    return expiryStr != null ? int.tryParse(expiryStr) : null;
   }
 
-  static Future<dynamic> getAccessToken() async {}
+  /// Check if token is expired or about to expire (within buffer seconds)
+  static Future<bool> isTokenExpired({int bufferSeconds = 300}) async {
+    final expiryAt = await getTokenExpiryAt();
+    if (expiryAt == null) return true;
 
-  static Future<dynamic> getRefreshToken() async {}
+    final now = DateTime.now().millisecondsSinceEpoch;
+    final bufferMs = bufferSeconds * 1000;
 
-  static Future<void> clearAll() async {}
+    // Token is expired if current time + buffer is past expiry time
+    return now + bufferMs >= expiryAt;
+  }
+
+  /// Save all tokens. expiresIn is in seconds from now.
+  static Future<void> saveAllTokens({
+    required String accessToken,
+    required String refreshToken,
+    required int expiresIn,
+  }) async {
+    // Calculate the actual expiry timestamp
+    final expiryAt = DateTime.now().millisecondsSinceEpoch + (expiresIn * 1000);
+
+    await Future.wait([
+      _storage.write(key: _keyAccessToken, value: accessToken),
+      _storage.write(key: _keyRefreshToken, value: refreshToken),
+      _storage.write(key: _keyTokenExpiryAt, value: expiryAt.toString()),
+    ]);
+  }
+
+  static Future<void> setUserId(String userId) async =>
+      await _storage.write(key: _keyUserId, value: userId);
+
+  static Future<String?> getUserId() async =>
+      await _storage.read(key: _keyUserId);
+
+  static Future<void> clearAll() async => await _storage.deleteAll();
 }

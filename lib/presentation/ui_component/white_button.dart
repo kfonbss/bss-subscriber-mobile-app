@@ -1,11 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 
-import '../../core/constant/constant_dimensions.dart';
-
 class WhiteButton extends StatelessWidget {
   final String label;
-  final VoidCallback onClicked;
+  final VoidCallback? onClicked;
   final double borderRadius;
   final Color? textColor;
   final bool isLoading;
@@ -14,7 +12,7 @@ class WhiteButton extends StatelessWidget {
     super.key,
     required this.label,
     required this.borderRadius,
-    required this.onClicked,
+    this.onClicked,
     this.textColor,
     required this.isLoading,
   });
@@ -29,6 +27,8 @@ class WhiteButton extends StatelessWidget {
         fixedSize: Size(double.infinity, 50),
         backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
         foregroundColor: textColor ?? Colors.black,
+        disabledBackgroundColor: Colors.grey,
+        disabledForegroundColor: Colors.black,
         padding: EdgeInsets.zero,
         shape: RoundedRectangleBorder(
           borderRadius: BorderRadius.circular(
@@ -37,19 +37,23 @@ class WhiteButton extends StatelessWidget {
         ),
       ),
       child:
-          isLoading
-              ? SizedBox(
-                height: 30,
-                width: 30,
-                child: CircularProgressIndicator(
-                  color: AppColor.kPrimaryColor,
-                  strokeWidth: 3,
-                ),
-              )
-              : Text(
-                label,
-                style: TextStyle(fontSize: 14, fontWeight: FontWeight.w600),
-              ),
+      isLoading
+          ? SizedBox(
+        height: 30,
+        width: 30,
+        child: CircularProgressIndicator(
+          color: AppColor.kPrimaryColor,
+          strokeWidth: 3,
+        ),
+      )
+          : Text(
+        label,
+        style: TextStyle(
+          fontSize: 14,
+          fontWeight: FontWeight.w600,
+          fontFamily: 'GeneralSans',
+        ),
+      ),
     );
   }
 }

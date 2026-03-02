@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/util/preference_util.dart';
 import 'package:kfon_subscriber/presentation/page_component/intro_screen_layout.dart';
 
 class IntroScreenPage extends StatefulWidget {
@@ -72,9 +73,10 @@ class _IntroScreenPageState extends State<IntroScreenPage> {
                 heading: 'Internet That Works for You',
                 description:
                     'Enjoy high-speed, secure, and cost-effective internet designed for every household and business.',
-                nextButtonCallback:
-                    () =>
-                        Navigator.pushReplacementNamed(context, '/login_page'),
+                nextButtonCallback: () {
+                  PreferenceUtils.setIntroScreenStatus(false);
+                  Navigator.pushReplacementNamed(context, '/login_page');
+                },
               ),
             ],
           ),
