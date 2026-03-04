@@ -16,7 +16,11 @@ import 'package:kfon_subscriber/service_locator.dart';
 class ProfilePage extends StatelessWidget {
   const ProfilePage({super.key});
 
-  Widget _createAccountListItems(String image, String label, {Color? textColor}) {
+  Widget _createAccountListItems(
+    String image,
+    String label, {
+    Color? textColor,
+  }) {
     return Container(
       margin: EdgeInsets.only(bottom: 17.h),
       padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
@@ -175,7 +179,13 @@ class ProfilePage extends StatelessWidget {
                 () => Navigator.push(
                   context,
                   MaterialPageRoute<void>(
-                    builder: (context) =>  SecuritySettingsPage(types: [PasswordChangeEnum.bss,PasswordChangeEnum.internet]),
+                    builder:
+                        (context) => SecuritySettingsPage(
+                          types: [
+                            PasswordChangeEnum.bss,
+                            PasswordChangeEnum.internet,
+                          ],
+                        ),
                   ),
                 ),
             child: _createAccountListItems(
@@ -184,30 +194,38 @@ class ProfilePage extends StatelessWidget {
             ),
           ),
           _createAccountListItems('support_help', 'My Tickets'),
-          GestureDetector(onTap:() => Navigator.pushNamed(context, '/settings_page'),
-          child: _createAccountListItems('support_help', 'Settings')),
           GestureDetector(
-            onTap:()=>Navigator.pushNamed(context, '/self_care') ,
-              child: _createAccountListItems('support_help', 'Self-Care/Tools')),
+            onTap: () => Navigator.pushNamed(context, '/settings_page'),
+            child: _createAccountListItems('support_help', 'Settings'),
+          ),
+          // GestureDetector(
+          //   onTap:()=>Navigator.pushNamed(context, '/self_care') ,
+          //     child: _createAccountListItems('support_help', 'Self-Care/Tools')),
           GestureDetector(
-            onTap: ()=>showLogoutDialog(context),
-              child: _createAccountListItems('logout', 'Logout',textColor: Colors.red)),
+            onTap: () => showLogoutDialog(context),
+            child: _createAccountListItems(
+              'logout',
+              'Logout',
+              textColor: Colors.red,
+            ),
+          ),
         ],
       ),
     );
   }
+
   void showLogoutDialog(BuildContext context) {
     final profileBloc = ProfileBloc(repository: sl<ProfileRepository>());
     showModalBottomSheet(
       context: context,
-      backgroundColor: context.isTablet
-          ? Colors.transparent
-          : AppColor.kMainBackgroundColor,
+      backgroundColor:
+          context.isTablet ? Colors.transparent : AppColor.kMainBackgroundColor,
       isScrollControlled: true,
       shape: RoundedRectangleBorder(
-        borderRadius: context.isTablet
-            ? BorderRadius.circular(24.w)
-            : BorderRadius.vertical(top: Radius.circular(24.w)),
+        borderRadius:
+            context.isTablet
+                ? BorderRadius.circular(24.w)
+                : BorderRadius.vertical(top: Radius.circular(24.w)),
       ),
       builder: (BuildContext context) {
         // Calculate responsive sizes for tablet
@@ -233,7 +251,7 @@ class ProfilePage extends StatelessWidget {
                 right: horizontalPadding,
                 top: topPadding,
                 bottom:
-                bottomPadding + MediaQuery.of(context).viewInsets.bottom,
+                    bottomPadding + MediaQuery.of(context).viewInsets.bottom,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -305,13 +323,14 @@ class ProfilePage extends StatelessWidget {
                             final isLoading = state is LogoutLoading;
 
                             return ElevatedButton(
-                              onPressed: isLoading
-                                  ? null
-                                  : () {
-                                context.read<ProfileBloc>().add(
-                                  const LogoutRequested(),
-                                );
-                              },
+                              onPressed:
+                                  isLoading
+                                      ? null
+                                      : () {
+                                        context.read<ProfileBloc>().add(
+                                          const LogoutRequested(),
+                                        );
+                                      },
                               style: ElevatedButton.styleFrom(
                                 backgroundColor: AppColor.kFailedRed,
                                 foregroundColor: Colors.white,
@@ -322,30 +341,32 @@ class ProfilePage extends StatelessWidget {
                                 ),
                                 elevation: 0,
                               ),
-                              child: isLoading
-                                  ? SizedBox(
-                                height: 20,
-                                width: 20,
-                                child: CircularProgressIndicator(
-                                  strokeWidth: 2,
-                                  valueColor:
-                                  AlwaysStoppedAnimation<Color>(
-                                    Colors.white,
-                                  ),
-                                ),
-                              )
-                                  : Text(
-                                'Logout',
-                                style: TextStyle(
-                                  fontFamily: 'GeneralSans',
-                                  fontSize: context.isTablet
-                                      ? 14.0 * 1.2
-                                      : 14.sp,
-                                  fontWeight: FontWeight.w600,
-                                  height: 1.2999999523162842,
-                                  letterSpacing: 0,
-                                ),
-                              ),
+                              child:
+                                  isLoading
+                                      ? SizedBox(
+                                        height: 20,
+                                        width: 20,
+                                        child: CircularProgressIndicator(
+                                          strokeWidth: 2,
+                                          valueColor:
+                                              AlwaysStoppedAnimation<Color>(
+                                                Colors.white,
+                                              ),
+                                        ),
+                                      )
+                                      : Text(
+                                        'Logout',
+                                        style: TextStyle(
+                                          fontFamily: 'GeneralSans',
+                                          fontSize:
+                                              context.isTablet
+                                                  ? 14.0 * 1.2
+                                                  : 14.sp,
+                                          fontWeight: FontWeight.w600,
+                                          height: 1.2999999523162842,
+                                          letterSpacing: 0,
+                                        ),
+                                      ),
                             );
                           },
                         ),

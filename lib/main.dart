@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -22,7 +21,7 @@ import 'package:kfon_subscriber/presentation/pages/enquiry_forms/enquiry_list_pa
 import 'package:kfon_subscriber/presentation/pages/enquiry_forms/gov_and_corp_enquiry_form.dart';
 import 'package:kfon_subscriber/presentation/pages/enquiry_forms/home_enquiry_form.dart';
 import 'package:kfon_subscriber/presentation/pages/intro_screen_page.dart';
-import 'package:kfon_subscriber/presentation/pages/invoice_page.dart';
+import 'package:kfon_subscriber/presentation/pages/invoice_list_page.dart';
 import 'package:kfon_subscriber/presentation/pages/main_page.dart';
 import 'package:kfon_subscriber/presentation/pages/notification_page.dart';
 import 'package:kfon_subscriber/presentation/pages/sign_up_page.dart';
@@ -50,7 +49,7 @@ Future<void> main() async {
 
 class MyApp extends StatefulWidget {
   final bool showIntro;
-  const MyApp({super.key,required this.showIntro});
+  const MyApp({super.key, required this.showIntro});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -111,8 +110,8 @@ class _MyAppState extends State<MyApp> {
           '/login_page': (context) => LoginPage(),
           '/otp_verification': (context) {
             final args =
-            ModalRoute.of(context)?.settings.arguments
-            as Map<String, dynamic>?;
+                ModalRoute.of(context)?.settings.arguments
+                    as Map<String, dynamic>?;
             return OtpVerificationPage(
               mobileNumber: args?['mobileNumber'] ?? '',
               isFromForgotPassword: args?['isFromForgotPassword'] ?? false,
@@ -135,7 +134,7 @@ class _MyAppState extends State<MyApp> {
           '/account_information_page': (context) => AccountInformationPage(),
           '/notification_page': (context) => NotificationPage(),
           '/transaction_history_page': (context) => TransactionHistoryPage(),
-          '/invoice_page': (context) => InvoicePage(),
+          '/invoice_list_page': (context) => InvoiceListPage(),
           '/settings_page': (context) => SettingsPage(),
           '/self_care': (context) => DiagnosticsPage(),
         },
@@ -144,10 +143,10 @@ class _MyAppState extends State<MyApp> {
           builder: (context, state) {
             if (state is Authenticated) {
               return MainPage();
-            } else if(widget.showIntro) {
+            } else if (widget.showIntro) {
               return IntroScreenPage();
-            }else{
-            return LoginPage();
+            } else {
+              return LoginPage();
             }
           },
         ),

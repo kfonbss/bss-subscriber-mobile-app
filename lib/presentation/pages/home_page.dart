@@ -105,7 +105,7 @@ class HomePage extends StatelessWidget {
                         '/transaction_history_page',
                       ),
                   onInvoiceTap:
-                      () => Navigator.pushNamed(context, '/invoice_page'),
+                      () => Navigator.pushNamed(context, '/invoice_list_page'),
                 ),
                 const SizedBox(height: 24),
                 _PlanChangeSection(),
@@ -609,11 +609,21 @@ class _PlanCard extends StatelessWidget {
               SizedBox(
                 height: 32.h,
                 width: 145.w,
-                child: SecondaryButton(label: 'Choose Plan', onClicked: ()=> Navigator.push(
-                  context,
-                  MaterialPageRoute<void>(builder: (context) => const ChangePlanPage(subscriberUuid: 'subscriberUuid', currentPackageId: 'currentPackageId')),
-                )),
-              )
+                child: SecondaryButton(
+                  label: 'Choose Plan',
+                  onClicked:
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder:
+                              (context) => const ChangePlanPage(
+                                subscriberUuid: 'subscriberUuid',
+                                currentPackageId: 'currentPackageId',
+                              ),
+                        ),
+                      ),
+                ),
+              ),
             ],
           ),
         ],

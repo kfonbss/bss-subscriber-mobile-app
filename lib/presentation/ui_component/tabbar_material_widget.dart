@@ -4,17 +4,13 @@ import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 class TabBarMaterialWidget extends StatefulWidget {
   final ValueChanged<int> onChangedTab;
 
-  const TabBarMaterialWidget({
-    super.key,
-    required this.onChangedTab,
-  });
+  const TabBarMaterialWidget({super.key, required this.onChangedTab});
 
   @override
   _TabBarMaterialWidgetState createState() => _TabBarMaterialWidgetState();
 }
 
 class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
-
   int selectedIndex = 0;
 
   @override
@@ -36,7 +32,10 @@ class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
           Padding(
             padding: const EdgeInsets.only(right: 20.0),
             child: _buildTabItem(
-                index: 1, icon: 'broadband', label: 'Broadband'),
+              index: 1,
+              icon: 'self_care',
+              label: 'Self care',
+            ),
           ),
           Padding(
             padding: const EdgeInsets.only(left: 20.0),
@@ -57,9 +56,9 @@ class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
     required String label,
   }) {
     return InkWell(
-      onTap: () =>
-          setState(() {
-            selectedIndex=index;
+      onTap:
+          () => setState(() {
+            selectedIndex = index;
             widget.onChangedTab(index);
           }),
       child: Column(
@@ -68,14 +67,18 @@ class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
           ImageIcon(
             size: 25,
             AssetImage('assets/bottomNaviBarIcons/$icon.png'),
-            color: index==selectedIndex ? AppColor.kPrimaryColor : Colors.black,
+            color:
+                index == selectedIndex ? AppColor.kPrimaryColor : Colors.black,
           ),
           Column(
             children: [
               Text(
                 label,
                 style: TextStyle(
-                  color: index==selectedIndex ? AppColor.kPrimaryColor : Colors.black,
+                  color:
+                      index == selectedIndex
+                          ? AppColor.kPrimaryColor
+                          : Colors.black,
                   fontSize: 10,
                   fontWeight: FontWeight.w600,
                 ),
@@ -84,13 +87,17 @@ class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
                 height: 2,
                 width: 5,
                 decoration: BoxDecoration(
-                  color: index==selectedIndex ? AppColor.kPrimaryColor : Colors.white,
+                  color:
+                      index == selectedIndex
+                          ? AppColor.kPrimaryColor
+                          : Colors.white,
                   borderRadius: BorderRadius.circular(10),
                 ),
               ),
             ],
           ),
         ],
-      ),);
+      ),
+    );
   }
 }

@@ -6,7 +6,6 @@ import 'package:kfon_subscriber/features/self_care/presentation/pages/connected_
 import 'package:kfon_subscriber/features/self_care/presentation/pages/speed_test_page.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
 
-
 class DiagnosticsPage extends StatelessWidget {
   const DiagnosticsPage({super.key});
 
@@ -20,7 +19,8 @@ class DiagnosticsPage extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
-            Expanded(                         // 👈 fix: constrain row content
+            Expanded(
+              // 👈 fix: constrain row content
               child: Row(
                 spacing: 16,
                 children: [
@@ -36,7 +36,8 @@ class DiagnosticsPage extends StatelessWidget {
                     ),
                     child: Image.asset('assets/icons/$icon'),
                   ),
-                  Expanded(                   // 👈 fix: let text wrap freely
+                  Expanded(
+                    // 👈 fix: let text wrap freely
                     child: Column(
                       mainAxisAlignment: MainAxisAlignment.center,
                       crossAxisAlignment: CrossAxisAlignment.start,
@@ -82,7 +83,7 @@ class DiagnosticsPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CommonAppBar(
-      onBackPressed: () => Navigator.pop(context),
+      // onBackPressed: () => Navigator.pop(context),
       title: 'Self-Care/Tools',
       body: Padding(
         padding: const EdgeInsets.only(
@@ -94,12 +95,13 @@ class DiagnosticsPage extends StatelessWidget {
         child: Column(
           children: [
             GestureDetector(
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (context) => const RestartModemPage(),
-                ),
-              ),
+              onTap:
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (context) => const RestartModemPage(),
+                    ),
+                  ),
               child: _createOptionLayout(
                 'Restart Modem/Refresh Connection',
                 '',
@@ -107,12 +109,13 @@ class DiagnosticsPage extends StatelessWidget {
               ),
             ),
             GestureDetector(
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (context) => const SpeedTestPage(),
-                ),
-              ),
+              onTap:
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (context) => const SpeedTestPage(),
+                    ),
+                  ),
               child: _createOptionLayout(
                 'Network Health Check',
                 'Ping / Speed Test',
@@ -120,12 +123,13 @@ class DiagnosticsPage extends StatelessWidget {
               ),
             ),
             GestureDetector(
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (context) => ConnectedDevicesPage(),
-                ),
-              ),
+              onTap:
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (context) => ConnectedDevicesPage(),
+                    ),
+                  ),
               child: _createOptionLayout(
                 'Device Management',
                 'Manage your connected devices',
@@ -133,14 +137,19 @@ class DiagnosticsPage extends StatelessWidget {
               ),
             ),
             GestureDetector(
-              onTap: () => Navigator.push(
-                context,
-                MaterialPageRoute<void>(
-                  builder: (context) => SecuritySettingsPage(
-                    types: [PasswordChangeEnum.ssid, PasswordChangeEnum.wifi],
+              onTap:
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder:
+                          (context) => SecuritySettingsPage(
+                            types: [
+                              PasswordChangeEnum.ssid,
+                              PasswordChangeEnum.wifi,
+                            ],
+                          ),
+                    ),
                   ),
-                ),
-              ),
               child: _createOptionLayout(
                 'Change SSID / Wi-Fi Password',
                 '',

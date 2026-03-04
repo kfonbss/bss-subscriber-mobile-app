@@ -3,6 +3,7 @@ import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/features/pages/chat_page.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/faq_page.dart';
+import 'package:kfon_subscriber/features/self_care/presentation/pages/diagnostics_page.dart';
 import 'package:kfon_subscriber/presentation/pages/home_page.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/profile_page.dart';
 import 'package:kfon_subscriber/presentation/ui_component/help_option_card.dart';
@@ -28,6 +29,7 @@ class _MainPageState extends State<MainPage> {
   void onChangedTab(int index) {
     _pageController.jumpToPage(index);
   }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -69,9 +71,9 @@ class _MainPageState extends State<MainPage> {
         elevation: 5,
         child: Padding(
           padding: const EdgeInsets.all(15.0),
-          child: Image.asset('assets/bottomNaviBarIcons/headphone.png',),
+          child: Image.asset('assets/bottomNaviBarIcons/headphone.png'),
         ),
-        onPressed: ()=>_showHelpOptions(context),
+        onPressed: () => _showHelpOptions(context),
       ),
       floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
 
@@ -80,14 +82,13 @@ class _MainPageState extends State<MainPage> {
         physics: const NeverScrollableScrollPhysics(),
         children: <Widget>[
           Center(child: HomePage()),
-          Center(child: HomePage()),
+          Center(child: DiagnosticsPage()),
           Center(child: FaqPage()),
           Center(child: ProfilePage()),
         ],
       ),
     );
   }
-
 
   _showHelpOptions(BuildContext context) {
     final bottomPadding = MediaQuery.of(context).padding.bottom;
@@ -306,7 +307,7 @@ class _MainPageState extends State<MainPage> {
               ),
               // Title
               Text(
-               'Call Back',
+                'Call Back',
                 style: const TextStyle(
                   color: Color(0xFF262629),
                   fontSize: 18,
