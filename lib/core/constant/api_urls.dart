@@ -1,6 +1,6 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
-class ApiUrls{
+class ApiUrls {
   static String get baseURL => dotenv.env['BASE_URL'] ?? '';
   static String subscriberManagementService =
       'bss-subscriber-management-service/api';
@@ -11,19 +11,25 @@ class ApiUrls{
   static String coreExternalService = 'bss-core-external-services/api';
 
   static String billingFinanceService = 'bss-billing-finance-services/api';
-  static const forgotPasswordSendOTPURL='myforgotPasswordSendOTPURL';
-  static const forgotPasswordVerifyOTPURL='myforgotVerifyOTPURL';
-  static const setNewPasswordURL='bss-user-role-mapping-services/api/auth/forgot-password';
-  static const lnpEnquiryFormURL='bss-enquiry-services/api/partner-enquiry/save';
-  static const subscriptionEnquiryFormURL='bss-enquiry-services/api/customer-enquiries/save';
-  static const agnpEnquiryFormURL='bss-enquiry-services/api/agnp-enquiries/save';
-  static const govAndCorpEnquiryFormURL='bss-enquiry-services/api/corporate-enquiries/save';
-  static const darkFibreEnquiryFormURL='bss-enquiry-services/api/darkfibre-enquiries/save';
-  static const bplEnquiryFormURL='bplEnquiryFormURL';
-  static const getPostOfficesDistrictURL='get_post_offices.php';
-  static const signUpGetOTPFormURL='signUpGetOTPFormURL';
-  static const signUpVerifyOTPFormURL='signUpVerifyOTPFormURL';
-  static const homePageURL='homePageURL';
+  static const forgotPasswordSendOTPURL = 'myforgotPasswordSendOTPURL';
+  static const forgotPasswordVerifyOTPURL = 'myforgotVerifyOTPURL';
+  static const setNewPasswordURL =
+      'bss-user-role-mapping-services/api/auth/forgot-password';
+  static const lnpEnquiryFormURL =
+      'bss-enquiry-services/api/partner-enquiry/save';
+  static const subscriptionEnquiryFormURL =
+      'bss-enquiry-services/api/customer-enquiries/save';
+  static const agnpEnquiryFormURL =
+      'bss-enquiry-services/api/agnp-enquiries/save';
+  static const govAndCorpEnquiryFormURL =
+      'bss-enquiry-services/api/corporate-enquiries/save';
+  static const darkFibreEnquiryFormURL =
+      'bss-enquiry-services/api/darkfibre-enquiries/save';
+  static const bplEnquiryFormURL = 'bplEnquiryFormURL';
+  static const getPostOfficesDistrictURL = 'get_post_offices.php';
+  static const signUpGetOTPFormURL = 'signUpGetOTPFormURL';
+  static const signUpVerifyOTPFormURL = 'signUpVerifyOTPFormURL';
+  static const homePageURL = 'homePageURL';
   static String subscriberDataUsageURL({required String subscriberUuid}) =>
       '$subscriberManagementService/mobile/subscribers/$subscriberUuid/data-usage';
   static String get listPackagesURL =>
@@ -43,4 +49,6 @@ class ApiUrls{
       '$userRoleMapingService/mobile/forgot-password/reset';
   static String get refreshTokenURL => '$userRoleMapingService/mobile/refresh';
   static String get logoutURL => '$userRoleMapingService/mobile/logout';
+  static String get profileURL =>
+      '$userRoleMapingService/mobile/subscriber/profile';
 }

@@ -34,13 +34,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     try {
-      final bool isLoggedIn = await authRepository.isLoggedIn();
-      if (isLoggedIn) {
-        emit(const Authenticated());
-       // authRepository.getUserProfile();
-      } else {
-        emit(const Unauthenticated());
-      }
+      final userProfile = await authRepository.getUserProfile();
+      userProfile.fold(
+        (failure) {
+          emit(const Unauthenticated());
+        },
+        (profileEntity) {
+          emit(const Authenticated());
+        },
+      );
     } catch (e) {
       emit(const Unauthenticated());
     }

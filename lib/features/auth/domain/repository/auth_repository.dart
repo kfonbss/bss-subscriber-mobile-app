@@ -28,5 +28,5 @@ abstract class AuthRepository {
 
   Future<Either<Failure, void>> logout(String refreshToken);
 
-//  Future<Either<Failure, dynamic>> getUserProfile();
+  Future<Either<Failure, dynamic>> getUserProfile();
 }

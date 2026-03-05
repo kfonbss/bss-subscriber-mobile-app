@@ -1,4 +1,6 @@
 import 'package:equatable/equatable.dart';
+import 'package:kfon_subscriber/features/profile/domain/entity/profile_entity.dart';
+
 abstract class ProfileState extends Equatable {
   const ProfileState();
 
@@ -10,23 +12,24 @@ class ProfileInitial extends ProfileState {
   const ProfileInitial();
 }
 
-class LogoutLoading extends ProfileState {
-  const LogoutLoading();
+class ProfileLoading extends ProfileState {
+  const ProfileLoading();
 }
 
-class LogoutSuccess extends ProfileState {
-  const LogoutSuccess();
-}
+class ProfileLoaded extends ProfileState {
+  final ProfileEntity profile;
 
-class LogoutFailure extends ProfileState {
-  final String errorMessage;
-
-  const LogoutFailure({required this.errorMessage});
+  const ProfileLoaded({required this.profile});
 
   @override
-  List<Object?> get props => [errorMessage];
+  List<Object?> get props => [profile];
 }
 
-class Unauthenticated extends ProfileState {
-  const Unauthenticated();
+class ProfileError extends ProfileState {
+  final String message;
+
+  const ProfileError({required this.message});
+
+  @override
+  List<Object?> get props => [message];
 }

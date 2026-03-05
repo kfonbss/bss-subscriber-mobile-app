@@ -164,13 +164,13 @@ class AuthRepositoryImp extends AuthRepository {
     }
   }
 
-  // @override
-  // Future<Either<Failure, dynamic>> getUserProfile() async {
-  //   APIResponse response = await sl<DioClient>().get(ApiUrls.profileURL);
-  //   if (response.isSuccess) {
-  //     return Right(response.data);
-  //   } else {
-  //     return Left(response.failure);
-  //   }
-  // }
+  @override
+  Future<Either<Failure, dynamic>> getUserProfile() async {
+    APIResponse response = await sl<DioClient>().get(ApiUrls.profileURL);
+    if (response.isSuccess) {
+      return Right(response.data);
+    } else {
+      return Left(response.failure);
+    }
+  }
 }

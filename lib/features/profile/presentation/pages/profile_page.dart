@@ -5,16 +5,28 @@ import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/core/util/extensions.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
-import 'package:kfon_subscriber/features/profile/domain/repository/profile_repository.dart';
+import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_bloc.dart';
+import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_event.dart';
+import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_state.dart';
 import 'package:kfon_subscriber/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:kfon_subscriber/features/profile/presentation/bloc/profile_event.dart';
 import 'package:kfon_subscriber/features/profile/presentation/bloc/profile_state.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/security_settings_page.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
-import 'package:kfon_subscriber/service_locator.dart';
 
-class ProfilePage extends StatelessWidget {
+class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
+
+  @override
+  State<ProfilePage> createState() => _ProfilePageState();
+}
+
+class _ProfilePageState extends State<ProfilePage> {
+  @override
+  void initState() {
+    super.initState();
+    context.read<ProfileBloc>().add(const FetchProfileRequested());
+  }
 
   Widget _createAccountListItems(
     String image,
@@ -85,75 +97,94 @@ class ProfilePage extends StatelessWidget {
       body: ListView(
         padding: EdgeInsets.symmetric(horizontal: 20),
         children: [
-          Container(
-            height: 100.h,
-            decoration: BoxDecoration(
-              color: AppColor.kPrimaryColor,
-              borderRadius: BorderRadius.circular(12),
-            ),
-            child: Padding(
-              padding: EdgeInsets.only(left: 16.w),
-              child: Row(
-                crossAxisAlignment: CrossAxisAlignment.center,
-                children: [
-                  CircleAvatar(
-                    radius: 34,
-                    backgroundImage: const NetworkImage(
-                      'https://example.com/profile.png',
-                    ),
-                    backgroundColor: Colors.white,
-                  ),
-                  SizedBox(width: 12.w),
-                  Column(
-                    mainAxisAlignment: MainAxisAlignment.center,
-                    crossAxisAlignment: CrossAxisAlignment.start,
-                    spacing: 4,
+          // ── Profile Header (from BLoC) ──
+          BlocBuilder<ProfileBloc, ProfileState>(
+            builder: (context, state) {
+              String name = 'Loading...';
+              String subscriberId = '';
+              String status = '';
+
+              if (state is ProfileLoaded) {
+                name = state.profile.name;
+                subscriberId = state.profile.subscriberId.toString();
+                status = state.profile.status;
+              } else if (state is ProfileError) {
+                name = 'Error loading profile';
+              }
+
+              return Container(
+                height: 100.h,
+                decoration: BoxDecoration(
+                  color: AppColor.kPrimaryColor,
+                  borderRadius: BorderRadius.circular(12),
+                ),
+                child: Padding(
+                  padding: EdgeInsets.only(left: 16.w),
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
-                      Text(
-                        'Rahul Kumar',
-                        style: TextStyle(
-                          fontFamily: 'General Sans',
-                          fontWeight: FontWeight.w600,
-                          fontSize: 14.sp,
-                          height: 1.3,
-                          color: Colors.white,
+                      CircleAvatar(
+                        radius: 34,
+                        backgroundImage: const NetworkImage(
+                          'https://example.com/profile.png',
                         ),
+                        backgroundColor: Colors.white,
                       ),
-                      Text(
-                        'ID : 123456789',
-                        style: TextStyle(
-                          fontFamily: 'General Sans',
-                          fontWeight: FontWeight.w500,
-                          fontSize: 12.sp,
-                          height: 1.6,
-                          color: Colors.white,
-                        ),
-                      ),
-                      Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 6.w,
-                          vertical: 2.h,
-                        ),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(21),
-                        ),
-                        child: Text(
-                          'Active',
-                          style: TextStyle(
-                            fontFamily: 'General Sans',
-                            fontWeight: FontWeight.w500,
-                            fontSize: 9.sp,
-                            height: 1.6,
-                            color: const Color(0xFF219653),
+                      SizedBox(width: 12.w),
+                      Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        spacing: 4,
+                        children: [
+                          Text(
+                            name,
+                            style: TextStyle(
+                              fontFamily: 'General Sans',
+                              fontWeight: FontWeight.w600,
+                              fontSize: 14.sp,
+                              height: 1.3,
+                              color: Colors.white,
+                            ),
                           ),
-                        ),
+                          if (subscriberId.isNotEmpty)
+                            Text(
+                              'ID : $subscriberId',
+                              style: TextStyle(
+                                fontFamily: 'General Sans',
+                                fontWeight: FontWeight.w500,
+                                fontSize: 12.sp,
+                                height: 1.6,
+                                color: Colors.white,
+                              ),
+                            ),
+                          if (status.isNotEmpty)
+                            Container(
+                              padding: EdgeInsets.symmetric(
+                                horizontal: 6.w,
+                                vertical: 2.h,
+                              ),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
+                                borderRadius: BorderRadius.circular(21),
+                              ),
+                              child: Text(
+                                status,
+                                style: TextStyle(
+                                  fontFamily: 'General Sans',
+                                  fontWeight: FontWeight.w500,
+                                  fontSize: 9.sp,
+                                  height: 1.6,
+                                  color: const Color(0xFF219653),
+                                ),
+                              ),
+                            ),
+                        ],
                       ),
                     ],
                   ),
-                ],
-              ),
-            ),
+                ),
+              );
+            },
           ),
           SizedBox(height: 24.h),
           Text(
@@ -193,16 +224,13 @@ class ProfilePage extends StatelessWidget {
               'Security Settings',
             ),
           ),
-          _createAccountListItems('support_help', 'My Tickets'),
+          _createAccountListItems('my_tickets', 'My Tickets'),
           GestureDetector(
             onTap: () => Navigator.pushNamed(context, '/settings_page'),
-            child: _createAccountListItems('support_help', 'Settings'),
+            child: _createAccountListItems('settings', 'Settings'),
           ),
-          // GestureDetector(
-          //   onTap:()=>Navigator.pushNamed(context, '/self_care') ,
-          //     child: _createAccountListItems('support_help', 'Self-Care/Tools')),
           GestureDetector(
-            onTap: () => showLogoutDialog(context),
+            onTap: () => _showLogoutDialog(context),
             child: _createAccountListItems(
               'logout',
               'Logout',
@@ -214,8 +242,7 @@ class ProfilePage extends StatelessWidget {
     );
   }
 
-  void showLogoutDialog(BuildContext context) {
-    final profileBloc = ProfileBloc(repository: sl<ProfileRepository>());
+  void _showLogoutDialog(BuildContext context) {
     showModalBottomSheet(
       context: context,
       backgroundColor:
@@ -297,20 +324,10 @@ class ProfilePage extends StatelessWidget {
                       SizedBox(
                         width: double.infinity,
                         height: buttonHeight,
-                        child: BlocConsumer<ProfileBloc, ProfileState>(
-                          bloc: profileBloc,
+                        child: BlocConsumer<AuthBloc, AuthState>(
                           listener: (context, state) {
                             if (state is LogoutSuccess) {
-                              // Close the dialog first
                               Navigator.of(context).pop();
-                              // Navigate to login screen and clear all routes
-                              // Navigator.of(
-                              //   context,
-                              //   rootNavigator: true,
-                              // ).pushNamedAndRemoveUntil(
-                              //   AppRoutes.login,
-                              //       (route) => false,
-                              // );
                             } else if (state is LogoutFailure) {
                               DialogUtil().showCustomSnackbar(
                                 context: context,
@@ -327,7 +344,7 @@ class ProfilePage extends StatelessWidget {
                                   isLoading
                                       ? null
                                       : () {
-                                        context.read<ProfileBloc>().add(
+                                        context.read<AuthBloc>().add(
                                           const LogoutRequested(),
                                         );
                                       },

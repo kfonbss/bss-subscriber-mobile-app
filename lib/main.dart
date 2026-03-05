@@ -11,8 +11,10 @@ import 'package:kfon_subscriber/features/auth/presentation/pages/forgot_password
 import 'package:kfon_subscriber/features/auth/presentation/pages/login_page.dart';
 import 'package:kfon_subscriber/features/auth/presentation/pages/new_password_page.dart';
 import 'package:kfon_subscriber/features/auth/presentation/pages/otp_verification_page.dart';
+import 'package:kfon_subscriber/features/profile/presentation/bloc/profile_bloc.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/account_information_page.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/settings_page.dart';
+import 'package:kfon_subscriber/features/profile/domain/repository/profile_repository.dart';
 import 'package:kfon_subscriber/features/self_care/presentation/pages/diagnostics_page.dart';
 import 'package:kfon_subscriber/presentation/pages/enquiry_forms/bpl_enquiry_form.dart';
 import 'package:kfon_subscriber/presentation/pages/enquiry_forms/agnp_enquiry_form.dart';
@@ -57,19 +59,24 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final AuthBloc _authBloc = AuthBloc(authRepository: sl<AuthRepository>());
+  late final ProfileBloc _profileBloc;
 
   @override
   void initState() {
     super.initState();
     _authBloc.add(const CheckAuthStatus());
+    _profileBloc = ProfileBloc(repository: sl<ProfileRepository>());
   }
 
   @override
   Widget build(BuildContext context) {
     final theme = ThemeData.light();
     final textTheme = theme.textTheme.apply(fontFamily: 'GeneralSans');
-    return BlocProvider(
-      create: (context) => _authBloc,
+    return MultiBlocProvider(
+      providers: [
+        BlocProvider(create: (context) => _authBloc),
+        BlocProvider(create: (context) => _profileBloc),
+      ],
       child: MaterialApp(
         theme: theme.copyWith(
           primaryColor: AppColor.kPrimaryColor,
@@ -157,6 +164,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void dispose() {
     _authBloc.close();
+    _profileBloc.close();
     super.dispose();
   }
 }

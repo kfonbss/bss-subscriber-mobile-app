@@ -7,7 +7,6 @@ abstract class ProfileEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-
-class LogoutRequested extends ProfileEvent {
-  const LogoutRequested();
+class FetchProfileRequested extends ProfileEvent {
+  const FetchProfileRequested();
 }
