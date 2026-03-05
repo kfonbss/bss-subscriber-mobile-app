@@ -327,7 +327,6 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: BlocConsumer<AuthBloc, AuthState>(
                           listener: (context, state) {
                             if (state is LogoutSuccess) {
-                              print('Logout Success');
                               Navigator.of(context).pop();
                             } else if (state is LogoutFailure) {
                               DialogUtil().showCustomSnackbar(
