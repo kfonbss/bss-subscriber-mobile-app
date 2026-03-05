@@ -11,8 +11,8 @@ import 'package:kfon_subscriber/features/auth/presentation/pages/forgot_password
 import 'package:kfon_subscriber/features/auth/presentation/pages/login_page.dart';
 import 'package:kfon_subscriber/features/auth/presentation/pages/new_password_page.dart';
 import 'package:kfon_subscriber/features/auth/presentation/pages/otp_verification_page.dart';
-import 'package:kfon_subscriber/features/profile/presentation/bloc/profile_bloc.dart';
-import 'package:kfon_subscriber/features/profile/presentation/pages/account_information_page.dart';
+import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profile_bloc.dart';
+import 'package:kfon_subscriber/features/profile/presentation/account_information/pages/account_information_page.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/settings_page.dart';
 import 'package:kfon_subscriber/features/profile/domain/repository/profile_repository.dart';
 import 'package:kfon_subscriber/features/self_care/presentation/pages/diagnostics_page.dart';

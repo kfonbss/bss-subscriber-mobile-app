@@ -1,7 +1,7 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/features/profile/domain/repository/profile_repository.dart';
-import 'package:kfon_subscriber/features/profile/presentation/bloc/profile_event.dart';
-import 'package:kfon_subscriber/features/profile/presentation/bloc/profile_state.dart';
+import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profile_event.dart';
+import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profile_state.dart';
 
 class ProfileBloc extends Bloc<ProfileEvent, ProfileState> {
   final ProfileRepository repository;

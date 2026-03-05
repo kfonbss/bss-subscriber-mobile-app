@@ -8,9 +8,9 @@ import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_event.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_state.dart';
-import 'package:kfon_subscriber/features/profile/presentation/bloc/profile_bloc.dart';
-import 'package:kfon_subscriber/features/profile/presentation/bloc/profile_event.dart';
-import 'package:kfon_subscriber/features/profile/presentation/bloc/profile_state.dart';
+import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profile_bloc.dart';
+import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profile_event.dart';
+import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profile_state.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/security_settings_page.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
 
@@ -327,6 +327,7 @@ class _ProfilePageState extends State<ProfilePage> {
                         child: BlocConsumer<AuthBloc, AuthState>(
                           listener: (context, state) {
                             if (state is LogoutSuccess) {
+                              print('Logout Success');
                               Navigator.of(context).pop();
                             } else if (state is LogoutFailure) {
                               DialogUtil().showCustomSnackbar(

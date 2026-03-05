@@ -5,7 +5,7 @@ import 'package:kfon_subscriber/features/pages/chat_page.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/faq_page.dart';
 import 'package:kfon_subscriber/features/self_care/presentation/pages/diagnostics_page.dart';
 import 'package:kfon_subscriber/presentation/pages/home_page.dart';
-import 'package:kfon_subscriber/features/profile/presentation/pages/profile_page.dart';
+import 'package:kfon_subscriber/features/profile/presentation/profile/pages/profile_page.dart';
 import 'package:kfon_subscriber/presentation/ui_component/help_option_card.dart';
 import 'package:kfon_subscriber/presentation/ui_component/tabbar_material_widget.dart';
 

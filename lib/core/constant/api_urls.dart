@@ -49,6 +49,9 @@ class ApiUrls {
       '$userRoleMapingService/mobile/forgot-password/reset';
   static String get refreshTokenURL => '$userRoleMapingService/mobile/refresh';
   static String get logoutURL => '$userRoleMapingService/mobile/logout';
+  //profile
   static String get profileURL =>
       '$userRoleMapingService/mobile/subscriber/profile';
+  static String get accountInformationURL =>
+      '$userRoleMapingService/mobile/subscriber/account-information';
 }
