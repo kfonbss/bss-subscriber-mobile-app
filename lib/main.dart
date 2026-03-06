@@ -27,7 +27,7 @@ import 'package:kfon_subscriber/presentation/pages/invoice_list_page.dart';
 import 'package:kfon_subscriber/presentation/pages/main_page.dart';
 import 'package:kfon_subscriber/presentation/pages/notification_page.dart';
 import 'package:kfon_subscriber/presentation/pages/sign_up_page.dart';
-import 'package:kfon_subscriber/presentation/pages/transaction_history_page.dart';
+import 'package:kfon_subscriber/features/tranasactions/presentation/pages/transaction_history_page.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 import 'features/auth/domain/repository/auth_repository.dart';
 import 'features/auth/presentation/bloc/auth_state.dart';

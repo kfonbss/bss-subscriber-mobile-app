@@ -54,4 +54,8 @@ class ApiUrls {
       '$userRoleMapingService/mobile/subscriber/profile';
   static String get accountInformationURL =>
       '$userRoleMapingService/mobile/subscriber/account-information';
+
+  //transactions
+  static String get rechargeTransactionsURL =>
+      '$billingFinanceService/mobile/subscriber/recharge-transactions';
 }

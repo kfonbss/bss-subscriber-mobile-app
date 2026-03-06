@@ -1,48 +1,161 @@
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/pdf_downloader/pdf_preview_and_download.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/features/tranasactions/domain/repository/transaction_repository.dart';
+import 'package:kfon_subscriber/features/tranasactions/presentation/bloc/transaction_history_bloc.dart';
+import 'package:kfon_subscriber/features/tranasactions/presentation/bloc/transaction_history_event.dart';
+import 'package:kfon_subscriber/features/tranasactions/presentation/bloc/transaction_history_state.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
-import 'package:flutter/material.dart';
+import 'package:kfon_subscriber/service_locator.dart';
 
 class TransactionHistoryPage extends StatelessWidget {
   const TransactionHistoryPage({super.key});
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider(
+      create:
+          (_) =>
+              TransactionHistoryBloc(repository: sl<TransactionRepository>())
+                ..add(const FetchTransactions()),
+      child: const _TransactionHistoryView(),
+    );
+  }
+}
+
+class _TransactionHistoryView extends StatefulWidget {
+  const _TransactionHistoryView();
+
+  @override
+  State<_TransactionHistoryView> createState() =>
+      _TransactionHistoryViewState();
+}
+
+class _TransactionHistoryViewState extends State<_TransactionHistoryView> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController
+      ..removeListener(_onScroll)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_isBottom) {
+      context.read<TransactionHistoryBloc>().add(const LoadMoreTransactions());
+    }
+  }
+
+  bool get _isBottom {
+    if (!_scrollController.hasClients) return false;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    return currentScroll >= (maxScroll * 0.9);
+  }
+
+  @override
+  Widget build(BuildContext context) {
     return CommonAppBar(
       title: 'Transactions',
       onBackPressed: () => Navigator.pop(context),
-      body: ListView.builder(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-        itemCount: 20, // TODO: Replace with actual data length
-        itemBuilder: (context, index) {
-          // TODO: Replace with actual transaction data
-          return _TransactionCard(
-            bssNo: 'UW9089EZ45520251015',
-            txnReference: 'UW9089EZ45520251015',
-            amount: '499',
-            packageName: 'KFON_EWH_100Mbps',
-            expiryDate: '10 Jul 2025',
-            status: 'Success',
-            paidOn: '2025-10-03 19:35:03',
-            paidBy: 'ABC Cable Vision',
-            paymentGateway: 'IKM',
-            responseMessage: 'Successfully completed and Receipt generated',
-            onDownloadInvoice: () {
-              if (context.mounted) {
-                Navigator.of(context, rootNavigator: true).push(
-                  MaterialPageRoute(
-                    builder:
-                        (_) => PdfPreviewAndDownload(
-                          title: 'Invoice',
-                          pdfUrl:
-                              'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-                        ),
+      body: BlocBuilder<TransactionHistoryBloc, TransactionHistoryState>(
+        builder: (context, state) {
+          if (state is TransactionHistoryLoading) {
+            return const Center(child: CircularProgressIndicator());
+          } else if (state is TransactionHistoryLoaded) {
+            if (state.transactions.isEmpty) {
+              return Center(
+                child: Text(
+                  'No transactions found',
+                  style: TextStyle(
+                    fontFamily: 'GeneralSans',
+                    fontSize: 14.sp,
+                    color: const Color(0xFF67697A),
                   ),
+                ),
+              );
+            }
+            return ListView.builder(
+              controller: _scrollController,
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+              itemCount:
+                  state.transactions.length + (state.isLoadingMore ? 1 : 0),
+              itemBuilder: (context, index) {
+                if (index >= state.transactions.length) {
+                  return Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16.h),
+                    child: const Center(child: CircularProgressIndicator()),
+                  );
+                }
+                final txn = state.transactions[index];
+                return _TransactionCard(
+                  bssNo: txn.bssNo,
+                  txnReference: txn.txnReference,
+                  amount: txn.amount.toStringAsFixed(0),
+                  packageName: txn.packageName,
+                  expiryDate: txn.expiryDate,
+                  status: txn.status,
+                  paidOn: txn.paidOn,
+                  paidBy: txn.paidBy,
+                  paymentGateway: txn.paymentGateway,
+                  responseMessage: txn.responseMessage,
+                  onDownloadInvoice: () {
+                    if (context.mounted) {
+                      Navigator.of(context, rootNavigator: true).push(
+                        MaterialPageRoute(
+                          builder:
+                              (_) => PdfPreviewAndDownload(
+                                title: 'Invoice',
+                                pdfUrl:
+                                    'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                              ),
+                        ),
+                      );
+                    }
+                  },
                 );
-              }
-            },
-          );
+              },
+            );
+          } else if (state is TransactionHistoryError) {
+            return Center(
+              child: Padding(
+                padding: EdgeInsets.all(20.w),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      state.message,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'GeneralSans',
+                        fontSize: 14.sp,
+                        color: const Color(0xFF67697A),
+                      ),
+                    ),
+                    SizedBox(height: 16.h),
+                    ElevatedButton(
+                      onPressed:
+                          () => context.read<TransactionHistoryBloc>().add(
+                            const FetchTransactions(),
+                          ),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              ),
+            );
+          }
+          return const SizedBox.shrink();
         },
       ),
     );
