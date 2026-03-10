@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 
 class TicketSuccessBottomSheet extends StatelessWidget {
@@ -53,11 +52,14 @@ class TicketSuccessBottomSheet extends StatelessWidget {
             width: 140,
             height: 140,
             margin: const EdgeInsets.only(top: 48, bottom: 24),
-            child: SvgPicture.asset(
-              'assets/images/ticket_create_success.svg',
-              width: 140,
-              height: 140,
-              fit: BoxFit.contain,
+            decoration: BoxDecoration(
+              color: AppColor.kCompletedGreen.withOpacity(0.1),
+              shape: BoxShape.circle,
+            ),
+            child: const Icon(
+              Icons.check_circle,
+              size: 80,
+              color: AppColor.kCompletedGreen,
             ),
           ),
 
@@ -172,37 +174,37 @@ class TicketSuccessBottomSheet extends StatelessWidget {
               ),
             ),
           ),
-          const SizedBox(height: 12),
-          // My Tickets Button
-          Padding(
-            padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: SizedBox(
-              width: double.infinity,
-              height: 52,
-              child: OutlinedButton(
-                onPressed: onViewTickets,
-                style: OutlinedButton.styleFrom(
-                  side: const BorderSide(
-                    color: AppColor.kPrimaryColor,
-                    width: 1,
-                  ),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                ),
-                child: const Text(
-                  'My Tickets',
-                  style: TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    height: 1.3,
-                    color: AppColor.kPrimaryColor,
-                    fontFamily: 'GeneralSans',
-                  ),
-                ),
-              ),
-            ),
-          ),
+          // const SizedBox(height: 12),
+          // // My Tickets Button
+          // Padding(
+          //   padding: const EdgeInsets.symmetric(horizontal: 20),
+          //   child: SizedBox(
+          //     width: double.infinity,
+          //     height: 52,
+          //     child: OutlinedButton(
+          //       onPressed: onViewTickets,
+          //       style: OutlinedButton.styleFrom(
+          //         side: const BorderSide(
+          //           color: AppColor.kPrimaryColor,
+          //           width: 1,
+          //         ),
+          //         shape: RoundedRectangleBorder(
+          //           borderRadius: BorderRadius.circular(10),
+          //         ),
+          //       ),
+          //       child: const Text(
+          //         'My Tickets',
+          //         style: TextStyle(
+          //           fontSize: 14,
+          //           fontWeight: FontWeight.w600,
+          //           height: 1.3,
+          //           color: AppColor.kPrimaryColor,
+          //           fontFamily: 'GeneralSans',
+          //         ),
+          //       ),
+          //     ),
+          //   ),
+          // ),
           const Spacer(),
 
           // Home Indicator

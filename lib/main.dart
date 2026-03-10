@@ -12,6 +12,7 @@ import 'package:kfon_subscriber/features/auth/presentation/pages/login_page.dart
 import 'package:kfon_subscriber/features/auth/presentation/pages/new_password_page.dart';
 import 'package:kfon_subscriber/features/auth/presentation/pages/otp_verification_page.dart';
 import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profile_bloc.dart';
+import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profile_event.dart';
 import 'package:kfon_subscriber/features/profile/presentation/account_information/pages/account_information_page.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/settings_page.dart';
 import 'package:kfon_subscriber/features/profile/domain/repository/profile_repository.dart';
@@ -72,6 +73,7 @@ class _MyAppState extends State<MyApp> {
     _profileBloc = ProfileBloc(repository: sl<ProfileRepository>());
     _homeBloc = HomeBloc(repository: sl<HomeRepository>());
     _homeBloc.add(GetHomeData());
+    _profileBloc.add(const FetchProfileRequested());
   }
 
   @override

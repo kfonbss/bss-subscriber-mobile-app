@@ -6,6 +6,7 @@ import 'package:kfon_subscriber/features/profile/presentation/pages/faq_page.dar
 import 'package:kfon_subscriber/features/self_care/presentation/pages/diagnostics_page.dart';
 import 'package:kfon_subscriber/features/home/presentation/pages/home_page.dart';
 import 'package:kfon_subscriber/features/profile/presentation/profile/pages/profile_page.dart';
+import 'package:kfon_subscriber/features/ticket/presentation/pages/create_ticket_page.dart';
 import 'package:kfon_subscriber/presentation/ui_component/help_option_card.dart';
 import 'package:kfon_subscriber/presentation/ui_component/tabbar_material_widget.dart';
 
@@ -100,7 +101,7 @@ class _MainPageState extends State<MainPage> {
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
       ),
-      builder: (BuildContext context) {
+      builder: (BuildContext sheetContext) {
         return SafeArea(
           top: false,
           child: Container(
@@ -165,7 +166,10 @@ class _MainPageState extends State<MainPage> {
                         icon: 'chat.png',
                         label: 'Chat with Us',
                         containerWidth: 98,
-                        onTap: () => _gotoChatPage('Chat with Us'),
+                        onTap: () {
+                          Navigator.pop(sheetContext);
+                          _gotoChatPage('Chat with Us');
+                        },
                       ),
                     ),
                     const SizedBox(width: 20),
@@ -174,7 +178,10 @@ class _MainPageState extends State<MainPage> {
                         icon: 'chat_with_ai.png',
                         label: 'Chat with AI',
                         containerWidth: 99,
-                        onTap: () => _gotoChatPage('Chat with AI'),
+                        onTap: () {
+                          Navigator.pop(sheetContext);
+                          _gotoChatPage('Chat with AI');
+                        },
                       ),
                     ),
                     const SizedBox(width: 20),
@@ -187,7 +194,7 @@ class _MainPageState extends State<MainPage> {
                         containerWidth: 98,
                         iconColor: AppColor.kPrimaryColor,
                         onTap: () {
-                          Navigator.pop(context);
+                          Navigator.pop(sheetContext);
                           _showCallbackConfirmation(context);
                         },
                       ),
@@ -198,41 +205,41 @@ class _MainPageState extends State<MainPage> {
                 // Bottom Action Buttons
                 Column(
                   children: [
-                    // SizedBox(
-                    //   width: double.infinity,
-                    //   height: 52,
-                    //   child: OutlinedButton(
-                    //     onPressed: () {
-                    //       Navigator.pop(context);
-                    //       Navigator.push(
-                    //         context,
-                    //         MaterialPageRoute(
-                    //           builder: (context) => const CreateTicketPage(),
-                    //         ),
-                    //       );
-                    //     },
-                    //     style: OutlinedButton.styleFrom(
-                    //       side: const BorderSide(
-                    //         color: Color(0xFF8D0247),
-                    //         width: 1,
-                    //       ),
-                    //       shape: RoundedRectangleBorder(
-                    //         borderRadius: BorderRadius.circular(10),
-                    //       ),
-                    //       backgroundColor: Colors.white,
-                    //     ),
-                    //     child: Text(
-                    //       'Create Ticket',
-                    //       style: const TextStyle(
-                    //         color: Color(0xFF8D0247),
-                    //         fontSize: 14,
-                    //         fontWeight: FontWeight.w600,
-                    //         height: 1.3,
-                    //         fontFamily: 'GeneralSans',
-                    //       ),
-                    //     ),
-                    //   ),
-                    // ),
+                    SizedBox(
+                      width: double.infinity,
+                      height: 52,
+                      child: OutlinedButton(
+                        onPressed: () {
+                          Navigator.pop(sheetContext);
+                          Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const CreateTicketPage(),
+                            ),
+                          );
+                        },
+                        style: OutlinedButton.styleFrom(
+                          side: const BorderSide(
+                            color: Color(0xFF8D0247),
+                            width: 1,
+                          ),
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          backgroundColor: Colors.white,
+                        ),
+                        child: Text(
+                          'Create Ticket',
+                          style: const TextStyle(
+                            color: Color(0xFF8D0247),
+                            fontSize: 14,
+                            fontWeight: FontWeight.w600,
+                            height: 1.3,
+                            fontFamily: 'GeneralSans',
+                          ),
+                        ),
+                      ),
+                    ),
                     const SizedBox(height: 13),
                     // Talk to our Agent Button (Filled)
                     SizedBox(
@@ -240,7 +247,7 @@ class _MainPageState extends State<MainPage> {
                       height: 52,
                       child: ElevatedButton(
                         onPressed: () {
-                          Navigator.pop(context);
+                          Navigator.pop(sheetContext);
                           // TODO: Implement talk to agent functionality
                         },
                         style: ElevatedButton.styleFrom(
@@ -273,9 +280,7 @@ class _MainPageState extends State<MainPage> {
   }
 
   _gotoChatPage(String heading) {
-    Navigator.pop(context);
-    Navigator.push(
-      context,
+    Navigator.of(context).push(
       MaterialPageRoute(builder: (context) => ChatPage(pageHeading: heading)),
     );
   }

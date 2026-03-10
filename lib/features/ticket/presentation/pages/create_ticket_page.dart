@@ -8,7 +8,6 @@ import 'package:kfon_subscriber/core/util/form_scroll_util.dart';
 import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profile_bloc.dart';
 import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profile_state.dart';
 import 'package:kfon_subscriber/features/home/presentation/bloc/home_bloc.dart';
-import 'package:kfon_subscriber/features/home/presentation/bloc/home_state.dart';
 import 'package:kfon_subscriber/core/util/preference_util.dart';
 import 'package:kfon_subscriber/features/profile/presentation/components/common_radio_button.dart';
 import 'package:kfon_subscriber/features/ticket/data/model/submit_ticket_req.dart';
@@ -216,7 +215,7 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
     if (_formKey.currentState?.validate() ?? false) {
       final customerType = 'SUBSCRIBERS';
       final profileState = context.read<ProfileBloc>().state;
-      final homeState = context.read<HomeBloc>().state;
+      final homeBloc = context.read<HomeBloc>();
       String customerName = '';
       String customerId = '';
 
@@ -224,8 +223,8 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
         customerName = profileState.profile.name;
       }
 
-      if (homeState is GetDataSuccess) {
-        customerId = homeState.homeEntity.subscriberId;
+      if (homeBloc.homeData != null) {
+        customerId = homeBloc.homeData!.subscriberId;
       } else if (profileState is ProfileLoaded) {
         // Fallback to integer ID if UUID from home is not available
         customerId = profileState.profile.subscriberId.toString();
