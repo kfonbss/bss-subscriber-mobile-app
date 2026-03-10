@@ -29,7 +29,7 @@ class ApiUrls {
   static const getPostOfficesDistrictURL = 'get_post_offices.php';
   static const signUpGetOTPFormURL = 'signUpGetOTPFormURL';
   static const signUpVerifyOTPFormURL = 'signUpVerifyOTPFormURL';
-  static const homePageURL = 'homePageURL';
+  static String homePageURL = '$subscriberManagementService/mobile/subscriber/home';
   static String subscriberDataUsageURL({required String subscriberUuid}) =>
       '$subscriberManagementService/mobile/subscribers/$subscriberUuid/data-usage';
   static String get listPackagesURL =>
@@ -51,11 +51,21 @@ class ApiUrls {
   static String get logoutURL => '$userRoleMapingService/mobile/logout';
   //profile
   static String get profileURL =>
-      '$userRoleMapingService/mobile/subscriber/profile';
+      '$subscriberManagementService/mobile/subscriber/profile';
   static String get accountInformationURL =>
-      '$userRoleMapingService/mobile/subscriber/account-information';
+      '$subscriberManagementService/mobile/subscriber/account-information';
 
   //transactions
   static String get rechargeTransactionsURL =>
       '$billingFinanceService/mobile/subscriber/recharge-transactions';
+
+  static String packageDetailsURL({required String subscriberUuid}) =>
+      '$subscriberManagementService/mobile/$subscriberUuid/package-details';
+  static String get subjectURL => '$userRoleMapingService/mobile/issue-types';
+  static String get prioritiesURL => '$userRoleMapingService/mobile/priorities';
+  static String get visibilityPermissionURL =>
+      '$userRoleMapingService/crm/visibility-permission';
+  static String get submitTicketURL => '$userRoleMapingService/mobile/tickets';
+
+  static String get addNoteURL => '$userRoleMapingService/mobile/note';
 }

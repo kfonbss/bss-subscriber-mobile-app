@@ -4,7 +4,7 @@ import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/features/pages/chat_page.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/faq_page.dart';
 import 'package:kfon_subscriber/features/self_care/presentation/pages/diagnostics_page.dart';
-import 'package:kfon_subscriber/presentation/pages/home_page.dart';
+import 'package:kfon_subscriber/features/home/presentation/pages/home_page.dart';
 import 'package:kfon_subscriber/features/profile/presentation/profile/pages/profile_page.dart';
 import 'package:kfon_subscriber/presentation/ui_component/help_option_card.dart';
 import 'package:kfon_subscriber/presentation/ui_component/tabbar_material_widget.dart';
@@ -198,7 +198,6 @@ class _MainPageState extends State<MainPage> {
                 // Bottom Action Buttons
                 Column(
                   children: [
-                    // Create Ticket Button (Outlined)
                     // SizedBox(
                     //   width: double.infinity,
                     //   height: 52,

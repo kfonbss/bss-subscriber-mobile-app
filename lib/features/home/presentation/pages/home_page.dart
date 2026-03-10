@@ -1,25 +1,55 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:intl/intl.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/constant/constant_dimensions.dart';
 import 'package:kfon_subscriber/core/helper/bottom_sheet_helper.dart';
+import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/pages/change_plan.dart';
 import 'package:kfon_subscriber/features/data_usage/presentation/pages/data_usage_view.dart';
+import 'package:kfon_subscriber/features/home/domain/entity/home_entity.dart';
+import 'package:kfon_subscriber/features/home/domain/repository/home_repository.dart';
+import 'package:kfon_subscriber/features/home/presentation/bloc/home_bloc.dart';
+import 'package:kfon_subscriber/features/home/presentation/bloc/home_event.dart';
+import 'package:kfon_subscriber/features/home/presentation/bloc/home_state.dart';
 import 'package:kfon_subscriber/features/top_up/presentation/pages/topup_page.dart';
-import 'package:kfon_subscriber/presentation/pages/active_package_page.dart';
+import 'package:kfon_subscriber/features/active_package_details/presentation/pages/active_package_page.dart';
 import 'package:kfon_subscriber/presentation/ui_component/primary_button.dart';
 import 'package:kfon_subscriber/presentation/ui_component/secondary_button.dart';
+import 'package:kfon_subscriber/service_locator.dart';
 
-import '../page_component/recharge_bottom_sheet.dart';
+import '../../../../presentation/page_component/recharge_bottom_sheet.dart';
 
 const kTeal = Color(0xFF00A896);
 const kOrange = Color(0xFFFF6B2C);
 const kRed = Color(0xFFE84040);
 const kYellow = Color(0xFFFFD600);
 
-class HomePage extends StatelessWidget {
-  HomePage({super.key});
+class HomePage extends StatefulWidget {
+  const HomePage({super.key});
+
+  @override
+  State<HomePage> createState() => _HomePageState();
+}
+
+class _HomePageState extends State<HomePage> {
+  late HomeBloc bloc;
+
+  @override
+  void initState() {
+    super.initState();
+    bloc = HomeBloc(repository: sl<HomeRepository>());
+    bloc.add(GetHomeData());
+  }
+
+  @override
+  void dispose() {
+    bloc.close();
+    super.dispose();
+  }
 
   void _showRechargeSheet(BuildContext context) {
     BottomSheetHelper.show(
@@ -53,7 +83,9 @@ class HomePage extends StatelessWidget {
             height: 42,
             decoration: ShapeDecoration(
               image: DecorationImage(
-                image: NetworkImage("https://placehold.co/42x42"),
+                image: NetworkImage(
+                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPrsHSSBc63zNawuN6LUuXgj58de3ciuETGw&s",
+                ),
                 fit: BoxFit.cover,
               ),
               shape: OvalBorder(
@@ -74,56 +106,115 @@ class HomePage extends StatelessWidget {
           ),
         ),
       ),
-      body: SingleChildScrollView(
-        child: Stack(
-          children: [
-            SizedBox(
-              height: 250,
-              child: ClipRRect(
-                borderRadius: BorderRadius.only(
-                  bottomLeft: Radius.circular(30.0),
-                  bottomRight: Radius.circular(30.0),
+      body: BlocListener<HomeBloc, HomeState>(
+        bloc: bloc,
+        listenWhen: (prev, curr) => curr is GetDataFailure,
+        listener: (context, state) {
+          if (state is GetDataFailure) {
+            DialogUtil().showMessage(state.errorMessage, context);
+          }
+        },
+        child: BlocBuilder<HomeBloc, HomeState>(
+          bloc: bloc,
+          buildWhen: (prev, curr) => curr is GetDataSuccess,
+          builder: (context, state) {
+            if (state is GetDataSuccess) {
+              final HomeEntity balance = state.homeEntity;
+              final PackageDetailsEntity? pkg = balance.packageDetails;
+              final String subscriberId = balance.subscriberId;
+              bloc.add(GetPlans(packageId: pkg!.packageId));
+              return SingleChildScrollView(
+                child: Stack(
+                  children: [
+                    SizedBox(
+                      height: 250,
+                      child: ClipRRect(
+                        borderRadius: BorderRadius.only(
+                          bottomLeft: Radius.circular(30.0),
+                          bottomRight: Radius.circular(30.0),
+                        ),
+                        child: SvgPicture.asset(
+                          'assets/images/home_background.svg',
+                          width: double.infinity,
+                          fit: BoxFit.fitWidth,
+                        ),
+                      ),
+                    ),
+                    Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        _WalletCard(balance: balance),
+                        if (pkg != null)
+                          _ComboCard(pkg: pkg, subscriberId: subscriberId),
+                        const SizedBox(height: 16),
+                        _QuickActions(
+                          onRechargeTap: () => _showRechargeSheet(context),
+                          onTransactionsTap:
+                              () => Navigator.pushNamed(
+                                context,
+                                '/transaction_history_page',
+                              ),
+                          onInvoiceTap:
+                              () => Navigator.pushNamed(
+                                context,
+                                '/invoice_list_page',
+                              ),
+                        ),
+                        const SizedBox(height: 24),
+                        BlocBuilder<HomeBloc, HomeState>(
+                          bloc: bloc,
+                          buildWhen: (prev, curr) => curr is GetPlansSuccess,
+                          builder: (BuildContext context, HomeState state) {
+                            return state is GetPlansSuccess &&
+                                    state.packageEntities.isNotEmpty
+                                ? _PlanChangeSection(
+                                  subscriberUuid: subscriberId,
+                                  currentPackageId: pkg.packageId,
+                                  plans: state.packageEntities,
+                                )
+                                : SizedBox.shrink();
+                          },
+                        ),
+                        const SizedBox(height: 24),
+                        _ServicesSection(),
+                        const SizedBox(height: 80),
+                      ],
+                    ),
+                  ],
                 ),
-                child: SvgPicture.asset(
-                  'assets/images/home_background.svg',
-                  width: double.infinity,
-                  fit: BoxFit.fitWidth,
+              );
+            }
+            return Center(
+              child: CircularProgressIndicator(
+                strokeWidth: 5,
+                backgroundColor: Colors.grey[200],
+                valueColor: AlwaysStoppedAnimation<Color>(
+                  AppColor.kPrimaryColor,
                 ),
               ),
-            ),
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                _WalletCard(),
-                _ComboCard(),
-                const SizedBox(height: 16),
-                _QuickActions(
-                  onRechargeTap: () => _showRechargeSheet(context),
-                  onTransactionsTap:
-                      () => Navigator.pushNamed(
-                        context,
-                        '/transaction_history_page',
-                      ),
-                  onInvoiceTap:
-                      () => Navigator.pushNamed(context, '/invoice_list_page'),
-                ),
-                const SizedBox(height: 24),
-                _PlanChangeSection(),
-                const SizedBox(height: 24),
-                _ServicesSection(),
-                const SizedBox(height: 80),
-              ],
-            ),
-          ],
+            );
+          },
         ),
       ),
     );
   }
 }
 
+// ─── Wallet Card ─────────────────────────────────────────────────────────────
+
 class _WalletCard extends StatelessWidget {
+  final HomeEntity balance;
+
+  const _WalletCard({required this.balance});
+
   @override
   Widget build(BuildContext context) {
+    // Format: ₹ 38,200
+    final formattedBalance =
+        '₹ ${balance.balance.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},')}';
+    // Format: Updated 09 Mar 2026
+    final formattedDate = DateFormat('dd MMM yyyy').format(balance.lastUpdated);
+
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 40, 20, 28),
       child: Row(
@@ -144,7 +235,7 @@ class _WalletCard extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                '₹ 38,200',
+                formattedBalance,
                 style: TextStyle(
                   color: Colors.white,
                   fontSize: 30.sp,
@@ -153,7 +244,7 @@ class _WalletCard extends StatelessWidget {
               ),
               const SizedBox(height: 4),
               Text(
-                'Updated 03 Nov 2025',
+                'Updated $formattedDate',
                 style: TextStyle(
                   color: Colors.white54,
                   fontSize: 8.sp,
@@ -167,9 +258,7 @@ class _WalletCard extends StatelessWidget {
             onPressed:
                 () => Navigator.push(
                   context,
-                  MaterialPageRoute<void>(
-                    builder: (context) => const TopupPage(),
-                  ),
+                  MaterialPageRoute<void>(builder: (_) => const TopupPage()),
                 ),
             style: ElevatedButton.styleFrom(
               backgroundColor: kYellow,
@@ -195,9 +284,25 @@ class _WalletCard extends StatelessWidget {
   }
 }
 
+// ─── Combo Card ──────────────────────────────────────────────────────────────
+
 class _ComboCard extends StatelessWidget {
+  final PackageDetailsEntity pkg;
+  final String subscriberId;
+
+  const _ComboCard({required this.pkg, required this.subscriberId});
+
   @override
   Widget build(BuildContext context) {
+    final activeUntilStr = DateFormat('MMM dd, yyyy').format(pkg.activeUntil);
+    final speedStr = '${pkg.speedMbps.toStringAsFixed(0)} Mbps';
+    final amountStr = '₹${pkg.renewalFee.toStringAsFixed(0)}';
+    final usageStr =
+        (pkg.availableVolumeGb > 0 || pkg.totalVolumeGb > 0)
+            ? '${pkg.availableVolumeGb.toStringAsFixed(0)} GB / ${pkg.totalVolumeGb.toStringAsFixed(0)} GB'
+            : 'Unlimited';
+    final addOnCount = pkg.activeAddOns.length;
+
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
       decoration: BoxDecoration(
@@ -229,7 +334,7 @@ class _ComboCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         Text(
-                          'Combo Plan',
+                          pkg.packageName, // ← entity
                           style: TextStyle(
                             fontFamily: 'General Sans',
                             fontWeight: FontWeight.w500,
@@ -239,7 +344,7 @@ class _ComboCard extends StatelessWidget {
                           ),
                         ),
                         Text(
-                          'Active until Aug 25, 2025',
+                          'Active until $activeUntilStr', // ← entity
                           style: TextStyle(
                             color: AppColor.kTextFiledHintColor,
                             fontSize: 10.sp,
@@ -259,7 +364,7 @@ class _ComboCard extends StatelessWidget {
                     borderRadius: BorderRadius.circular(20),
                   ),
                   child: Text(
-                    '20 Days left',
+                    '${pkg.daysLeft} Days left', // ← entity
                     style: TextStyle(
                       fontFamily: 'General Sans',
                       fontWeight: FontWeight.w500,
@@ -285,10 +390,10 @@ class _ComboCard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _Stat(label: 'Amount', value: '₹499'),
-                _Stat(label: 'Speed', value: '100 Mbps'),
-                _Stat(label: 'FPU', value: 'Unlimited'),
-                _Stat(label: 'Usage', value: '21 GB / 100 GB'),
+                _Stat(label: 'Amount', value: amountStr), // ← renewalFee
+                _Stat(label: 'Speed', value: speedStr), // ← speedMbps
+                _Stat(label: 'FPU', value: pkg.packageType), // ← packageType
+                _Stat(label: 'Usage', value: usageStr), // ← volume fields
               ],
             ),
           ),
@@ -300,12 +405,16 @@ class _ComboCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: SecondaryButton(
-                      label: '+2 Pack Active',
+                      label: '+$addOnCount Pack Active',
+                      // ← activeAddOns.length
                       onClicked:
                           () => Navigator.push(
                             context,
                             MaterialPageRoute<void>(
-                              builder: (context) => const ActivePackagePage(),
+                              builder:
+                                  (_) => ActivePackagePage(
+                                    subscriberUuid: subscriberId,
+                                  ),
                             ),
                           ),
                     ),
@@ -320,8 +429,9 @@ class _ComboCard extends StatelessWidget {
                             context,
                             MaterialPageRoute<void>(
                               builder:
-                                  (context) => DataUsageView(
-                                    subscriberUuid: 'subscriberUuid',
+                                  (_) => DataUsageView(
+                                    subscriberUuid:
+                                        pkg.packageId, // ← packageId
                                   ),
                             ),
                           ),
@@ -336,6 +446,8 @@ class _ComboCard extends StatelessWidget {
     );
   }
 }
+
+// ─── Stat ─────────────────────────────────────────────────────────────────────
 
 class _Stat extends StatelessWidget {
   final String label, value;
@@ -370,6 +482,8 @@ class _Stat extends StatelessWidget {
     );
   }
 }
+
+// ─── Quick Actions ───────────────────────────────────────────────────────────
 
 class _QuickActions extends StatelessWidget {
   final VoidCallback onRechargeTap;
@@ -439,7 +553,6 @@ class _QuickActions extends StatelessWidget {
                                 ),
                               ),
                             ),
-
                             const SizedBox(height: 10),
                             Text(
                               a['label'] as String,
@@ -462,7 +575,19 @@ class _QuickActions extends StatelessWidget {
   }
 }
 
+// ─── Plan Change Section ─────────────────────────────────────────────────────
+
 class _PlanChangeSection extends StatelessWidget {
+  final String subscriberUuid;
+  final String currentPackageId;
+  final List<PackageEntity> plans;
+
+  const _PlanChangeSection({
+    required this.subscriberUuid,
+    required this.currentPackageId,
+    required this.plans,
+  });
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -488,9 +613,9 @@ class _PlanChangeSection extends StatelessWidget {
                       context,
                       MaterialPageRoute<void>(
                         builder:
-                            (context) => const ChangePlanPage(
-                              subscriberUuid: 'subscriberUuid',
-                              currentPackageId: 'currentPackageId',
+                            (_) => ChangePlanPage(
+                              subscriberUuid: subscriberUuid,
+                              currentPackageId: currentPackageId,
                             ),
                       ),
                     ),
@@ -515,23 +640,41 @@ class _PlanChangeSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        _PlanCard(name: 'Internet Extra Combo Plus', price: '₹ 182'),
-        const SizedBox(height: 12),
-        _PlanCard(name: 'Mega Extra Plus', price: '₹ 182'),
+        if (plans.isNotEmpty)
+          ListView.builder(
+            physics: const NeverScrollableScrollPhysics(),
+            shrinkWrap: true,
+            itemCount: plans.length,
+            itemBuilder: (context, index) {
+              return _PlanCard(
+                plan: plans[index],
+                subscriberUuid: subscriberUuid,
+                currentPackageId: currentPackageId,
+              );
+            },
+          ),
       ],
     );
   }
 }
 
-class _PlanCard extends StatelessWidget {
-  final String name, price;
+// ─── Plan Card ───────────────────────────────────────────────────────────────
 
-  const _PlanCard({required this.name, required this.price});
+class _PlanCard extends StatelessWidget {
+  final PackageEntity plan;
+  final String subscriberUuid;
+  final String currentPackageId;
+
+  const _PlanCard({
+    required this.plan,
+    required this.subscriberUuid,
+    required this.currentPackageId,
+  });
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(horizontal: 16),
+      margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       padding: const EdgeInsets.all(16),
       decoration: BoxDecoration(
         color: Colors.white,
@@ -556,7 +699,7 @@ class _PlanCard extends StatelessWidget {
               ),
               const SizedBox(width: 10),
               Text(
-                name,
+                plan.packageName,
                 style: TextStyle(
                   fontFamily: 'General Sans',
                   fontWeight: FontWeight.w600,
@@ -580,10 +723,10 @@ class _PlanCard extends StatelessWidget {
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _Stat(label: 'Data', value: '100 GB'),
-                _Stat(label: 'Speed', value: '100 Mbps'),
-                _Stat(label: 'FPU', value: 'Unlimited'),
-                _Stat(label: 'validity', value: '30 Days'),
+                _Stat(label: 'Data', value: '${plan.data} GB'),
+                _Stat(label: 'Speed', value: plan.speed),
+                _Stat(label: 'FPU', value: plan.planType),
+                _Stat(label: 'Validity', value: '${plan.validity} Days'),
               ],
             ),
           ),
@@ -598,7 +741,7 @@ class _PlanCard extends StatelessWidget {
                   borderRadius: BorderRadius.circular(8),
                 ),
                 child: Text(
-                  price,
+                  '₹ ${plan.price}',
                   style: TextStyle(
                     color: Colors.white,
                     fontWeight: FontWeight.bold,
@@ -616,9 +759,9 @@ class _PlanCard extends StatelessWidget {
                         context,
                         MaterialPageRoute<void>(
                           builder:
-                              (context) => const ChangePlanPage(
-                                subscriberUuid: 'subscriberUuid',
-                                currentPackageId: 'currentPackageId',
+                              (_) => ChangePlanPage(
+                                subscriberUuid: subscriberUuid,
+                                currentPackageId: currentPackageId,
                               ),
                         ),
                       ),
@@ -631,6 +774,8 @@ class _PlanCard extends StatelessWidget {
     );
   }
 }
+
+// ─── Services Section ─────────────────────────────────────────────────────────
 
 class _ServicesSection extends StatelessWidget {
   final _services = const [
@@ -687,6 +832,8 @@ class _ServicesSection extends StatelessWidget {
     );
   }
 }
+
+// ─── Service Card ─────────────────────────────────────────────────────────────
 
 class _ServiceCard extends StatelessWidget {
   final String title;

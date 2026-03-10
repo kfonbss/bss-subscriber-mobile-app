@@ -1,9 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:intl/intl.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/features/active_package_details/domain/entity/active_packages_details_entity.dart';
 
 class PackageInfoCard extends StatelessWidget {
-  const PackageInfoCard({super.key});
+  final ActivePackagesDetailsEntity? entity;
+  const PackageInfoCard({super.key,required this.entity});
 
   @override
   Widget build(BuildContext context) {
@@ -33,7 +36,7 @@ class PackageInfoCard extends StatelessWidget {
               child: Row(
                 children: [
                   Text(
-                    '100 Mbps ',
+                    '${entity!.speedMbps} Mbps',
                     style: TextStyle(
                       fontFamily: 'GeneralSans',
                       fontSize: 22.sp,
@@ -41,7 +44,7 @@ class PackageInfoCard extends StatelessWidget {
                     ),
                   ),
                   Text(
-                    '(Unlimited)',
+                    '(${entity!.packageType})',
                     style: TextStyle(
                       fontFamily: 'GeneralSans',
                       fontSize: 11.sp,
@@ -60,7 +63,7 @@ class PackageInfoCard extends StatelessWidget {
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
-                      '20 Days left',
+                      '${entity!.daysLeft} Days left',
                       style: TextStyle(
                         fontFamily: 'GeneralSans',
                         fontSize: 12.sp,
@@ -98,7 +101,7 @@ class PackageInfoCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
-                            'Combo Plan   ₹999',
+                            '${entity!.packageName}   ₹${entity!.renewalFee}',
                             style: TextStyle(
                               fontFamily: 'GeneralSans',
                               fontSize: 14.sp,
@@ -108,7 +111,7 @@ class PackageInfoCard extends StatelessWidget {
                           ),
                           SizedBox(height: 2.h),
                           Text(
-                            'Active until Aug 25, 2025',
+                            'Active until ${DateFormat('MMM dd, yyyy').format(entity!.activeUntil)}',
                             style: TextStyle(
                               fontFamily: 'GeneralSans',
                               fontSize: 11.sp,
@@ -129,7 +132,7 @@ class PackageInfoCard extends StatelessWidget {
                           borderRadius: BorderRadius.circular(80),
                         ),
                         child: Text(
-                          '+ 3 Pack',
+                          '+ ${entity!.totalPackageCount} Pack',
                           style: TextStyle(
                             fontFamily: 'GeneralSans',
                             fontSize: 11.sp,
@@ -141,8 +144,7 @@ class PackageInfoCard extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 18.h),
-
-                  _DataUsageBar(usedGB: 79, totalGB: 100),
+                  _DataUsageBar(usedGB: entity!.availableVolumeGb, totalGB: entity!.totalVolumeGb),
                 ],
               ),
             ),

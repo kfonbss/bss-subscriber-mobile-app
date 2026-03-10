@@ -126,7 +126,7 @@ class _ProfilePageState extends State<ProfilePage> {
                       CircleAvatar(
                         radius: 34,
                         backgroundImage: const NetworkImage(
-                          'https://example.com/profile.png',
+                          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPrsHSSBc63zNawuN6LUuXgj58de3ciuETGw&s',
                         ),
                         backgroundColor: Colors.white,
                       ),

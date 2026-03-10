@@ -146,7 +146,7 @@ class _DataUsageViewState extends State<DataUsageView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          PackageInfoCard(),
+                          PackageInfoCard(entity: null,),
                           const SizedBox(height: 24),
                           _DataUsageChart(
                             graphData: dataUsage.dataUsage!.graphData,

@@ -38,93 +38,27 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
     currentTabStates[tab] = const TabPlanState(status: ListPlanStatus.loading);
 
     emit(state.copyWith(tabStates: currentTabStates));
-    //
-    // final result = await repository.getPackages(
-    //   GetAllPackagesParams(
-    //     type: 'retail',
-    //     search: tab == PlanTab.all ? state.searchQuery : null,
-    //     speedMbps: tab == PlanTab.all ? state.speedFilter : null,
-    //     ott: _ottForTab(tab),
-    //   ),
-    // );
+
+    final result = await repository.getPackages(
+      GetAllPackagesParams(
+        type: 'retail',
+        search: tab == PlanTab.all ? state.searchQuery : null,
+        speedMbps: tab == PlanTab.all ? state.speedFilter : null,
+        ott: _ottForTab(tab),
+      ),
+    );
 
     final updatedTabStates = Map<PlanTab, TabPlanState>.from(state.tabStates);
 
-    // result.fold(
-    //       (failure) {
-    //     updatedTabStates[tab] = TabPlanState(
-    //       status: ListPlanStatus.error,
-    //       errorMessage: failure.toString(),
-    //     );
-    //   },
-    //       (packages) {
-    //     final filtered = packages
-    //         .where((p) => p.packageId != event.packageId)
-    //         .toList();
-    //     updatedTabStates[tab] = TabPlanState(
-    //       status: ListPlanStatus.success,
-    //       packages: filtered,
-    //       hasMore: false,
-    //     );
-    //   },
-    // );
-    const List<PackageEntity> packages = [
-      PackageEntity(
-        packageId:   'PKG001',
-        packageName: 'Basic Home',
-        price:       299.0,
-        speed:       '25 Mbps',
-        data:        '100 GB',
-        validity:    30,
-        planType:    'FTTH',
-      ),
-      PackageEntity(
-        packageId:   'PKG002',
-        packageName: 'Internet Extra Combo Plus',
-        price:       499.0,
-        speed:       '50 Mbps',
-        data:        '200 GB',
-        validity:    30,
-        planType:    'FTTH',
-      ),
-      PackageEntity(
-        packageId:   'PKG003',
-        packageName: 'Mega Extra Plus',
-        price:       799.0,
-        speed:       '100 Mbps',
-        data:        '500 GB',
-        validity:    30,
-        planType:    'FTTH',
-      ),
-      PackageEntity(
-        packageId:   'PKG004',
-        packageName: 'Unlimited Pro',
-        price:       999.0,
-        speed:       '200 Mbps',
-        data:        'Unlimited',
-        validity:    30,
-        planType:    'FTTH',
-      ),
-      PackageEntity(
-        packageId:   'PKG005',
-        packageName: 'Business Starter',
-        price:       1499.0,
-        speed:       '100 Mbps',
-        data:        'Unlimited',
-        validity:    30,
-        planType:    'ILL',
-      ),
-      PackageEntity(
-        packageId:   'PKG006',
-        packageName: 'Business Pro',
-        price:       2999.0,
-        speed:       '500 Mbps',
-        data:        'Unlimited',
-        validity:    30,
-        planType:    'ILL',
-      ),
-    ];
-    final filtered = packages
+    result.fold(
+          (failure) {
+        updatedTabStates[tab] = TabPlanState(
+          status: ListPlanStatus.error,
+          errorMessage: failure.toString(),
+        );
+      },
+          (packages) {
+        final filtered = packages
             .where((p) => p.packageId != event.packageId)
             .toList();
         updatedTabStates[tab] = TabPlanState(
@@ -132,6 +66,9 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
           packages: filtered,
           hasMore: false,
         );
+      },
+    );
+
     emit(state.copyWith(tabStates: updatedTabStates));
   }
   //   // No pagination in the new API
