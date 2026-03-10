@@ -11,7 +11,6 @@ import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entit
 import 'package:kfon_subscriber/features/change_plan/presentation/pages/change_plan.dart';
 import 'package:kfon_subscriber/features/data_usage/presentation/pages/data_usage_view.dart';
 import 'package:kfon_subscriber/features/home/domain/entity/home_entity.dart';
-import 'package:kfon_subscriber/features/home/domain/repository/home_repository.dart';
 import 'package:kfon_subscriber/features/home/presentation/bloc/home_bloc.dart';
 import 'package:kfon_subscriber/features/home/presentation/bloc/home_event.dart';
 import 'package:kfon_subscriber/features/home/presentation/bloc/home_state.dart';
@@ -19,7 +18,6 @@ import 'package:kfon_subscriber/features/top_up/presentation/pages/topup_page.da
 import 'package:kfon_subscriber/features/active_package_details/presentation/pages/active_package_page.dart';
 import 'package:kfon_subscriber/presentation/ui_component/primary_button.dart';
 import 'package:kfon_subscriber/presentation/ui_component/secondary_button.dart';
-import 'package:kfon_subscriber/service_locator.dart';
 
 import '../../../../presentation/page_component/recharge_bottom_sheet.dart';
 
@@ -41,13 +39,11 @@ class _HomePageState extends State<HomePage> {
   @override
   void initState() {
     super.initState();
-    bloc = HomeBloc(repository: sl<HomeRepository>());
-    bloc.add(GetHomeData());
+    bloc = context.read<HomeBloc>();
   }
 
   @override
   void dispose() {
-    bloc.close();
     super.dispose();
   }
 

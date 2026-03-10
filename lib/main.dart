@@ -27,6 +27,9 @@ import 'package:kfon_subscriber/presentation/pages/invoice_list_page.dart';
 import 'package:kfon_subscriber/presentation/pages/main_page.dart';
 import 'package:kfon_subscriber/presentation/pages/notification_page.dart';
 import 'package:kfon_subscriber/presentation/pages/sign_up_page.dart';
+import 'package:kfon_subscriber/features/home/presentation/bloc/home_bloc.dart';
+import 'package:kfon_subscriber/features/home/presentation/bloc/home_event.dart';
+import 'package:kfon_subscriber/features/home/domain/repository/home_repository.dart';
 import 'package:kfon_subscriber/features/tranasactions/presentation/pages/transaction_history_page.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 import 'features/auth/domain/repository/auth_repository.dart';
@@ -60,12 +63,15 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final AuthBloc _authBloc = AuthBloc(authRepository: sl<AuthRepository>());
   late final ProfileBloc _profileBloc;
+  late final HomeBloc _homeBloc;
 
   @override
   void initState() {
     super.initState();
     _authBloc.add(const CheckAuthStatus());
     _profileBloc = ProfileBloc(repository: sl<ProfileRepository>());
+    _homeBloc = HomeBloc(repository: sl<HomeRepository>());
+    _homeBloc.add(GetHomeData());
   }
 
   @override
@@ -76,6 +82,7 @@ class _MyAppState extends State<MyApp> {
       providers: [
         BlocProvider(create: (context) => _authBloc),
         BlocProvider(create: (context) => _profileBloc),
+        BlocProvider(create: (context) => _homeBloc),
       ],
       child: MaterialApp(
         theme: theme.copyWith(
@@ -165,6 +172,7 @@ class _MyAppState extends State<MyApp> {
   void dispose() {
     _authBloc.close();
     _profileBloc.close();
+    _homeBloc.close();
     super.dispose();
   }
 }

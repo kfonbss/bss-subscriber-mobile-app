@@ -19,6 +19,8 @@ import 'package:kfon_subscriber/features/top_up/data/repository/topup_repository
 import 'package:kfon_subscriber/features/top_up/domain/repository/topup_repository.dart';
 import 'package:kfon_subscriber/features/tranasactions/data/repository/transaction_repository_imp.dart';
 import 'package:kfon_subscriber/features/tranasactions/domain/repository/transaction_repository.dart';
+import 'package:kfon_subscriber/features/ticket/data/repository/ticket_repository_imp.dart';
+import 'package:kfon_subscriber/features/ticket/domain/repository/ticket_repository.dart';
 
 import 'features/auth/data/repository/auth_repository_imp.dart';
 import 'features/auth/domain/repository/auth_repository.dart';
@@ -41,4 +43,5 @@ void setUpServiceLocator() {
   sl.registerSingleton<ProfileRepository>(ProfileRepositoryImp());
   sl.registerSingleton<TransactionRepository>(TransactionRepositoryImp());
   sl.registerSingleton<PackageDetailsRepository>(PackageDetailsRepositoryImp());
+  sl.registerSingleton<TicketRepository>(TicketRepositoryImp());
 }

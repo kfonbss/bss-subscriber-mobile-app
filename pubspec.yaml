@@ -59,6 +59,7 @@ dependencies:
   flutter_secure_storage: ^10.0.0
   flutter_dotenv: ^6.0.0
   video_player: ^2.9.2
+  url_launcher: ^6.3.0
 
 
 flutter_native_splash:
