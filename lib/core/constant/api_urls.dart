@@ -29,13 +29,17 @@ class ApiUrls {
   static const getPostOfficesDistrictURL = 'get_post_offices.php';
   static const signUpGetOTPFormURL = 'signUpGetOTPFormURL';
   static const signUpVerifyOTPFormURL = 'signUpVerifyOTPFormURL';
-  static String homePageURL = '$subscriberManagementService/mobile/subscriber/home';
+  static String homePageURL =
+      '$subscriberManagementService/mobile/subscriber/home';
   static String subscriberDataUsageURL({required String subscriberUuid}) =>
       '$subscriberManagementService/mobile/subscribers/$subscriberUuid/data-usage';
   static String get listPackagesURL =>
       '$packageManagementService/mobile/packages';
   static String changePlanURL({required String subscriberUuid}) =>
       '$subscriberManagementService/mobile/subscribers/$subscriberUuid/change-plan';
+  static String get rechargeChangePlanURL =>
+      '$billingFinanceService/mobile/payment/recharge';
+
   static String get walletTopupURL =>
       '$billingFinanceService/mobile/payment/top-up';
   static String get loginURL => '$userRoleMapingService/mobile/login';

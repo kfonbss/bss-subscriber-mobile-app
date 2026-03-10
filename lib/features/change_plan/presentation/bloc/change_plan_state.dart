@@ -1,12 +1,15 @@
 import 'package:equatable/equatable.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/enums/subscriber_enums.dart';
+import 'package:kfon_subscriber/features/change_plan/domain/entity/recharge_change_plan_redirect_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/bloc/tab_plan_state.dart';
 
 enum ListPlanStatus { initial, loading, loadingMore, success, error }
 
 enum ActionStatus { idle, loading, success, error }
+
 const _sentinel = Object();
+
 class ChangePlanState extends Equatable {
   final Map<PlanTab, TabPlanState> tabStates;
   final PlanTab activeTab;
@@ -16,6 +19,7 @@ class ChangePlanState extends Equatable {
   final String? successMessage;
   final String? searchQuery;
   final int? speedFilter;
+  final RechargeChangePlanRedirectEntity? redirectEntity;
 
   const ChangePlanState({
     this.tabStates = const {},
@@ -26,6 +30,7 @@ class ChangePlanState extends Equatable {
     this.successMessage,
     this.searchQuery,
     this.speedFilter,
+    this.redirectEntity,
   });
 
   TabPlanState get activeTabState =>
@@ -37,7 +42,7 @@ class ChangePlanState extends Equatable {
     for (final tabState in tabStates.values) {
       try {
         return tabState.packages.firstWhere(
-              (p) => p.packageId == selectedPackageId,
+          (p) => p.packageId == selectedPackageId,
         );
       } catch (_) {
         continue;
@@ -55,6 +60,7 @@ class ChangePlanState extends Equatable {
     String? successMessage,
     String? searchQuery,
     Object? speedFilter = _sentinel,
+    RechargeChangePlanRedirectEntity? redirectEntity,
   }) {
     return ChangePlanState(
       tabStates: tabStates ?? this.tabStates,
@@ -64,9 +70,9 @@ class ChangePlanState extends Equatable {
       errorMessage: errorMessage,
       successMessage: successMessage,
       searchQuery: searchQuery ?? this.searchQuery,
-      speedFilter: speedFilter == _sentinel
-          ? this.speedFilter
-          : speedFilter as int?,
+      speedFilter:
+          speedFilter == _sentinel ? this.speedFilter : speedFilter as int?,
+      redirectEntity: redirectEntity ?? this.redirectEntity,
     );
   }
 
@@ -80,5 +86,6 @@ class ChangePlanState extends Equatable {
     successMessage,
     searchQuery,
     speedFilter,
+    redirectEntity,
   ];
 }

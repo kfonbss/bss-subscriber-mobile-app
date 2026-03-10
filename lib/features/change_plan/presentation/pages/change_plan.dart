@@ -1,4 +1,3 @@
-
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 
 import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entity.dart';
@@ -34,9 +33,9 @@ class ChangePlanPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-      ChangePlanBloc(repository: sl<ChangePlanRepository>())
-        ..add(LoadPackages(tab: PlanTab.all, packageId: currentPackageId)),
+      create:
+          (_) => ChangePlanBloc(repository: sl<ChangePlanRepository>())
+            ..add(LoadPackages(tab: PlanTab.all, packageId: currentPackageId)),
       child: _ChangePlanView(
         subscriberUuid: subscriberUuid,
         currentPackageId: currentPackageId,
@@ -103,14 +102,15 @@ class _ChangePlanViewState extends State<_ChangePlanView>
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => SpeedFilterSheet(
-        currentSpeed: bloc.state.speedFilter,
-        onApply: (speed) {
-          bloc.add(
-            FilterBySpeed(speed: speed, packageId: widget.currentPackageId),
-          );
-        },
-      ),
+      builder:
+          (_) => SpeedFilterSheet(
+            currentSpeed: bloc.state.speedFilter,
+            onApply: (speed) {
+              bloc.add(
+                FilterBySpeed(speed: speed, packageId: widget.currentPackageId),
+              );
+            },
+          ),
     );
   }
 
@@ -125,7 +125,6 @@ class _ChangePlanViewState extends State<_ChangePlanView>
 
   @override
   Widget build(BuildContext context) {
-
     return BlocListener<ChangePlanBloc, ChangePlanState>(
       listenWhen: (prev, curr) => prev.actionStatus != curr.actionStatus,
       listener: (context, state) {
@@ -133,7 +132,8 @@ class _ChangePlanViewState extends State<_ChangePlanView>
           Navigator.pop(context);
           DialogUtil().showCustomSnackbar(
             context: context,
-            content: 'Plan changed successfully to ${state.selectedPackage?.packageName ?? ''}',
+            content:
+                'Plan changed successfully to ${state.selectedPackage?.packageName ?? ''}',
           );
         } else if (state.actionStatus == ActionStatus.error) {
           DialogUtil().showCustomSnackbar(
@@ -162,43 +162,48 @@ class _ChangePlanViewState extends State<_ChangePlanView>
                     padding: const EdgeInsets.all(4),
                     labelPadding: const EdgeInsets.symmetric(horizontal: 6),
                     overlayColor: WidgetStateProperty.all(Colors.transparent),
-                    tabs: _tabs.asMap().entries.map((entry) {
-                      final index = entry.key;
-                      final tab = entry.value;
-                      return Tab(
-                        height: 32,
-                        child: AnimatedBuilder(
-                          animation: _tabController,
-                          builder: (context, _) {
-                            final isSelected = _tabController.index == index;
-                            return Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                              ),
-                              decoration: BoxDecoration(
-                                color: isSelected
-                                    ? AppColor.kPrimaryColor
-                                    : Colors.white,
-                                borderRadius: BorderRadius.circular(25),
-                              ),
-                              alignment: Alignment.center,
-                              child: Text(
-                                _tabLabel(tab),
-                                style: TextStyle(
-                                  fontSize: 12,
-                                  fontWeight: isSelected
-                                      ? FontWeight.w600
-                                      : FontWeight.w400,
-                                  color: isSelected
-                                      ? Colors.white
-                                      : AppColor.kTabBarUnselectedText,
-                                ),
-                              ),
-                            );
-                          },
-                        ),
-                      );
-                    }).toList(),
+                    tabs:
+                        _tabs.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final tab = entry.value;
+                          return Tab(
+                            height: 32,
+                            child: AnimatedBuilder(
+                              animation: _tabController,
+                              builder: (context, _) {
+                                final isSelected =
+                                    _tabController.index == index;
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color:
+                                        isSelected
+                                            ? AppColor.kPrimaryColor
+                                            : Colors.white,
+                                    borderRadius: BorderRadius.circular(25),
+                                  ),
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    _tabLabel(tab),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight:
+                                          isSelected
+                                              ? FontWeight.w600
+                                              : FontWeight.w400,
+                                      color:
+                                          isSelected
+                                              ? Colors.white
+                                              : AppColor.kTabBarUnselectedText,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        }).toList(),
                   ),
                 ),
 
@@ -268,12 +273,13 @@ class _ChangePlanViewState extends State<_ChangePlanView>
                 Expanded(
                   child: TabBarView(
                     controller: _tabController,
-                    children: _tabs.map((tab) {
-                      return _PlanTabContent(
-                        tab: tab,
-                        currentPackageId: widget.currentPackageId,
-                      );
-                    }).toList(),
+                    children:
+                        _tabs.map((tab) {
+                          return _PlanTabContent(
+                            tab: tab,
+                            currentPackageId: widget.currentPackageId,
+                          );
+                        }).toList(),
                   ),
                 ),
               ],
@@ -293,21 +299,23 @@ class _ChangePlanViewState extends State<_ChangePlanView>
                     return SizedBox(
                       width: double.infinity,
                       child: ElevatedButton(
-                        onPressed: selectedPackage == null || isLoading
-                            ? null
-                            : () => _showConfirmationDialog(
-                          context,
-                          selectedPackage,
-                        ),
-                        child: isLoading
-                            ? const SizedBox(
-                          height: 20,
-                          width: 20,
-                          child: CircularProgressIndicator(
-                            strokeWidth: 2,
-                          ),
-                        )
-                            : Text('Change Package'),
+                        onPressed:
+                            selectedPackage == null || isLoading
+                                ? null
+                                : () => _showConfirmationDialog(
+                                  context,
+                                  selectedPackage,
+                                ),
+                        child:
+                            isLoading
+                                ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                  ),
+                                )
+                                : Text('Change Package'),
                       ),
                     );
                   },
@@ -321,26 +329,22 @@ class _ChangePlanViewState extends State<_ChangePlanView>
   }
 
   void _showConfirmationDialog(BuildContext context, PackageEntity package) {
-
+    final bloc = context.read<ChangePlanBloc>();
     DialogUtil().showConfirmationSheet(
       context: context,
       title: 'Change Plan',
       content: 'Are you sure you want to change to ${package.packageName}?',
       onPositiveButtonClick: () {
         Navigator.pop(context);
-        // context.read<ChangePlanBloc>().add(
-        //   ChangePlan(
-        //     subscriberUuid: widget.subscriberUuid,
-        //     params: ChangePlanRequestParams(
-        //       packageId: package.packageId,
-        //       packageName: package.packageName,
-        //       planType: package.planType,
-        //     ),
-        //   ),
-        // );
         Navigator.push(
           context,
-          MaterialPageRoute<void>(builder: (context) =>  RechargePage(package: package)),
+          MaterialPageRoute<void>(
+            builder:
+                (context) => BlocProvider.value(
+                  value: bloc,
+                  child: RechargePage(package: package),
+                ),
+          ),
         );
       },
     );
@@ -409,9 +413,13 @@ class _PlanTabContentState extends State<_PlanTabContent>
         if (tabState.status == ListPlanStatus.error) {
           return RetryWidget(
             errorMessage: tabState.errorMessage ?? 'Something went wrong',
-            onRetry: () => context.read<ChangePlanBloc>().add(
-              LoadPackages(tab: widget.tab, packageId: widget.currentPackageId),
-            ),
+            onRetry:
+                () => context.read<ChangePlanBloc>().add(
+                  LoadPackages(
+                    tab: widget.tab,
+                    packageId: widget.currentPackageId,
+                  ),
+                ),
           );
         }
 
@@ -424,7 +432,7 @@ class _PlanTabContentState extends State<_PlanTabContent>
           controller: _scrollController,
           padding: const EdgeInsets.only(left: 16, right: 10, bottom: 84),
           itemCount:
-          tabState.packages.length +
+              tabState.packages.length +
               (tabState.status == ListPlanStatus.loadingMore ? 1 : 0),
           itemBuilder: (context, index) {
             if (index >= tabState.packages.length) {
@@ -439,9 +447,10 @@ class _PlanTabContentState extends State<_PlanTabContent>
             return PlanTile(
               package: package,
               isSelected: state.selectedPackageId == package.packageId,
-              onTap: () => context.read<ChangePlanBloc>().add(
-                SelectPackage(package.packageId),
-              ),
+              onTap:
+                  () => context.read<ChangePlanBloc>().add(
+                    SelectPackage(package.packageId),
+                  ),
             );
           },
           separatorBuilder: (context, index) => const SizedBox(height: 10),

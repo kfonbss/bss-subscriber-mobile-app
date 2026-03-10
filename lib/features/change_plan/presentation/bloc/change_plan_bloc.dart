@@ -18,6 +18,7 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
     on<FilterBySpeed>(_onFilterBySpeed);
     on<SelectPackage>(_onSelectPackage);
     on<ChangePlan>(_onChangePlan);
+    on<RechargeChangePlan>(_onRechargeChangePlan);
   }
 
   bool? _ottForTab(PlanTab tab) {
@@ -30,9 +31,9 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
   }
 
   Future<void> _onLoadPackages(
-      LoadPackages event,
-      Emitter<ChangePlanState> emit,
-      ) async {
+    LoadPackages event,
+    Emitter<ChangePlanState> emit,
+  ) async {
     final tab = event.tab;
     final currentTabStates = Map<PlanTab, TabPlanState>.from(state.tabStates);
     currentTabStates[tab] = const TabPlanState(status: ListPlanStatus.loading);
@@ -51,16 +52,15 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
     final updatedTabStates = Map<PlanTab, TabPlanState>.from(state.tabStates);
 
     result.fold(
-          (failure) {
+      (failure) {
         updatedTabStates[tab] = TabPlanState(
           status: ListPlanStatus.error,
           errorMessage: failure.toString(),
         );
       },
-          (packages) {
-        final filtered = packages
-            .where((p) => p.packageId != event.packageId)
-            .toList();
+      (packages) {
+        final filtered =
+            packages.where((p) => p.packageId != event.packageId).toList();
         updatedTabStates[tab] = TabPlanState(
           status: ListPlanStatus.success,
           packages: filtered,
@@ -91,17 +91,17 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
   }
 
   Future<void> _onSearchPackages(
-      SearchPackages event,
-      Emitter<ChangePlanState> emit,
-      ) async {
+    SearchPackages event,
+    Emitter<ChangePlanState> emit,
+  ) async {
     emit(state.copyWith(searchQuery: event.query));
     add(LoadPackages(tab: PlanTab.all, packageId: event.packageId));
   }
 
   Future<void> _onFilterBySpeed(
-      FilterBySpeed event,
-      Emitter<ChangePlanState> emit,
-      ) async {
+    FilterBySpeed event,
+    Emitter<ChangePlanState> emit,
+  ) async {
     emit(state.copyWith(speedFilter: event.speed));
     add(LoadPackages(tab: PlanTab.all, packageId: event.packageId));
   }
@@ -111,9 +111,9 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
   }
 
   Future<void> _onChangePlan(
-      ChangePlan event,
-      Emitter<ChangePlanState> emit,
-      ) async {
+    ChangePlan event,
+    Emitter<ChangePlanState> emit,
+  ) async {
     emit(state.copyWith(actionStatus: ActionStatus.loading));
 
     final result = await repository.changePlan(
@@ -122,13 +122,37 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
     );
 
     result.fold(
-          (failure) => emit(
+      (failure) => emit(
         state.copyWith(
           actionStatus: ActionStatus.error,
           errorMessage: failure.toString(),
         ),
       ),
-          (_) => emit(state.copyWith(actionStatus: ActionStatus.success)),
+      (_) => emit(state.copyWith(actionStatus: ActionStatus.success)),
+    );
+  }
+
+  Future<void> _onRechargeChangePlan(
+    RechargeChangePlan event,
+    Emitter<ChangePlanState> emit,
+  ) async {
+    emit(state.copyWith(actionStatus: ActionStatus.loading));
+
+    final result = await repository.rechargeChangePlan(event.params);
+
+    result.fold(
+      (failure) => emit(
+        state.copyWith(
+          actionStatus: ActionStatus.error,
+          errorMessage: failure.toString(),
+        ),
+      ),
+      (data) => emit(
+        state.copyWith(
+          actionStatus: ActionStatus.success,
+          redirectEntity: data.redirect,
+        ),
+      ),
     );
   }
 }

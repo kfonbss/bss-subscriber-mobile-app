@@ -8,6 +8,14 @@ import 'package:kfon_subscriber/painter/dashed_line_painter.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
 import 'package:kfon_subscriber/presentation/ui_component/primary_button.dart';
 
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kfon_subscriber/core/util/preference_util.dart';
+import 'package:kfon_subscriber/features/change_plan/presentation/bloc/change_plan_bloc.dart';
+import 'package:kfon_subscriber/features/change_plan/presentation/bloc/change_plan_event.dart';
+import 'package:kfon_subscriber/features/change_plan/presentation/bloc/change_plan_state.dart';
+import 'package:kfon_subscriber/features/change_plan/domain/params/recharge_change_plan_params.dart';
+import 'package:kfon_subscriber/features/change_plan/presentation/pages/payment_webview_page.dart';
+
 class RechargePage extends StatelessWidget {
   final PackageEntity package;
 
@@ -22,51 +30,111 @@ class RechargePage extends StatelessWidget {
       extendBodyBehindAppBar: true,
       circleColor: Colors.white,
       titleColor: Colors.white,
-      body: Stack(
-        children: [
-          SizedBox(
-            width: double.infinity,
-            height: 200.h,
-            child: SvgPicture.asset(
-              'assets/images/speed_test_background.svg',
-              fit: BoxFit.fill,
-            ),
-          ),
-          Padding(
-            padding: EdgeInsets.only(left: 20, right: 20, top: 140, bottom: 20),
-            child: Column(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
-              children: [
-                PlanTile(package: package, isSelected: false, onTap: () {}),
-                PrimaryButton(
-                  label: 'Pay Now',
-                  isLoading: false,
-                  onClicked:
-                      () => showPaymentMethodSheet(context, onNext: () {}),
+      body: BlocConsumer<ChangePlanBloc, ChangePlanState>(
+        listenWhen:
+            (previous, current) =>
+                previous.actionStatus != current.actionStatus,
+        listener: (context, state) {
+          if (state.actionStatus == ActionStatus.success &&
+              state.redirectEntity != null) {
+            Navigator.pop(context); // Close PaymentMethodSheet if open
+            Navigator.push(
+              context,
+              MaterialPageRoute(
+                builder:
+                    (context) => PaymentWebViewPage(
+                      redirectEntity: state.redirectEntity!,
+                    ),
+              ),
+            ).then((result) {
+              if (result == PaymentResult.success) {
+                _showTopUpSuccessDialog(package.price, context);
+              } else if (result == PaymentResult.failed) {
+                _showTopUpFailDialog(package.price, context);
+              }
+            });
+          } else if (state.actionStatus == ActionStatus.error) {
+            Navigator.pop(context); // Close PaymentMethodSheet if open
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text('Recharge failed: ${state.errorMessage}')),
+            );
+          }
+        },
+        builder: (context, state) {
+          return Stack(
+            children: [
+              SizedBox(
+                width: double.infinity,
+                height: 200.h,
+                child: SvgPicture.asset(
+                  'assets/images/speed_test_background.svg',
+                  fit: BoxFit.fill,
                 ),
-              ],
-            ),
-          ),
-        ],
+              ),
+              Padding(
+                padding: EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                  top: 140,
+                  bottom: 20,
+                ),
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  children: [
+                    PlanTile(package: package, isSelected: false, onTap: () {}),
+                    PrimaryButton(
+                      label: 'Pay Now',
+                      isLoading: state.actionStatus == ActionStatus.loading,
+                      onClicked:
+                          () => showPaymentMethodSheet(
+                            context,
+                            onNext: (gateway) async {
+                              if (context.mounted) {
+                                context.read<ChangePlanBloc>().add(
+                                  RechargeChangePlan(
+                                    params: RechargeChangePlanParams(
+                                      packageId: package.packageId,
+                                      gateway: gateway,
+                                      amount: package.price,
+                                      durationDays: package.validity,
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                          ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
+          );
+        },
       ),
     );
   }
 
   void showPaymentMethodSheet(
     BuildContext context, {
-    required VoidCallback onNext,
+    required Function(String gateway) onNext,
   }) {
     showModalBottomSheet(
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (_) => PaymentMethodSheet(onNext: (){
-        _showTopUpFailDialog(1250,context);
-      }),
+      builder:
+          (_) => BlocProvider.value(
+            value: context.read<ChangePlanBloc>(),
+            child: PaymentMethodSheet(
+              onNext: (gateway) {
+                onNext(gateway);
+              },
+            ),
+          ),
     );
   }
 
-  void _showTopUpSuccessDialog(double amount,BuildContext context) {
+  void _showTopUpSuccessDialog(double amount, BuildContext context) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -143,7 +211,7 @@ class RechargePage extends StatelessWidget {
                   ),
                   textAlign: TextAlign.center,
                 ),
-                const SizedBox(height: 18,),
+                const SizedBox(height: 18),
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -155,7 +223,7 @@ class RechargePage extends StatelessWidget {
                     ),
                   ),
                 ),
-                const SizedBox(height: 18,),
+                const SizedBox(height: 18),
                 Text(
                   'Transaction ID: TXN23456789',
                   style: TextStyle(
@@ -202,7 +270,7 @@ class RechargePage extends StatelessWidget {
     );
   }
 
-  void _showTopUpFailDialog(double amount,BuildContext context) {
+  void _showTopUpFailDialog(double amount, BuildContext context) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -263,7 +331,7 @@ class RechargePage extends StatelessWidget {
                     height: 1.54,
                   ),
                 ),
-                const SizedBox(height: 18,),
+                const SizedBox(height: 18),
                 Container(
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(horizontal: 20.w),
@@ -310,12 +378,10 @@ class RechargePage extends StatelessWidget {
       },
     );
   }
-
-
 }
 
 class PaymentMethodSheet extends StatefulWidget {
-  final VoidCallback onNext;
+  final Function(String gateway) onNext;
 
   const PaymentMethodSheet({super.key, required this.onNext});
 
@@ -375,12 +441,15 @@ class _PaymentMethodSheetState extends State<PaymentMethodSheet> {
           SizedBox(height: 80.h),
 
           // Next button
-          PrimaryButton(
-            label: 'Next',
-            isLoading: false,
-            onClicked: () {
-             // Navigator.pop(context);
-              widget.onNext();
+          BlocBuilder<ChangePlanBloc, ChangePlanState>(
+            builder: (context, state) {
+              return PrimaryButton(
+                label: 'Next',
+                isLoading: state.actionStatus == ActionStatus.loading,
+                onClicked: () {
+                  widget.onNext(_selected);
+                },
+              );
             },
           ),
         ],
