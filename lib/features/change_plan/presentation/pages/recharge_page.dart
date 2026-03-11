@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/pages/components/plan_tile.dart';
@@ -14,6 +15,7 @@ import 'package:kfon_subscriber/features/change_plan/presentation/bloc/change_pl
 import 'package:kfon_subscriber/features/change_plan/presentation/bloc/change_plan_event.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/bloc/change_plan_state.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/params/recharge_change_plan_params.dart';
+import 'package:kfon_subscriber/features/change_plan/domain/entity/recharge_payment_status_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/pages/payment_webview_page.dart';
 
 class RechargePage extends StatelessWidget {
@@ -33,7 +35,8 @@ class RechargePage extends StatelessWidget {
       body: BlocConsumer<ChangePlanBloc, ChangePlanState>(
         listenWhen:
             (previous, current) =>
-                previous.actionStatus != current.actionStatus,
+                previous.actionStatus != current.actionStatus ||
+                previous.paymentStatus != current.paymentStatus,
         listener: (context, state) {
           if (state.actionStatus == ActionStatus.success &&
               state.redirectEntity != null) {
@@ -48,16 +51,37 @@ class RechargePage extends StatelessWidget {
               ),
             ).then((result) {
               if (result == PaymentResult.success) {
-                _showTopUpSuccessDialog(package.price, context);
+                // Fetch payment status from API
+                if (context.mounted && state.orderId != null) {
+                  context.read<ChangePlanBloc>().add(
+                    FetchRechargePaymentStatus(orderId: state.orderId!),
+                  );
+                }
               } else if (result == PaymentResult.failed) {
                 _showTopUpFailDialog(package.price, context);
+              } else if (result == PaymentResult.cancelled) {
+                DialogUtil().showCustomSnackbar(
+                  context: context,
+                  content: 'Recharge payemnt is cancelled',
+                  backgroundColor: AppColor.kPendingOrange,
+                );
               }
             });
           } else if (state.actionStatus == ActionStatus.error) {
             Navigator.pop(context); // Close PaymentMethodSheet if open
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text('Recharge failed: ${state.errorMessage}')),
+            DialogUtil().showCustomSnackbar(
+              context: context,
+              content: 'Recharge failed: ${state.errorMessage}',
+              backgroundColor: AppColor.kSuspendedStatusText,
             );
+          }
+
+          // Handle payment status response
+          if (state.paymentStatus == PaymentStatus.success &&
+              state.paymentStatusEntity != null) {
+            _showTopUpSuccessDialog(state.paymentStatusEntity!, context);
+          } else if (state.paymentStatus == PaymentStatus.failed) {
+            _showTopUpFailDialog(package.price, context);
           }
         },
         builder: (context, state) {
@@ -134,7 +158,10 @@ class RechargePage extends StatelessWidget {
     );
   }
 
-  void _showTopUpSuccessDialog(double amount, BuildContext context) {
+  void _showTopUpSuccessDialog(
+    RechargePaymentStatusEntity paymentStatus,
+    BuildContext context,
+  ) {
     showDialog(
       context: context,
       barrierDismissible: false,
@@ -173,41 +200,13 @@ class RechargePage extends StatelessWidget {
                 const SizedBox(height: 12),
                 // Message
                 Text(
-                  'Your recharge of ₹500 has been completed successfully.',
+                  'Your recharge of ₹${paymentStatus.amount.toStringAsFixed(2)} has been completed successfully.',
                   style: TextStyle(
                     color: const Color(0xFF354259),
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                     height: 1.54,
                     fontFamily: 'GeneralSans',
-                  ),
-                  textAlign: TextAlign.center,
-                ),
-                const SizedBox(height: 13),
-                Text.rich(
-                  TextSpan(
-                    children: [
-                      TextSpan(
-                        text: 'New balance : ',
-                        style: TextStyle(
-                          color: const Color(0xFF354259),
-                          fontSize: 13.sp,
-                          fontFamily: 'General Sans',
-                          fontWeight: FontWeight.w500,
-                          height: 1.54,
-                        ),
-                      ),
-                      TextSpan(
-                        text: '₹1,250',
-                        style: TextStyle(
-                          color: AppColor.kPrimaryColor,
-                          fontSize: 13.sp,
-                          fontFamily: 'General Sans',
-                          fontWeight: FontWeight.w600,
-                          height: 1.54,
-                        ),
-                      ),
-                    ],
                   ),
                   textAlign: TextAlign.center,
                 ),
@@ -225,7 +224,7 @@ class RechargePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 18),
                 Text(
-                  'Transaction ID: TXN23456789',
+                  'Transaction ID: ${paymentStatus.txnId}',
                   style: TextStyle(
                     color: const Color(0xFF354259),
                     fontSize: 14,

@@ -50,7 +50,7 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
         },
         onNavigationRequest: (NavigationRequest request) {
           final result = _getPaymentResultFromUrl(request.url);
-
+          print('urlNavigate  ${request.url}');
           if (result != null) {
             Navigator.of(context).pop(result);
             return NavigationDecision.prevent;

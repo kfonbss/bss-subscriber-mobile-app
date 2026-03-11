@@ -8,7 +8,9 @@ import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entit
 import 'package:kfon_subscriber/features/change_plan/domain/params/change_plan_request_params.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/params/recharge_change_plan_params.dart';
 import 'package:kfon_subscriber/features/change_plan/data/models/recharge_change_plan_response_model.dart';
+import 'package:kfon_subscriber/features/change_plan/data/models/recharge_payment_status_model.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/recharge_change_plan_redirect_entity.dart';
+import 'package:kfon_subscriber/features/change_plan/domain/entity/recharge_payment_status_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/params/get_all_packages_parms.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/repository/change_plan_repository.dart';
 import 'package:kfon_subscriber/service_locator.dart';
@@ -71,6 +73,24 @@ class ChangePlanRepositoryImp extends ChangePlanRepository {
         response.data as Map<String, dynamic>,
       );
       return Right(responseModel.toEntity());
+    } else {
+      return Left(response.failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, RechargePaymentStatusEntity>> getRechargePaymentStatus(
+    String orderId,
+  ) async {
+    APIResponse response = await sl<DioClient>().get(
+      ApiUrls.rechargePaymentStatus(orderId: orderId),
+    );
+
+    if (response.isSuccess) {
+      final model = RechargePaymentStatusModel.fromJson(
+        response.data as Map<String, dynamic>,
+      );
+      return Right(model.toEntity());
     } else {
       return Left(response.failure);
     }

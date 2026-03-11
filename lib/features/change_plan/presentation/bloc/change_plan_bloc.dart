@@ -19,6 +19,7 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
     on<SelectPackage>(_onSelectPackage);
     on<ChangePlan>(_onChangePlan);
     on<RechargeChangePlan>(_onRechargeChangePlan);
+    on<FetchRechargePaymentStatus>(_onFetchRechargePaymentStatus);
   }
 
   bool? _ottForTab(PlanTab tab) {
@@ -151,6 +152,31 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
         state.copyWith(
           actionStatus: ActionStatus.success,
           redirectEntity: data.redirect,
+          orderId: data.orderId,
+        ),
+      ),
+    );
+  }
+
+  Future<void> _onFetchRechargePaymentStatus(
+    FetchRechargePaymentStatus event,
+    Emitter<ChangePlanState> emit,
+  ) async {
+    emit(state.copyWith(paymentStatus: PaymentStatus.loading));
+
+    final result = await repository.getRechargePaymentStatus(event.orderId);
+
+    result.fold(
+      (failure) => emit(
+        state.copyWith(
+          paymentStatus: PaymentStatus.failed,
+          errorMessage: failure.toString(),
+        ),
+      ),
+      (entity) => emit(
+        state.copyWith(
+          paymentStatus: PaymentStatus.success,
+          paymentStatusEntity: entity,
         ),
       ),
     );

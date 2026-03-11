@@ -8,7 +8,10 @@ import 'package:kfon_subscriber/core/helper/bottom_sheet_helper.dart';
 import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entity.dart';
+import 'package:kfon_subscriber/features/change_plan/domain/repository/change_plan_repository.dart';
+import 'package:kfon_subscriber/features/change_plan/presentation/bloc/change_plan_bloc.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/pages/change_plan.dart';
+import 'package:kfon_subscriber/features/change_plan/presentation/pages/recharge_page.dart';
 import 'package:kfon_subscriber/features/data_usage/presentation/pages/data_usage_view.dart';
 import 'package:kfon_subscriber/features/home/domain/entity/home_entity.dart';
 import 'package:kfon_subscriber/features/home/presentation/bloc/home_bloc.dart';
@@ -18,6 +21,7 @@ import 'package:kfon_subscriber/features/top_up/presentation/pages/topup_page.da
 import 'package:kfon_subscriber/features/active_package_details/presentation/pages/active_package_page.dart';
 import 'package:kfon_subscriber/presentation/ui_component/primary_button.dart';
 import 'package:kfon_subscriber/presentation/ui_component/secondary_button.dart';
+import 'package:kfon_subscriber/service_locator.dart';
 
 import '../../../../presentation/page_component/recharge_bottom_sheet.dart';
 
@@ -750,17 +754,40 @@ class _PlanCard extends StatelessWidget {
                 width: 145.w,
                 child: SecondaryButton(
                   label: 'Choose Plan',
-                  onClicked:
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute<void>(
-                          builder:
-                              (_) => ChangePlanPage(
-                                subscriberUuid: subscriberUuid,
-                                currentPackageId: currentPackageId,
+                  onClicked: () {
+                    Navigator.push(
+                      context,
+                      MaterialPageRoute<void>(
+                        builder:
+                            (_) => BlocProvider.value(
+                              value: ChangePlanBloc(
+                                repository: sl<ChangePlanRepository>(),
                               ),
-                        ),
+                              child: RechargePage(
+                                package: PackageEntity(
+                                  packageId: plan.packageId,
+                                  packageName: plan.packageName,
+                                  price: plan.price,
+                                  speed: plan.speed,
+                                  data: plan.data,
+                                  validity: plan.validity,
+                                  planType: plan.planType,
+                                ),
+                              ),
+                            ),
                       ),
+                    );
+                  },
+                  // () => Navigator.push(
+                  //   context,
+                  //   MaterialPageRoute<void>(
+                  //     builder:
+                  //         (_) => ChangePlanPage(
+                  //           subscriberUuid: subscriberUuid,
+                  //           currentPackageId: currentPackageId,
+                  //         ),
+                  //   ),
+                  // ),
                 ),
               ),
             ],

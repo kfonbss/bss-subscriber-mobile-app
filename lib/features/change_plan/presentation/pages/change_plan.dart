@@ -125,228 +125,195 @@ class _ChangePlanViewState extends State<_ChangePlanView>
 
   @override
   Widget build(BuildContext context) {
-    return BlocListener<ChangePlanBloc, ChangePlanState>(
-      listenWhen: (prev, curr) => prev.actionStatus != curr.actionStatus,
-      listener: (context, state) {
-        if (state.actionStatus == ActionStatus.success) {
-          Navigator.pop(context);
-          DialogUtil().showCustomSnackbar(
-            context: context,
-            content:
-                'Plan changed successfully to ${state.selectedPackage?.packageName ?? ''}',
-          );
-        } else if (state.actionStatus == ActionStatus.error) {
-          DialogUtil().showCustomSnackbar(
-            context: context,
-            content: state.errorMessage ?? 'Something went wrong',
-            backgroundColor: AppColor.kSuspendedStatusText,
-          );
-        }
-      },
-      child: CommonAppBar(
-        title: 'Change Plan',
-        onBackPressed: () => Navigator.pop(context),
-        body: Stack(
-          children: [
-            Column(
-              children: [
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  child: TabBar(
-                    controller: _tabController,
-                    isScrollable: true,
-                    tabAlignment: TabAlignment.start,
-                    indicator: const BoxDecoration(),
-                    indicatorSize: TabBarIndicatorSize.tab,
-                    dividerColor: Colors.transparent,
-                    padding: const EdgeInsets.all(4),
-                    labelPadding: const EdgeInsets.symmetric(horizontal: 6),
-                    overlayColor: WidgetStateProperty.all(Colors.transparent),
-                    tabs:
-                        _tabs.asMap().entries.map((entry) {
-                          final index = entry.key;
-                          final tab = entry.value;
-                          return Tab(
-                            height: 32,
-                            child: AnimatedBuilder(
-                              animation: _tabController,
-                              builder: (context, _) {
-                                final isSelected =
-                                    _tabController.index == index;
-                                return Container(
-                                  padding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                  ),
-                                  decoration: BoxDecoration(
+    return CommonAppBar(
+      title: 'Change Plan',
+      onBackPressed: () => Navigator.pop(context),
+      body: Stack(
+        children: [
+          Column(
+            children: [
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: TabBar(
+                  controller: _tabController,
+                  isScrollable: true,
+                  tabAlignment: TabAlignment.start,
+                  indicator: const BoxDecoration(),
+                  indicatorSize: TabBarIndicatorSize.tab,
+                  dividerColor: Colors.transparent,
+                  padding: const EdgeInsets.all(4),
+                  labelPadding: const EdgeInsets.symmetric(horizontal: 6),
+                  overlayColor: WidgetStateProperty.all(Colors.transparent),
+                  tabs:
+                      _tabs.asMap().entries.map((entry) {
+                        final index = entry.key;
+                        final tab = entry.value;
+                        return Tab(
+                          height: 32,
+                          child: AnimatedBuilder(
+                            animation: _tabController,
+                            builder: (context, _) {
+                              final isSelected = _tabController.index == index;
+                              return Container(
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                ),
+                                decoration: BoxDecoration(
+                                  color:
+                                      isSelected
+                                          ? AppColor.kPrimaryColor
+                                          : Colors.white,
+                                  borderRadius: BorderRadius.circular(25),
+                                ),
+                                alignment: Alignment.center,
+                                child: Text(
+                                  _tabLabel(tab),
+                                  style: TextStyle(
+                                    fontSize: 12,
+                                    fontWeight:
+                                        isSelected
+                                            ? FontWeight.w600
+                                            : FontWeight.w400,
                                     color:
                                         isSelected
-                                            ? AppColor.kPrimaryColor
-                                            : Colors.white,
-                                    borderRadius: BorderRadius.circular(25),
+                                            ? Colors.white
+                                            : AppColor.kTabBarUnselectedText,
                                   ),
-                                  alignment: Alignment.center,
-                                  child: Text(
-                                    _tabLabel(tab),
-                                    style: TextStyle(
-                                      fontSize: 12,
-                                      fontWeight:
-                                          isSelected
-                                              ? FontWeight.w600
-                                              : FontWeight.w400,
-                                      color:
-                                          isSelected
-                                              ? Colors.white
-                                              : AppColor.kTabBarUnselectedText,
-                                    ),
+                                ),
+                              );
+                            },
+                          ),
+                        );
+                      }).toList(),
+                ),
+              ),
+
+              const SizedBox(height: 12),
+
+              // Search & filter (only for All tab)
+              BlocBuilder<ChangePlanBloc, ChangePlanState>(
+                buildWhen: (prev, curr) => prev.activeTab != curr.activeTab,
+                builder: (context, state) {
+                  if (state.activeTab != PlanTab.all) {
+                    return const SizedBox.shrink();
+                  }
+                  return Padding(
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    child: Row(
+                      children: [
+                        Expanded(
+                          child: TextField(
+                            controller: _searchController,
+                            onChanged: _onSearch,
+                            decoration: InputDecoration(
+                              hintText: 'Search Plan',
+                              hintStyle: const TextStyle(
+                                fontWeight: FontWeight.w300,
+                                fontSize: 14,
+                              ),
+                              prefixIcon: const Icon(Icons.search, size: 20),
+                              isDense: true,
+                              filled: true,
+                              fillColor: Colors.white,
+                              contentPadding: const EdgeInsets.symmetric(
+                                horizontal: 12,
+                                vertical: 12,
+                              ),
+                              border: OutlineInputBorder(
+                                borderRadius: BorderRadius.circular(12),
+                                borderSide: BorderSide.none,
+                              ),
+                            ),
+                          ),
+                        ),
+                        const SizedBox(width: 8),
+                        InkWell(
+                          onTap: _showSpeedFilter,
+                          borderRadius: BorderRadius.circular(12),
+                          child: Container(
+                            padding: const EdgeInsets.all(12),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              borderRadius: BorderRadius.circular(12),
+                            ),
+                            child: Icon(
+                              Icons.tune,
+                              size: 20,
+                              color: AppColor.kPrimaryColor,
+                            ),
+                          ),
+                        ),
+                      ],
+                    ),
+                  );
+                },
+              ),
+
+              const SizedBox(height: 12),
+
+              Expanded(
+                child: TabBarView(
+                  controller: _tabController,
+                  children:
+                      _tabs.map((tab) {
+                        return _PlanTabContent(
+                          tab: tab,
+                          currentPackageId: widget.currentPackageId,
+                        );
+                      }).toList(),
+                ),
+              ),
+            ],
+          ),
+
+          // Bottom Change Package button only when plan selected
+          Align(
+            alignment: Alignment.bottomCenter,
+            child: Padding(
+              padding: const EdgeInsets.all(16),
+              child: BlocBuilder<ChangePlanBloc, ChangePlanState>(
+                builder: (context, state) {
+                  final isLoading = state.actionStatus == ActionStatus.loading;
+                  final selectedPackage = state.selectedPackage;
+
+                  return SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed:
+                          selectedPackage == null || isLoading
+                              ? null
+                              : () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute<void>(
+                                    builder:
+                                        (_) => BlocProvider.value(
+                                          value: context.read<ChangePlanBloc>(),
+                                          child: RechargePage(
+                                            package: selectedPackage,
+                                          ),
+                                        ),
                                   ),
                                 );
                               },
-                            ),
-                          );
-                        }).toList(),
-                  ),
-                ),
-
-                const SizedBox(height: 12),
-
-                // Search & filter (only for All tab)
-                BlocBuilder<ChangePlanBloc, ChangePlanState>(
-                  buildWhen: (prev, curr) => prev.activeTab != curr.activeTab,
-                  builder: (context, state) {
-                    if (state.activeTab != PlanTab.all) {
-                      return const SizedBox.shrink();
-                    }
-                    return Padding(
-                      padding: const EdgeInsets.symmetric(horizontal: 16),
-                      child: Row(
-                        children: [
-                          Expanded(
-                            child: TextField(
-                              controller: _searchController,
-                              onChanged: _onSearch,
-                              decoration: InputDecoration(
-                                hintText: 'Search Plan',
-                                hintStyle: const TextStyle(
-                                  fontWeight: FontWeight.w300,
-                                  fontSize: 14,
+                      child:
+                          isLoading
+                              ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
                                 ),
-                                prefixIcon: const Icon(Icons.search, size: 20),
-                                isDense: true,
-                                filled: true,
-                                fillColor: Colors.white,
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 12,
-                                  vertical: 12,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide.none,
-                                ),
-                              ),
-                            ),
-                          ),
-                          const SizedBox(width: 8),
-                          InkWell(
-                            onTap: _showSpeedFilter,
-                            borderRadius: BorderRadius.circular(12),
-                            child: Container(
-                              padding: const EdgeInsets.all(12),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Icon(
-                                Icons.tune,
-                                size: 20,
-                                color: AppColor.kPrimaryColor,
-                              ),
-                            ),
-                          ),
-                        ],
-                      ),
-                    );
-                  },
-                ),
-
-                const SizedBox(height: 12),
-
-                Expanded(
-                  child: TabBarView(
-                    controller: _tabController,
-                    children:
-                        _tabs.map((tab) {
-                          return _PlanTabContent(
-                            tab: tab,
-                            currentPackageId: widget.currentPackageId,
-                          );
-                        }).toList(),
-                  ),
-                ),
-              ],
-            ),
-
-            // Bottom Change Package button only when plan selected
-            Align(
-              alignment: Alignment.bottomCenter,
-              child: Padding(
-                padding: const EdgeInsets.all(16),
-                child: BlocBuilder<ChangePlanBloc, ChangePlanState>(
-                  builder: (context, state) {
-                    final isLoading =
-                        state.actionStatus == ActionStatus.loading;
-                    final selectedPackage = state.selectedPackage;
-
-                    return SizedBox(
-                      width: double.infinity,
-                      child: ElevatedButton(
-                        onPressed:
-                            selectedPackage == null || isLoading
-                                ? null
-                                : () => _showConfirmationDialog(
-                                  context,
-                                  selectedPackage,
-                                ),
-                        child:
-                            isLoading
-                                ? const SizedBox(
-                                  height: 20,
-                                  width: 20,
-                                  child: CircularProgressIndicator(
-                                    strokeWidth: 2,
-                                  ),
-                                )
-                                : Text('Change Package'),
-                      ),
-                    );
-                  },
-                ),
+                              )
+                              : Text('Change Package'),
+                    ),
+                  );
+                },
               ),
             ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  void _showConfirmationDialog(BuildContext context, PackageEntity package) {
-    final bloc = context.read<ChangePlanBloc>();
-    DialogUtil().showConfirmationSheet(
-      context: context,
-      title: 'Change Plan',
-      content: 'Are you sure you want to change to ${package.packageName}?',
-      onPositiveButtonClick: () {
-        Navigator.pop(context);
-        Navigator.push(
-          context,
-          MaterialPageRoute<void>(
-            builder:
-                (context) => BlocProvider.value(
-                  value: bloc,
-                  child: RechargePage(package: package),
-                ),
           ),
-        );
-      },
+        ],
+      ),
     );
   }
 }

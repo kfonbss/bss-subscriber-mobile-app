@@ -77,3 +77,12 @@ class FilterBySpeed extends ChangePlanEvent {
   @override
   List<Object?> get props => [speed, packageId];
 }
+
+class FetchRechargePaymentStatus extends ChangePlanEvent {
+  final String orderId;
+
+  const FetchRechargePaymentStatus({required this.orderId});
+
+  @override
+  List<Object?> get props => [orderId];
+}
