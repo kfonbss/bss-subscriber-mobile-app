@@ -13,6 +13,7 @@ import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profi
 import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profile_state.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/security_settings_page.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
+import 'package:kfon_subscriber/features/ticket/presentation/pages/tickets_page.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -224,7 +225,14 @@ class _ProfilePageState extends State<ProfilePage> {
               'Security Settings',
             ),
           ),
-          _createAccountListItems('my_tickets', 'My Tickets'),
+          GestureDetector(
+            onTap:
+                () => Navigator.push(
+                  context,
+                  MaterialPageRoute(builder: (context) => const TicketsPage()),
+                ),
+            child: _createAccountListItems('my_tickets', 'My Tickets'),
+          ),
           GestureDetector(
             onTap: () => Navigator.pushNamed(context, '/settings_page'),
             child: _createAccountListItems('settings', 'Settings'),
