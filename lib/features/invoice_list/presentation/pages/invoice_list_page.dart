@@ -1,43 +1,123 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/pdf_downloader/pdf_preview_and_download.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/features/invoice_list/domain/entity/invoice_entity.dart';
+import 'package:kfon_subscriber/features/invoice_list/presentation/bloc/invoice_list_bloc.dart';
+import 'package:kfon_subscriber/features/invoice_list/presentation/bloc/invoice_list_event.dart';
+import 'package:kfon_subscriber/features/invoice_list/presentation/bloc/invoice_list_state.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
+import 'package:kfon_subscriber/presentation/ui_component/no_data_found.dart';
+import 'package:kfon_subscriber/presentation/ui_component/retry_widget.dart';
+import 'package:kfon_subscriber/presentation/ui_component/shimmer/list_shimmers.dart';
 
-class InvoiceListPage extends StatelessWidget {
+class InvoiceListPage extends StatefulWidget {
   const InvoiceListPage({super.key});
+
+  @override
+  State<InvoiceListPage> createState() => _InvoiceListPageState();
+}
+
+class _InvoiceListPageState extends State<InvoiceListPage> {
+  final ScrollController _scrollController = ScrollController();
+
+  @override
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
+
+  @override
+  void dispose() {
+    _scrollController
+      ..removeListener(_onScroll)
+      ..dispose();
+    super.dispose();
+  }
+
+  void _onScroll() {
+    if (_isBottom) {
+      context.read<InvoiceListBloc>().add(const LoadMoreInvoices());
+    }
+  }
+
+  bool get _isBottom {
+    if (!_scrollController.hasClients) return false;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    return currentScroll >= (maxScroll * 0.9);
+  }
 
   @override
   Widget build(BuildContext context) {
     return CommonAppBar(
       title: 'Invoice',
       onBackPressed: () => Navigator.pop(context),
-      body: ListView.separated(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-        itemCount: 10, // TODO: Replace with actual data length
-        separatorBuilder: (context, index) => SizedBox(height: 12.h),
-        itemBuilder: (context, index) {
-          // TODO: Replace with actual invoice data
-          return _InvoiceCard(
-            invoiceNo: 'KLLNP2025110003',
-            amount: '349.99',
-            date: '2025-10-12 19:35:03',
-            onDownload: () {
-              if (context.mounted) {
-                Navigator.of(context, rootNavigator: true).push(
-                  MaterialPageRoute(
-                    builder:
-                        (_) => PdfPreviewAndDownload(
-                          title: 'Invoice',
-                          pdfUrl:
-                              'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
-                        ),
+      body: BlocBuilder<InvoiceListBloc, InvoiceListState>(
+        builder: (context, state) {
+          if (state is InvoiceListLoading) {
+            return ListShimmer(itemCount: 10);
+          }
+
+          if (state is InvoiceListError) {
+            return RetryWidget(
+              errorMessage: state.message,
+              onRetry:
+                  () => context.read<InvoiceListBloc>().add(
+                    const FetchInvoices(),
                   ),
+            );
+          }
+
+          if (state is InvoiceListLoaded) {
+            if (state.invoices.isEmpty) {
+              return NoDataFound(errorMessage: 'No invoices found');
+            }
+
+            return ListView.separated(
+              controller: _scrollController,
+              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+              itemCount: state.invoices.length + (state.isLoadingMore ? 1 : 0),
+              separatorBuilder: (context, index) => SizedBox(height: 12.h),
+              itemBuilder: (context, index) {
+                if (index >= state.invoices.length) {
+                  return const Padding(
+                    padding: EdgeInsets.symmetric(vertical: 16),
+                    child: Center(
+                      child: CircularProgressIndicator(
+                        color: AppColor.kPrimaryColor,
+                      ),
+                    ),
+                  );
+                }
+
+                final invoice = state.invoices[index];
+                return _InvoiceCard(
+                  invoiceNo: invoice.invoiceNo,
+                  amount: invoice.amount.toStringAsFixed(2),
+                  date: invoice.invoiceDate,
+                  onDownload: () {
+                    if (context.mounted) {
+                      Navigator.of(context, rootNavigator: true).push(
+                        MaterialPageRoute(
+                          builder:
+                              (_) => PdfPreviewAndDownload(
+                                title: 'Invoice',
+                                pdfUrl:
+                                    'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                              ),
+                        ),
+                      );
+                    }
+                  },
                 );
-              }
-            },
-          );
+              },
+            );
+          }
+
+          return const SizedBox.shrink();
         },
       ),
     );

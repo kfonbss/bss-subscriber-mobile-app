@@ -24,7 +24,10 @@ import 'package:kfon_subscriber/presentation/pages/enquiry_forms/enquiry_list_pa
 import 'package:kfon_subscriber/presentation/pages/enquiry_forms/gov_and_corp_enquiry_form.dart';
 import 'package:kfon_subscriber/presentation/pages/enquiry_forms/home_enquiry_form.dart';
 import 'package:kfon_subscriber/presentation/pages/intro_screen_page.dart';
-import 'package:kfon_subscriber/presentation/pages/invoice_list_page.dart';
+import 'package:kfon_subscriber/features/invoice_list/presentation/pages/invoice_list_page.dart';
+import 'package:kfon_subscriber/features/invoice_list/presentation/bloc/invoice_list_bloc.dart';
+import 'package:kfon_subscriber/features/invoice_list/presentation/bloc/invoice_list_event.dart';
+import 'package:kfon_subscriber/features/invoice_list/domain/repository/invoice_repository.dart';
 import 'package:kfon_subscriber/presentation/pages/main_page.dart';
 import 'package:kfon_subscriber/presentation/pages/notification_page.dart';
 import 'package:kfon_subscriber/presentation/pages/sign_up_page.dart';
@@ -72,7 +75,6 @@ class _MyAppState extends State<MyApp> {
     _authBloc.add(const CheckAuthStatus());
     _profileBloc = ProfileBloc(repository: sl<ProfileRepository>());
     _homeBloc = HomeBloc(repository: sl<HomeRepository>());
-    _homeBloc.add(GetHomeData());
     _profileBloc.add(const FetchProfileRequested());
   }
 
@@ -150,7 +152,14 @@ class _MyAppState extends State<MyApp> {
           '/account_information_page': (context) => AccountInformationPage(),
           '/notification_page': (context) => NotificationPage(),
           '/transaction_history_page': (context) => TransactionHistoryPage(),
-          '/invoice_list_page': (context) => InvoiceListPage(),
+          '/invoice_list_page':
+              (context) => BlocProvider(
+                create:
+                    (context) =>
+                        InvoiceListBloc(repository: sl<InvoiceRepository>())
+                          ..add(const FetchInvoices()),
+                child: const InvoiceListPage(),
+              ),
           '/settings_page': (context) => SettingsPage(),
           '/self_care': (context) => DiagnosticsPage(),
         },

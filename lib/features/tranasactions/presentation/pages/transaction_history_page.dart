@@ -264,6 +264,7 @@ class _TransactionCard extends StatelessWidget {
                       flex: 3,
                       child: _LabelValue(label: 'Package', value: packageName),
                     ),
+                    SizedBox(width: 8.w),
                     Expanded(
                       flex: 2,
                       child: _LabelValue(
@@ -271,6 +272,7 @@ class _TransactionCard extends StatelessWidget {
                         value: expiryDate,
                       ),
                     ),
+                    SizedBox(width: 8.w),
                     Expanded(
                       flex: 2,
                       child: _LabelValue(
@@ -291,10 +293,12 @@ class _TransactionCard extends StatelessWidget {
                       flex: 3,
                       child: _LabelValue(label: 'Paid On', value: paidOn),
                     ),
+                    SizedBox(width: 8.w),
                     Expanded(
                       flex: 2,
                       child: _LabelValue(label: 'Paid By', value: paidBy),
                     ),
+                    SizedBox(width: 8.w),
                     Expanded(
                       flex: 2,
                       child: _LabelValue(

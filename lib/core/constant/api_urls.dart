@@ -64,6 +64,9 @@ class ApiUrls {
   //transactions
   static String get rechargeTransactionsURL =>
       '$billingFinanceService/mobile/subscriber/recharge-transactions';
+  //invoices
+  static String get invoicesURL =>
+      '$subscriberManagementService/mobile/subscriber/invoices';
 
   static String packageDetailsURL({required String subscriberUuid}) =>
       '$subscriberManagementService/mobile/$subscriberUuid/package-details';

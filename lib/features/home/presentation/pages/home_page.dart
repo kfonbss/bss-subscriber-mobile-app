@@ -44,6 +44,7 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     bloc = context.read<HomeBloc>();
+    bloc.add(GetHomeData());
   }
 
   @override
