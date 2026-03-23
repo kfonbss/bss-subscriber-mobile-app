@@ -136,6 +136,8 @@ class PlanTile extends StatelessWidget {
           style: theme.textTheme.bodySmall?.copyWith(
             fontWeight: FontWeight.w500,
           ),
+          maxLines: 3,
+          overflow: TextOverflow.ellipsis,
         ),
       ],
     );

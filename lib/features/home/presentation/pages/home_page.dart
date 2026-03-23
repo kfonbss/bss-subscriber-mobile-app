@@ -318,46 +318,53 @@ class _ComboCard extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.fromLTRB(16, 16, 16, 12),
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Row(
-                  children: [
-                    CircleAvatar(
-                      radius: 22,
-                      backgroundColor: AppColor.kPrimaryColor.withOpacity(0.1),
-                      child: Icon(
-                        Icons.language,
-                        color: AppColor.kPrimaryColor,
+                Expanded(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      CircleAvatar(
+                        radius: 22,
+                        backgroundColor: AppColor.kPrimaryColor.withOpacity(0.1),
+                        child: Icon(
+                          Icons.language,
+                          color: AppColor.kPrimaryColor,
+                        ),
                       ),
-                    ),
-                    const SizedBox(width: 12),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          pkg.packageName, // ← entity
-                          style: TextStyle(
-                            fontFamily: 'General Sans',
-                            fontWeight: FontWeight.w500,
-                            height: 1.3,
-                            fontSize: 16.sp,
-                            color: AppColor.kBlackHeadingColor,
-                          ),
+                      const SizedBox(width: 12),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              pkg.packageName, // ← entity
+                              style: TextStyle(
+                                fontFamily: 'General Sans',
+                                fontWeight: FontWeight.w500,
+                                height: 1.3,
+                                fontSize: 16.sp,
+                                color: AppColor.kBlackHeadingColor,
+                              ),
+                            ),
+                            Text(
+                              'Active until $activeUntilStr', // ← entity
+                              style: TextStyle(
+                                color: AppColor.kTextFiledHintColor,
+                                fontSize: 10.sp,
+                                fontFamily: 'General Sans',
+                                fontWeight: FontWeight.w500,
+                                height: 1.6,
+                              ),
+                            ),
+                          ],
                         ),
-                        Text(
-                          'Active until $activeUntilStr', // ← entity
-                          style: TextStyle(
-                            color: AppColor.kTextFiledHintColor,
-                            fontSize: 10.sp,
-                            fontFamily: 'General Sans',
-                            fontWeight: FontWeight.w500,
-                            height: 1.6,
-                          ),
-                        ),
-                      ],
-                    ),
-                  ],
+                      ),
+                    ],
+                  ),
                 ),
+                const SizedBox(width: 8),
                 Container(
                   padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
                   decoration: BoxDecoration(
@@ -367,7 +374,7 @@ class _ComboCard extends StatelessWidget {
                   child: Text(
                     '${pkg.daysLeft} Days left', // ← entity
                     style: TextStyle(
-                      fontFamily: 'General Sans',
+                      fontFamily: 'GeneralSans',
                       fontWeight: FontWeight.w500,
                       height: 1.3,
                       fontSize: 12.sp,
