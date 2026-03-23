@@ -26,9 +26,9 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   // lnp
   final _usernameTextFieldController = TextEditingController(
-    text: 'Kfon.jijocs',
+    text: 'Kfon.aji007',
   );
-  final _passwordTextFieldController = TextEditingController(text: 'pass1234');
+  final _passwordTextFieldController = TextEditingController(text: 'pass123');
   final DialogUtil _dialogUtil = DialogUtil();
 
   @override

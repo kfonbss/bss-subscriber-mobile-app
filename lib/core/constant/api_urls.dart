@@ -38,9 +38,9 @@ class ApiUrls {
   static String changePlanURL({required String subscriberUuid}) =>
       '$subscriberManagementService/mobile/subscribers/$subscriberUuid/change-plan';
   static String get rechargeChangePlanURL =>
-      '$billingFinanceService/mobile/payment/recharge';
+      '$billingFinanceService/web/payment/recharge/online';
   static String rechargePaymentStatus({required String orderId}) =>
-      '$billingFinanceService/mobile/payment/recharge/status/$orderId';
+      '$billingFinanceService/web/payment/recharge/status/$orderId';
 
   static String get walletTopupURL =>
       '$billingFinanceService/mobile/payment/top-up';

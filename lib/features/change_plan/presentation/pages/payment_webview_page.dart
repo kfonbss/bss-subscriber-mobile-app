@@ -1,3 +1,5 @@
+import 'dart:io';
+
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/recharge_change_plan_redirect_entity.dart';
 import 'package:flutter/material.dart';
@@ -35,6 +37,7 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
     await _controller.setJavaScriptMode(JavaScriptMode.unrestricted);
     await _controller.setBackgroundColor(Colors.white);
 
+
     await _controller.setNavigationDelegate(
       NavigationDelegate(
         onPageStarted: (String url) {
@@ -49,6 +52,14 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
           }
         },
         onNavigationRequest: (NavigationRequest request) {
+          // final modifiedUrl = _replaceCallbackHost(request.url);
+          // if (modifiedUrl != request.url) {
+          //   // Load the modified URL instead
+          //   _controller.loadRequest(Uri.parse(modifiedUrl));
+          //   return NavigationDecision.prevent;
+          // }
+          //
+
           final result = _getPaymentResultFromUrl(request.url);
           print('urlNavigate  ${request.url}');
           if (result != null) {
@@ -56,6 +67,14 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
             return NavigationDecision.prevent;
           }
           return NavigationDecision.navigate;
+        },
+        onWebResourceError: (WebResourceError error) {
+          debugPrint(
+            'Ajithhhhhh WebResourceError: ${error.description} '
+                '| errorCode: ${error.errorCode} '
+                '| errorType: ${error.errorType} '
+                '| url: ${error.url}',
+          );
         },
       ),
     );
@@ -71,10 +90,10 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
     // Only escape double quotes to prevent breaking the value="" attribute
     final inputFields = params.entries
         .map((entry) {
-          final key = entry.key;
-          final value = entry.value.replaceAll('"', '&quot;');
-          return '<input type="hidden" name="$key" value="$value" />';
-        })
+      final key = entry.key;
+      final value = entry.value.replaceAll('"', '&quot;');
+      return '<input type="hidden" name="$key" value="$value" />';
+    })
         .join('\n');
 
     // Create HTML with auto-submitting POST form (CCAvenue format)
@@ -90,7 +109,16 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
 
     await _controller.loadHtmlString(html);
   }
+  /// Replaces the dev API host with the internal IP for the callback URL
+  String _replaceCallbackHost(String url) {
+    const oldHost = 'https://devapi.kfon.co.in';
+    const newHost = 'https://172.16.80.240';
 
+    if (url.startsWith(oldHost)) {
+      return url.replaceFirst(oldHost, newHost);
+    }
+    return url;
+  }
   void _checkForPaymentResult(String url) {
     final result = _getPaymentResultFromUrl(url);
     if (result != null && mounted) {
@@ -127,21 +155,21 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
       context: context,
       builder:
           (context) => AlertDialog(
-            title: const Text('Cancel Payment?'),
-            content: const Text(
-              'Are you sure you want to cancel this payment?',
-            ),
-            actions: [
-              TextButton(
-                onPressed: () => Navigator.pop(context, false),
-                child: const Text('No'),
-              ),
-              TextButton(
-                onPressed: () => Navigator.pop(context, true),
-                child: const Text('Yes'),
-              ),
-            ],
+        title: const Text('Cancel Payment?'),
+        content: const Text(
+          'Are you sure you want to cancel this payment?',
+        ),
+        actions: [
+          TextButton(
+            onPressed: () => Navigator.pop(context, false),
+            child: const Text('No'),
           ),
+          TextButton(
+            onPressed: () => Navigator.pop(context, true),
+            child: const Text('Yes'),
+          ),
+        ],
+      ),
     );
 
     if (shouldCancel == true && mounted) {
