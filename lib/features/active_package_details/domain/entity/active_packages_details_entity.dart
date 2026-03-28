@@ -23,7 +23,7 @@ class ActivePackagesDetailsEntity {
   final DateTime activeUntil;
   final double renewalFee;
   final int totalPackageCount;
-  final int availableVolumeGb;
+  final double availableVolumeGb;
   final int totalVolumeGb;
   final List<AdOnEntity> activeAddOns;
 
