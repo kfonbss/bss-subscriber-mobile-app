@@ -27,11 +27,7 @@ class SessionCard extends StatelessWidget {
             ),
           ),
           const SizedBox(height: 10),
-          _infoRow(
-            'Start Time',
-            dateFormat.format(session!.startTime),
-            theme,
-          ),
+          _infoRow('Start Time', dateFormat.format(session!.startTime), theme),
           _infoRow(
             'End Time',
             session!.endTime != null

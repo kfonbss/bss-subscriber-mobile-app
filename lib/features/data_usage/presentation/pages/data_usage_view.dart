@@ -27,11 +27,10 @@ part '../components/data_usage_session_history_card.dart';
 class DataUsageView extends StatefulWidget {
   final String subscriberUuid;
 
-   DataUsageView({super.key, required this.subscriberUuid});
+  DataUsageView({super.key, required this.subscriberUuid});
 
   @override
-  State<DataUsageView> createState() =>
-      _DataUsageViewState();
+  State<DataUsageView> createState() => _DataUsageViewState();
 }
 
 class _DataUsageViewState extends State<DataUsageView> {
@@ -45,8 +44,7 @@ class _DataUsageViewState extends State<DataUsageView> {
   void _loadDataUsage() {
     bloc = DataUsageBloc(repository: sl<DataUsageRepository>());
     final state = bloc.state;
-    if (state.status == DataUsageStatus.initial ||
-        state.data == null) {
+    if (state.status == DataUsageStatus.initial || state.data == null) {
       bloc.add(
         LoadSubscriberDataUsage(
           params: GetSubscriberDataUsageParams(
@@ -56,8 +54,6 @@ class _DataUsageViewState extends State<DataUsageView> {
         ),
       );
     }
-
-
   }
 
   void _onPeriodChanged(String period) {
@@ -82,7 +78,7 @@ class _DataUsageViewState extends State<DataUsageView> {
       extendBodyBehindAppBar: true,
       circleColor: Colors.white,
       titleColor: Colors.white,
-      body:Stack(
+      body: Stack(
         children: [
           SizedBox(
             width: double.infinity,
@@ -146,7 +142,7 @@ class _DataUsageViewState extends State<DataUsageView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          PackageInfoCard(entity: null,),
+                          PackageInfoCard(entity: null),
                           const SizedBox(height: 24),
                           _DataUsageChart(
                             graphData: dataUsage.dataUsage!.graphData,
@@ -174,9 +170,8 @@ class _DataUsageViewState extends State<DataUsageView> {
                                   CircleAvatar(
                                     minRadius: 24,
                                     maxRadius: 24,
-                                    backgroundColor: AppColor.kPrimaryColor.withValues(
-                                      alpha: 0.05,
-                                    ),
+                                    backgroundColor: AppColor.kPrimaryColor
+                                        .withValues(alpha: 0.05),
                                     child: SvgPicture.asset(
                                       'assets/icons/modem_restart.svg',
                                       colorFilter: ColorFilter.mode(
@@ -191,8 +186,11 @@ class _DataUsageViewState extends State<DataUsageView> {
                                   Expanded(
                                     child: Text(
                                       'Restart Modem',
-                                      style: Theme.of(context).textTheme.labelLarge
-                                          ?.copyWith(fontWeight: FontWeight.w600),
+                                      style: Theme.of(
+                                        context,
+                                      ).textTheme.labelLarge?.copyWith(
+                                        fontWeight: FontWeight.w600,
+                                      ),
                                     ),
                                   ),
                                   const Icon(
@@ -221,7 +219,7 @@ class _DataUsageViewState extends State<DataUsageView> {
             ),
           ),
         ],
-      ) ,
+      ),
     );
   }
 

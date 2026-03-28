@@ -165,12 +165,12 @@ class _AccountInformationView extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return CommonAppBar(
-      actions: [
-        IconButton(
-          icon: Image.asset('assets/icons/edit.png', height: 20.h, width: 20.w),
-          onPressed: () {},
-        ),
-      ],
+      // actions: [
+      //   IconButton(
+      //     icon: Image.asset('assets/icons/edit.png', height: 20.h, width: 20.w),
+      //     onPressed: () {},
+      //   ),
+      // ],
       onBackPressed: () => Navigator.pop(context),
       title: 'Account Information',
       body: BlocBuilder<AccountInformationBloc, AccountInformationState>(

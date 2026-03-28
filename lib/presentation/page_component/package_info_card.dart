@@ -6,7 +6,7 @@ import 'package:kfon_subscriber/features/active_package_details/domain/entity/ac
 
 class PackageInfoCard extends StatelessWidget {
   final ActivePackagesDetailsEntity? entity;
-  const PackageInfoCard({super.key,required this.entity});
+  const PackageInfoCard({super.key, required this.entity});
 
   @override
   Widget build(BuildContext context) {
@@ -97,31 +97,32 @@ class PackageInfoCard extends StatelessWidget {
                         ),
                       ),
                       SizedBox(width: 10.w),
-                      Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          Text(
-                            '${entity!.packageName}   ₹${entity!.renewalFee}',
-                            style: TextStyle(
-                              fontFamily: 'GeneralSans',
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w500,
-                              color: AppColor.kTextSecondaryDark,
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            Text(
+                              '${entity!.packageName}   ₹${entity!.renewalFee}',
+                              style: TextStyle(
+                                fontFamily: 'GeneralSans',
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w500,
+                                color: AppColor.kTextSecondaryDark,
+                              ),
                             ),
-                          ),
-                          SizedBox(height: 2.h),
-                          Text(
-                            'Active until ${DateFormat('MMM dd, yyyy').format(entity!.activeUntil)}',
-                            style: TextStyle(
-                              fontFamily: 'GeneralSans',
-                              fontSize: 11.sp,
-                              fontWeight: FontWeight.w400,
-                              color: AppColor.kTextSecondary,
+                            SizedBox(height: 2.h),
+                            Text(
+                              'Active until ${DateFormat('MMM dd, yyyy').format(entity!.activeUntil)}',
+                              style: TextStyle(
+                                fontFamily: 'GeneralSans',
+                                fontSize: 11.sp,
+                                fontWeight: FontWeight.w400,
+                                color: AppColor.kTextSecondary,
+                              ),
                             ),
-                          ),
-                        ],
+                          ],
+                        ),
                       ),
-                      const Spacer(),
                       Container(
                         padding: EdgeInsets.symmetric(
                           horizontal: 12.w,
@@ -144,7 +145,10 @@ class PackageInfoCard extends StatelessWidget {
                     ],
                   ),
                   SizedBox(height: 18.h),
-                  _DataUsageBar(usedGB: entity!.availableVolumeGb, totalGB: entity!.totalVolumeGb),
+                  _DataUsageBar(
+                    usedGB: entity!.availableVolumeGb,
+                    totalGB: entity!.totalVolumeGb,
+                  ),
                 ],
               ),
             ),
