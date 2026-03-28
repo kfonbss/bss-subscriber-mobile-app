@@ -86,6 +86,14 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
     final actionUrl = widget.redirectEntity.actionUrl;
     final params = widget.redirectEntity.params;
 
+    // DEBUG
+    print('=== PAYMENT DEBUG ===');
+    print('actionUrl: $actionUrl');
+    params.forEach((key, value) {
+      print('param [$key] = $value');
+    });
+    print('====================');
+
     // Build hidden input fields for form submission
     // Only escape double quotes to prevent breaking the value="" attribute
     final inputFields = params.entries
@@ -97,8 +105,9 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
         .join('\n');
 
     // Create HTML with auto-submitting POST form (CCAvenue format)
+    final resolvedActionUrl = _replaceCallbackHost(actionUrl);
     final html = '''
-<form method="POST" action="$actionUrl">
+<form method="POST" action="$resolvedActionUrl">
   $inputFields
 </form>
 

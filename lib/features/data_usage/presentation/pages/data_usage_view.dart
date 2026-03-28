@@ -3,6 +3,7 @@ library subscriber_data_usage_page;
 import 'package:kfon_subscriber/core/constant/app_styles.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/features/active_package_details/domain/entity/active_packages_details_entity.dart';
 import 'package:kfon_subscriber/features/data_usage/domain/params/get_subscriber_data_usage_params.dart';
 import 'package:kfon_subscriber/features/data_usage/domain/repository/data_usage_repository.dart';
 import 'package:kfon_subscriber/features/data_usage/presentation/bloc/data_usage_bloc.dart';
@@ -26,8 +27,9 @@ part '../components/data_usage_session_history_card.dart';
 
 class DataUsageView extends StatefulWidget {
   final String subscriberUuid;
+  final ActivePackagesDetailsEntity? entity;
 
-   DataUsageView({super.key, required this.subscriberUuid});
+   DataUsageView({super.key, required this.subscriberUuid,required this.entity});
 
   @override
   State<DataUsageView> createState() =>
@@ -45,8 +47,9 @@ class _DataUsageViewState extends State<DataUsageView> {
   void _loadDataUsage() {
     bloc = DataUsageBloc(repository: sl<DataUsageRepository>());
     final state = bloc.state;
-    if (state.status == DataUsageStatus.initial ||
-        state.data == null) {
+     print('Ajithhhhhhhhhhhhhhhh: $state');
+    // if (state.status == DataUsageStatus.initial ||
+    //     state.data == null) {
       bloc.add(
         LoadSubscriberDataUsage(
           params: GetSubscriberDataUsageParams(
@@ -55,7 +58,7 @@ class _DataUsageViewState extends State<DataUsageView> {
           ),
         ),
       );
-    }
+   // }
 
 
   }
@@ -146,7 +149,7 @@ class _DataUsageViewState extends State<DataUsageView> {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
-                          PackageInfoCard(entity: null,),
+                          PackageInfoCard(entity: widget.entity,),
                           const SizedBox(height: 24),
                           _DataUsageChart(
                             graphData: dataUsage.dataUsage!.graphData,
