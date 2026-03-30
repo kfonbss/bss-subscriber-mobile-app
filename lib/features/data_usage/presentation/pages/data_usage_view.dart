@@ -29,7 +29,11 @@ class DataUsageView extends StatefulWidget {
   final String subscriberUuid;
   final ActivePackagesDetailsEntity? entity;
 
-  DataUsageView({super.key, required this.subscriberUuid, required this.entity});
+  DataUsageView({
+    super.key,
+    required this.subscriberUuid,
+    required this.entity,
+  });
 
   @override
   State<DataUsageView> createState() => _DataUsageViewState();
@@ -90,134 +94,131 @@ class _DataUsageViewState extends State<DataUsageView> {
               fit: BoxFit.fill,
             ),
           ),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(left: 20, right: 20, top: 140),
-              child: BlocBuilder<DataUsageBloc, DataUsageState>(
-                bloc: bloc,
-                buildWhen: (prev, curr) => prev.status != curr.status,
-                builder: (context, state) {
-                  final dataUsageState = state;
+          Padding(
+            padding: EdgeInsets.only(left: 20, right: 20, top: 140),
+            child: BlocBuilder<DataUsageBloc, DataUsageState>(
+              bloc: bloc,
+              buildWhen: (prev, curr) => prev.status != curr.status,
+              builder: (context, state) {
+                final dataUsageState = state;
 
-                  if (dataUsageState.status == DataUsageStatus.loading) {
-                    return const Center(child: CircularProgressIndicator());
+                if (dataUsageState.status == DataUsageStatus.loading) {
+                  return const Center(child: CircularProgressIndicator());
+                }
+
+                if (dataUsageState.status == DataUsageStatus.error) {
+                  return Center(
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Image.asset(
+                          'assets/images/filler.png',
+                          width: 180,
+                          height: 128,
+                          fit: BoxFit.contain,
+                        ),
+                        const SizedBox(height: 16),
+                        Text(
+                          dataUsageState.error ?? 'Something went wrong',
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: AppColor.kTextSecondaryDark,
+                          ),
+                          textAlign: TextAlign.center,
+                        ),
+                        const SizedBox(height: 16),
+                        ElevatedButton(
+                          onPressed: _loadDataUsage,
+                          child: Text('Retry'),
+                        ),
+                      ],
+                    ),
+                  );
+                }
+
+                if (dataUsageState.status == DataUsageStatus.loaded &&
+                    dataUsageState.data != null) {
+                  final dataUsage = dataUsageState.data!;
+
+                  if (dataUsage.dataUsage == null) {
+                    return _buildEmptyState(theme);
                   }
 
-                  if (dataUsageState.status == DataUsageStatus.error) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            'assets/images/filler.png',
-                            width: 180,
-                            height: 128,
-                            fit: BoxFit.contain,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            dataUsageState.error ?? 'Something went wrong',
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: AppColor.kTextSecondaryDark,
+                  return SingleChildScrollView(
+                    child: Column(
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        PackageInfoCard(entity: widget.entity),
+                        const SizedBox(height: 24),
+                        _DataUsageChart(
+                          graphData: dataUsage.dataUsage!.graphData,
+                          period: dataUsage.period,
+                          onPeriodChanged: _onPeriodChanged,
+                        ),
+                        const SizedBox(height: 24),
+                        GestureDetector(
+                          onTap: () {
+                            Navigator.push(
+                              context,
+                              MaterialPageRoute(
+                                builder: (_) => const RestartModemPage(),
+                              ),
+                            );
+                          },
+                          child: Container(
+                            decoration: AppStyles.boxDecorationMedium,
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 12,
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: _loadDataUsage,
-                            child: Text('Retry'),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-
-                  if (dataUsageState.status == DataUsageStatus.loaded &&
-                      dataUsageState.data != null) {
-                    final dataUsage = dataUsageState.data!;
-
-                    if (dataUsage.dataUsage == null) {
-                      return _buildEmptyState(theme);
-                    }
-
-                    return SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          PackageInfoCard(entity: widget.entity),
-                          const SizedBox(height: 24),
-                          _DataUsageChart(
-                            graphData: dataUsage.dataUsage!.graphData,
-                            period: dataUsage.period,
-                            onPeriodChanged: _onPeriodChanged,
-                          ),
-                          const SizedBox(height: 24),
-                          GestureDetector(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const RestartModemPage(),
+                            child: Row(
+                              children: [
+                                CircleAvatar(
+                                  minRadius: 24,
+                                  maxRadius: 24,
+                                  backgroundColor: AppColor.kPrimaryColor
+                                      .withValues(alpha: 0.05),
+                                  child: SvgPicture.asset(
+                                    'assets/icons/modem_restart.svg',
+                                    colorFilter: ColorFilter.mode(
+                                      AppColor.kPrimaryColor,
+                                      BlendMode.srcIn,
+                                    ),
+                                    width: 22,
+                                    height: 22,
+                                  ),
                                 ),
-                              );
-                            },
-                            child: Container(
-                              decoration: AppStyles.boxDecorationMedium,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 12,
-                              ),
-                              child: Row(
-                                children: [
-                                  CircleAvatar(
-                                    minRadius: 24,
-                                    maxRadius: 24,
-                                    backgroundColor: AppColor.kPrimaryColor
-                                        .withValues(alpha: 0.05),
-                                    child: SvgPicture.asset(
-                                      'assets/icons/modem_restart.svg',
-                                      colorFilter: ColorFilter.mode(
-                                        AppColor.kPrimaryColor,
-                                        BlendMode.srcIn,
-                                      ),
-                                      width: 22,
-                                      height: 22,
-                                    ),
+                                const SizedBox(width: 12),
+                                Expanded(
+                                  child: Text(
+                                    'Restart Modem',
+                                    style: Theme.of(context)
+                                        .textTheme
+                                        .labelLarge
+                                        ?.copyWith(fontWeight: FontWeight.w600),
                                   ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(
-                                      'Restart Modem',
-                                      style: Theme.of(
-                                        context,
-                                      ).textTheme.labelLarge?.copyWith(
-                                        fontWeight: FontWeight.w600,
-                                      ),
-                                    ),
-                                  ),
-                                  const Icon(
-                                    Icons.arrow_forward_ios,
-                                    size: 16,
-                                    color: AppColor.kLabelGrey,
-                                  ),
-                                ],
-                              ),
+                                ),
+                                const Icon(
+                                  Icons.arrow_forward_ios,
+                                  size: 16,
+                                  color: AppColor.kLabelGrey,
+                                ),
+                              ],
                             ),
                           ),
-                          const SizedBox(height: 24),
-                          SessionCard(session: dataUsage.activeSession),
-                          const SizedBox(height: 24),
-                          DataUsageSessionHistoryCard(
-                            sessionHistory: dataUsage.sessionHistory,
-                          ),
-                        ],
-                      ),
-                    );
-                  }
+                        ),
+                        const SizedBox(height: 24),
+                        SessionCard(session: dataUsage.activeSession),
+                        const SizedBox(height: 24),
+                        DataUsageSessionHistoryCard(
+                          sessionHistory: dataUsage.sessionHistory,
+                        ),
+                      ],
+                    ),
+                  );
+                }
 
-                  return _buildEmptyState(theme);
-                },
-              ),
+                return _buildEmptyState(theme);
+              },
             ),
           ),
         ],
