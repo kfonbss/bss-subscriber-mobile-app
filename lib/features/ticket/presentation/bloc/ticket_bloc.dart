@@ -1,6 +1,6 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/features/ticket/domain/entity/tickets_list_response_entity.dart';
-import 'package:kfon_subscriber/features/ticket/domain/params/get_tickets_list_params.dart';
+
 import 'package:kfon_subscriber/features/ticket/domain/repository/ticket_repository.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/bloc/ticket_event.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/bloc/ticket_state.dart';
@@ -156,8 +156,7 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
     emit(currentState.copyWith(isLoadingMore: true));
 
     try {
-      final nextPage = currentState.data.pageInfo.pageNumber + 1;
-      final params = GetTicketsListParams(page: nextPage, size: pageSize);
+      final params = event.params;
 
       final result = await ticketRepository.getTickets(params);
 

@@ -1,3 +1,4 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -30,9 +31,17 @@ class _TicketsPageState extends State<TicketsPage> {
   final DialogUtil _dialogUtil = DialogUtil();
   final ScrollController _scrollController = ScrollController();
   final TextEditingController _searchController = TextEditingController();
+  Timer? _debounce;
 
   GetTicketsListParams _buildParams() {
-    return const GetTicketsListParams(page: 0, size: 10);
+    return GetTicketsListParams(
+      page: 0,
+      size: 10,
+      search:
+          _searchController.text.trim().isNotEmpty
+              ? _searchController.text.trim()
+              : null,
+    );
   }
 
   @override
@@ -44,6 +53,7 @@ class _TicketsPageState extends State<TicketsPage> {
 
   @override
   void dispose() {
+    _debounce?.cancel();
     _scrollController
       ..removeListener(_onScroll)
       ..dispose();
@@ -54,7 +64,15 @@ class _TicketsPageState extends State<TicketsPage> {
 
   void _onScroll() {
     if (_isNearBottom) {
-      _ticketBloc.add(const LoadMoreTickets());
+      final currentState = _ticketBloc.state;
+      if (currentState is TicketsLoaded &&
+          !currentState.isLoadingMore &&
+          !currentState.data.pageInfo.isLast) {
+        final nextPage = currentState.data.pageInfo.pageNumber + 1;
+        _ticketBloc.add(
+          LoadMoreTickets(params: _buildParams().copyWith(page: nextPage)),
+        );
+      }
     }
   }
 
@@ -146,155 +164,182 @@ class _TicketsPageState extends State<TicketsPage> {
             onBackPressed: () => Navigator.pop(context),
             title: 'My Tickets',
             body: SafeArea(
-              child: Stack(
-                children: [
-                  Column(
-                    children: [
-                      // Search Bar
-                      Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
-                        child: CommonSearchField(
-                          controller: _searchController,
-                          hintText: 'Search Tickets',
-                          onChanged: (value) {
-                            // TODO: Implement search logic
-                          },
-                          onFilterPressed: () {
-                            // TODO: Implement filter logic
-                          },
+              child: GestureDetector(
+                onTap: () => FocusManager.instance.primaryFocus?.unfocus(),
+                behavior: HitTestBehavior.opaque,
+                child: Stack(
+                  children: [
+                    Column(
+                      children: [
+                        // Search Bar
+                        Padding(
+                          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                          child: CommonSearchField(
+                            controller: _searchController,
+                            hintText: 'Search Tickets',
+                            onChanged: (value) {
+                              if (_debounce?.isActive ?? false)
+                                _debounce!.cancel();
+                              _debounce = Timer(
+                                const Duration(milliseconds: 500),
+                                () {
+                                  _ticketBloc.add(
+                                    LoadTickets(params: _buildParams()),
+                                  );
+                                },
+                              );
+                            },
+                            // onFilterPressed: () {
+                            //   // TODO: Implement filter logic
+                            // },
+                          ),
                         ),
-                      ),
 
-                      // Ticket List
-                      Expanded(
-                        child:
-                            state is TicketsLoading && tickets.isEmpty
-                                ? const Padding(
-                                  padding: EdgeInsets.only(top: 10),
-                                  child: ListShimmer(
-                                    itemCount: 8,
-                                    itemHeight: 140,
-                                  ),
-                                )
-                                : RefreshIndicator(
-                                  onRefresh: () async {
-                                    _ticketBloc.add(
-                                      RefreshTickets(params: _buildParams()),
-                                    );
-                                    await Future.delayed(
-                                      const Duration(milliseconds: 500),
-                                    );
-                                  },
-                                  child:
-                                      tickets.isEmpty &&
-                                              state is! TicketsLoading
-                                          ? SingleChildScrollView(
-                                            physics:
-                                                const AlwaysScrollableScrollPhysics(),
-                                            child: SizedBox(
-                                              height:
-                                                  MediaQuery.of(
-                                                    context,
-                                                  ).size.height *
-                                                  0.6,
-                                              child: Center(
-                                                child: Column(
-                                                  mainAxisAlignment:
-                                                      MainAxisAlignment.center,
-                                                  children: [
-                                                    Image.asset(
-                                                      'assets/images/filler.png',
-                                                      width: 232,
-                                                      height: 166,
-                                                      fit: BoxFit.contain,
-                                                    ),
-                                                    const SizedBox(height: 16),
-                                                    Text(
-                                                      'No Tickets',
-                                                      style: Theme.of(context)
-                                                          .textTheme
-                                                          .bodyMedium
-                                                          ?.copyWith(
-                                                            color:
-                                                                AppColor
-                                                                    .kTextSecondaryDark,
-                                                            fontWeight:
-                                                                FontWeight.w400,
-                                                            fontSize: 14,
-                                                          ),
-                                                    ),
-                                                  ],
+                        // Ticket List
+                        Expanded(
+                          child:
+                              state is TicketsLoading
+                                  ? const Padding(
+                                    padding: EdgeInsets.only(top: 10),
+                                    child: ListShimmer(
+                                      itemCount: 8,
+                                      itemHeight: 140,
+                                    ),
+                                  )
+                                  : RefreshIndicator(
+                                    onRefresh: () async {
+                                      _ticketBloc.add(
+                                        RefreshTickets(params: _buildParams()),
+                                      );
+                                      await Future.delayed(
+                                        const Duration(milliseconds: 500),
+                                      );
+                                    },
+                                    child:
+                                        tickets.isEmpty &&
+                                                state is! TicketsLoading
+                                            ? SingleChildScrollView(
+                                              physics:
+                                                  const AlwaysScrollableScrollPhysics(),
+                                              child: SizedBox(
+                                                height:
+                                                    MediaQuery.of(
+                                                      context,
+                                                    ).size.height *
+                                                    0.6,
+                                                child: Center(
+                                                  child: Column(
+                                                    mainAxisAlignment:
+                                                        MainAxisAlignment
+                                                            .center,
+                                                    children: [
+                                                      Image.asset(
+                                                        'assets/images/filler.png',
+                                                        width: 232,
+                                                        height: 166,
+                                                        fit: BoxFit.contain,
+                                                      ),
+                                                      const SizedBox(
+                                                        height: 16,
+                                                      ),
+                                                      Text(
+                                                        'No Tickets',
+                                                        style: Theme.of(context)
+                                                            .textTheme
+                                                            .bodyMedium
+                                                            ?.copyWith(
+                                                              color:
+                                                                  AppColor
+                                                                      .kTextSecondaryDark,
+                                                              fontWeight:
+                                                                  FontWeight
+                                                                      .w400,
+                                                              fontSize: 14,
+                                                            ),
+                                                      ),
+                                                    ],
+                                                  ),
                                                 ),
                                               ),
-                                            ),
-                                          )
-                                          : ListView.separated(
-                                            controller: _scrollController,
-                                            padding: const EdgeInsets.fromLTRB(
-                                              20,
-                                              0,
-                                              20,
-                                              80,
-                                            ),
-                                            physics:
-                                                const AlwaysScrollableScrollPhysics(),
-                                            itemCount:
-                                                tickets.length +
-                                                (isLoadingMore ? 1 : 0),
-                                            separatorBuilder: (context, index) {
-                                              if (index == tickets.length - 1 &&
-                                                  isLoadingMore) {
-                                                return const SizedBox.shrink();
-                                              }
-                                              return const SizedBox(height: 16);
-                                            },
-                                            itemBuilder: (context, index) {
-                                              if (index == tickets.length) {
-                                                return const Padding(
-                                                  padding: EdgeInsets.all(16.0),
-                                                  child: Center(
-                                                    child: ListShimmer(
-                                                      itemCount: 1,
-                                                      itemHeight: 140,
-                                                    ),
+                                            )
+                                            : ListView.separated(
+                                              controller: _scrollController,
+                                              padding:
+                                                  const EdgeInsets.fromLTRB(
+                                                    20,
+                                                    0,
+                                                    20,
+                                                    80,
                                                   ),
+                                              physics:
+                                                  const AlwaysScrollableScrollPhysics(),
+                                              itemCount:
+                                                  tickets.length +
+                                                  (isLoadingMore ? 1 : 0),
+                                              separatorBuilder: (
+                                                context,
+                                                index,
+                                              ) {
+                                                if (index ==
+                                                        tickets.length - 1 &&
+                                                    isLoadingMore) {
+                                                  return const SizedBox.shrink();
+                                                }
+                                                return const SizedBox(
+                                                  height: 16,
                                                 );
-                                              }
-                                              return GestureDetector(
-                                                onTap: () async {
-                                                  final result = await Navigator.push<
-                                                    bool
-                                                  >(
-                                                    context,
-                                                    MaterialPageRoute(
-                                                      builder:
-                                                          (
-                                                            context,
-                                                          ) => TicketDetailPage(
-                                                            ticket:
-                                                                ticketEntities[index],
-                                                          ),
+                                              },
+                                              itemBuilder: (context, index) {
+                                                if (index == tickets.length) {
+                                                  return const Padding(
+                                                    padding: EdgeInsets.all(
+                                                      16.0,
+                                                    ),
+                                                    child: Center(
+                                                      child: ListShimmer(
+                                                        itemCount: 1,
+                                                        itemHeight: 140,
+                                                      ),
                                                     ),
                                                   );
-                                                  if (result == true) {
-                                                    _ticketBloc.add(
-                                                      RefreshTickets(
-                                                        params: _buildParams(),
+                                                }
+                                                return GestureDetector(
+                                                  onTap: () async {
+                                                    final result = await Navigator.push<
+                                                      bool
+                                                    >(
+                                                      context,
+                                                      MaterialPageRoute(
+                                                        builder:
+                                                            (
+                                                              context,
+                                                            ) => TicketDetailPage(
+                                                              ticket:
+                                                                  ticketEntities[index],
+                                                            ),
                                                       ),
                                                     );
-                                                  }
-                                                },
-                                                child: _TicketCard(
-                                                  ticket: tickets[index],
-                                                ),
-                                              );
-                                            },
-                                          ),
-                                ),
-                      ),
-                    ],
-                  ),
-                ],
+                                                    if (result == true) {
+                                                      _ticketBloc.add(
+                                                        RefreshTickets(
+                                                          params:
+                                                              _buildParams(),
+                                                        ),
+                                                      );
+                                                    }
+                                                  },
+                                                  child: _TicketCard(
+                                                    ticket: tickets[index],
+                                                  ),
+                                                );
+                                              },
+                                            ),
+                                  ),
+                        ),
+                      ],
+                    ),
+                  ],
+                ),
               ),
             ),
           );

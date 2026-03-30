@@ -106,8 +106,14 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
       );
     }
 
-    // Add movements (skip first if it duplicates the initial remarks)
-    final movements = _movements;
+    // Sort movements in chronological order (oldest first) so the timeline makes sense
+    final movements = _movements.toList()
+      ..sort((a, b) {
+        if (a.createdDate == null || b.createdDate == null) return 0;
+        return a.createdDate!.compareTo(b.createdDate!);
+      });
+
+    // Skip the first chronological movement if it duplicates the initial remarks
     final int startIndex =
         (movements.isNotEmpty &&
                 widget.ticket.remarks != null &&
@@ -174,15 +180,28 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
         listener: (context, state) {
           if (state is NoteSubmitted) {
             setState(() {
-              _movements.add(
-                TicketMovementEntity(
-                  id: state.respoEntity.movementId,
-                  note: _lastAddedNote,
-                  status: state.respoEntity.status,
-                  assignedToName: state.respoEntity.assignedToName,
-                  createdDate: DateTime.now(),
-                ),
+              final newMovement = TicketMovementEntity(
+                id: state.respoEntity.movementId,
+                note: _lastAddedNote,
+                status: state.respoEntity.status,
+                assignedToName: state.respoEntity.assignedToName,
+                createdDate: DateTime.now(),
               );
+
+              // Update the local screen's movement list
+              _movements.add(newMovement);
+
+              // 🚀 Optimistic UI Update
+              // Inject the new note directly into the original TicketEntity instance 
+              // that 'TicketsPage' explicitly passed to us. This ensures that even
+              // if the TicketList backend API takes time to refresh, the user will 
+              // instantly see the new note if they quickly tap the same ticket again!
+              try {
+                widget.ticket.movements.add(newMovement);
+              } catch (e) {
+                // Silently ignore if the list is strictly immutable 
+              }
+
               _lastAddedNote = null;
               _hasNewNotes = true;
             });

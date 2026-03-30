@@ -13,14 +13,13 @@ import 'package:kfon_subscriber/service_locator.dart';
 
 class ActivePackagePage extends StatefulWidget {
   final String subscriberUuid;
-  const ActivePackagePage({super.key,required this.subscriberUuid});
+  const ActivePackagePage({super.key, required this.subscriberUuid});
 
   @override
   State<ActivePackagePage> createState() => _ActivePackagePageState();
 }
 
 class _ActivePackagePageState extends State<ActivePackagePage> {
-
   late PackageDetailsBloc _bloc;
   @override
   Widget build(BuildContext context) {
@@ -42,44 +41,45 @@ class _ActivePackagePageState extends State<ActivePackagePage> {
             buildWhen: (previous, current) => current is GetDataSuccess,
             builder: (context, state) {
               return state is GetDataSuccess
-               ?Column(
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  PackageInfoCard(entity: state.entity,),
-                  SizedBox(height: 24.h),
-                  Text(
-                    'Active Add-ons',
-                    style: TextStyle(
-                      fontFamily: 'GeneralSans',
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w700,
-                      color: AppColor.kTextSecondaryDark,
-                    ),
-                  ),
-                  SizedBox(height: 12.h),
-                  ListView.builder(
-                    itemCount: state.entity.activeAddOns.length,
-                    physics: const NeverScrollableScrollPhysics(),
-                    shrinkWrap: true,
-                    itemBuilder: (context, index) {
-                      return _AddOnTile(
-                        title: '+${state.entity.activeAddOns[index].serviceTypeName}   ₹399',
-                        subtitle: state.entity.activeAddOns[index].label,
-                        isActive:state.entity.activeAddOns[index].isActive ,
-                      );
-                    },
+                  ? Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      PackageInfoCard(entity: state.entity),
+                      SizedBox(height: 24.h),
+                      Text(
+                        'Active Add-ons',
+                        style: TextStyle(
+                          fontFamily: 'GeneralSans',
+                          fontSize: 16.sp,
+                          fontWeight: FontWeight.w700,
+                          color: AppColor.kTextSecondaryDark,
+                        ),
+                      ),
+                      SizedBox(height: 12.h),
+                      ListView.builder(
+                        itemCount: state.entity.activeAddOns.length,
+                        physics: const NeverScrollableScrollPhysics(),
+                        shrinkWrap: true,
+                        itemBuilder: (context, index) {
+                          return _AddOnTile(
+                            title:
+                                '+${state.entity.activeAddOns[index].serviceTypeName}   ₹399',
+                            subtitle: state.entity.activeAddOns[index].label,
+                            isActive: state.entity.activeAddOns[index].isActive,
+                          );
+                        },
+                      ),
+                    ],
                   )
-                ],
-              )
-              :Center(
-                child: CircularProgressIndicator(
-                  strokeWidth: 5,
-                  backgroundColor: Colors.grey[200],
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    AppColor.kPrimaryColor,
-                  ),
-                ),
-              );
+                  : Center(
+                    child: CircularProgressIndicator(
+                      strokeWidth: 5,
+                      backgroundColor: Colors.grey[200],
+                      valueColor: AlwaysStoppedAnimation<Color>(
+                        AppColor.kPrimaryColor,
+                      ),
+                    ),
+                  );
             },
           ),
         ),
@@ -101,16 +101,16 @@ class _ActivePackagePageState extends State<ActivePackagePage> {
   }
 }
 
-
-
-
-
 class _AddOnTile extends StatelessWidget {
   final String title;
   final String subtitle;
   final bool isActive;
 
-  const _AddOnTile({required this.title, required this.subtitle,required this.isActive});
+  const _AddOnTile({
+    required this.title,
+    required this.subtitle,
+    required this.isActive,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -179,7 +179,7 @@ class _AddOnTile extends StatelessWidget {
               borderRadius: BorderRadius.circular(20),
             ),
             child: Text(
-              isActive?'Active':'Inactive',
+              isActive ? 'Active' : 'Inactive',
               style: TextStyle(
                 fontFamily: 'GeneralSans',
                 fontSize: 12.sp,

@@ -35,7 +35,8 @@ class LoadTickets extends TicketEvent {
 }
 
 class LoadMoreTickets extends TicketEvent {
-  const LoadMoreTickets();
+  final GetTicketsListParams params;
+  const LoadMoreTickets({required this.params});
 }
 
 class RefreshTickets extends TicketEvent {
