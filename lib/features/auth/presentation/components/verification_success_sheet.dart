@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/presentation/ui_component/primary_button.dart';
 
 
@@ -52,7 +53,8 @@ class VerificationSuccessSheet extends StatelessWidget {
               isLoading: false,
               onClicked: () {
                 Navigator.of(context).pop(); // Close bottom sheet
-                Navigator.pushReplacementNamed(context, '/main_page');
+                Navigator.pushReplacementNamed(context, AppRoutes.mainPage
+                );
               },
             ),
           ),

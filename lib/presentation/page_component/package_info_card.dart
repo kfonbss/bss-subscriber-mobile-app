@@ -59,7 +59,7 @@ class PackageInfoCard extends StatelessWidget {
                       vertical: 6.h,
                     ),
                     decoration: BoxDecoration(
-                      color: AppColor.kYellowBackground,
+                      color: Color(0xFFFDE933),
                       borderRadius: BorderRadius.circular(20),
                     ),
                     child: Text(
@@ -82,17 +82,17 @@ class PackageInfoCard extends StatelessWidget {
               child: Column(
                 children: [
                   Row(
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
-                        width: 40.w,
-                        height: 40.w,
+                        width: 38.w,
+                        height: 38.h,
                         decoration: const BoxDecoration(
                           color: AppColor.kPrimaryColor,
                           shape: BoxShape.circle,
                         ),
                         child: Icon(
                           Icons.language_rounded,
-                          size: 22.w,
                           color: Colors.white,
                         ),
                       ),
@@ -108,6 +108,7 @@ class PackageInfoCard extends StatelessWidget {
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w500,
                                 color: AppColor.kTextSecondaryDark,
+                                height: 1.30
                               ),
                             ),
                             SizedBox(height: 2.h),

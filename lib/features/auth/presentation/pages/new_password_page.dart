@@ -1,4 +1,5 @@
 import 'package:kfon_subscriber/core/constant/app_styles.dart';
+import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/validator/validators.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_event.dart';
@@ -64,7 +65,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
               if (!mounted) return;
               Navigator.pushNamedAndRemoveUntil(
                 context,
-                '/login_page',
+                AppRoutes.login,
                 (route) => false,
               );
             });

@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
-import 'package:kfon_subscriber/presentation/ui_component/sign_in_button.dart';
 import 'package:kfon_subscriber/presentation/ui_component/white_button.dart';
 
 class IntroScreenLayout extends StatelessWidget {
@@ -90,11 +90,31 @@ class IntroScreenLayout extends StatelessWidget {
                 spacing: 15,
                 children: [
                   Expanded(
-                    child: SignInButton(
-                      label: 'Sign In',
-                      onClicked: () => Navigator.pushReplacementNamed(
-                        context,
-                        '/login_page',
+                    child: FilledButton(
+                      onPressed:
+                          () => Navigator.pushReplacementNamed(
+                            context,
+                            AppRoutes.login,
+                          ),
+                      style: FilledButton.styleFrom(
+                        elevation: 0,
+                        minimumSize: Size(double.infinity, 50),
+                        fixedSize: Size(double.infinity, 50),
+                        backgroundColor: const Color.fromRGBO(
+                          255,
+                          255,
+                          255,
+                          0.2,
+                        ),
+                        foregroundColor: Colors.white,
+                        padding: EdgeInsets.zero,
+                      ),
+                      child: Text(
+                        'Sign In',
+                        style: TextStyle(
+                          fontSize: 14,
+                          fontWeight: FontWeight.w600,
+                        ),
                       ),
                     ),
                   ),

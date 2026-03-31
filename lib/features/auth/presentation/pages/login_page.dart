@@ -1,4 +1,5 @@
 import 'package:kfon_subscriber/core/constant/app_styles.dart';
+import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/validator/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
@@ -26,7 +27,7 @@ class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   // lnp
   final _usernameTextFieldController = TextEditingController(
-    text: 'Kfon.aji007',
+    text: 'Kfon.elliot',
   );
   final _passwordTextFieldController = TextEditingController(text: 'pass123');
   final DialogUtil _dialogUtil = DialogUtil();
@@ -70,7 +71,7 @@ class _LoginPageState extends State<LoginPage> {
           } else if (state is LoginSuccess) {
             Navigator.pushReplacementNamed(
               context,
-              '/otp_verification',
+              AppRoutes.otpVerification,
               arguments: {'mobileNumber': state.user.mobileNumber},
             );
           }
@@ -168,7 +169,7 @@ class _LoginPageState extends State<LoginPage> {
                               TextButton(
                                 onPressed: () => Navigator.pushNamed(
                                   context,
-                                  '/forgot_password',
+                                  AppRoutes.forgotPassword,
                                 ),
                                 child: Text(
                                   'Forgot Password?',
@@ -207,24 +208,39 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 Align(
                   alignment: Alignment.bottomCenter,
-                  child: Container(
-
-                    height: 30.h,
-                    margin: EdgeInsets.only(bottom: 50,left: 100,right: 100),
-                    decoration: BoxDecoration(
-                      color: Colors.white,
-                      borderRadius: BorderRadius.circular(23),
-                    ),
-                    child: const Center(
-                      child: Text(
-                        'www.kerlainternet.com',
-                        style: TextStyle(
-                          color: AppColor.kPrimaryColor,
-                          fontSize: 12,
-                          fontWeight: FontWeight.w400,
+                  child: Column(
+                    spacing: 10,
+                    mainAxisAlignment: MainAxisAlignment.end,
+                    children: [
+                      Padding(
+                        padding:  EdgeInsets.symmetric(horizontal:20.w, ),
+                        child: WhiteButton(
+                          isLoading: false,
+                          label: 'Enquiry Forms',
+                          borderRadius: 10,
+                          textColor: AppColor.kPrimaryColor,
+                          onClicked: () => Navigator.pushNamed(context, AppRoutes.enquiryListPage),
                         ),
                       ),
-                    ),
+                      Container(
+                        height: 30.h,
+                        margin: EdgeInsets.only(bottom: 50,left: 100,right: 100),
+                        decoration: BoxDecoration(
+                          color: Colors.white,
+                          borderRadius: BorderRadius.circular(23),
+                        ),
+                        child: const Center(
+                          child: Text(
+                            'www.kerlainternet.com',
+                            style: TextStyle(
+                              color: AppColor.kPrimaryColor,
+                              fontSize: 12,
+                              fontWeight: FontWeight.w400,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ],
                   ),
                 ),
               ],

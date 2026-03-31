@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/core/util/extensions.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
@@ -200,7 +201,7 @@ class _ProfilePageState extends State<ProfilePage> {
           SizedBox(height: 17),
           GestureDetector(
             onTap:
-                () => Navigator.pushNamed(context, '/account_information_page'),
+                () => Navigator.pushNamed(context, AppRoutes.accountInformationPage),
             child: _createAccountListItems(
               'account_information',
               'Account Information',
@@ -234,7 +235,7 @@ class _ProfilePageState extends State<ProfilePage> {
             child: _createAccountListItems('my_tickets', 'My Tickets'),
           ),
           GestureDetector(
-            onTap: () => Navigator.pushNamed(context, '/settings_page'),
+            onTap: () => Navigator.pushNamed(context, AppRoutes.settingsPage),
             child: _createAccountListItems('settings', 'Settings'),
           ),
           GestureDetector(
@@ -336,7 +337,7 @@ class _ProfilePageState extends State<ProfilePage> {
                           listener: (context, state) {
                             if (state is LogoutSuccess) {
                               Navigator.of(context).pushNamedAndRemoveUntil(
-                                '/login_page',
+                                AppRoutes.login,
                                 (Route<dynamic> route) => false,
                               );
                             } else if (state is LogoutFailure) {

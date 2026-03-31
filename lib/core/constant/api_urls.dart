@@ -70,6 +70,8 @@ class ApiUrls {
 
   static String packageDetailsURL({required String subscriberUuid}) =>
       '$subscriberManagementService/mobile/$subscriberUuid/package-details';
+  static String subscriberDetailsURL({required String subscriberUuid}) =>
+      '$subscriberManagementService/mobile/subscribers/$subscriberUuid/details';
   static String get subjectURL => '$userRoleMapingService/mobile/issue-types';
   static String get prioritiesURL => '$userRoleMapingService/mobile/priorities';
   static String get visibilityPermissionURL =>

@@ -9,6 +9,8 @@ import 'package:kfon_subscriber/features/active_package_details/presentation/blo
 import 'package:kfon_subscriber/features/active_package_details/presentation/bloc/package_details_state.dart';
 import 'package:kfon_subscriber/presentation/page_component/package_info_card.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
+import 'package:kfon_subscriber/presentation/ui_component/shimmer/shimmer_base.dart';
+import 'package:kfon_subscriber/presentation/ui_component/shimmer/shimmer_box.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 
 class ActivePackagePage extends StatefulWidget {
@@ -71,13 +73,18 @@ class _ActivePackagePageState extends State<ActivePackagePage> {
                   )
                 ],
               )
-              :Center(
-                child: CircularProgressIndicator(
-                  strokeWidth: 5,
-                  backgroundColor: Colors.grey[200],
-                  valueColor: AlwaysStoppedAnimation<Color>(
-                    AppColor.kPrimaryColor,
-                  ),
+              :AppShimmer(
+                child: Column(
+                  crossAxisAlignment: CrossAxisAlignment.start,
+                  children: [
+                    ShimmerBox(width: double.infinity, height: 190.h),
+                    const SizedBox(height: 60),
+                    ShimmerBox(width: double.infinity, height: 70.h),
+                    const SizedBox(height: 16),
+                    ShimmerBox(width: double.infinity, height: 70.h),
+                    const SizedBox(height: 16),
+                    ShimmerBox(width: double.infinity, height: 70.h),
+                  ],
                 ),
               );
             },

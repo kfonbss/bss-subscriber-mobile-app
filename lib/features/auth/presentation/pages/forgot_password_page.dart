@@ -1,4 +1,5 @@
 import 'package:kfon_subscriber/core/constant/app_styles.dart';
+import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/validator/validators.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_event.dart';
@@ -55,7 +56,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
           if (state is OtpSent) {
             Navigator.pushNamed(
               context,
-              '/otp_verification',
+              AppRoutes.otpVerification,
               arguments: {
                 'mobileNumber': state.mobileNumber,
                 'isFromForgotPassword': true,

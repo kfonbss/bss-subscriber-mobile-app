@@ -8,6 +8,9 @@ import 'package:kfon_subscriber/features/tranasactions/presentation/bloc/transac
 import 'package:kfon_subscriber/features/tranasactions/presentation/bloc/transaction_history_event.dart';
 import 'package:kfon_subscriber/features/tranasactions/presentation/bloc/transaction_history_state.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
+import 'package:kfon_subscriber/presentation/ui_component/no_data_found.dart';
+import 'package:kfon_subscriber/presentation/ui_component/shimmer/list_shimmers.dart';
+import 'package:kfon_subscriber/presentation/ui_component/shimmer/shimmer_base.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 
 class TransactionHistoryPage extends StatelessWidget {
@@ -71,19 +74,10 @@ class _TransactionHistoryViewState extends State<_TransactionHistoryView> {
       body: BlocBuilder<TransactionHistoryBloc, TransactionHistoryState>(
         builder: (context, state) {
           if (state is TransactionHistoryLoading) {
-            return const Center(child: CircularProgressIndicator());
+            return AppShimmer(child: ListShimmer(itemHeight: 200.h,itemCount: 10,));
           } else if (state is TransactionHistoryLoaded) {
             if (state.transactions.isEmpty) {
-              return Center(
-                child: Text(
-                  'No transactions found',
-                  style: TextStyle(
-                    fontFamily: 'GeneralSans',
-                    fontSize: 14.sp,
-                    color: const Color(0xFF67697A),
-                  ),
-                ),
-              );
+              return NoDataFound(errorMessage: 'No transactions found');
             }
             return ListView.builder(
               controller: _scrollController,

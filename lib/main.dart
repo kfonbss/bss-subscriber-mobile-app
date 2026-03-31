@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/util/preference_util.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_bloc.dart';
@@ -11,34 +12,32 @@ import 'package:kfon_subscriber/features/auth/presentation/pages/forgot_password
 import 'package:kfon_subscriber/features/auth/presentation/pages/login_page.dart';
 import 'package:kfon_subscriber/features/auth/presentation/pages/new_password_page.dart';
 import 'package:kfon_subscriber/features/auth/presentation/pages/otp_verification_page.dart';
+import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/dark_fibre_enquiry_form.dart';
+import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/gov_and_corp_enquiry_form.dart';
+import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/home_enquiry_form.dart';
+import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/lnp_enquiry_form.dart';
+import 'package:kfon_subscriber/features/pages/notification_page.dart';
 import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profile_bloc.dart';
 import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profile_event.dart';
 import 'package:kfon_subscriber/features/profile/presentation/account_information/pages/account_information_page.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/settings_page.dart';
 import 'package:kfon_subscriber/features/profile/domain/repository/profile_repository.dart';
-import 'package:kfon_subscriber/features/self_care/presentation/pages/diagnostics_page.dart';
-import 'package:kfon_subscriber/presentation/pages/enquiry_forms/bpl_enquiry_form.dart';
-import 'package:kfon_subscriber/presentation/pages/enquiry_forms/agnp_enquiry_form.dart';
-import 'package:kfon_subscriber/presentation/pages/enquiry_forms/dark_fibre_enquiry_form.dart';
-import 'package:kfon_subscriber/presentation/pages/enquiry_forms/enquiry_list_page.dart';
-import 'package:kfon_subscriber/presentation/pages/enquiry_forms/gov_and_corp_enquiry_form.dart';
-import 'package:kfon_subscriber/presentation/pages/enquiry_forms/home_enquiry_form.dart';
-import 'package:kfon_subscriber/presentation/pages/intro_screen_page.dart';
+import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/bpl_enquiry_form.dart';
+import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/agnp_enquiry_form.dart';
+import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/enquiry_list_page.dart';
+import 'package:kfon_subscriber/features/pages/intro_screen_page.dart';
 import 'package:kfon_subscriber/features/invoice_list/presentation/pages/invoice_list_page.dart';
 import 'package:kfon_subscriber/features/invoice_list/presentation/bloc/invoice_list_bloc.dart';
 import 'package:kfon_subscriber/features/invoice_list/presentation/bloc/invoice_list_event.dart';
 import 'package:kfon_subscriber/features/invoice_list/domain/repository/invoice_repository.dart';
-import 'package:kfon_subscriber/presentation/pages/main_page.dart';
-import 'package:kfon_subscriber/presentation/pages/notification_page.dart';
-import 'package:kfon_subscriber/presentation/pages/sign_up_page.dart';
+import 'package:kfon_subscriber/features/pages/main_page.dart';
 import 'package:kfon_subscriber/features/home/presentation/bloc/home_bloc.dart';
-import 'package:kfon_subscriber/features/home/presentation/bloc/home_event.dart';
 import 'package:kfon_subscriber/features/home/domain/repository/home_repository.dart';
 import 'package:kfon_subscriber/features/tranasactions/presentation/pages/transaction_history_page.dart';
+import 'package:kfon_subscriber/l10/bss_sub_localizations.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 import 'features/auth/domain/repository/auth_repository.dart';
 import 'features/auth/presentation/bloc/auth_state.dart';
-import 'presentation/pages/enquiry_forms/lnp_enquiry_form.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
@@ -58,6 +57,7 @@ Future<void> main() async {
 
 class MyApp extends StatefulWidget {
   final bool showIntro;
+
   const MyApp({super.key, required this.showIntro});
 
   @override
@@ -124,9 +124,11 @@ class _MyAppState extends State<MyApp> {
           Sizer.init(context);
           return child!;
         },
+        localizationsDelegates: [BssSubLocalizations.delegate],
+        supportedLocales: [const Locale('en')],
         routes: {
-          '/login_page': (context) => LoginPage(),
-          '/otp_verification': (context) {
+          AppRoutes.login: (context) => LoginPage(),
+          AppRoutes.otpVerification: (context) {
             final args =
                 ModalRoute.of(context)?.settings.arguments
                     as Map<String, dynamic>?;
@@ -135,24 +137,25 @@ class _MyAppState extends State<MyApp> {
               isFromForgotPassword: args?['isFromForgotPassword'] ?? false,
             );
           },
-          '/new_password': (context) => const NewPasswordPage(),
-          '/sign_up': (context) => SignUpPage(),
-          '/main_page': (context) => MainPage(),
-          '/forgot_password': (context) => ForgotPasswordPage(),
-          '/enquiry_list_page': (context) => EnquiryFormList(),
-          '/home_enquiry_form': (context) => HomeEnquiryForm(),
-          '/lnp_enquiry_form': (context) => LNPEnquiryForm(),
-          '/bpl_enquiry_form': (context) => BPLEnquiryForm(),
-          '/government_enquiry_form':
+          AppRoutes.newPassword: (context) => const NewPasswordPage(),
+          AppRoutes.mainPage: (context) => MainPage(),
+          AppRoutes.forgotPassword: (context) => ForgotPasswordPage(),
+          AppRoutes.enquiryListPage: (context) => EnquiryFormList(),
+          AppRoutes.homeEnquiryForm: (context) => HomeEnquiryForm(),
+          AppRoutes.lnpEnquiryForm: (context) => LNPEnquiryForm(),
+          AppRoutes.bplEnquiryForm: (context) => BPLEnquiryForm(),
+          AppRoutes.governmentEnquiryForm:
               (context) => GovAndCorpEnquiryForm(isGovernmentEnquiry: true),
-          '/corporate_enquiry_form':
+          AppRoutes.corporateEnquiryForm:
               (context) => GovAndCorpEnquiryForm(isGovernmentEnquiry: false),
-          '/agnp_enquiry_form': (context) => AGNPEnquiryForm(),
-          '/dark_fibre_enquiry_form': (context) => DarkFibreEnquiryForm(),
-          '/account_information_page': (context) => AccountInformationPage(),
-          '/notification_page': (context) => NotificationPage(),
-          '/transaction_history_page': (context) => TransactionHistoryPage(),
-          '/invoice_list_page':
+          AppRoutes.agnpEnquiryForm: (context) => AGNPEnquiryForm(),
+          AppRoutes.darkFibreEnquiryForm: (context) => DarkFibreEnquiryForm(),
+          AppRoutes.accountInformationPage:
+              (context) => AccountInformationPage(),
+          AppRoutes.notificationPage: (context) => NotificationPage(),
+          AppRoutes.transactionHistoryPage:
+              (context) => TransactionHistoryPage(),
+          AppRoutes.invoiceListPage:
               (context) => BlocProvider(
                 create:
                     (context) =>
@@ -160,8 +163,7 @@ class _MyAppState extends State<MyApp> {
                           ..add(const FetchInvoices()),
                 child: const InvoiceListPage(),
               ),
-          '/settings_page': (context) => SettingsPage(),
-          '/self_care': (context) => DiagnosticsPage(),
+          AppRoutes.settingsPage: (context) => SettingsPage(),
         },
         home: BlocBuilder<AuthBloc, AuthState>(
           bloc: _authBloc,
