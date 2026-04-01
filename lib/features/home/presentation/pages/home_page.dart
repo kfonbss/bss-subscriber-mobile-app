@@ -128,7 +128,7 @@ class _HomePageState extends State<HomePage> {
               final HomeEntity balance = state.homeEntity;
               final PackageDetailsEntity? pkg = balance.packageDetails;
               final String subscriberId = balance.subscriberId;
-              bloc.add(GetPlans(packageId: pkg!.packageId));
+              bloc.add(GetPlans(packageId: pkg!.packageId, subscriberUuid: subscriberId));
               return SingleChildScrollView(
                 child: Stack(
                   children: [

@@ -41,6 +41,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
 
       final result = await repository.getPackages(
         GetAllPackagesParams(
+          subscriberId: event.subscriberUuid,
           type: 'retail',
           search:  null,
           speedMbps: null,

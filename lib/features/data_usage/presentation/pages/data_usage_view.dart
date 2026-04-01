@@ -86,20 +86,25 @@ class _DataUsageViewState extends State<DataUsageView> {
       extendBodyBehindAppBar: true,
       circleColor: Colors.white,
       titleColor: Colors.white,
-      body: Stack(
-        children: [
-          SizedBox(
-            width: double.infinity,
-            height: 200.h,
-            child: SvgPicture.asset(
-              'assets/images/speed_test_background.svg',
-              fit: BoxFit.fill,
+      body: SizedBox.expand(
+        child: Stack(
+          children: [
+            Positioned(
+              top: 0,
+              left: 0,
+              right: 0,
+              child: SizedBox(
+                height: 200.h,
+                child: SvgPicture.asset(
+                  'assets/images/speed_test_background.svg',
+                  fit: BoxFit.fill,
+                ),
+              ),
             ),
-          ),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.only(left: 20, right: 20, top: 140),
-              child: BlocBuilder<DataUsageBloc, DataUsageState>(
+            Positioned.fill(
+              child: Padding(
+                padding: EdgeInsets.only(left: 20, right: 20, top: 140),
+                child: BlocBuilder<DataUsageBloc, DataUsageState>(
                 bloc: bloc,
                 buildWhen: (prev, curr) => prev.status != curr.status,
                 builder: (context, state) {
@@ -246,7 +251,8 @@ class _DataUsageViewState extends State<DataUsageView> {
             ),
           ),
         ],
-      ),
+        ),   // closes Stack
+      ),     // closes SizedBox.expand
     );
   }
 

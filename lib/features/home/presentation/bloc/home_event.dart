@@ -17,9 +17,10 @@ class GetActivePackageDetails extends HomeEvent {
 
 class GetPlans extends HomeEvent {
   final String packageId;
+  final String subscriberUuid;
 
-  const GetPlans({required this.packageId});
+  const GetPlans({required this.packageId, required this.subscriberUuid});
 
   @override
-  List<Object?> get props => [packageId];
+  List<Object?> get props => [packageId, subscriberUuid];
 }

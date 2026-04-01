@@ -169,8 +169,9 @@ class _TicketsPageState extends State<TicketsPage> {
                 behavior: HitTestBehavior.opaque,
                 child: Stack(
                   children: [
-                    Column(
-                      children: [
+                    Positioned.fill(
+                      child: Column(
+                        children: [
                         // Search Bar
                         Padding(
                           padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
@@ -337,7 +338,8 @@ class _TicketsPageState extends State<TicketsPage> {
                                   ),
                         ),
                       ],
-                    ),
+                    ),   // closes Column
+                  ),     // closes Positioned.fill
                   ],
                 ),
               ),

@@ -1,12 +1,14 @@
 import 'package:equatable/equatable.dart';
 
 class GetAllPackagesParams extends Equatable {
+  final String subscriberId;
   final String? search;
   final String type;
   final int? speedMbps;
   final bool? ott;
 
   const GetAllPackagesParams({
+    required this.subscriberId,
     this.search,
     this.type = 'retail',
     this.speedMbps,
@@ -15,6 +17,7 @@ class GetAllPackagesParams extends Equatable {
 
   Map<String, dynamic> toJson() {
     final params = <String, dynamic>{};
+    params['subscriberId'] = subscriberId;
     if (search != null && search!.isNotEmpty) params['search'] = search;
     params['type'] = type;
     if (speedMbps != null) params['speedMbps'] = speedMbps;
@@ -23,5 +26,5 @@ class GetAllPackagesParams extends Equatable {
   }
 
   @override
-  List<Object?> get props => [search, type, speedMbps, ott];
+  List<Object?> get props => [subscriberId, search, type, speedMbps, ott];
 }

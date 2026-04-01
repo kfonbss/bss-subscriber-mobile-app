@@ -43,6 +43,7 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
 
     final result = await repository.getPackages(
       GetAllPackagesParams(
+        subscriberId: event.subscriberUuid,
         type: 'retail',
         search: tab == PlanTab.all ? state.searchQuery : null,
         speedMbps: tab == PlanTab.all ? state.speedFilter : null,
@@ -87,7 +88,11 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
     // Load data for the tab if it hasn't been loaded yet
     final tabState = state.tabStates[event.tab];
     if (tabState == null || tabState.status == ListPlanStatus.initial) {
-      add(LoadPackages(tab: event.tab, packageId: event.packageId));
+      add(LoadPackages(
+        tab: event.tab,
+        packageId: event.packageId,
+        subscriberUuid: event.subscriberUuid,
+      ));
     }
   }
 
@@ -96,7 +101,11 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
     Emitter<ChangePlanState> emit,
   ) async {
     emit(state.copyWith(searchQuery: event.query));
-    add(LoadPackages(tab: PlanTab.all, packageId: event.packageId));
+    add(LoadPackages(
+      tab: PlanTab.all,
+      packageId: event.packageId,
+      subscriberUuid: event.subscriberUuid,
+    ));
   }
 
   Future<void> _onFilterBySpeed(
@@ -104,7 +113,11 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
     Emitter<ChangePlanState> emit,
   ) async {
     emit(state.copyWith(speedFilter: event.speed));
-    add(LoadPackages(tab: PlanTab.all, packageId: event.packageId));
+    add(LoadPackages(
+      tab: PlanTab.all,
+      packageId: event.packageId,
+      subscriberUuid: event.subscriberUuid,
+    ));
   }
 
   void _onSelectPackage(SelectPackage event, Emitter<ChangePlanState> emit) {

@@ -13,11 +13,16 @@ abstract class ChangePlanEvent extends Equatable {
 class LoadPackages extends ChangePlanEvent {
   final PlanTab tab;
   final String packageId;
+  final String subscriberUuid;
 
-  const LoadPackages({required this.tab, required this.packageId});
+  const LoadPackages({
+    required this.tab,
+    required this.packageId,
+    required this.subscriberUuid,
+  });
 
   @override
-  List<Object?> get props => [tab, packageId];
+  List<Object?> get props => [tab, packageId, subscriberUuid];
 }
 
 class SelectPackage extends ChangePlanEvent {
@@ -51,31 +56,46 @@ class RechargeChangePlan extends ChangePlanEvent {
 class SwitchTab extends ChangePlanEvent {
   final PlanTab tab;
   final String packageId;
+  final String subscriberUuid;
 
-  const SwitchTab({required this.tab, required this.packageId});
+  const SwitchTab({
+    required this.tab,
+    required this.packageId,
+    required this.subscriberUuid,
+  });
 
   @override
-  List<Object?> get props => [tab, packageId];
+  List<Object?> get props => [tab, packageId, subscriberUuid];
 }
 
 class SearchPackages extends ChangePlanEvent {
   final String query;
   final String packageId;
+  final String subscriberUuid;
 
-  const SearchPackages({required this.query, required this.packageId});
+  const SearchPackages({
+    required this.query,
+    required this.packageId,
+    required this.subscriberUuid,
+  });
 
   @override
-  List<Object?> get props => [query, packageId];
+  List<Object?> get props => [query, packageId, subscriberUuid];
 }
 
 class FilterBySpeed extends ChangePlanEvent {
   final int? speed;
   final String packageId;
+  final String subscriberUuid;
 
-  const FilterBySpeed({this.speed, required this.packageId});
+  const FilterBySpeed({
+    this.speed,
+    required this.packageId,
+    required this.subscriberUuid,
+  });
 
   @override
-  List<Object?> get props => [speed, packageId];
+  List<Object?> get props => [speed, packageId, subscriberUuid];
 }
 
 class FetchRechargePaymentStatus extends ChangePlanEvent {

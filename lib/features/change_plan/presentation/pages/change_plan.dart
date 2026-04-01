@@ -34,8 +34,13 @@ class ChangePlanPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return BlocProvider(
       create:
-          (_) => ChangePlanBloc(repository: sl<ChangePlanRepository>())
-            ..add(LoadPackages(tab: PlanTab.all, packageId: currentPackageId)),
+          (_) => ChangePlanBloc(repository: sl<ChangePlanRepository>())..add(
+            LoadPackages(
+              tab: PlanTab.all,
+              packageId: currentPackageId,
+              subscriberUuid: subscriberUuid,
+            ),
+          ),
       child: _ChangePlanView(
         subscriberUuid: subscriberUuid,
         currentPackageId: currentPackageId,
@@ -83,13 +88,21 @@ class _ChangePlanViewState extends State<_ChangePlanView>
     if (_tabController.indexIsChanging) return;
     final tab = _tabs[_tabController.index];
     context.read<ChangePlanBloc>().add(
-      SwitchTab(tab: tab, packageId: widget.currentPackageId),
+      SwitchTab(
+        tab: tab,
+        packageId: widget.currentPackageId,
+        subscriberUuid: widget.subscriberUuid,
+      ),
     );
   }
 
   void _onSearch(String query) {
     context.read<ChangePlanBloc>().add(
-      SearchPackages(query: query, packageId: widget.currentPackageId),
+      SearchPackages(
+        query: query,
+        packageId: widget.currentPackageId,
+        subscriberUuid: widget.subscriberUuid,
+      ),
     );
   }
 
@@ -107,7 +120,11 @@ class _ChangePlanViewState extends State<_ChangePlanView>
             currentSpeed: bloc.state.speedFilter,
             onApply: (speed) {
               bloc.add(
-                FilterBySpeed(speed: speed, packageId: widget.currentPackageId),
+                FilterBySpeed(
+                  speed: speed,
+                  packageId: widget.currentPackageId,
+                  subscriberUuid: widget.subscriberUuid,
+                ),
               );
             },
           ),
@@ -130,140 +147,144 @@ class _ChangePlanViewState extends State<_ChangePlanView>
       onBackPressed: () => Navigator.pop(context),
       body: Stack(
         children: [
-          Column(
-            children: [
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: TabBar(
-                  controller: _tabController,
-                  isScrollable: true,
-                  tabAlignment: TabAlignment.start,
-                  indicator: const BoxDecoration(),
-                  indicatorSize: TabBarIndicatorSize.tab,
-                  dividerColor: Colors.transparent,
-                  padding: const EdgeInsets.all(4),
-                  labelPadding: const EdgeInsets.symmetric(horizontal: 6),
-                  overlayColor: WidgetStateProperty.all(Colors.transparent),
-                  tabs:
-                      _tabs.asMap().entries.map((entry) {
-                        final index = entry.key;
-                        final tab = entry.value;
-                        return Tab(
-                          height: 32,
-                          child: AnimatedBuilder(
-                            animation: _tabController,
-                            builder: (context, _) {
-                              final isSelected = _tabController.index == index;
-                              return Container(
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                ),
-                                decoration: BoxDecoration(
-                                  color:
-                                      isSelected
-                                          ? AppColor.kPrimaryColor
-                                          : Colors.white,
-                                  borderRadius: BorderRadius.circular(25),
-                                ),
-                                alignment: Alignment.center,
-                                child: Text(
-                                  _tabLabel(tab),
-                                  style: TextStyle(
-                                    fontSize: 12,
-                                    fontWeight:
-                                        isSelected
-                                            ? FontWeight.w600
-                                            : FontWeight.w400,
+          Positioned.fill(
+            child: Column(
+              children: [
+                Padding(
+                  padding: const EdgeInsets.symmetric(horizontal: 16),
+                  child: TabBar(
+                    controller: _tabController,
+                    isScrollable: true,
+                    tabAlignment: TabAlignment.start,
+                    indicator: const BoxDecoration(),
+                    indicatorSize: TabBarIndicatorSize.tab,
+                    dividerColor: Colors.transparent,
+                    padding: const EdgeInsets.all(4),
+                    labelPadding: const EdgeInsets.symmetric(horizontal: 6),
+                    overlayColor: WidgetStateProperty.all(Colors.transparent),
+                    tabs:
+                        _tabs.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          final tab = entry.value;
+                          return Tab(
+                            height: 32,
+                            child: AnimatedBuilder(
+                              animation: _tabController,
+                              builder: (context, _) {
+                                final isSelected =
+                                    _tabController.index == index;
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  decoration: BoxDecoration(
                                     color:
                                         isSelected
-                                            ? Colors.white
-                                            : AppColor.kTabBarUnselectedText,
+                                            ? AppColor.kPrimaryColor
+                                            : Colors.white,
+                                    borderRadius: BorderRadius.circular(25),
                                   ),
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    _tabLabel(tab),
+                                    style: TextStyle(
+                                      fontSize: 12,
+                                      fontWeight:
+                                          isSelected
+                                              ? FontWeight.w600
+                                              : FontWeight.w400,
+                                      color:
+                                          isSelected
+                                              ? Colors.white
+                                              : AppColor.kTabBarUnselectedText,
+                                    ),
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        }).toList(),
+                  ),
+                ),
+
+                const SizedBox(height: 12),
+
+                // Search & filter (only for All tab)
+                BlocBuilder<ChangePlanBloc, ChangePlanState>(
+                  buildWhen: (prev, curr) => prev.activeTab != curr.activeTab,
+                  builder: (context, state) {
+                    if (state.activeTab != PlanTab.all) {
+                      return const SizedBox.shrink();
+                    }
+                    return Padding(
+                      padding: const EdgeInsets.symmetric(horizontal: 16),
+                      child: Row(
+                        children: [
+                          Expanded(
+                            child: TextField(
+                              controller: _searchController,
+                              onChanged: _onSearch,
+                              decoration: InputDecoration(
+                                hintText: 'Search Plan',
+                                hintStyle: const TextStyle(
+                                  fontWeight: FontWeight.w300,
+                                  fontSize: 14,
                                 ),
-                              );
-                            },
+                                prefixIcon: const Icon(Icons.search, size: 20),
+                                isDense: true,
+                                filled: true,
+                                fillColor: Colors.white,
+                                contentPadding: const EdgeInsets.symmetric(
+                                  horizontal: 12,
+                                  vertical: 12,
+                                ),
+                                border: OutlineInputBorder(
+                                  borderRadius: BorderRadius.circular(12),
+                                  borderSide: BorderSide.none,
+                                ),
+                              ),
+                            ),
                           ),
-                        );
-                      }).toList(),
-                ),
-              ),
-
-              const SizedBox(height: 12),
-
-              // Search & filter (only for All tab)
-              BlocBuilder<ChangePlanBloc, ChangePlanState>(
-                buildWhen: (prev, curr) => prev.activeTab != curr.activeTab,
-                builder: (context, state) {
-                  if (state.activeTab != PlanTab.all) {
-                    return const SizedBox.shrink();
-                  }
-                  return Padding(
-                    padding: const EdgeInsets.symmetric(horizontal: 16),
-                    child: Row(
-                      children: [
-                        Expanded(
-                          child: TextField(
-                            controller: _searchController,
-                            onChanged: _onSearch,
-                            decoration: InputDecoration(
-                              hintText: 'Search Plan',
-                              hintStyle: const TextStyle(
-                                fontWeight: FontWeight.w300,
-                                fontSize: 14,
-                              ),
-                              prefixIcon: const Icon(Icons.search, size: 20),
-                              isDense: true,
-                              filled: true,
-                              fillColor: Colors.white,
-                              contentPadding: const EdgeInsets.symmetric(
-                                horizontal: 12,
-                                vertical: 12,
-                              ),
-                              border: OutlineInputBorder(
+                          const SizedBox(width: 8),
+                          InkWell(
+                            onTap: _showSpeedFilter,
+                            borderRadius: BorderRadius.circular(12),
+                            child: Container(
+                              padding: const EdgeInsets.all(12),
+                              decoration: BoxDecoration(
+                                color: Colors.white,
                                 borderRadius: BorderRadius.circular(12),
-                                borderSide: BorderSide.none,
+                              ),
+                              child: Icon(
+                                Icons.tune,
+                                size: 20,
+                                color: AppColor.kPrimaryColor,
                               ),
                             ),
                           ),
-                        ),
-                        const SizedBox(width: 8),
-                        InkWell(
-                          onTap: _showSpeedFilter,
-                          borderRadius: BorderRadius.circular(12),
-                          child: Container(
-                            padding: const EdgeInsets.all(12),
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
-                            child: Icon(
-                              Icons.tune,
-                              size: 20,
-                              color: AppColor.kPrimaryColor,
-                            ),
-                          ),
-                        ),
-                      ],
-                    ),
-                  );
-                },
-              ),
-
-              const SizedBox(height: 12),
-
-              Expanded(
-                child: TabBarView(
-                  controller: _tabController,
-                  children:
-                      _tabs.map((tab) {
-                        return _PlanTabContent(
-                          tab: tab,
-                          currentPackageId: widget.currentPackageId,
-                        );
-                      }).toList(),
+                        ],
+                      ),
+                    );
+                  },
                 ),
-              ),
-            ],
+
+                const SizedBox(height: 12),
+
+                Expanded(
+                  child: TabBarView(
+                    controller: _tabController,
+                    children:
+                        _tabs.map((tab) {
+                          return _PlanTabContent(
+                            tab: tab,
+                            currentPackageId: widget.currentPackageId,
+                            subscriberUuid: widget.subscriberUuid,
+                          );
+                        }).toList(),
+                  ),
+                ),
+              ],
+            ),
           ),
 
           // Bottom Change Package button only when plan selected
@@ -323,8 +344,13 @@ class _ChangePlanViewState extends State<_ChangePlanView>
 class _PlanTabContent extends StatefulWidget {
   final PlanTab tab;
   final String currentPackageId;
+  final String subscriberUuid;
 
-  const _PlanTabContent({required this.tab, required this.currentPackageId});
+  const _PlanTabContent({
+    required this.tab,
+    required this.currentPackageId,
+    required this.subscriberUuid,
+  });
 
   @override
   State<_PlanTabContent> createState() => _PlanTabContentState();
@@ -385,6 +411,7 @@ class _PlanTabContentState extends State<_PlanTabContent>
                   LoadPackages(
                     tab: widget.tab,
                     packageId: widget.currentPackageId,
+                    subscriberUuid: widget.subscriberUuid,
                   ),
                 ),
           );
