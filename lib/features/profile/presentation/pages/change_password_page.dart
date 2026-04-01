@@ -1,10 +1,9 @@
 import 'package:flutter/material.dart';
-import 'package:intl/intl.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/security_settings_page.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_password_text_field.dart';
-import 'package:kfon_subscriber/presentation/ui_component/primary_color_button.dart';
+import 'package:kfon_subscriber/presentation/ui_component/primary_button.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   final PasswordChangeEnum type;
@@ -33,12 +32,13 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
 
   String _getLabel(PasswordChangeEnum type) {
     return switch (type) {
-      PasswordChangeEnum.bss      => 'Change BSS Portal Password',
+      PasswordChangeEnum.bss => 'Change BSS Portal Password',
       PasswordChangeEnum.internet => 'Change Internet Password',
-      PasswordChangeEnum.ssid     => 'Change SSID Password',
-      PasswordChangeEnum.wifi     => 'Change WiFi Password',
+      PasswordChangeEnum.ssid => 'Change SSID Password',
+      PasswordChangeEnum.wifi => 'Change WiFi Password',
     };
   }
+
   @override
   Widget build(BuildContext context) {
     return CommonAppBar(
@@ -52,7 +52,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           spacing: 40,
           children: [
             Text(
-             _getLabel(widget.type),
+              _getLabel(widget.type),
               style: TextStyle(
                 fontFamily: 'General Sans',
                 fontWeight: FontWeight.w600,
@@ -85,11 +85,17 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             Column(
               spacing: 16,
               children: [
-                PrimaryColorButton(
+                PrimaryButton(
                   label: 'Update Password',
                   borderRadius: 10,
                   onClicked: () => _passwordChanged(),
                   isLoading: false,
+                  textStyle: TextStyle(
+                    fontSize: 14.sp,
+                    fontFamily: 'General Sans',
+                    fontWeight: FontWeight.w600,
+                    height: 1.3,
+                  ),
                 ),
                 Center(
                   child: Text(
@@ -136,7 +142,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 height: 140.h,
                 width: 140.w,
               ),
-              SizedBox(height: 24,),
+              SizedBox(height: 24),
               Text(
                 'Password Updated\n Successfully 🎉',
                 textAlign: TextAlign.center,
@@ -145,11 +151,10 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                   fontSize: 18.sp,
                   fontWeight: FontWeight.w600,
                   color: Colors.black,
-
                 ),
               ),
 
-              SizedBox(height: 12,),
+              SizedBox(height: 12),
               Text(
                 "Your password has been changed. You'll be redirected to Security Settings.",
                 textAlign: TextAlign.center,
@@ -161,12 +166,18 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 ),
               ),
 
-              SizedBox(height: 20,),
-              PrimaryColorButton(
+              SizedBox(height: 20),
+              PrimaryButton(
                 borderRadius: 10,
                 isLoading: false,
                 label: 'Login Now',
                 onClicked: () => Navigator.pop(context),
+                textStyle:  TextStyle(
+                fontSize: 14.sp,
+                fontFamily: 'General Sans',
+                fontWeight: FontWeight.w600,
+                height: 1.3,
+              ),
               ),
             ],
           ),

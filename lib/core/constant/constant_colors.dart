@@ -24,4 +24,5 @@ class AppColor {
   static const Color kDragHandleGrey = Color(0xFFB9BAC0);// Light red/pink background for suspended/offline status badge
   static const Color kSuspendedStatusText = Color(0xFFEA181B);
   static const Color kTabBarUnselectedText = Color(0xFF656070);
+  static const Color kinputFiledLightBorder = Color(0xFFEAEAEA);
 }

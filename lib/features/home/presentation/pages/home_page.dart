@@ -5,6 +5,7 @@ import 'package:intl/intl.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/constant/constant_dimensions.dart';
 import 'package:kfon_subscriber/core/helper/bottom_sheet_helper.dart';
+import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/active_package_details/domain/entity/active_packages_details_entity.dart';
@@ -18,13 +19,16 @@ import 'package:kfon_subscriber/features/home/domain/entity/home_entity.dart';
 import 'package:kfon_subscriber/features/home/presentation/bloc/home_bloc.dart';
 import 'package:kfon_subscriber/features/home/presentation/bloc/home_event.dart';
 import 'package:kfon_subscriber/features/home/presentation/bloc/home_state.dart';
+import 'package:kfon_subscriber/features/home/presentation/components/home_shimmer.dart';
 import 'package:kfon_subscriber/features/top_up/presentation/pages/topup_page.dart';
 import 'package:kfon_subscriber/features/active_package_details/presentation/pages/active_package_page.dart';
 import 'package:kfon_subscriber/presentation/ui_component/primary_button.dart';
 import 'package:kfon_subscriber/presentation/ui_component/secondary_button.dart';
+import 'package:kfon_subscriber/presentation/ui_component/shimmer/shimmer_base.dart';
+import 'package:kfon_subscriber/presentation/ui_component/shimmer/shimmer_box.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 
-import '../../../../presentation/page_component/recharge_bottom_sheet.dart';
+import '../../../offline_recharge/presentation/pages/offline_recharge_bottom_sheet.dart';
 
 const kTeal = Color(0xFF00A896);
 const kOrange = Color(0xFFFF6B2C);
@@ -53,11 +57,11 @@ class _HomePageState extends State<HomePage> {
     super.dispose();
   }
 
-  void _showRechargeSheet(BuildContext context) {
+  void _showRechargeSheet(BuildContext context,String subscriberId) {
     BottomSheetHelper.show(
       context: context,
       title: 'Recharge',
-      child: const RechargeBottomSheet(),
+      child:  OfflineRechargeBottomSheet(subscriberUuid: subscriberId,),
     );
   }
 
@@ -71,7 +75,7 @@ class _HomePageState extends State<HomePage> {
         actionsPadding: EdgeInsets.only(right: 15),
         actions: [
           GestureDetector(
-            onTap: () => Navigator.pushNamed(context, '/notification_page'),
+            onTap: () => Navigator.pushNamed(context, AppRoutes.notificationPage),
             child: Image.asset(
               'assets/icons/notification_white.png',
               width: AppDimensions.kActionButtonSize,
@@ -81,8 +85,8 @@ class _HomePageState extends State<HomePage> {
           ),
           SizedBox(width: 15),
           Container(
-            width: 42,
-            height: 42,
+            width: 42.w,
+            height: 42.h,
             decoration: ShapeDecoration(
               image: DecorationImage(
                 image: NetworkImage(
@@ -101,7 +105,7 @@ class _HomePageState extends State<HomePage> {
           ),
         ],
         title: SizedBox(
-          height: 45.0,
+          height: 45.h,
           child: Image.asset(
             'assets/images/logo_white.png',
             fit: BoxFit.fitHeight,
@@ -150,16 +154,16 @@ class _HomePageState extends State<HomePage> {
                           _ComboCard(pkg: pkg, subscriberId: subscriberId),
                         const SizedBox(height: 16),
                         _QuickActions(
-                          onRechargeTap: () => _showRechargeSheet(context),
+                          onRechargeTap: () => _showRechargeSheet(context,subscriberId),
                           onTransactionsTap:
                               () => Navigator.pushNamed(
                                 context,
-                                '/transaction_history_page',
+                                AppRoutes.transactionHistoryPage,
                               ),
                           onInvoiceTap:
                               () => Navigator.pushNamed(
                                 context,
-                                '/invoice_list_page',
+                                AppRoutes.invoiceListPage,
                               ),
                         ),
                         const SizedBox(height: 24),
@@ -186,15 +190,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               );
             }
-            return Center(
-              child: CircularProgressIndicator(
-                strokeWidth: 5,
-                backgroundColor: Colors.grey[200],
-                valueColor: AlwaysStoppedAnimation<Color>(
-                  AppColor.kPrimaryColor,
-                ),
-              ),
-            );
+            return HomeShimmer();
           },
         ),
       ),
@@ -327,7 +323,9 @@ class _ComboCard extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 22,
-                        backgroundColor: AppColor.kPrimaryColor.withOpacity(0.1),
+                        backgroundColor: AppColor.kPrimaryColor.withOpacity(
+                          0.1,
+                        ),
                         child: Icon(
                           Icons.language,
                           color: AppColor.kPrimaryColor,
@@ -439,8 +437,7 @@ class _ComboCard extends StatelessWidget {
                             MaterialPageRoute<void>(
                               builder:
                                   (_) => DataUsageView(
-                                    subscriberUuid:
-                                        pkg.packageId,
+                                    subscriberUuid: pkg.packageId,
                                     entity: ActivePackagesDetailsEntity(
                                       packageId: pkg.packageId,
                                       activeAddOns: [],
@@ -452,7 +449,7 @@ class _ComboCard extends StatelessWidget {
                                       renewalFee: pkg.renewalFee,
                                       speedMbps: pkg.speedMbps,
                                       totalPackageCount: pkg.totalPackageCount,
-                                      totalVolumeGb: pkg.totalPackageCount
+                                      totalVolumeGb: pkg.totalPackageCount,
                                     ),
                                   ),
                             ),

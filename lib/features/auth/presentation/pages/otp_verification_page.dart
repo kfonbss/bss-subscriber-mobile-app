@@ -1,5 +1,6 @@
 import 'dart:async';
 
+import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_event.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_state.dart';
@@ -111,7 +112,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
           if (state is OtpVerified) {
             if (widget.isFromForgotPassword) {
               // Navigate to new password page for forgot password flow
-              Navigator.pushReplacementNamed(context, '/new_password');
+              Navigator.pushReplacementNamed(context, AppRoutes.newPassword);
             } else {
               // Show success bottom sheet for registration/login flow
               showAppModalBottomSheet(

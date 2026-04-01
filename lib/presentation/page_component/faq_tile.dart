@@ -1,10 +1,18 @@
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class FaqTile extends StatefulWidget {
+  final int questionNo;
   final String question;
   final String answer;
 
-  const FaqTile({super.key, required this.question, required this.answer});
+  const FaqTile({
+    super.key,
+    required this.questionNo,
+    required this.question,
+    required this.answer,
+  });
 
   @override
   State<FaqTile> createState() => _FaqTileState();
@@ -12,47 +20,68 @@ class FaqTile extends StatefulWidget {
 
 class _FaqTileState extends State<FaqTile> {
   bool isExpanded = false;
+  final TextStyle questionStyle = TextStyle(
+    color: AppColor.kTextSecondaryDark,
+    fontSize: 14.sp,
+    fontFamily: 'General Sans',
+    fontWeight: FontWeight.w600,
+    height: 1.30,
+  );
+  final TextStyle answerStyle = TextStyle(
+    color: Colors.black.withValues(alpha: 0.70),
+    fontSize: 12.sp,
+    fontFamily: 'General Sans',
+    fontWeight: FontWeight.w500,
+    height: 1.60,
+  );
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.symmetric(vertical: 10, horizontal: 20),
       decoration: BoxDecoration(
-        borderRadius: BorderRadius.all(Radius.circular(8.0)),
-        border: Border.all(color: Colors.grey.shade200, width: 1.5),
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(12),
+        border: Border.all(color: AppColor.kinputFiledLightBorder, width: 1.w),
       ),
-      child: ExpansionTile(
-        shape: Border(),
-        trailing: Icon(
-          isExpanded ? Icons.remove : Icons.add,
-          color: Colors.red,
-          size: 22.0,
-        ),
-        onExpansionChanged:
-            (value) => setState(() {
-              isExpanded = value;
-            }),
-        tilePadding: EdgeInsets.only(left: 15, right: 15),
-        childrenPadding: EdgeInsets.only(left: 15, right: 15, bottom: 15),
-        title: Text(
-          widget.question,
-          style: TextStyle(
-            fontSize: 16,
-            fontWeight: FontWeight.w600,
-            color: Colors.black,
-          ),
-        ),
+      padding: EdgeInsets.only(left: 10,right: 14,top: 13,bottom: 13),
+      child:Row(
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            widget.answer,
-            style: TextStyle(
-              fontSize: 14,
-              fontWeight: FontWeight.w500,
-              color: Color(0xFF626262),
+          Text('${widget.questionNo}. ', style: questionStyle),
+          Expanded(
+            child: Column(
+              spacing: 5,
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Text(widget.question, style: questionStyle),
+                isExpanded
+                    ?Text(widget.answer,style: answerStyle,)
+                    :SizedBox.shrink()
+              ],
             ),
           ),
+          SizedBox(width: 12,),
+          IconButton(
+            padding: EdgeInsets.zero,
+            constraints: const BoxConstraints(),
+            style: const ButtonStyle(
+              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            ),
+            icon: Icon(
+              isExpanded ? Icons.remove : Icons.add,
+              color: AppColor.kTextSecondaryDark,
+              size: 20.w,
+            ),
+            onPressed: () {
+              setState(() {
+                isExpanded = isExpanded?false:true;
+              });
+
+            },
+          )
         ],
-      ),
+      )
+
     );
   }
 }

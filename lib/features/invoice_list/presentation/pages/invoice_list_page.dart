@@ -4,7 +4,6 @@ import 'package:flutter_svg/svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/pdf_downloader/pdf_preview_and_download.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
-import 'package:kfon_subscriber/features/invoice_list/domain/entity/invoice_entity.dart';
 import 'package:kfon_subscriber/features/invoice_list/presentation/bloc/invoice_list_bloc.dart';
 import 'package:kfon_subscriber/features/invoice_list/presentation/bloc/invoice_list_event.dart';
 import 'package:kfon_subscriber/features/invoice_list/presentation/bloc/invoice_list_state.dart';
@@ -58,7 +57,7 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
       body: BlocBuilder<InvoiceListBloc, InvoiceListState>(
         builder: (context, state) {
           if (state is InvoiceListLoading) {
-            return ListShimmer(itemCount: 10);
+            return ListShimmer(itemCount: 10,itemHeight: 96,);
           }
 
           if (state is InvoiceListError) {
