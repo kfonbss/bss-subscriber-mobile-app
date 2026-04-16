@@ -12,6 +12,10 @@ class Initial extends OfflineRechargeState {
   const Initial();
 }
 
+class Loading extends OfflineRechargeState {
+  const Loading();
+}
+
 class OnRecharging extends OfflineRechargeState {
   const OnRecharging();
 }

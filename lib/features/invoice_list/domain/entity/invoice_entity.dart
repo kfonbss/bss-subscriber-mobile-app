@@ -5,11 +5,16 @@ class InvoiceEntity {
   final double amount;
   final String invoiceDate;
 
+  /// Full URL for downloading the invoice PDF.
+  /// Empty string if the API did not return a URL for this invoice.
+  final String pdfUrl;
+
   const InvoiceEntity({
     required this.invoiceId,
     required this.invoiceNo,
     required this.amount,
     required this.invoiceDate,
+    required this.pdfUrl,
   });
 }
 

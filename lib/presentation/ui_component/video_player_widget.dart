@@ -1,6 +1,7 @@
 import 'dart:io';
 
 import 'package:flutter/material.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:video_player/video_player.dart';
 
 /// Reusable video player widget for previewing video files.
@@ -16,7 +17,7 @@ class VideoPlayerWidget extends StatefulWidget {
 }
 
 class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
-  late VideoPlayerController _controller;
+  VideoPlayerController? _controller;
   bool _isInitialized = false;
   bool _hasError = false;
   String? _errorMessage;
@@ -39,7 +40,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         throw Exception('No video source provided');
       }
 
-      await _controller.initialize();
+      await _controller!.initialize();
       if (mounted) {
         setState(() {
           _isInitialized = true;
@@ -57,7 +58,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
 
   @override
   void dispose() {
-    _controller.dispose();
+    _controller?.dispose();
     super.dispose();
   }
 
@@ -80,12 +81,12 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, color: Colors.red, size: 48),
+            const Icon(Icons.error_outline, color: AppColor.kFailedRed, size: 48),
             const SizedBox(height: 16),
             const Text(
               'Error loading video',
               style: TextStyle(
-                color: Colors.red,
+                color: AppColor.kFailedRed,
                 fontSize: 16,
                 fontWeight: FontWeight.w600,
                 fontFamily: 'GeneralSans',
@@ -98,7 +99,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                 child: Text(
                   _errorMessage!,
                   style: const TextStyle(
-                    color: Color(0xFF67697A),
+                    color: AppColor.kSlateGrey,
                     fontSize: 12,
                     fontFamily: 'GeneralSans',
                   ),
@@ -120,29 +121,29 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
       children: [
         // Video display
         AspectRatio(
-          aspectRatio: _controller.value.aspectRatio,
+          aspectRatio: _controller!.value.aspectRatio,
           child: Stack(
             alignment: Alignment.center,
             children: [
-              VideoPlayer(_controller),
+              VideoPlayer(_controller!),
               // Play/Pause overlay button
               GestureDetector(
                 onTap: () {
                   setState(() {
-                    if (_controller.value.isPlaying) {
-                      _controller.pause();
+                    if (_controller!.value.isPlaying) {
+                      _controller!.pause();
                     } else {
-                      _controller.play();
+                      _controller!.play();
                     }
                   });
                 },
                 child: Container(
                   decoration: BoxDecoration(
-                    color: Colors.black.withOpacity(0.3),
+                    color: Colors.black.withValues(alpha: 0.3),
                     shape: BoxShape.circle,
                   ),
                   child: Icon(
-                    _controller.value.isPlaying
+                    _controller!.value.isPlaying
                         ? Icons.pause
                         : Icons.play_arrow,
                     size: 64,
@@ -161,7 +162,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
             children: [
               // Progress bar
               ValueListenableBuilder(
-                valueListenable: _controller,
+                valueListenable: _controller!,
                 builder: (context, VideoPlayerValue value, child) {
                   return Column(
                     children: [
@@ -180,7 +181,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                           min: 0.0,
                           max: value.duration.inMilliseconds.toDouble(),
                           onChanged: (newValue) {
-                            _controller.seekTo(
+                            _controller!.seekTo(
                               Duration(milliseconds: newValue.toInt()),
                             );
                           },
@@ -196,7 +197,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                               _formatDuration(value.position),
                               style: const TextStyle(
                                 fontSize: 12,
-                                color: Color(0xFF67697A),
+                                color: AppColor.kSlateGrey,
                                 fontFamily: 'GeneralSans',
                               ),
                             ),
@@ -204,7 +205,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
                               _formatDuration(value.duration),
                               style: const TextStyle(
                                 fontSize: 12,
-                                color: Color(0xFF67697A),
+                                color: AppColor.kSlateGrey,
                                 fontFamily: 'GeneralSans',
                               ),
                             ),

@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/security_settings_page.dart';
+import 'package:kfon_subscriber/l10n/bss_sub_localizations.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_password_text_field.dart';
 import 'package:kfon_subscriber/presentation/ui_component/primary_button.dart';
@@ -16,11 +19,11 @@ class ChangePasswordPage extends StatefulWidget {
 
 class _ChangePasswordPageState extends State<ChangePasswordPage> {
   final TextEditingController currentPassTextEditingController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController newPassTextEditingController =
-      TextEditingController();
+  TextEditingController();
   final TextEditingController conformPassTextEditingController =
-      TextEditingController();
+  TextEditingController();
 
   @override
   void dispose() {
@@ -30,20 +33,45 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     super.dispose();
   }
 
-  String _getLabel(PasswordChangeEnum type) {
+  // Does not use `this` — static to avoid instance closure allocation.
+  static String _getLabel(PasswordChangeEnum type, BssSubLocalizations l10n) {
     return switch (type) {
-      PasswordChangeEnum.bss => 'Change BSS Portal Password',
-      PasswordChangeEnum.internet => 'Change Internet Password',
-      PasswordChangeEnum.ssid => 'Change SSID Password',
-      PasswordChangeEnum.wifi => 'Change WiFi Password',
+      PasswordChangeEnum.bss => l10n.changeBssPortalPassword,
+      PasswordChangeEnum.internet => l10n.changeInternetPassword,
+      PasswordChangeEnum.ssid => l10n.changeSsidPassword,
+      PasswordChangeEnum.wifi => l10n.changeWifiPassword,
     };
   }
 
+  // Sizer-based styles — computed once as static final.
+  static final _titleStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w600,
+    fontSize: 18.sp,
+    color: Colors.black,
+    height: 1.30,
+  );
+  static final _buttonTextStyle = TextStyle(
+    fontSize: 14.sp,
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w600,
+    height: 1.3,
+  );
+  static const _forgotPasswordStyle = TextStyle(
+    color: AppColor.kSlateGrey,
+    fontSize: 14,
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w400,
+    height: 1.60,
+  );
+
   @override
   Widget build(BuildContext context) {
+    final l10n = context.bssSubL10n;
+
     return CommonAppBar(
       onBackPressed: () => Navigator.pop(context),
-      title: 'Security Settings',
+      title: l10n.securitySettings,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
@@ -52,33 +80,26 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           spacing: 40,
           children: [
             Text(
-              _getLabel(widget.type),
-              style: TextStyle(
-                fontFamily: 'General Sans',
-                fontWeight: FontWeight.w600,
-                fontSize: 18.sp,
-                color: Colors.black,
-                height: 1.30,
-              ),
+              _getLabel(widget.type, l10n),
+              style: _titleStyle,
             ),
             Column(
               spacing: 16,
               children: [
                 CommonPasswordTextField(
                   textEditingController: currentPassTextEditingController,
-                  hintText: 'Enter your password',
-                  heading: 'Current Password',
+                  hintText: l10n.enterYourPassword,
+                  heading: l10n.currentPassword,
                 ),
                 CommonPasswordTextField(
-                  textEditingController: currentPassTextEditingController,
-                  hintText: 'Enter new password',
-                  heading: 'New Password',
+                  textEditingController: newPassTextEditingController,
+                  hintText: l10n.enterNewPasswordHint,
+                  heading: l10n.newPassword,
                 ),
-
                 CommonPasswordTextField(
-                  textEditingController: currentPassTextEditingController,
-                  hintText: 'Confirm New Password',
-                  heading: 'Confirm New Password',
+                  textEditingController: conformPassTextEditingController,
+                  hintText: l10n.confirmNewPasswordHint,
+                  heading: l10n.confirmNewPassword,
                 ),
               ],
             ),
@@ -86,28 +107,17 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
               spacing: 16,
               children: [
                 PrimaryButton(
-                  label: 'Update Password',
+                  label: l10n.updatePassword,
                   borderRadius: 10,
-                  onClicked: () => _passwordChanged(),
+                  onClicked: () => _passwordChanged(l10n),
                   isLoading: false,
-                  textStyle: TextStyle(
-                    fontSize: 14.sp,
-                    fontFamily: 'General Sans',
-                    fontWeight: FontWeight.w600,
-                    height: 1.3,
-                  ),
+                  textStyle: _buttonTextStyle,
                 ),
                 Center(
                   child: Text(
-                    'Forgot password',
+                    l10n.forgotPasswordLower,
                     textAlign: TextAlign.center,
-                    style: TextStyle(
-                      color: const Color(0xFF67697A),
-                      fontSize: 14,
-                      fontFamily: 'General Sans',
-                      fontWeight: FontWeight.w400,
-                      height: 1.60,
-                    ),
+                    style: _forgotPasswordStyle,
                   ),
                 ),
               ],
@@ -118,7 +128,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     );
   }
 
-  Future<void> _passwordChanged() async {
+  Future<void> _passwordChanged(BssSubLocalizations l10n) async {
     showModalBottomSheet<void>(
       context: context,
       isScrollControlled: false,
@@ -142,42 +152,30 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 height: 140.h,
                 width: 140.w,
               ),
-              SizedBox(height: 24),
+              const SizedBox(height: 24),
               Text(
-                'Password Updated\n Successfully 🎉',
+                l10n.passwordUpdatedSuccessfullyTitle,
                 textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'General Sans',
-                  fontSize: 18.sp,
-                  fontWeight: FontWeight.w600,
-                  color: Colors.black,
-                ),
+                style: _titleStyle,
               ),
-
-              SizedBox(height: 12),
+              const SizedBox(height: 12),
               Text(
-                "Your password has been changed. You'll be redirected to Security Settings.",
+                l10n.passwordUpdatedSuccessfullyDescription,
                 textAlign: TextAlign.center,
                 style: TextStyle(
-                  fontFamily: 'General Sans',
+                  fontFamily: 'GeneralSans',
                   fontSize: 12.sp,
                   fontWeight: FontWeight.w400,
-                  color: Colors.grey.shade500,
+                  color: AppColor.kMediumGrey,
                 ),
               ),
-
-              SizedBox(height: 20),
+              const SizedBox(height: 20),
               PrimaryButton(
                 borderRadius: 10,
                 isLoading: false,
-                label: 'Login Now',
+                label: l10n.loginNow,
                 onClicked: () => Navigator.pop(context),
-                textStyle:  TextStyle(
-                fontSize: 14.sp,
-                fontFamily: 'General Sans',
-                fontWeight: FontWeight.w600,
-                height: 1.3,
-              ),
+                textStyle: _buttonTextStyle,
               ),
             ],
           ),

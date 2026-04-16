@@ -8,7 +8,7 @@ class DashedLinePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    var paint = Paint()
+    final paint = Paint()
       ..color = color
       ..strokeWidth = strokeWidth
       ..strokeCap = StrokeCap.butt;
@@ -29,5 +29,6 @@ class DashedLinePainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(CustomPainter oldDelegate) => false;
+  bool shouldRepaint(DashedLinePainter oldDelegate) =>
+      oldDelegate.color != color || oldDelegate.strokeWidth != strokeWidth;
 }

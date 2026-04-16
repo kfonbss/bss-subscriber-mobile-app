@@ -7,17 +7,37 @@ class TabBarMaterialWidget extends StatefulWidget {
   const TabBarMaterialWidget({super.key, required this.onChangedTab});
 
   @override
-  _TabBarMaterialWidgetState createState() => _TabBarMaterialWidgetState();
+  State<TabBarMaterialWidget> createState() => _TabBarMaterialWidgetState();
 }
 
 class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
   int selectedIndex = 0;
 
+  // ── Static styles & decorations — allocated once, shared across all rebuilds
+  static const _selectedTextStyle = TextStyle(
+    color: AppColor.kPrimaryColor,
+    fontSize: 10,
+    fontWeight: FontWeight.w600,
+  );
+  static const _unselectedTextStyle = TextStyle(
+    color: Colors.black,
+    fontSize: 10,
+    fontWeight: FontWeight.w600,
+  );
+  static const _selectedIndicator = BoxDecoration(
+    color: AppColor.kPrimaryColor,
+    borderRadius: BorderRadius.all(Radius.circular(10)),
+  );
+  static const _unselectedIndicator = BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.all(Radius.circular(10)),
+  );
+
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
       height: 70,
-      shape: CircularNotchedRectangle(),
+      shape: const CircularNotchedRectangle(),
       color: Colors.white,
       notchMargin: 8.0,
       elevation: 10.0,
@@ -31,11 +51,7 @@ class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
           ),
           Padding(
             padding: const EdgeInsets.only(right: 20.0),
-            child: _buildTabItem(
-              index: 1,
-              icon: 'self_care',
-              label: 'Self care',
-            ),
+            child: _buildTabItem(index: 1, icon: 'self_care', label: 'Self care'),
           ),
           Padding(
             padding: const EdgeInsets.only(left: 20.0),
@@ -55,44 +71,30 @@ class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
     required String icon,
     required String label,
   }) {
+    final isSelected = index == selectedIndex;
     return InkWell(
-      onTap:
-          () => setState(() {
-            selectedIndex = index;
-            widget.onChangedTab(index);
-          }),
+      onTap: () => setState(() {
+        selectedIndex = index;
+        widget.onChangedTab(index);
+      }),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           ImageIcon(
-            size: 25,
             AssetImage('assets/bottomNaviBarIcons/$icon.png'),
-            color:
-                index == selectedIndex ? AppColor.kPrimaryColor : Colors.black,
+            size: 25,
+            color: isSelected ? AppColor.kPrimaryColor : Colors.black,
           ),
           Column(
             children: [
               Text(
                 label,
-                style: TextStyle(
-                  color:
-                      index == selectedIndex
-                          ? AppColor.kPrimaryColor
-                          : Colors.black,
-                  fontSize: 10,
-                  fontWeight: FontWeight.w600,
-                ),
+                style: isSelected ? _selectedTextStyle : _unselectedTextStyle,
               ),
               Container(
                 height: 2,
                 width: 5,
-                decoration: BoxDecoration(
-                  color:
-                      index == selectedIndex
-                          ? AppColor.kPrimaryColor
-                          : Colors.white,
-                  borderRadius: BorderRadius.circular(10),
-                ),
+                decoration: isSelected ? _selectedIndicator : _unselectedIndicator,
               ),
             ],
           ),

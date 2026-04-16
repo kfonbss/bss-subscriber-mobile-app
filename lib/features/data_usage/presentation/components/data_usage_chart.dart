@@ -1,6 +1,6 @@
 part of '../pages/data_usage_view.dart';
 
-class _DataUsageChart extends StatelessWidget {
+class _DataUsageChart extends StatefulWidget {
   final List<GraphDataEntity> graphData;
   final String period;
   final Function(String) onPeriodChanged;
@@ -12,22 +12,60 @@ class _DataUsageChart extends StatelessWidget {
   });
 
   @override
-  Widget build(BuildContext context) {
-    if (graphData.isEmpty) {
-      return const SizedBox.shrink();
-    }
+  State<_DataUsageChart> createState() => _DataUsageChartState();
+}
 
-    final usageSpots = graphData
+class _DataUsageChartState extends State<_DataUsageChart> {
+  late List<FlSpot> _usageSpots;
+  late double _adjustedMaxY;
+  late Color _belowBarColor;
+
+  // Allocated once per app-lifetime — AppColor.kYellowBackground and the
+  // radius are compile-time constants so the whole BoxDecoration is too.
+  static const _periodButtonDecoration = BoxDecoration(
+    color: AppColor.kYellowBackground,
+    borderRadius: BorderRadius.all(Radius.circular(12.5)),
+  );
+
+  @override
+  void initState() {
+    super.initState();
+    _recompute(widget.graphData);
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    // Cached here so build() doesn't call withValues() on every frame.
+    _belowBarColor =
+        Theme.of(context).colorScheme.primary.withValues(alpha: 0.1);
+  }
+
+  @override
+  void didUpdateWidget(_DataUsageChart old) {
+    super.didUpdateWidget(old);
+    if (!identical(old.graphData, widget.graphData)) {
+      _recompute(widget.graphData);
+    }
+  }
+
+  void _recompute(List<GraphDataEntity> data) {
+    _usageSpots = data
         .asMap()
         .entries
         .map((e) => FlSpot(e.key.toDouble() + 1, e.value.usageGb))
         .toList();
-
-    final maxY = graphData.isNotEmpty
-        ? graphData.map((e) => e.usageGb).reduce((a, b) => a > b ? a : b)
+    final maxY = data.isNotEmpty
+        ? data.map((e) => e.usageGb).reduce((a, b) => a > b ? a : b)
         : 10.0;
+    _adjustedMaxY = maxY * 1.2;
+  }
 
-    final adjustedMaxY = maxY * 1.2;
+  @override
+  Widget build(BuildContext context) {
+    if (widget.graphData.isEmpty) {
+      return const SizedBox.shrink();
+    }
 
     final theme = Theme.of(context);
     return Container(
@@ -41,7 +79,7 @@ class _DataUsageChart extends StatelessWidget {
             Row(
               children: [
                 Text(
-                  'Data Usage',
+                  context.bssSubL10n.dataUsage,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
@@ -53,15 +91,12 @@ class _DataUsageChart extends StatelessWidget {
                       horizontal: 12,
                       vertical: 6,
                     ),
-                    decoration: BoxDecoration(
-                      color: AppColor.kYellowBackground,
-                      borderRadius: BorderRadius.circular(12.5),
-                    ),
+                    decoration: _periodButtonDecoration,
                     child: Row(
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'Weekly',
+                          context.bssSubL10n.weekly,
                           style: theme.textTheme.labelLarge?.copyWith(
                             fontWeight: FontWeight.w500,
                           ),
@@ -71,15 +106,15 @@ class _DataUsageChart extends StatelessWidget {
                       ],
                     ),
                   ),
-                  onSelected: onPeriodChanged,
+                  onSelected: widget.onPeriodChanged,
                   itemBuilder: (context) => [
                     PopupMenuItem(
                       value: 'DAY',
                       child: Row(
                         children: [
-                          Icon(Icons.today, size: 18),
-                          SizedBox(width: 12),
-                          Text('Day'),
+                          const Icon(Icons.today, size: 18),
+                          const SizedBox(width: 12),
+                          Text(context.bssSubL10n.day),
                         ],
                       ),
                     ),
@@ -87,9 +122,9 @@ class _DataUsageChart extends StatelessWidget {
                       value: 'WEEK',
                       child: Row(
                         children: [
-                          Icon(Icons.calendar_view_week, size: 18),
-                          SizedBox(width: 12),
-                          Text('Week'),
+                          const Icon(Icons.calendar_view_week, size: 18),
+                          const SizedBox(width: 12),
+                          Text(context.bssSubL10n.week),
                         ],
                       ),
                     ),
@@ -97,9 +132,9 @@ class _DataUsageChart extends StatelessWidget {
                       value: 'MONTH',
                       child: Row(
                         children: [
-                          Icon(Icons.calendar_view_month, size: 18),
-                          SizedBox(width: 12),
-                          Text('Month'),
+                          const Icon(Icons.calendar_view_month, size: 18),
+                          const SizedBox(width: 12),
+                          Text(context.bssSubL10n.month),
                         ],
                       ),
                     ),
@@ -119,15 +154,15 @@ class _DataUsageChart extends StatelessWidget {
               child: LineChart(
                 LineChartData(
                   minX: 1,
-                  maxX: graphData.length.toDouble(),
+                  maxX: widget.graphData.length.toDouble(),
                   minY: 0,
-                  maxY: adjustedMaxY,
+                  maxY: _adjustedMaxY,
                   gridData: FlGridData(
                     show: true,
-                    horizontalInterval: adjustedMaxY / 5,
+                    horizontalInterval: _adjustedMaxY / 5,
                     verticalInterval: 1,
-                    getDrawingHorizontalLine: (value) => FlLine(
-                      color: Colors.grey.withValues(alpha: 0.15),
+                    getDrawingHorizontalLine: (value) => const FlLine(
+                      color: Color(0x26808080), // grey @ 15% opacity
                       strokeWidth: 1,
                     ),
                     drawVerticalLine: false,
@@ -144,11 +179,11 @@ class _DataUsageChart extends StatelessWidget {
                       sideTitles: SideTitles(
                         showTitles: true,
                         reservedSize: 30,
-                        interval: adjustedMaxY / 5,
+                        interval: _adjustedMaxY / 5,
                         getTitlesWidget: (value, meta) {
                           if (value == 0) return const SizedBox.shrink();
                           return Text(
-                            '${value.toInt()} GB',
+                            context.bssSubL10n.valueInGb(value.toInt().toString()),
                             style: theme.textTheme.labelSmall?.copyWith(
                               fontSize: 9,
                               color: AppColor.kTextSecondary,
@@ -164,13 +199,13 @@ class _DataUsageChart extends StatelessWidget {
                         reservedSize: 20,
                         getTitlesWidget: (value, meta) {
                           final index = value.toInt() - 1;
-                          if (index < 0 || index >= graphData.length) {
+                          if (index < 0 || index >= widget.graphData.length) {
                             return const SizedBox.shrink();
                           }
                           return Padding(
                             padding: const EdgeInsets.only(top: 4.0),
                             child: Text(
-                              graphData[index].day,
+                              widget.graphData[index].day,
                               style: theme.textTheme.labelSmall?.copyWith(
                                 fontSize: 9,
                                 color: AppColor.kTextSecondary,
@@ -197,14 +232,14 @@ class _DataUsageChart extends StatelessWidget {
 
                   lineBarsData: [
                     LineChartBarData(
-                      spots: usageSpots,
+                      spots: _usageSpots,
                       isCurved: true,
                       barWidth: 1.5,
                       color: theme.colorScheme.primary,
-                      dotData: FlDotData(show: true),
+                      dotData: const FlDotData(show: true),
                       belowBarData: BarAreaData(
                         show: true,
-                        color: theme.colorScheme.primary.withValues(alpha: 0.1),
+                        color: _belowBarColor,
                       ),
                     ),
                   ],

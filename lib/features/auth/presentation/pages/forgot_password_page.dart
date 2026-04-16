@@ -1,17 +1,18 @@
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/core/constant/app_styles.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
+import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/core/validator/validators.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_event.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_state.dart';
 import 'package:kfon_subscriber/features/auth/presentation/components/auth_header.dart';
 import 'package:kfon_subscriber/features/auth/presentation/components/login_text_field.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/presentation/ui_component/white_button.dart';
-import 'package:kfon_subscriber/core/util/dialog_util.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -22,8 +23,11 @@ class ForgotPasswordPage extends StatefulWidget {
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _usernameController = TextEditingController(
-    text: '',
+  final TextEditingController _usernameController = TextEditingController();
+
+  static const _systemUiStyle = SystemUiOverlayStyle(
+    statusBarBrightness: Brightness.dark,
+    statusBarColor: AppColor.kPrimaryColor,
   );
 
   @override
@@ -37,7 +41,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       return;
     }
 
-    String username = _usernameController.text.trim();
+    final username = _usernameController.text.trim();
 
     context.read<AuthBloc>().add(
       SendForgotPasswordOtpRequested(username: username),
@@ -47,10 +51,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion(
-      value: SystemUiOverlayStyle(
-        statusBarBrightness: Brightness.dark,
-        statusBarColor: AppColor.kPrimaryColor,
-      ),
+      value: _systemUiStyle,
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is OtpSent) {
@@ -86,8 +87,8 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 Column(
                   children: [
                     AuthHeader(
-                      heading: 'Forgot Password?',
-                      description: "Don't worry! Enter your registered username to reset your password.",
+                      heading: context.bssSubL10n.forgotPassword,
+                      description: context.bssSubL10n.forgotPasswordDescription,
                       onClicked: () {},
                     ),
                     Form(
@@ -101,7 +102,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             vertical: 11,
                           ),
                           child: LoginTextField(
-                            hintText: 'Enter Username',
+                            hintText: context.bssSubL10n.enterUsername,
                             textEditingController: _usernameController,
                             iconName: 'user.png',
                             textInputType: TextInputType.text,
@@ -127,7 +128,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           final isLoading = state is AuthLoading;
                           return WhiteButton(
                             isLoading: isLoading,
-                            label: 'Get OTP',
+                            label: context.bssSubL10n.getOtp,
                             borderRadius: 10,
                             textColor: AppColor.kPrimaryColor,
                             onClicked: _getOtp,

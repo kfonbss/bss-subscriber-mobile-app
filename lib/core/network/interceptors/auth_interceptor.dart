@@ -1,18 +1,23 @@
 import 'dart:async';
+
+import 'package:dio/dio.dart';
+import 'package:kfon_subscriber/core/constant/api_urls.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/routes/navigator_key.dart';
+import 'package:kfon_subscriber/core/util/preference_util.dart';
 import 'package:kfon_subscriber/features/auth/domain/repository/auth_repository.dart';
 import 'package:kfon_subscriber/service_locator.dart';
-import 'package:kfon_subscriber/core/util/preference_util.dart';
-import 'package:dio/dio.dart';
-import 'package:flutter/widgets.dart';
-import 'package:kfon_subscriber/core/constant/api_urls.dart';
 
 /// Interceptor that handles authentication token management
-/// and  Automatically refreshes token before expiry
+/// and automatically refreshes token before expiry.
 class AuthInterceptor extends Interceptor {
   bool _isRefreshing = false;
   Completer<void>? _refreshCompleter;
+
+  /// Cached repository — resolved lazily to avoid circular dependency
+  /// (DioClient → AuthInterceptor → AuthRepository → DioClient).
+  AuthRepository? _authRepository;
+  AuthRepository get _repository => _authRepository ??= sl<AuthRepository>();
 
   static List<String> get _publicEndpoints => [
     ApiUrls.loginURL,
@@ -30,12 +35,21 @@ class AuthInterceptor extends Interceptor {
   ) async {
     final isPublicEndpoint = _publicEndpoints.contains(options.path);
 
-    if (!isPublicEndpoint) {
-      await _ensureValidToken();
-      await _attachAuthHeader(options);
+    try {
+      if (!isPublicEndpoint) {
+        await _ensureValidToken();
+        await _attachAuthHeader(options);
+      }
+      return handler.next(options);
+    } catch (e) {
+      return handler.reject(
+        DioException(
+          requestOptions: options,
+          error: e,
+          type: DioExceptionType.unknown,
+        ),
+      );
     }
-
-    return handler.next(options);
   }
 
   /// Ensures we have a valid token
@@ -55,8 +69,6 @@ class AuthInterceptor extends Interceptor {
 
   Future<void> _attachAuthHeader(RequestOptions options) async {
     final token = await PreferenceUtils.getAccessToken();
-
-    debugPrint('authTest token: $token');
     if (token != null && token.isNotEmpty) {
       options.headers['Authorization'] = 'Bearer $token';
     }
@@ -69,17 +81,25 @@ class AuthInterceptor extends Interceptor {
     try {
       final refreshToken = await _getValidRefreshToken();
 
-      if (refreshToken == null) return;
+      if (refreshToken == null) {
+        // _handleRefreshFailure already called inside _getValidRefreshToken.
+        // Complete so that any concurrent request waiting on the completer
+        // is unblocked (it will fail on its own next interceptor pass).
+        _refreshCompleter?.complete();
+        return;
+      }
 
       await _callRefreshApi(refreshToken);
 
-      // Complete successfully
       _refreshCompleter?.complete();
     } catch (e) {
       await _handleRefreshFailure();
-      // Complete with error
       _refreshCompleter?.completeError(e);
     } finally {
+      // Safety net: if the completer was somehow left incomplete, unblock waiters.
+      if (_refreshCompleter != null && !_refreshCompleter!.isCompleted) {
+        _refreshCompleter!.complete();
+      }
       _isRefreshing = false;
       _refreshCompleter = null;
     }
@@ -89,7 +109,7 @@ class AuthInterceptor extends Interceptor {
     final refreshToken = await PreferenceUtils.getRefreshToken();
 
     if (refreshToken == null || refreshToken.isEmpty) {
-      _handleRefreshFailure();
+      await _handleRefreshFailure();
       return null;
     }
 
@@ -98,10 +118,9 @@ class AuthInterceptor extends Interceptor {
 
   /// Calls the refresh token API and saves new tokens
   Future<void> _callRefreshApi(String refreshToken) async {
-    final authRepository = sl<AuthRepository>();
-    final result = await authRepository.refreshToken(refreshToken);
+    final result = await _repository.refreshToken(refreshToken);
 
-    result.fold(
+    await result.fold(
       (error) => _handleRefreshFailure(),
       (authModel) => _saveNewTokens(authModel),
     );

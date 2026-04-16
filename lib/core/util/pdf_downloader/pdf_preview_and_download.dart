@@ -1,4 +1,5 @@
 import 'dart:io';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:flutter_svg/flutter_svg.dart';
@@ -25,8 +26,9 @@ class PdfPreviewAndDownload extends StatefulWidget {
 class _PdfPreviewAndDownloadState extends State<PdfPreviewAndDownload> {
   final PdfDownloadController _controller = PdfDownloadController();
 
-  File? pdfFile;
-  bool isLoading = true;
+  File? _pdfFile;
+  bool _isLoading = true;
+  bool _hasError = false;
 
   @override
   void initState() {
@@ -35,8 +37,21 @@ class _PdfPreviewAndDownloadState extends State<PdfPreviewAndDownload> {
   }
 
   Future<void> _loadPdf() async {
-    pdfFile = await _controller.loadPdf(widget.pdfUrl);
-    setState(() => isLoading = false);
+    if (mounted) setState(() { _isLoading = true; _hasError = false; });
+    try {
+      final file = await _controller.loadPdf(widget.pdfUrl);
+      if (mounted) setState(() { _pdfFile = file; _isLoading = false; });
+    } catch (_) {
+      if (mounted) setState(() { _isLoading = false; _hasError = true; });
+    }
+  }
+
+  Future<void> _downloadPdf() async {
+    final savedPath = await _controller.downloadPdf(_pdfFile!);
+    if (!mounted) return;
+    ScaffoldMessenger.of(context).showSnackBar(
+      SnackBar(content: Text('PDF saved to $savedPath')),
+    );
   }
 
   @override
@@ -60,45 +75,64 @@ class _PdfPreviewAndDownloadState extends State<PdfPreviewAndDownload> {
                         BlendMode.srcIn,
                       ),
                     ),
-                    onPressed: pdfFile == null
+                    onPressed: _pdfFile == null
                         ? null
-                        : () => _controller.sharePdf(pdfFile!),
+                        : () => _controller.sharePdf(_pdfFile!),
                   ),
                 ),
               ),
             ]
           : null,
       onBackPressed: () => Navigator.of(context).pop(),
-      body: isLoading
+      body: _isLoading
           ? const Center(child: CircularProgressIndicator())
-          : Padding(
-              padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
-              child: Column(
-                crossAxisAlignment: CrossAxisAlignment.stretch,
-                children: [
-                  Expanded(
-                    child: ClipRRect(
-                      borderRadius: BorderRadius.circular(12),
-                      child: PDFView(filePath: pdfFile!.path),
-                    ),
-                  ),
-
-                  SizedBox(height: 16),
-
-                  ElevatedButton(
-                    onPressed: () => _controller.downloadPdf(context, pdfFile!),
-                    child: Text(
-                      'Download PDF',
-                      style:  TextStyle(
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
+          : _hasError
+              ? Center(
+                  child: Column(
+                    mainAxisSize: MainAxisSize.min,
+                    children: [
+                      const Icon(Icons.error_outline, size: 48, color: Colors.red),
+                      const SizedBox(height: 12),
+                      const Text(
+                        'Failed to load PDF',
+                        style: TextStyle(fontSize: 16, fontWeight: FontWeight.w500),
                       ),
-                    ),
+                      const SizedBox(height: 16),
+                      ElevatedButton(
+                        onPressed: _loadPdf,
+                        child: const Text('Retry'),
+                      ),
+                    ],
                   ),
-                  SizedBox(height: 8),
-                ],
-              ),
-            ),
+                )
+              : Padding(
+                  padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: ClipRRect(
+                          borderRadius: BorderRadius.circular(12),
+                          child: PDFView(filePath: _pdfFile!.path),
+                        ),
+                      ),
+
+                      const SizedBox(height: 16),
+
+                      ElevatedButton(
+                        onPressed: _downloadPdf,
+                        child: Text(
+                          'Download PDF',
+                          style: TextStyle(
+                            fontSize: 16.sp,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                      ),
+                      const SizedBox(height: 8),
+                    ],
+                  ),
+                ),
     );
   }
 }

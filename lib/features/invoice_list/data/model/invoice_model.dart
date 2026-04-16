@@ -6,12 +6,14 @@ class InvoiceModel {
   final String invoiceNo;
   final double amount;
   final String invoiceDate;
+  final String pdfUrl;
 
   const InvoiceModel({
     required this.invoiceId,
     required this.invoiceNo,
     required this.amount,
     required this.invoiceDate,
+    required this.pdfUrl,
   });
 
   factory InvoiceModel.fromJson(Map<String, dynamic> json) {
@@ -21,6 +23,7 @@ class InvoiceModel {
       amount:
           (json['amount'] is num) ? (json['amount'] as num).toDouble() : 0.0,
       invoiceDate: json['invoiceDate']?.toString() ?? '',
+      pdfUrl: json['pdfUrl']?.toString() ?? '',
     );
   }
 
@@ -30,6 +33,7 @@ class InvoiceModel {
       invoiceNo: invoiceNo,
       amount: amount,
       invoiceDate: invoiceDate,
+      pdfUrl: pdfUrl,
     );
   }
 }

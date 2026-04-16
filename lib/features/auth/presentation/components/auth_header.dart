@@ -15,80 +15,58 @@ class AuthHeader extends StatelessWidget {
     required this.onClicked,
   });
 
+  // Sizer ratios and Sizer.isTablet are fixed after MaterialApp.builder —
+  // computed once as static final, eliminating per-build allocations.
+  static final double _topSpacing = Sizer.isTablet ? 60.h : 112.0;
+  static final double _headingSpacing = Sizer.isTablet ? 12.h : 20.0;
+  static final double _bottomSpacing = Sizer.isTablet ? 32.h : 48.0;
+  static final EdgeInsets _descriptionPadding = Sizer.isTablet
+      ? EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h)
+      : const EdgeInsets.only(left: 24, right: 24, top: 12, bottom: 45);
+  static final _headingStyle = TextStyle(
+    fontSize: Sizer.isTablet ? 24.sp : 32.0,
+    fontWeight: FontWeight.w600,
+    color: Colors.white,
+    fontFamily: 'GeneralSans',
+  );
+  static final _descriptionStyle = TextStyle(
+    color: Colors.white,
+    fontSize: Sizer.isTablet ? 14.sp : 12.0,
+    fontWeight: FontWeight.w500,
+    fontFamily: 'GeneralSans',
+  );
+
   @override
   Widget build(BuildContext context) {
-    // Tablet-responsive values
-    final isTablet = Sizer.isTablet;
-    // Top spacing: Smaller on tablet for better proportions
-    final topSpacing = isTablet ? 60.h : 112.0;
-    final logoWidth = isTablet
-        ? 150.0 // Smaller, more proportional size for tablet
-        : MediaQuery.of(context).size.width * 0.31; // Original mobile logic
-    // Heading spacing: Smaller on tablet
-    final headingSpacing = isTablet ? 12.h : 20.0;
-    final headingFontSize = isTablet
-        ? 24.sp
-        : 32.0; // Smaller heading for tablet
-    // Bottom spacing: Smaller on tablet
-    final bottomSpacing = isTablet ? 32.h : 48.0;
-    // Description padding: Different structure, needs conditional
-    final descriptionPadding = isTablet
-        ? EdgeInsets.symmetric(horizontal: 24.w, vertical: 12.h)
-        : const EdgeInsets.only(left: 24, right: 24, top: 12, bottom: 45);
-    final descriptionFontSize = isTablet ? 14.sp : 12.0;
+    // logoWidth depends on MediaQuery (changes on rotation) — not static.
+    final logoWidth = Sizer.isTablet
+        ? 150.0
+        : MediaQuery.sizeOf(context).width * 0.31;
 
     return Column(
       children: [
-        SizedBox(height: topSpacing),
+        SizedBox(height: _topSpacing),
         Image.asset(
           'assets/images/kfone_white.png',
           width: logoWidth,
           fit: BoxFit.fitWidth,
         ),
-        SizedBox(height: headingSpacing),
-        Text(
-          heading,
-          style: TextStyle(
-            fontSize: headingFontSize,
-            fontWeight: FontWeight.w600,
-            color: Colors.white,
-            fontFamily: 'GeneralSans',
-          ),
-        ),
+        SizedBox(height: _headingSpacing),
+        Text(heading, style: _headingStyle),
 
         if (description.isNotEmpty)
           Padding(
-            padding: descriptionPadding,
+            padding: _descriptionPadding,
             child: RichText(
               textAlign: TextAlign.center,
               text: TextSpan(
                 text: description,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: descriptionFontSize,
-                  fontWeight: FontWeight.w500,
-                  fontFamily: 'GeneralSans',
-                ),
-                // children: <TextSpan>[
-                //   TextSpan(
-                //     text: clickableText ?? '',
-                //     style: TextStyle(
-                //       color: Colors.white,
-                //       fontWeight: FontWeight.w600,
-                //       decoration: TextDecoration.underline,
-                //       decorationColor: Colors.white,
-                //       fontSize: 12,
-                //     ),
-                //     recognizer:
-                //         TapGestureRecognizer()
-                //           ..onTap = onClicked, // Assign the TapGestureRecognizer
-                //   ),
-                // ],
+                style: _descriptionStyle,
               ),
             ),
           )
         else
-          SizedBox(height: bottomSpacing),
+          SizedBox(height: _bottomSpacing),
       ],
     );
   }

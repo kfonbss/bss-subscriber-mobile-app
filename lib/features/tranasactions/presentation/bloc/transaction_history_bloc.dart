@@ -60,7 +60,10 @@ class TransactionHistoryBloc
       );
 
       result.fold(
-        (failure) => emit(currentState.copyWith(isLoadingMore: false)),
+        (failure) => emit(currentState.copyWith(
+          isLoadingMore: false,
+          paginationError: failure.toString(),
+        )),
         (page) => emit(
           TransactionHistoryLoaded(
             transactions: [...currentState.transactions, ...page.transactions],
@@ -70,8 +73,11 @@ class TransactionHistoryBloc
           ),
         ),
       );
-    } catch (_) {
-      emit(currentState.copyWith(isLoadingMore: false));
+    } catch (e) {
+      emit(currentState.copyWith(
+        isLoadingMore: false,
+        paginationError: e.toString(),
+      ));
     }
   }
 }

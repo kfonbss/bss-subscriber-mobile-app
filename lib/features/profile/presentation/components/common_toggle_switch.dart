@@ -17,6 +17,20 @@ class CommonToggleSwitch extends StatelessWidget {
     this.height,
   });
 
+  // Thumb shadow does not change — precomputed as static const.
+  // 0x1A = 26 ≈ 0.1 × 255 → Colors.black @ 10% opacity
+  static const _thumbDecoration = BoxDecoration(
+    shape: BoxShape.circle,
+    color: Colors.white,
+    boxShadow: [
+      BoxShadow(
+        color: Color(0x1A000000),
+        blurRadius: 2,
+        offset: Offset(0, 1),
+      ),
+    ],
+  );
+
   @override
   Widget build(BuildContext context) {
     final toggleWidth = width ?? (context.isTablet ? 36.0 * 1.2 : 36.w);
@@ -31,7 +45,7 @@ class CommonToggleSwitch extends StatelessWidget {
         height: toggleHeight,
         decoration: BoxDecoration(
           borderRadius: BorderRadius.circular(toggleHeight / 2),
-          color: value ? AppColor.kPrimaryColor : const Color(0xFFE5E5E5),
+          color: value ? AppColor.kPrimaryColor : AppColor.kToggleDisabledGrey,
         ),
         child: Stack(
           children: [
@@ -43,17 +57,7 @@ class CommonToggleSwitch extends StatelessWidget {
               child: Container(
                 width: thumbRadius * 2,
                 height: thumbRadius * 2,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Colors.white,
-                  boxShadow: [
-                    BoxShadow(
-                      color: Colors.black.withOpacity(0.1),
-                      blurRadius: 2,
-                      offset: const Offset(0, 1),
-                    ),
-                  ],
-                ),
+                decoration: _thumbDecoration,
               ),
             ),
           ],

@@ -1,8 +1,8 @@
 import 'package:equatable/equatable.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entity.dart';
-import 'package:kfon_subscriber/features/change_plan/domain/enums/subscriber_enums.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/recharge_change_plan_redirect_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/recharge_payment_status_entity.dart';
+import 'package:kfon_subscriber/features/change_plan/domain/enums/subscriber_enums.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/bloc/tab_plan_state.dart';
 
 enum ListPlanStatus { initial, loading, loadingMore, success, error }
@@ -47,15 +47,11 @@ class ChangePlanState extends Equatable {
 
   PackageEntity? get selectedPackage {
     if (selectedPackageId == null) return null;
-    // Search across all tabs for the selected package
     for (final tabState in tabStates.values) {
-      try {
-        return tabState.packages.firstWhere(
-          (p) => p.packageId == selectedPackageId,
-        );
-      } catch (_) {
-        continue;
-      }
+      final match = tabState.packages
+          .where((p) => p.packageId == selectedPackageId)
+          .firstOrNull;
+      if (match != null) return match;
     }
     return null;
   }

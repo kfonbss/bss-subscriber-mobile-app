@@ -4,31 +4,33 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/core/util/form_scroll_util.dart';
+import 'package:kfon_subscriber/core/util/preference_util.dart';
+import 'package:kfon_subscriber/core/validator/validators.dart';
+import 'package:kfon_subscriber/features/home/presentation/bloc/home_bloc.dart';
+import 'package:kfon_subscriber/features/home/presentation/bloc/home_state.dart';
+import 'package:kfon_subscriber/features/profile/presentation/components/common_radio_button.dart';
 import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profile_bloc.dart';
 import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profile_state.dart';
-import 'package:kfon_subscriber/features/home/presentation/bloc/home_bloc.dart';
-import 'package:kfon_subscriber/core/util/preference_util.dart';
-import 'package:kfon_subscriber/features/profile/presentation/components/common_radio_button.dart';
 import 'package:kfon_subscriber/features/ticket/data/model/submit_ticket_req.dart';
 import 'package:kfon_subscriber/features/ticket/domain/entity/subject_entity.dart';
 import 'package:kfon_subscriber/features/ticket/domain/repository/ticket_repository.dart';
-import 'package:kfon_subscriber/core/validator/validators.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/bloc/ticket_bloc.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/bloc/ticket_event.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/bloc/ticket_state.dart';
-import 'package:kfon_subscriber/features/ticket/presentation/widgets/subject_picker_sheet.dart';
-import 'package:kfon_subscriber/features/ticket/presentation/widgets/priority_picker_sheet.dart';
+import 'package:kfon_subscriber/features/ticket/presentation/pages/tickets_page.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/widgets/attachment_list_widget.dart';
+import 'package:kfon_subscriber/features/ticket/presentation/widgets/priority_picker_sheet.dart';
+import 'package:kfon_subscriber/features/ticket/presentation/widgets/subject_picker_sheet.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/widgets/ticket_success_bottom_sheet.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/presentation/ui_component/attachment_upload_field.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_bottom_sheet.dart';
 import 'package:kfon_subscriber/presentation/ui_component/file_preview_page.dart';
 import 'package:kfon_subscriber/presentation/ui_component/primary_button.dart';
 import 'package:kfon_subscriber/service_locator.dart';
-import 'package:kfon_subscriber/core/util/dialog_util.dart';
-import 'package:kfon_subscriber/features/ticket/presentation/pages/tickets_page.dart';
 
 class CreateTicketPage extends StatefulWidget {
   const CreateTicketPage({super.key});
@@ -38,6 +40,25 @@ class CreateTicketPage extends StatefulWidget {
 }
 
 class _CreateTicketPageState extends State<CreateTicketPage> {
+  // Shared across all three TextFormFields — avoids allocating 6 new
+  // InputBorder objects on every build() call.
+  static const _inputBorder = OutlineInputBorder(
+    borderRadius: BorderRadius.all(Radius.circular(12)),
+    borderSide: BorderSide.none,
+  );
+  static const _errorBorder = OutlineInputBorder(
+    borderRadius: BorderRadius.all(Radius.circular(12)),
+    borderSide: BorderSide(color: AppColor.kFailedRed, width: 1),
+  );
+
+  // Subject escalation time container decoration.
+  static const _escalationBoxDecoration = BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.all(Radius.circular(12)),
+  );
+
+  // 0.5 × 255 = 127.5 → 128 = 0x80
+  static const _backdropColor = Color(0x80000000);
   final TextEditingController _descriptionController = TextEditingController();
   final TextEditingController _subjectController = TextEditingController();
   final TextEditingController _priorityController = TextEditingController();
@@ -49,16 +70,14 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
     ticketRepository: sl<TicketRepository>(),
   );
   final DialogUtil _dialogUtil = DialogUtil();
-  List<SubjectEntity> subjects = [];
 
   String _ticketCategory = 'COMPLAINT_REGISTRATION';
   String? _selectedPriorityCode;
-  // SubscriberPickerItem? _selectedSubscriber;
 
   @override
   void initState() {
     super.initState();
-    _ticketBloc.add(LoadSubjects());
+    _ticketBloc.add(const LoadSubjects());
   }
 
   @override
@@ -67,24 +86,24 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
     _subjectController.dispose();
     _priorityController.dispose();
     _subscriberController.dispose();
+    _ticketBloc.close();
     super.dispose();
   }
 
   Future<void> _pickFile() async {
+    final l10n = context.bssSubL10n;
     try {
-      FilePickerResult? result = await FilePicker.platform.pickFiles(
+      final result = await FilePicker.platform.pickFiles(
         type: FileType.custom,
         allowedExtensions: ['gif', 'jpg', 'jpeg', 'png', 'pdf', 'mp4'],
         allowMultiple: true,
       );
 
       if (result != null) {
-        // final l10n = context.bssLNPL10n; // Removed as per instruction to hardcode localization
         bool hasTooLargeFile = false;
 
         for (final file in result.files) {
           if (file.path != null) {
-            // Check file size (5MB = 5 * 1024 * 1024 bytes)
             if (file.size > 5 * 1024 * 1024) {
               hasTooLargeFile = true;
               continue;
@@ -96,7 +115,7 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
         }
 
         if (hasTooLargeFile && mounted) {
-          _dialogUtil.showMessage('File size must be less than 5MB', context);
+          _dialogUtil.showMessage(l10n.fileSizeMustBeLessThan5MB, context);
         }
 
         if (_selectedFiles.isNotEmpty) {
@@ -106,33 +125,30 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
       }
     } catch (e) {
       if (mounted) {
-        ScaffoldMessenger.of(
-          context,
-        ).showSnackBar(SnackBar(content: Text('Error picking file: $e')));
+        ScaffoldMessenger.of(context).showSnackBar(
+          SnackBar(content: Text(l10n.errorPickingFile(e.toString()))),
+        );
       }
     }
   }
 
   void _viewFile(PlatformFile file) {
     if (file.path == null) return;
-
     final String extension = file.extension ?? file.path!.split('.').last;
-
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder:
-            (context) => FilePreviewPage(
-              file: File(file.path!),
-              fileName: file.name,
-              fileExtension: extension,
-            ),
+        builder: (context) => FilePreviewPage(
+          file: File(file.path!),
+          fileName: file.name,
+          fileExtension: extension,
+        ),
       ),
     );
   }
 
   Widget _buildRadioButton(String label, String value) {
-    final bool isSelected = _ticketCategory == value;
+    final isSelected = _ticketCategory == value;
     return GestureDetector(
       onTap: () {
         setState(() {
@@ -140,16 +156,16 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
         });
       },
       child: Row(
-        mainAxisSize: MainAxisSize.min, // Ensure it takes minimum space
+        mainAxisSize: MainAxisSize.min,
         children: [
           CommonRadioButton(isSelected: isSelected),
           const SizedBox(width: 8),
           Text(
             label,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,
-              color: const Color(0xFF4C4C4C),
+              color: AppColor.kTextFiledLabelColor,
               fontFamily: 'GeneralSans',
             ),
           ),
@@ -162,57 +178,40 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
     showAppModalBottomSheet(
       context: context,
       isScrollControlled: false,
-      builder:
-          (context) => PriorityPickerSheet(
-            ticketBloc: _ticketBloc,
-            selectedPriority: _selectedPriorityCode,
-            onPrioritySelected: (priority) {
-              setState(() {
-                _selectedPriorityCode = priority.code;
-                _priorityController.text = priority.name;
-              });
-            },
-          ),
-    );
-  }
-
-  /*void _showSubscriberPicker() {
-    showAppModalBottomSheet(
-      context: context,
-      isScrollControlled: false,
-      builder: (context) => SubscriberPickerSheet(
-        selectedSubscriberId: _selectedSubscriber?.id,
-        onSubscriberSelected: (subscriber) {
+      builder: (context) => PriorityPickerSheet(
+        ticketBloc: _ticketBloc,
+        selectedPriority: _selectedPriorityCode,
+        onPrioritySelected: (priority) {
           setState(() {
-            _selectedSubscriber = subscriber;
-            _subscriberController.text = subscriber.name;
+            _selectedPriorityCode = priority.code;
+            _priorityController.text = priority.name;
           });
         },
       ),
     );
-  }*/
+  }
 
   void _showSubjectPicker() {
     showAppModalBottomSheet(
       context: context,
       isScrollControlled: true,
-      useSafeAreaScroll: false, // Prevents full-sheet scrolling
-      builder:
-          (context) => SubjectPickerSheet(
-            ticketBloc: _ticketBloc,
-            selectedSubjectId: _selectedSubject?.id,
-            onSubjectSelected: (subject) {
-              setState(() {
-                _selectedSubject = subject;
-                _subjectController.text = subject.name;
-              });
-            },
-          ),
+      useSafeAreaScroll: false,
+      builder: (context) => SubjectPickerSheet(
+        ticketBloc: _ticketBloc,
+        selectedSubjectId: _selectedSubject?.id,
+        onSubjectSelected: (subject) {
+          setState(() {
+            _selectedSubject = subject;
+            _subjectController.text = subject.name;
+          });
+        },
+      ),
     );
   }
 
   Future<void> _submitTicket() async {
     if (_formKey.currentState?.validate() ?? false) {
+      if (_selectedSubject == null || _selectedPriorityCode == null) return;
       final customerType = 'SUBSCRIBERS';
       final profileState = context.read<ProfileBloc>().state;
       final homeBloc = context.read<HomeBloc>();
@@ -223,10 +222,10 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
         customerName = profileState.profile.name;
       }
 
-      if (homeBloc.homeData != null) {
-        customerId = homeBloc.homeData!.subscriberId;
+      final homeState = homeBloc.state;
+      if (homeState is GetDataSuccess) {
+        customerId = homeState.homeEntity.subscriberId;
       } else if (profileState is ProfileLoaded) {
-        // Fallback to integer ID if UUID from home is not available
         customerId = profileState.profile.subscriberId.toString();
       } else {
         customerId = await PreferenceUtils.getUserId() ?? '';
@@ -248,7 +247,6 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
         ),
       );
     } else {
-      // Small delay to allow validation state to update before finding the widget
       Future.delayed(const Duration(milliseconds: 100), () {
         if (mounted && _formKey.currentContext != null) {
           FormScrollUtil.scrollToFirstError(_formKey.currentContext!);
@@ -264,67 +262,59 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
       isDismissible: false,
       enableDrag: false,
       backgroundColor: Colors.transparent,
-      builder:
-          (context) => Stack(
-            children: [
-              // Semi-transparent overlay
-              Positioned.fill(
-                child: GestureDetector(
-                  onTap: () {}, // Prevent dismissal on tap
-                  child: Container(color: Colors.black.withOpacity(0.5)),
-                ),
-              ),
-              // Bottom sheet content
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: TicketSuccessBottomSheet(
-                  ticketId: ticketId,
-                  onReturnHome: () {
-                    Navigator.pop(context); // Close bottom sheet
-                    Navigator.pop(
-                      context,
-                      true,
-                    ); // Return to previous page with result
-                  },
-                  onViewTickets: () {
-                    Navigator.pop(context); // Close bottom sheet
-                    Navigator.pushReplacement(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const TicketsPage(),
-                      ),
-                    );
-                  },
-                ),
-              ),
-            ],
+      builder: (context) => Stack(
+        children: [
+          Positioned.fill(
+            child: GestureDetector(
+              onTap: () {},
+              child: const ColoredBox(color: _backdropColor),
+            ),
           ),
+          Positioned(
+            bottom: 0,
+            left: 0,
+            right: 0,
+            child: TicketSuccessBottomSheet(
+              ticketId: ticketId,
+              onReturnHome: () {
+                Navigator.pop(context);
+                Navigator.pop(context, true);
+              },
+              onViewTickets: () {
+                Navigator.pop(context);
+                Navigator.pushReplacement(
+                  context,
+                  MaterialPageRoute(
+                    builder: (context) => const TicketsPage(),
+                  ),
+                );
+              },
+            ),
+          ),
+        ],
+      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.bssSubL10n;
+
     return BlocListener<TicketBloc, TicketState>(
       bloc: _ticketBloc,
-      listenWhen:
-          (context, state) =>
-              state is OnError ||
-              state is SubjectLoaded ||
-              state is TicketSubmitted,
+      listenWhen: (previous, current) =>
+          current is OnError ||
+          current is TicketSubmitted,
       listener: (context, state) {
         if (state is OnError) {
           _dialogUtil.showMessage(state.errorMessage, context);
-        } else if (state is SubjectLoaded) {
-          subjects = state.subjects;
         } else if (state is TicketSubmitted) {
           _showSuccessBottomSheet(state.respoEntity.ticketId);
         }
       },
       child: CommonAppBar(
         onBackPressed: () => Navigator.pop(context),
-        title: 'Create Ticket',
+        title: l10n.createTicket,
         body: SafeArea(
           child: Column(
             children: [
@@ -338,11 +328,11 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                       children: [
                         // Ticket Category
                         Text(
-                          'Ticket Category *',
+                          l10n.ticketCategoryLabel,
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF0F1121),
+                            color: AppColor.kTextSecondaryDark,
                             height: 1.3,
                             fontFamily: 'GeneralSans',
                           ),
@@ -351,92 +341,71 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                         Row(
                           children: [
                             _buildRadioButton(
-                              'Complaint Registration',
+                              l10n.complaintRegistration,
                               'COMPLAINT_REGISTRATION',
                             ),
                             const SizedBox(width: 24),
-                            _buildRadioButton('Request', 'REQUEST'),
+                            _buildRadioButton(l10n.request, 'REQUEST'),
                           ],
                         ),
                         const SizedBox(height: 24),
 
                         // Select Subject Field
                         Text(
-                          'Select Subject *',
+                          l10n.selectSubjectLabel,
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF0F1121),
+                            color: AppColor.kTextSecondaryDark,
                             height: 1.3,
                             fontFamily: 'GeneralSans',
                           ),
                         ),
                         const SizedBox(height: 12),
-                        BlocBuilder<TicketBloc, TicketState>(
-                          bloc: _ticketBloc,
-                          buildWhen:
-                              (previous, current) => current is SubjectSelected,
-                          builder: (context, state) {
-                            return TextFormField(
-                              controller: _subjectController,
-                              readOnly: true,
-                              onTap: _showSubjectPicker,
-                              autovalidateMode:
-                                  AutovalidateMode.onUserInteraction,
-                              validator:
-                                  (v) => Validators.validateRequired(
-                                    v,
-                                    fieldName: 'Select subject',
-                                  ),
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w400,
-                                color: Color(0xFF0F1121),
-                                fontFamily: 'GeneralSans',
-                              ),
-                              decoration: InputDecoration(
-                                hintText: 'Select subject',
-                                hintStyle: const TextStyle(
-                                  fontSize: 14,
-                                  fontWeight: FontWeight.w400,
-                                  color: Color(0xFFA5A5A5),
-                                  fontFamily: 'GeneralSans',
-                                ),
-                                filled: true,
-                                fillColor: Colors.white,
-                                suffixIcon: const Icon(
-                                  Icons.keyboard_arrow_down,
-                                  color: Color(0xFF292D32),
-                                ),
-                                contentPadding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 14,
-                                ),
-                                border: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: BorderSide.none,
-                                ),
-                                errorBorder: OutlineInputBorder(
-                                  borderRadius: BorderRadius.circular(12),
-                                  borderSide: const BorderSide(
-                                    color: Colors.red,
-                                    width: 1,
-                                  ),
-                                ),
-                              ),
-                            );
-                          },
+                        TextFormField(
+                          controller: _subjectController,
+                          readOnly: true,
+                          onTap: _showSubjectPicker,
+                          autovalidateMode:
+                          AutovalidateMode.onUserInteraction,
+                          validator: (v) => Validators.validateRequired(
+                            v,
+                            fieldName: l10n.selectSubjectHintText,
+                          ),
+                          style: const TextStyle(
+                            fontSize: 14,
+                            fontWeight: FontWeight.w400,
+                            color: AppColor.kTextSecondaryDark,
+                            fontFamily: 'GeneralSans',
+                          ),
+                          decoration: InputDecoration(
+                            hintText: l10n.selectSubjectHintText,
+                            hintStyle: const TextStyle(
+                              fontSize: 14,
+                              fontWeight: FontWeight.w400,
+                              color: AppColor.kMediumGrey,
+                              fontFamily: 'GeneralSans',
+                            ),
+                            filled: true,
+                            fillColor: Colors.white,
+                            suffixIcon: const Icon(
+                              Icons.keyboard_arrow_down,
+                              color: AppColor.kNearBlack,
+                            ),
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 16,
+                              vertical: 14,
+                            ),
+                            border: _inputBorder,
+                            errorBorder: _errorBorder,
+                          ),
                         ),
                         if (_selectedSubject != null) ...[
                           const SizedBox(height: 16),
-                          // Resolved In Container
                           Container(
                             height: 52,
                             width: double.infinity,
-                            decoration: BoxDecoration(
-                              color: Colors.white,
-                              borderRadius: BorderRadius.circular(12),
-                            ),
+                            decoration: _escalationBoxDecoration,
                             child: CustomPaint(
                               painter: DashedBorderPainter(
                                 color: AppColor.kPrimaryColor,
@@ -468,13 +437,12 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                         const SizedBox(height: 24),
 
                         // Select Priority Field
-                        // Select Priority Field
                         Text(
-                          'Select Priority *',
+                          l10n.selectPriorityLabel,
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF0F1121),
+                            color: AppColor.kTextSecondaryDark,
                             height: 1.3,
                             fontFamily: 'GeneralSans',
                           ),
@@ -485,255 +453,158 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                           readOnly: true,
                           onTap: _showPriorityPicker,
                           autovalidateMode: AutovalidateMode.onUserInteraction,
-                          validator:
-                              (v) => Validators.validateRequired(
-                                v,
-                                fieldName: 'Priority',
-                              ),
+                          validator: (v) => Validators.validateRequired(
+                            v,
+                            fieldName: l10n.selectPriorityHintText,
+                          ),
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
-                            color: Color(0xFF0F1121),
+                            color: AppColor.kTextSecondaryDark,
                             fontFamily: 'GeneralSans',
                           ),
                           decoration: InputDecoration(
-                            hintText: 'Select Priority',
+                            hintText: l10n.selectPriorityHintText,
                             hintStyle: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
-                              color: Color(0xFFA5A5A5),
+                              color: AppColor.kMediumGrey,
                               fontFamily: 'GeneralSans',
                             ),
                             filled: true,
                             fillColor: Colors.white,
                             suffixIcon: const Icon(
                               Icons.keyboard_arrow_down,
-                              color: Color(0xFF292D32),
+                              color: AppColor.kNearBlack,
                             ),
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16,
                               vertical: 14,
                             ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                color: Colors.red,
-                                width: 1,
-                              ),
-                            ),
+                            border: _inputBorder,
+                            errorBorder: _errorBorder,
                           ),
                         ),
                         const SizedBox(height: 24),
 
-                        /*
-                        // Select Subscriber Field
+                        // Remarks Field
                         Text(
-                          'Select Subscriber*', // Hardcoded localization
+                          l10n.remarks,
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF0F1121),
+                            color: AppColor.kTextSecondaryDark,
                             height: 1.3,
                             fontFamily: 'GeneralSans',
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 8),
                         TextFormField(
-                          controller: _subscriberController,
-                          readOnly: true,
-                          onTap: _showSubscriberPicker,
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          validator: (v) => Validators.validateRequired(
+                          controller: _descriptionController,
+                          maxLines: 5,
+                          minLines: 5,
+                          textAlignVertical: TextAlignVertical.top,
+                          autovalidateMode:
+                          AutovalidateMode.onUserInteraction,
+                          validator: (v) =>
+                          Validators.validateRequired(
                             v,
-                            fieldName: 'Select Subscriber', // Hardcoded localization
-                          ),
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Color(0xFF0F1121),
-                            fontFamily: 'GeneralSans',
-                          ),
+                            fieldName: l10n.remarks,
+                          ) ??
+                              Validators.validateMinLength(
+                                v,
+                                10,
+                                fieldName: l10n.remarks,
+                              ),
                           decoration: InputDecoration(
-                            hintText: 'Select Subscriber', // Hardcoded localization
+                            hintText: l10n.remarksHint,
                             hintStyle: const TextStyle(
+                              color: AppColor.kSlateGrey,
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
-                              color: Color(0xFFA5A5A5),
+                              height: 1.6,
                               fontFamily: 'GeneralSans',
                             ),
                             filled: true,
                             fillColor: Colors.white,
-                            suffixIcon: const Icon(
-                              Icons.keyboard_arrow_down,
-                              color: Color(0xFF292D32),
-                            ),
+                            border: _inputBorder,
+                            errorBorder: _errorBorder,
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16,
-                              vertical: 14,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                color: Colors.red,
-                                width: 1,
-                              ),
+                              vertical: 15,
                             ),
                           ),
-                        ),
-                        const SizedBox(height: 24),
-*/
-
-                        // Remarks Field
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            Text(
-                              'Remarks',
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Color(0xFF0F1121),
-                                height: 1.3,
-                                fontFamily: 'GeneralSans',
-                              ),
-                            ),
-                            const SizedBox(height: 8),
-                            Container(
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: TextFormField(
-                                controller: _descriptionController,
-                                maxLines: 5,
-                                minLines: 5,
-                                textAlignVertical: TextAlignVertical.top,
-                                autovalidateMode:
-                                    AutovalidateMode.onUserInteraction,
-                                validator:
-                                    (v) =>
-                                        Validators.validateRequired(
-                                          v,
-                                          fieldName: 'Remarks',
-                                        ) ??
-                                        Validators.validateMinLength(
-                                          v,
-                                          10,
-                                          fieldName: 'Remarks',
-                                        ),
-                                decoration: InputDecoration(
-                                  hintText: 'Remarks',
-                                  hintStyle: const TextStyle(
-                                    color: Color(0xFF67697A),
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400,
-                                    height: 1.6,
-                                    fontFamily: 'GeneralSans',
-                                  ),
-                                  border: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: BorderSide.none,
-                                  ),
-                                  errorBorder: OutlineInputBorder(
-                                    borderRadius: BorderRadius.circular(12),
-                                    borderSide: const BorderSide(
-                                      color: Colors.red,
-                                      width: 1,
-                                    ),
-                                  ),
-                                  contentPadding: const EdgeInsets.symmetric(
-                                    horizontal: 16,
-                                    vertical: 15,
-                                  ),
-                                ),
-                                style: const TextStyle(
-                                  color: Color(0xFF262629),
-                                  fontSize: 14,
-                                  height: 1.6,
-                                  fontFamily: 'GeneralSans',
-                                  fontWeight: FontWeight.w400,
-                                ),
-                              ),
-                            ),
-                          ],
+                          style: const TextStyle(
+                            color: AppColor.kNearBlack,
+                            fontSize: 14,
+                            height: 1.6,
+                            fontFamily: 'GeneralSans',
+                            fontWeight: FontWeight.w400,
+                          ),
                         ),
                         const SizedBox(height: 24),
 
                         // Upload Attachment Field
-                        Column(
-                          crossAxisAlignment: CrossAxisAlignment.start,
-                          children: [
-                            FormField<List<PlatformFile>>(
-                              validator: (value) {
-                                if (_selectedFiles.isEmpty) {
-                                  return 'Please attach at least one document';
-                                }
-                                return null;
-                              },
-                              builder: (state) {
-                                return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
-                                  children: [
-                                    AttachmentUploadField(
-                                      label: 'Attachments *',
-                                      onTap: _pickFile,
+                        FormField<List<PlatformFile>>(
+                          validator: (value) {
+                            if (_selectedFiles.isEmpty) {
+                              return l10n.pleaseAttachAtLeastOneDocument;
+                            }
+                            return null;
+                          },
+                          builder: (state) {
+                            return Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              children: [
+                                AttachmentUploadField(
+                                  label: l10n.attachmentsLabel,
+                                  onTap: _pickFile,
+                                ),
+                                if (state.hasError)
+                                  Padding(
+                                    padding: const EdgeInsets.only(
+                                      top: 8,
+                                      left: 12,
                                     ),
-                                    if (state.hasError)
-                                      Padding(
-                                        padding: const EdgeInsets.only(
-                                          top: 8,
-                                          left: 12,
-                                        ),
-                                        child: Text(
-                                          state.errorText!,
-                                          style: const TextStyle(
-                                            color: Color(0xFFBA1A1A),
-                                            fontSize: 12,
-                                            fontFamily: 'GeneralSans',
-                                          ),
-                                        ),
+                                    child: Text(
+                                      state.errorText!,
+                                      style: const TextStyle(
+                                        color: AppColor.kFailedRed,
+                                        fontSize: 12,
+                                        fontFamily: 'GeneralSans',
                                       ),
-                                  ],
-                                );
+                                    ),
+                                  ),
+                              ],
+                            );
+                          },
+                        ),
+                        const SizedBox(height: 12),
+                        BlocBuilder<TicketBloc, TicketState>(
+                          bloc: _ticketBloc,
+                          buildWhen: (_, current) =>
+                              current is FileSelected,
+                          builder: (context, state) {
+                            return AttachmentListWidget(
+                              selectedFiles: _selectedFiles,
+                              onViewFile: _viewFile,
+                              onDeleteFile: (file) {
+                                setState(() {
+                                  _selectedFiles.remove(file);
+                                  _ticketBloc.add(const OnFileSelect());
+                                  _formKey.currentState?.validate();
+                                });
                               },
-                            ),
-                            // Attached File List
-                            const SizedBox(height: 12),
-                            BlocBuilder<TicketBloc, TicketState>(
-                              bloc: _ticketBloc,
-                              buildWhen:
-                                  (context, state) => state is FileSelected,
-                              builder: (context, state) {
-                                return AttachmentListWidget(
-                                  selectedFiles: _selectedFiles,
-                                  onViewFile: _viewFile,
-                                  onDeleteFile: (file) {
-                                    setState(() {
-                                      _selectedFiles.remove(file);
-                                      _ticketBloc.add(const OnFileSelect());
-                                      _formKey.currentState?.validate();
-                                    });
-                                  },
-                                );
-                              },
-                            ),
-                          ],
+                            );
+                          },
                         ),
                         const SizedBox(height: 12),
 
                         // File Format Instructions
                         Text(
-                          '*Please upload files in the following format :\nGIF, JPG, JPEG, PNG, PDF, MP4. The maximum allowed file\nsize is 5MB.',
+                          l10n.fileFormatInstructions,
                           style: const TextStyle(
-                            color: Color(0xFF67697A),
+                            color: AppColor.kSlateGrey,
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
                             height: 1.67,
@@ -747,20 +618,20 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                 ),
               ),
 
-              // Submit Button (Fixed at bottom)
-              Container(
+              // Submit Button — Padding is lighter than Container when there
+              // is no decoration; avoids an unnecessary RenderObject layer.
+              Padding(
                 padding: const EdgeInsets.all(20),
                 child: BlocBuilder<TicketBloc, TicketState>(
                   bloc: _ticketBloc,
-                  buildWhen:
-                      (previous, current) =>
-                          current is TicketSubmitting ||
-                          current is TicketSubmitted ||
-                          current is OnError,
+                  buildWhen: (previous, current) =>
+                  current is TicketSubmitting ||
+                      current is TicketSubmitted ||
+                      current is OnError,
                   builder: (context, state) {
                     return PrimaryButton(
                       isLoading: state is TicketSubmitting,
-                      label: 'Submit',
+                      label: l10n.submit,
                       borderRadius: 10,
                       height: 52,
                       onClicked: _submitTicket,

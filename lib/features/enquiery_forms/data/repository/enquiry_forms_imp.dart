@@ -11,14 +11,16 @@ import 'package:kfon_subscriber/features/enquiery_forms/data/model/gov_and_corp_
 import 'package:kfon_subscriber/features/enquiery_forms/data/model/home_enquiry_form_params.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/data/model/lnp_enquiry_form_params.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/domain/repository/enquiery_form.dart';
-import 'package:kfon_subscriber/service_locator.dart';
 import 'package:path_provider/path_provider.dart';
 
-
 class EnquiryFormRepositoryImp extends EnquiryFormRepository {
+  final DioClient _client;
+
+  EnquiryFormRepositoryImp({required DioClient client}) : _client = client;
+
   @override
   Future<Either> submitHomeEnquiryForm(HomeEnquiryFormParams params) async {
-    var response = await sl<DioClient>().post(
+    final response = await _client.post(
       ApiUrls.subscriptionEnquiryFormURL,
       data: params.toMap(),
     );
@@ -31,7 +33,7 @@ class EnquiryFormRepositoryImp extends EnquiryFormRepository {
 
   @override
   Future<Either> submitLNPEnquiryForm(LNPEnquiryFormParams params) async {
-    var response = await sl<DioClient>().post(
+    final response = await _client.post(
       ApiUrls.lnpEnquiryFormURL,
       data: await params.toFormData(),
     );
@@ -44,7 +46,7 @@ class EnquiryFormRepositoryImp extends EnquiryFormRepository {
 
   @override
   Future<Either> submitAGNPEnquiryForm(AGNPEnquiryFormParams params) async {
-    var response = await sl<DioClient>().post(
+    final response = await _client.post(
       ApiUrls.agnpEnquiryFormURL,
       data: params.toMap(),
     );
@@ -57,11 +59,12 @@ class EnquiryFormRepositoryImp extends EnquiryFormRepository {
 
   @override
   Future<Either> submitGovAndCorpEnquiryForm(
-      GovAndCorpEnquiryFormParams params,) async {
-    var response = await sl<DioClient>().post(
+    GovAndCorpEnquiryFormParams params,
+  ) async {
+    final response = await _client.post(
       ApiUrls.govAndCorpEnquiryFormURL,
-      data: params.toMap()
-      ,);
+      data: params.toMap(),
+    );
     if (response.error.isEmpty) {
       return Right(response.data);
     } else {
@@ -71,8 +74,9 @@ class EnquiryFormRepositoryImp extends EnquiryFormRepository {
 
   @override
   Future<Either> submitDarkFibreEnquiryForm(
-      DarkFibreEnquiryFormParams params,) async {
-    var response = await sl<DioClient>().post(
+    DarkFibreEnquiryFormParams params,
+  ) async {
+    final response = await _client.post(
       ApiUrls.darkFibreEnquiryFormURL,
       data: await params.toFormData(),
     );
@@ -92,11 +96,9 @@ class EnquiryFormRepositoryImp extends EnquiryFormRepository {
       downloadsDir = await getApplicationDocumentsDirectory();
     }
 
-    final File file = File('${downloadsDir.path}/${url
-        .split('/')
-        .last}');
+    final File file = File('${downloadsDir.path}/${url.split('/').last}');
 
-    var response = await sl<DioClient>().download(url, file.path);
+    final response = await _client.download(url, file.path);
     if (response.error.isEmpty) {
       return Right(true);
     } else {
@@ -106,7 +108,7 @@ class EnquiryFormRepositoryImp extends EnquiryFormRepository {
 
   @override
   Future<Either> submitBPLEnquiryForm(BplEnquiryFormParams params) async {
-    var response = await sl<DioClient>().post(
+    final response = await _client.post(
       ApiUrls.bplEnquiryFormURL,
       data: params.toMap(),
     );

@@ -1,15 +1,16 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/offline_recharge/domain/entity/offline_recharge_data_entity.dart';
 import 'package:kfon_subscriber/features/offline_recharge/domain/repository/offline_recharge_repository.dart';
 import 'package:kfon_subscriber/features/offline_recharge/presentation/bloc/offline_recharge_bloc.dart';
 import 'package:kfon_subscriber/features/offline_recharge/presentation/bloc/offline_recharge_event.dart';
 import 'package:kfon_subscriber/features/offline_recharge/presentation/bloc/offline_recharge_state.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/presentation/ui_component/primary_button.dart';
 import 'package:kfon_subscriber/presentation/ui_component/secondary_button.dart';
-import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/presentation/ui_component/shimmer/shimmer_base.dart';
 import 'package:kfon_subscriber/presentation/ui_component/shimmer/shimmer_box.dart';
 import 'package:kfon_subscriber/service_locator.dart';
@@ -26,15 +27,79 @@ class OfflineRechargeBottomSheet extends StatefulWidget {
 
 class _OfflineRechargeBottomSheetState
     extends State<OfflineRechargeBottomSheet> {
-  static const _bg = Color(0xFFEFEBE5);
-  static const _orange = Color(0xFFE8820C);
+  static const _orange = AppColor.kStatusPendingOrange;
   late OfflineRechargeBloc _bloc;
+
+  // ── Shared card decoration ───────────────────────────────────────────────────
+  static const _cardDecoration = BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.all(Radius.circular(16)),
+  );
+  // 0x1F = 31 ≈ 0.12 × 255 → Colors.black @ 12% opacity
+  static const _sheetDecoration = BoxDecoration(
+    color: AppColor.kWarmBackground,
+    borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+    boxShadow: [
+      BoxShadow(
+        color: Color(0x1F000000),
+        blurRadius: 40,
+        offset: Offset(0, 8),
+      ),
+    ],
+  );
+  static const _avatarDecoration = BoxDecoration(
+    shape: BoxShape.circle,
+    gradient: LinearGradient(
+      colors: [Color(0xFF6A4FA3), Color(0xFFA0522D)],
+      begin: Alignment.topLeft,
+      end: Alignment.bottomRight,
+    ),
+  );
+  static const _statsDecoration = ShapeDecoration(
+    color: AppColor.kSecondaryBackgroundColor,
+    shape: RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(12)),
+    ),
+  );
+  static const _badgeDecoration = BoxDecoration(
+    color: AppColor.kStatusFailBg,
+    borderRadius: BorderRadius.all(Radius.circular(20)),
+  );
+  // Sizer-based text styles — computed once as static final.
+  static final _emojiStyle = TextStyle(fontSize: 22.sp);
+  static final _userNameStyle = TextStyle(
+    fontSize: 16.sp,
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w500,
+    height: 1.30,
+    color: AppColor.kRichBlack,
+  );
+  static final _displayNameStyle = TextStyle(
+    fontSize: 10.sp,
+    color: const Color(0xFF888888),
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w500,
+    height: 1.30,
+  );
+  static final _badgeTextStyle = TextStyle(
+    fontSize: 10.sp,
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w500,
+    height: 1.30,
+    color: AppColor.kStatusFailRed,
+  );
 
   @override
   void initState() {
     super.initState();
     _bloc = OfflineRechargeBloc(repository: sl<OfflineRechargeRepository>());
     _bloc.add(GetData(subscriberUuid: widget.subscriberUuid));
+  }
+
+  @override
+  void dispose() {
+    _bloc.close();
+    super.dispose();
   }
 
   @override
@@ -47,51 +112,33 @@ class _OfflineRechargeBottomSheetState
           DialogUtil().showMessage(state.errorMessage, context);
         } else if (state is RechargeSuccess) {
           DialogUtil().showMessage(
-            'Recharge Success',
+            context.bssSubL10n.rechargeSuccess,
             context,
-            backgroundColor: Colors.green,
+            backgroundColor: AppColor.kSuccessGreen,
           );
         }
       },
-      listenWhen:
-          (previous, current) =>
-              current is OnFailure || current is RechargeSuccess,
-      buildWhen:
-          (previous, current) =>
-              current is GetDataSuccess || current is OnRecharging,
+      listenWhen: (previous, current) =>
+          current is OnFailure || current is RechargeSuccess,
+      buildWhen: (previous, current) =>
+          current is GetDataSuccess || current is OnRecharging,
       builder: (context, state) {
         if (state is GetDataSuccess) {
           return Container(
-            decoration: BoxDecoration(
-              color: _bg,
-              borderRadius: const BorderRadius.vertical(
-                top: Radius.circular(28),
-              ),
-              boxShadow: [
-                BoxShadow(
-                  color: Colors.black.withOpacity(0.12),
-                  blurRadius: 40,
-                  offset: const Offset(0, 8),
-                ),
-              ],
-            ),
+            decoration: _sheetDecoration,
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 _buildUserCard(state.entity),
                 const SizedBox(height: 14),
-
-                // Details Card
                 _buildDetailsCard(state.entity),
                 const SizedBox(height: 22),
-
-                // Buttons
                 _buildButtons(context),
               ],
             ),
           );
         } else if (state is OnRecharging) {
-          return Center(
+          return const Center(
             child: SizedBox(
               height: 45,
               width: 45,
@@ -119,29 +166,18 @@ class _OfflineRechargeBottomSheetState
   Widget _buildUserCard(OfflineRechargeDataEntity entity) {
     return Container(
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
+      decoration: _cardDecoration,
       child: Column(
         children: [
-          // User row
           Row(
             children: [
               // Avatar
               Container(
                 width: 40.w,
                 height: 40.h,
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  gradient: const LinearGradient(
-                    colors: [Color(0xFF6A4FA3), Color(0xFFA0522D)],
-                    begin: Alignment.topLeft,
-                    end: Alignment.bottomRight,
-                  ),
-                ),
+                decoration: _avatarDecoration,
                 child: Center(
-                  child: Text('🧔', style: TextStyle(fontSize: 22.sp)),
+                  child: Text('🧔', style: _emojiStyle),
                 ),
               ),
               const SizedBox(width: 12),
@@ -152,72 +188,51 @@ class _OfflineRechargeBottomSheetState
                   children: [
                     Text(
                       entity.subscriberDetails.username,
-                      style: TextStyle(
-                        fontSize: 16.sp,
-                        fontFamily: 'General Sans',
-                        fontWeight: FontWeight.w500,
-                        height: 1.30,
-                        color: Color(0xFF1A1A1A),
-                      ),
+                      style: _userNameStyle,
                     ),
-                    SizedBox(height: 2),
+                    const SizedBox(height: 2),
                     Text(
                       entity.subscriberDetails.displayName,
-                      style: TextStyle(
-                        fontSize: 10.sp,
-                        color: Color(0xFF888888),
-                        fontFamily: 'General Sans',
-                        fontWeight: FontWeight.w500,
-                        height: 1.30,
-                      ),
+                      style: _displayNameStyle,
                     ),
                   ],
                 ),
               ),
-              // Expired badge
+              // Status badge
               Container(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 12,
-                  vertical: 4,
-                ),
-                decoration: BoxDecoration(
-                  color: const Color(0xFFFCE8EC),
-                  borderRadius: BorderRadius.circular(20),
-                ),
+                padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 4),
+                decoration: _badgeDecoration,
                 child: Text(
                   entity.rechargeDetails.subscriptionStatus,
-                  style: TextStyle(
-                    fontSize: 10.sp,
-                    fontFamily: 'General Sans',
-                    fontWeight: FontWeight.w500,
-                    height: 1.30,
-                    color: Color(0xFFD0214A),
-                  ),
+                  style: _badgeTextStyle,
                 ),
               ),
             ],
           ),
           const SizedBox(height: 14),
-          const Divider(color: Color(0xFFEFEBE5), height: 1),
+          const Divider(color: AppColor.kWarmBackground, height: 1),
           const SizedBox(height: 12),
 
           // Stats row
           Container(
-            padding: EdgeInsets.all(12),
-            decoration: ShapeDecoration(
-              color: const Color(0xFFF5F5F5),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
-              ),
-            ),
+            padding: const EdgeInsets.all(12),
+            decoration: _statsDecoration,
             child: Row(
               children: [
-                _StatItem(label: 'Last Paid', value: '₹${entity.subscriberDetails.lastTopUpAmount}'),
                 _StatItem(
-                  label: 'Recharge Count',
-                  value: '${entity.rechargeDetails.rechargeCount} Times',
+                  label: context.bssSubL10n.lastPaid,
+                  value: '₹${entity.subscriberDetails.lastTopUpAmount}',
                 ),
-                _StatItem(label: 'Last Plan', value: entity.rechargeDetails.lastPlan),
+                _StatItem(
+                  label: context.bssSubL10n.rechargeCountLabel,
+                  value: context.bssSubL10n.rechargeCountTimes(
+                    entity.rechargeDetails.rechargeCount.toString(),
+                  ),
+                ),
+                _StatItem(
+                  label: context.bssSubL10n.lastPlan,
+                  value: entity.rechargeDetails.lastPlan,
+                ),
               ],
             ),
           ),
@@ -229,22 +244,25 @@ class _OfflineRechargeBottomSheetState
   Widget _buildDetailsCard(OfflineRechargeDataEntity entity) {
     return Container(
       padding: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-      ),
+      decoration: _cardDecoration,
       child: Column(
         children: [
-          _InfoRow(label: 'Topup To', value: entity.subscriberDetails.username),
           _InfoRow(
-            label: 'Topup Amount',
+            label: context.bssSubL10n.topupTo,
+            value: entity.subscriberDetails.username,
+          ),
+          _InfoRow(
+            label: context.bssSubL10n.topupAmount,
             value: '${entity.rechargeDetails.lastPaid}',
             valueColor: _orange,
             valueFontWeight: FontWeight.w600,
           ),
-          _InfoRow(label: 'Account Balance', value: '${entity.rechargeDetails.accountBalance}'),
           _InfoRow(
-            label: 'Topup Message',
+            label: context.bssSubL10n.accountBalance,
+            value: '${entity.rechargeDetails.accountBalance}',
+          ),
+          _InfoRow(
+            label: context.bssSubL10n.topupMessage,
             value: entity.rechargeDetails.topUpMessage,
             valueStyle: const TextStyle(
               fontSize: 12,
@@ -261,37 +279,29 @@ class _OfflineRechargeBottomSheetState
   Widget _buildButtons(BuildContext ctx) {
     return Row(
       children: [
-        // No
         Expanded(
           child: SecondaryButton(
-            label: 'No',
+            label: ctx.bssSubL10n.no,
             onClicked: () => Navigator.pop(ctx),
           ),
         ),
         const SizedBox(width: 14),
-        // Yes
         Expanded(
           child: PrimaryButton(
-            label: 'Yes',
+            label: ctx.bssSubL10n.yes,
             isLoading: false,
             onClicked: () {
               Navigator.pop(ctx);
               DialogUtil().showMessage(
-                'Your recharge has been completed Successfully',
+                ctx.bssSubL10n.rechargeCompletedSuccessfully,
                 ctx,
-                backgroundColor: Colors.green,
+                backgroundColor: AppColor.kSuccessGreen,
               );
             },
           ),
         ),
       ],
     );
-  }
-
-  @override
-  void dispose() {
-    super.dispose();
-    _bloc.close();
   }
 }
 
@@ -301,33 +311,31 @@ class _StatItem extends StatelessWidget {
 
   const _StatItem({required this.label, required this.value});
 
+  // Sizer-based — computed once as static final.
+  static final _labelStyle = TextStyle(
+    fontSize: 8.sp,
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w400,
+    height: 1.30,
+    color: const Color(0xFFAAAAAA),
+  );
+  static final _valueStyle = TextStyle(
+    fontSize: 12.sp,
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w500,
+    height: 1.30,
+    color: AppColor.kRichBlack,
+  );
+
   @override
   Widget build(BuildContext ctx) {
     return Expanded(
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 8.sp,
-              fontFamily: 'General Sans',
-              fontWeight: FontWeight.w400,
-              height: 1.30,
-              color: Color(0xFFAAAAAA),
-            ),
-          ),
+          Text(label, style: _labelStyle),
           const SizedBox(height: 3),
-          Text(
-            value,
-            style: TextStyle(
-              fontSize: 12.sp,
-              fontFamily: 'General Sans',
-              fontWeight: FontWeight.w500,
-              height: 1.30,
-              color: Color(0xFF1A1A1A),
-            ),
-          ),
+          Text(value, style: _valueStyle),
         ],
       ),
     );
@@ -351,6 +359,21 @@ class _InfoRow extends StatelessWidget {
     this.isLast = false,
   });
 
+  static final _labelStyle = TextStyle(
+    fontSize: 14.sp,
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w400,
+    height: 1.30,
+    color: const Color(0xFF999999),
+  );
+  static final _defaultValueStyle = TextStyle(
+    fontSize: 14.sp,
+    fontFamily: 'GeneralSans',
+    height: 1.30,
+    fontWeight: FontWeight.w500,
+    color: AppColor.kRichBlack,
+  );
+
   @override
   Widget build(BuildContext ctx) {
     return Container(
@@ -358,30 +381,19 @@ class _InfoRow extends StatelessWidget {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            label,
-            style: TextStyle(
-              fontSize: 14.sp,
-              fontFamily: 'General Sans',
-              fontWeight: FontWeight.w400,
-              height: 1.30,
-              color: Color(0xFF999999),
-            ),
-          ),
+          Text(label, style: _labelStyle),
           const SizedBox(width: 12),
           Expanded(
             child: Text(
               value,
               textAlign: TextAlign.right,
-              style:
-                  valueStyle ??
-                  TextStyle(
-                    fontSize: 14.sp,
-                    fontFamily: 'General Sans',
-                    height: 1.30,
-                    fontWeight: valueFontWeight ?? FontWeight.w500,
-                    color: valueColor ?? const Color(0xFF1A1A1A),
-                  ),
+              style: valueStyle ??
+                  (valueColor != null || valueFontWeight != null
+                      ? _defaultValueStyle.copyWith(
+                          color: valueColor,
+                          fontWeight: valueFontWeight,
+                        )
+                      : _defaultValueStyle),
             ),
           ),
         ],

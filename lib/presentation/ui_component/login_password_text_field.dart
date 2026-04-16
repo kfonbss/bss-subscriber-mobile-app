@@ -46,7 +46,7 @@ class _LoginPasswordTextFieldState extends State<LoginPasswordTextField> {
         ).textTheme.bodyMedium?.copyWith(color: AppColor.kTextFiledHintColor),
         errorStyle: Theme.of(
           context,
-        ).textTheme.bodySmall?.copyWith(color: Colors.red),
+        ).textTheme.bodySmall?.copyWith(color: AppColor.kFailedRed),
         contentPadding: EdgeInsets.symmetric(vertical: 4),
 
         prefixIconConstraints: BoxConstraints(

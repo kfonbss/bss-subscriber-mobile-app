@@ -12,6 +12,10 @@ class Initial extends PackageDetailsState {
   const Initial();
 }
 
+class PackageDetailsLoading extends PackageDetailsState {
+  const PackageDetailsLoading();
+}
+
 class GetDataSuccess extends PackageDetailsState {
   final ActivePackagesDetailsEntity entity;
 

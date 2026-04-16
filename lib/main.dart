@@ -12,30 +12,31 @@ import 'package:kfon_subscriber/features/auth/presentation/pages/forgot_password
 import 'package:kfon_subscriber/features/auth/presentation/pages/login_page.dart';
 import 'package:kfon_subscriber/features/auth/presentation/pages/new_password_page.dart';
 import 'package:kfon_subscriber/features/auth/presentation/pages/otp_verification_page.dart';
+import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/agnp_enquiry_form.dart';
+import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/bpl_enquiry_form.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/dark_fibre_enquiry_form.dart';
+import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/enquiry_list_page.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/gov_and_corp_enquiry_form.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/home_enquiry_form.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/lnp_enquiry_form.dart';
-import 'package:kfon_subscriber/features/pages/notification_page.dart';
-import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profile_bloc.dart';
-import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profile_event.dart';
-import 'package:kfon_subscriber/features/profile/presentation/account_information/pages/account_information_page.dart';
-import 'package:kfon_subscriber/features/profile/presentation/pages/settings_page.dart';
-import 'package:kfon_subscriber/features/profile/domain/repository/profile_repository.dart';
-import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/bpl_enquiry_form.dart';
-import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/agnp_enquiry_form.dart';
-import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/enquiry_list_page.dart';
-import 'package:kfon_subscriber/features/pages/intro_screen_page.dart';
-import 'package:kfon_subscriber/features/invoice_list/presentation/pages/invoice_list_page.dart';
+import 'package:kfon_subscriber/features/home/domain/repository/home_repository.dart';
+import 'package:kfon_subscriber/features/home/presentation/bloc/home_bloc.dart';
+import 'package:kfon_subscriber/features/invoice_list/domain/repository/invoice_repository.dart';
 import 'package:kfon_subscriber/features/invoice_list/presentation/bloc/invoice_list_bloc.dart';
 import 'package:kfon_subscriber/features/invoice_list/presentation/bloc/invoice_list_event.dart';
-import 'package:kfon_subscriber/features/invoice_list/domain/repository/invoice_repository.dart';
+import 'package:kfon_subscriber/features/invoice_list/presentation/pages/invoice_list_page.dart';
+import 'package:kfon_subscriber/features/pages/intro_screen_page.dart';
 import 'package:kfon_subscriber/features/pages/main_page.dart';
-import 'package:kfon_subscriber/features/home/presentation/bloc/home_bloc.dart';
-import 'package:kfon_subscriber/features/home/domain/repository/home_repository.dart';
+import 'package:kfon_subscriber/features/pages/notification_page.dart';
+import 'package:kfon_subscriber/features/profile/domain/repository/profile_repository.dart';
+import 'package:kfon_subscriber/features/profile/presentation/account_information/pages/account_information_page.dart';
+import 'package:kfon_subscriber/features/profile/presentation/pages/settings_page.dart';
+import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profile_bloc.dart';
+import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profile_event.dart';
 import 'package:kfon_subscriber/features/tranasactions/presentation/pages/transaction_history_page.dart';
-import 'package:kfon_subscriber/l10/bss_sub_localizations.dart';
+import 'package:kfon_subscriber/l10n/bss_sub_localizations.dart';
 import 'package:kfon_subscriber/service_locator.dart';
+
 import 'features/auth/domain/repository/auth_repository.dart';
 import 'features/auth/presentation/bloc/auth_state.dart';
 
@@ -72,10 +73,9 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
-    _authBloc.add(const CheckAuthStatus());
     _profileBloc = ProfileBloc(repository: sl<ProfileRepository>());
     _homeBloc = HomeBloc(repository: sl<HomeRepository>());
-    _profileBloc.add(const FetchProfileRequested());
+    _authBloc.add(const CheckAuthStatus());
   }
 
   @override
@@ -84,9 +84,9 @@ class _MyAppState extends State<MyApp> {
     final textTheme = theme.textTheme.apply(fontFamily: 'GeneralSans');
     return MultiBlocProvider(
       providers: [
-        BlocProvider(create: (context) => _authBloc),
-        BlocProvider(create: (context) => _profileBloc),
-        BlocProvider(create: (context) => _homeBloc),
+        BlocProvider.value(value: _authBloc),
+        BlocProvider.value(value: _profileBloc),
+        BlocProvider.value(value: _homeBloc),
       ],
       child: MaterialApp(
         theme: theme.copyWith(
@@ -121,7 +121,7 @@ class _MyAppState extends State<MyApp> {
           ),
         ),
         builder: (context, child) {
-          Sizer.init(context);
+          Sizer.init(context, designHeight: 932.0, designWidth: 430.0);
           return child!;
         },
         localizationsDelegates: [BssSubLocalizations.delegate],
@@ -165,9 +165,15 @@ class _MyAppState extends State<MyApp> {
               ),
           AppRoutes.settingsPage: (context) => SettingsPage(),
         },
-        home: BlocBuilder<AuthBloc, AuthState>(
+        home: BlocConsumer<AuthBloc, AuthState>(
           bloc: _authBloc,
+          listener: (context, state) {
+            if (state is Authenticated) {
+              _profileBloc.add(const FetchProfileRequested());
+            }
+          },
           builder: (context, state) {
+           // return Container();
             if (state is Authenticated) {
               return MainPage();
             } else if (widget.showIntro) {

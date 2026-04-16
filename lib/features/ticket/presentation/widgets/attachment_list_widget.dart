@@ -29,7 +29,7 @@ class AttachmentListWidget extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: const Color(0xFFCBCBCB), width: 1),
+                border: Border.all(color: AppColor.kDividerGrey, width: 1),
               ),
               child: Row(
                 children: [
@@ -47,7 +47,7 @@ class AttachmentListWidget extends StatelessWidget {
                     child: Text(
                       file.name,
                       style: const TextStyle(
-                        color: Color(0xFF262629),
+                        color: AppColor.kNearBlack,
                         fontSize: 14,
                         fontWeight: FontWeight.w500,
                         height: 1.0,
@@ -62,7 +62,7 @@ class AttachmentListWidget extends StatelessWidget {
                     child: ImageIcon(
                       const AssetImage('assets/icons/eye.png'),
                       size: 20,
-                      color: const Color(0xFF767681),
+                      color: AppColor.kMutedIconGrey,
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -73,7 +73,7 @@ class AttachmentListWidget extends StatelessWidget {
                       width: 20,
                       height: 20,
                       colorFilter: const ColorFilter.mode(
-                        Color(0xFF767681),
+                        AppColor.kMutedIconGrey,
                         BlendMode.srcIn,
                       ),
                     ),

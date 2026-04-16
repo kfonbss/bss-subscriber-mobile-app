@@ -1,12 +1,14 @@
 import 'package:flutter/material.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/profile/presentation/components/common_radio_button.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
 
 class Language {
   final String name;
-  final String flagAsset; // Placeholder for flag asset path
+  final String flagAsset;
   final String code;
 
   Language({required this.name, required this.flagAsset, required this.code});
@@ -32,10 +34,43 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
     Language(name: 'Chinese', flagAsset: '', code: 'zh'),
   ];
 
+  // ── Static styles for the search bar ────────────────────────────────────────
+  static final _searchDecoration = BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.all(Radius.circular(12.w)),
+    border: Border.fromBorderSide(
+      BorderSide(color: AppColor.kIconContainerGrey, width: 1.w),
+    ),
+  );
+  static final _searchTextStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    color: AppColor.kTextSecondaryDark,
+    fontSize: 12.sp,
+    fontWeight: FontWeight.w400,
+    height: 1.6,
+    letterSpacing: 0,
+  );
+  static final _searchHintStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    color: AppColor.kSlateGrey,
+    fontSize: 12.sp,
+    fontWeight: FontWeight.w400,
+    height: 1.6,
+    letterSpacing: 0,
+  );
+  static const _searchIconColorFilter =
+      ColorFilter.mode(AppColor.kSlateGrey, BlendMode.srcIn);
+  static final _sectionHeadingStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    color: AppColor.kTextSecondaryDark,
+    fontSize: 16.sp,
+    fontWeight: FontWeight.w600,
+    height: 1.3,
+    letterSpacing: 0,
+  );
+
   List<Language> get _filteredLanguages {
-    if (_searchQuery.isEmpty) {
-      return _allLanguages;
-    }
+    if (_searchQuery.isEmpty) return _allLanguages;
     return _allLanguages
         .where(
           (lang) =>
@@ -50,143 +85,13 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
     super.dispose();
   }
 
-  Widget _buildSearchBar(BuildContext context) {
-    return Container(
-      height: 48.h,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12.w),
-        border: Border.all(color: const Color(0xFFF3F3FA), width: 1.w),
-      ),
-      child: TextField(
-        controller: _searchController,
-        onChanged: (value) {
-          setState(() {
-            _searchQuery = value;
-          });
-        },
-        style: TextStyle(
-          fontFamily: 'GeneralSans',
-          color: const Color(0xFF0F1121),
-          fontSize: 12.sp,
-          fontWeight: FontWeight.w400,
-          height: 1.6,
-          letterSpacing: 0,
-        ),
-        decoration: InputDecoration(
-          hintText:'Search language',
-          hintStyle: TextStyle(
-            fontFamily: 'GeneralSans',
-            color: const Color(0xFF67697A),
-            fontSize: 12.sp,
-            fontWeight: FontWeight.w400,
-            height: 1.6,
-            letterSpacing: 0,
-          ),
-          prefixIcon: Padding(
-            padding: EdgeInsets.all(12.w),
-            child: SvgPicture.asset(
-              'assets/icons/search.svg',
-              width: 24.w,
-              height: 24.w,
-              colorFilter: const ColorFilter.mode(
-                Color(0xFF67697A),
-                BlendMode.srcIn,
-              ),
-            ),
-          ),
-          border: InputBorder.none,
-          contentPadding: EdgeInsets.symmetric(
-            horizontal: 16.w,
-            vertical: 14.h,
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _buildLanguageItem(Language language) {
-    final isSelected = _selectedLanguage == language.name;
-
-    return Container(
-      height: 56.h,
-      margin: EdgeInsets.only(bottom: 16.h),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12.w),
-        border: Border.all(color: const Color(0xFFEAEAEA), width: 1.w),
-      ),
-      child: Material(
-        color: Colors.transparent,
-        child: InkWell(
-          onTap: () {
-            setState(() {
-              _selectedLanguage = language.name;
-            });
-            // TODO: Save language preference
-          },
-          borderRadius: BorderRadius.circular(12.w),
-          child: Padding(
-            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-            child: Row(
-              children: [
-                // Flag placeholder - replace with actual flag asset when available
-                Container(
-                  width: 24.w,
-                  height: 24.w,
-                  decoration: BoxDecoration(
-                    shape: BoxShape.circle,
-                    color: Colors.grey.shade200,
-                  ),
-                  child: Center(
-                    child: Text(
-                      _getFlagEmoji(language.code),
-                      style: TextStyle(fontSize: 16.sp),
-                    ),
-                  ),
-                ),
-                SizedBox(width: 12.w),
-                Expanded(
-                  child: Text(
-                    language.name,
-                    style: TextStyle(
-                      fontFamily: 'GeneralSans',
-                      color: const Color(0xFF0F1121),
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w600,
-                      height: 1.3,
-                      letterSpacing: 0,
-                    ),
-                  ),
-                ),
-                SizedBox(width: 12.w),
-                // Radio button
-                CommonRadioButton(isSelected: isSelected, size: 20.w),
-              ],
-            ),
-          ),
-        ),
-      ),
-    );
-  }
-
-  String _getFlagEmoji(String code) {
-    // Simple emoji flags as placeholders
-    final flagMap = {
-      'en': '🇺🇸',
-      'id': '🇮🇩',
-      'ms': '🇲🇾',
-      'ja': '🇯🇵',
-      'zh': '🇨🇳',
-    };
-    return flagMap[code] ?? '🏳️';
-  }
-
   @override
   Widget build(BuildContext context) {
+    final l10n = context.bssSubL10n;
+
     return CommonAppBar(
       onBackPressed: () => Navigator.pop(context),
-      title: 'Language',
+      title: l10n.language,
       body: SingleChildScrollView(
         padding: EdgeInsets.only(bottom: 50.h),
         child: Column(
@@ -198,29 +103,137 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // Search bar
-                  _buildSearchBar(context),
-                  SizedBox(height: 20.h),
-                  // Language Choice section
-                  Text(
-                    'Language Choice',
-                    style: TextStyle(
-                      fontFamily: 'GeneralSans',
-                      color: const Color(0xFF0F1121),
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
-                      height: 1.3,
-                      letterSpacing: 0,
+                  Container(
+                    height: 48.h,
+                    decoration: _searchDecoration,
+                    child: TextField(
+                      controller: _searchController,
+                      onChanged: (value) =>
+                          setState(() => _searchQuery = value),
+                      style: _searchTextStyle,
+                      decoration: InputDecoration(
+                        hintText: l10n.searchLanguage,
+                        hintStyle: _searchHintStyle,
+                        prefixIcon: Padding(
+                          padding: EdgeInsets.all(12.w),
+                          child: SvgPicture.asset(
+                            'assets/icons/search.svg',
+                            width: 24.w,
+                            height: 24.w,
+                            colorFilter: _searchIconColorFilter,
+                          ),
+                        ),
+                        border: InputBorder.none,
+                        contentPadding: EdgeInsets.symmetric(
+                          horizontal: 16.w,
+                          vertical: 14.h,
+                        ),
+                      ),
                     ),
                   ),
+                  SizedBox(height: 20.h),
+                  Text(l10n.languageChoice, style: _sectionHeadingStyle),
                   SizedBox(height: 16.h),
-                  // Language list
+                  // Language list — each item is a StatelessWidget for identity
+                  // tracking; only the selected item rebuilds on selection change.
                   ..._filteredLanguages.map(
-                    (language) => _buildLanguageItem(language),
+                    (language) => _LanguageItem(
+                      language: language,
+                      isSelected: _selectedLanguage == language.name,
+                      onTap: () =>
+                          setState(() => _selectedLanguage = language.name),
+                    ),
                   ),
                 ],
               ),
             ),
           ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Language list item ────────────────────────────────────────────────────────
+// Extracted from _buildLanguageItem so Flutter can track each row's identity.
+class _LanguageItem extends StatelessWidget {
+  final Language language;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _LanguageItem({
+    required this.language,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  // static const Map — no new object created per getFlagEmoji call.
+  static const _flagMap = {
+    'en': '🇺🇸',
+    'id': '🇮🇩',
+    'ms': '🇲🇾',
+    'ja': '🇯🇵',
+    'zh': '🇨🇳',
+  };
+  static String _getFlagEmoji(String code) => _flagMap[code] ?? '🏳️';
+
+  static final _itemDecoration = BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.all(Radius.circular(12.w)),
+    border: Border.fromBorderSide(
+      BorderSide(color: AppColor.kinputFiledLightBorder, width: 1.w),
+    ),
+  );
+  static final _inkRadius = BorderRadius.all(Radius.circular(12.w));
+  static const _flagBgDecoration = BoxDecoration(
+    shape: BoxShape.circle,
+    color: AppColor.kDividerGrey,
+  );
+  static final _emojiStyle = TextStyle(fontSize: 16.sp);
+  static final _languageNameStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    color: AppColor.kTextSecondaryDark,
+    fontSize: 14.sp,
+    fontWeight: FontWeight.w600,
+    height: 1.3,
+    letterSpacing: 0,
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 56.h,
+      margin: EdgeInsets.only(bottom: 16.h),
+      decoration: _itemDecoration,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: _inkRadius,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+            child: Row(
+              children: [
+                Container(
+                  width: 24.w,
+                  height: 24.w,
+                  decoration: _flagBgDecoration,
+                  child: Center(
+                    child: Text(
+                      _getFlagEmoji(language.code),
+                      style: _emojiStyle,
+                    ),
+                  ),
+                ),
+                SizedBox(width: 12.w),
+                Expanded(
+                  child: Text(language.name, style: _languageNameStyle),
+                ),
+                SizedBox(width: 12.w),
+                CommonRadioButton(isSelected: isSelected, size: 20.w),
+              ],
+            ),
+          ),
         ),
       ),
     );

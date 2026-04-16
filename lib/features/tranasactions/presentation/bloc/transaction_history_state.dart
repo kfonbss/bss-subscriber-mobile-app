@@ -24,24 +24,36 @@ class TransactionHistoryLoaded extends TransactionHistoryState {
   final bool isLoadingMore;
   final int currentPage;
 
+  /// Non-null when a load-more request failed. Cleared on the next
+  /// successful load-more or full refresh (new state instance).
+  final String? paginationError;
+
   const TransactionHistoryLoaded({
     required this.transactions,
     required this.hasReachedMax,
     this.isLoadingMore = false,
     required this.currentPage,
+    this.paginationError,
   });
+
+  // Sentinel used so copyWith can explicitly clear paginationError to null.
+  static const _clear = Object();
 
   TransactionHistoryLoaded copyWith({
     List<TransactionEntity>? transactions,
     bool? hasReachedMax,
     bool? isLoadingMore,
     int? currentPage,
+    Object? paginationError = _clear,
   }) {
     return TransactionHistoryLoaded(
       transactions: transactions ?? this.transactions,
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       currentPage: currentPage ?? this.currentPage,
+      paginationError: identical(paginationError, _clear)
+          ? this.paginationError
+          : paginationError as String?,
     );
   }
 
@@ -51,6 +63,7 @@ class TransactionHistoryLoaded extends TransactionHistoryState {
     hasReachedMax,
     isLoadingMore,
     currentPage,
+    paginationError,
   ];
 }
 

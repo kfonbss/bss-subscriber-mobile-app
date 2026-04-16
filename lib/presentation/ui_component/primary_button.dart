@@ -59,7 +59,7 @@ class PrimaryButton extends StatelessWidget {
         elevation: 0,
         minimumSize: Size(double.infinity, height ?? 50),
         fixedSize: Size(double.infinity, height ?? 50),
-        disabledBackgroundColor: Colors.grey,
+        disabledBackgroundColor: AppColor.kMediumGrey,
         backgroundColor: AppColor.kPrimaryColor,
         foregroundColor: Colors.white,
         padding: EdgeInsets.zero,
@@ -68,7 +68,7 @@ class PrimaryButton extends StatelessWidget {
             textStyle ??
             TextStyle(
               fontSize: 12.sp,
-              fontFamily: 'General Sans',
+              fontFamily: 'GeneralSans',
               fontWeight: FontWeight.w500,
               height: 1.3,
             ),

@@ -11,18 +11,15 @@ class PackageDetailsBloc extends Bloc<PackageDetailsEvent, PackageDetailsState> 
   }
 
   Future<void> _onLoadPlansData(
-      GetActivePackageDetails event,
+    GetActivePackageDetails event,
     Emitter<PackageDetailsState> emit,
   ) async {
+    emit(const PackageDetailsLoading());
     try {
-      final homeData = await repository.getPackageDetails(event.subscriberUuid);
-      homeData.fold(
-        (failure) {
-          emit(GetDataFailure(errorMessage: failure.toString()));
-        },
-        (entity) {
-          emit(GetDataSuccess(entity: entity));
-        },
+      final result = await repository.getPackageDetails(event.subscriberUuid);
+      result.fold(
+        (failure) => emit(GetDataFailure(errorMessage: failure.toString())),
+        (entity) => emit(GetDataSuccess(entity: entity)),
       );
     } catch (e) {
       emit(GetDataFailure(errorMessage: e.toString()));

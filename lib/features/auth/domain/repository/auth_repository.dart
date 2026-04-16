@@ -1,10 +1,10 @@
+import 'package:dartz/dartz.dart';
 import 'package:kfon_subscriber/core/error/failure.dart';
-import 'package:kfon_subscriber/features/auth/domain/entity/otp_response_entity.dart';
 import 'package:kfon_subscriber/features/auth/domain/entity/auth_entity.dart';
+import 'package:kfon_subscriber/features/auth/domain/entity/otp_response_entity.dart';
 import 'package:kfon_subscriber/features/auth/domain/params/login_params.dart';
 import 'package:kfon_subscriber/features/auth/domain/params/reset_password_params.dart';
 import 'package:kfon_subscriber/features/auth/domain/params/verify_otp_params.dart';
-import 'package:dartz/dartz.dart';
 
 abstract class AuthRepository {
   Future<Either<Failure, AuthEntity>> login(LoginParams loginReq);

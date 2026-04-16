@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:intl/intl.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/pdf_downloader/pdf_preview_and_download.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
@@ -7,10 +8,10 @@ import 'package:kfon_subscriber/features/tranasactions/domain/repository/transac
 import 'package:kfon_subscriber/features/tranasactions/presentation/bloc/transaction_history_bloc.dart';
 import 'package:kfon_subscriber/features/tranasactions/presentation/bloc/transaction_history_event.dart';
 import 'package:kfon_subscriber/features/tranasactions/presentation/bloc/transaction_history_state.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
 import 'package:kfon_subscriber/presentation/ui_component/no_data_found.dart';
 import 'package:kfon_subscriber/presentation/ui_component/shimmer/list_shimmers.dart';
-import 'package:kfon_subscriber/presentation/ui_component/shimmer/shimmer_base.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 
 class TransactionHistoryPage extends StatelessWidget {
@@ -19,10 +20,9 @@ class TransactionHistoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create:
-          (_) =>
-              TransactionHistoryBloc(repository: sl<TransactionRepository>())
-                ..add(const FetchTransactions()),
+      create: (_) =>
+      TransactionHistoryBloc(repository: sl<TransactionRepository>())
+        ..add(const FetchTransactions()),
       child: const _TransactionHistoryView(),
     );
   }
@@ -32,11 +32,16 @@ class _TransactionHistoryView extends StatefulWidget {
   const _TransactionHistoryView();
 
   @override
-  State<_TransactionHistoryView> createState() =>
-      _TransactionHistoryViewState();
+  State<_TransactionHistoryView> createState() => _TransactionHistoryViewState();
 }
 
 class _TransactionHistoryViewState extends State<_TransactionHistoryView> {
+  static final _errorStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    fontSize: 14.sp,
+    color: AppColor.kSlateGrey,
+  );
+
   final ScrollController _scrollController = ScrollController();
 
   @override
@@ -54,7 +59,12 @@ class _TransactionHistoryViewState extends State<_TransactionHistoryView> {
   }
 
   void _onScroll() {
-    if (_isBottom) {
+    if (!_isBottom) return;
+    final state = context.read<TransactionHistoryBloc>().state;
+    // Guard: only dispatch when loaded and not already paginating so the
+    // event queue is not flooded while the user holds the scroll position
+    // at the threshold.
+    if (state is TransactionHistoryLoaded && !state.isLoadingMore) {
       context.read<TransactionHistoryBloc>().add(const LoadMoreTransactions());
     }
   }
@@ -68,22 +78,38 @@ class _TransactionHistoryViewState extends State<_TransactionHistoryView> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.bssSubL10n;
+
     return CommonAppBar(
-      title: 'Transactions',
+      title: l10n.transactions,
       onBackPressed: () => Navigator.pop(context),
-      body: BlocBuilder<TransactionHistoryBloc, TransactionHistoryState>(
+      body: BlocConsumer<TransactionHistoryBloc, TransactionHistoryState>(
+        listenWhen: (previous, current) {
+          if (current is TransactionHistoryLoaded && current.paginationError != null) {
+            final prevError = previous is TransactionHistoryLoaded ? previous.paginationError : null;
+            return current.paginationError != prevError;
+          }
+          return false;
+        },
+        listener: (context, state) {
+          if (state is TransactionHistoryLoaded && state.paginationError != null) {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(state.paginationError!)),
+            );
+          }
+        },
         builder: (context, state) {
           if (state is TransactionHistoryLoading) {
-            return AppShimmer(child: ListShimmer(itemHeight: 200.h,itemCount: 10,));
+            // AppShimmer is now built into ListShimmer — no outer wrapper needed.
+            return ListShimmer(itemHeight: 200.h, itemCount: 10);
           } else if (state is TransactionHistoryLoaded) {
             if (state.transactions.isEmpty) {
-              return NoDataFound(errorMessage: 'No transactions found');
+              return NoDataFound(errorMessage: l10n.noTransactionsFound);
             }
             return ListView.builder(
               controller: _scrollController,
               padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-              itemCount:
-                  state.transactions.length + (state.isLoadingMore ? 1 : 0),
+              itemCount: state.transactions.length + (state.isLoadingMore ? 1 : 0),
               itemBuilder: (context, index) {
                 if (index >= state.transactions.length) {
                   return Padding(
@@ -103,20 +129,18 @@ class _TransactionHistoryViewState extends State<_TransactionHistoryView> {
                   paidBy: txn.paidBy,
                   paymentGateway: txn.paymentGateway,
                   responseMessage: txn.responseMessage,
-                  onDownloadInvoice: () {
-                    if (context.mounted) {
-                      Navigator.of(context, rootNavigator: true).push(
-                        MaterialPageRoute(
-                          builder:
-                              (_) => PdfPreviewAndDownload(
-                                title: 'Invoice',
-                                pdfUrl:
-                                    'https://www.w3.org/WAI/ER/tests/xhtml/testfiles/resources/pdf/dummy.pdf',
+                  onDownloadInvoice: txn.invoiceUrl.isEmpty
+                      ? null
+                      : () {
+                          Navigator.of(context, rootNavigator: true).push(
+                            MaterialPageRoute(
+                              builder: (_) => PdfPreviewAndDownload(
+                                title: l10n.invoice,
+                                pdfUrl: txn.invoiceUrl,
                               ),
-                        ),
-                      );
-                    }
-                  },
+                            ),
+                          );
+                        },
                 );
               },
             );
@@ -130,19 +154,14 @@ class _TransactionHistoryViewState extends State<_TransactionHistoryView> {
                     Text(
                       state.message,
                       textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontFamily: 'GeneralSans',
-                        fontSize: 14.sp,
-                        color: const Color(0xFF67697A),
-                      ),
+                      style: _errorStyle,
                     ),
                     SizedBox(height: 16.h),
                     ElevatedButton(
-                      onPressed:
-                          () => context.read<TransactionHistoryBloc>().add(
-                            const FetchTransactions(),
-                          ),
-                      child: const Text('Retry'),
+                      onPressed: () => context
+                          .read<TransactionHistoryBloc>()
+                          .add(const FetchTransactions()),
+                      child: Text(l10n.retry),
                     ),
                   ],
                 ),
@@ -183,35 +202,82 @@ class _TransactionCard extends StatelessWidget {
     this.onDownloadInvoice,
   });
 
+  // Hoisted out of build() — BoxDecoration and its BoxShadow were being
+  // allocated on every render pass for every visible card in the list.
+  // Colors.black.withValues(alpha: 0.06) == Color(0x0F000000).
+  static const _cardDecoration = BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.all(Radius.circular(12)),
+    boxShadow: [
+      BoxShadow(
+        color: Color(0x0F000000),
+        blurRadius: 16,
+      ),
+    ],
+  );
+  static const _infoBgDecoration = BoxDecoration(
+    color: AppColor.kSecondaryBackgroundColor,
+    borderRadius: BorderRadius.all(Radius.circular(10)),
+  );
+  static final _amountStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    fontSize: 14.sp,
+    fontWeight: FontWeight.w600,
+    color: AppColor.kTextSecondaryDark,
+    height: 1.30,
+  );
+  static final _responseLabelStyle = TextStyle(
+    color: AppColor.kLabelGrey,
+    fontSize: 8.sp,
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w400,
+    height: 1.30,
+  );
+  static final _responseValueStyle = TextStyle(
+    color: AppColor.kTextSecondaryDark,
+    fontSize: 10.sp,
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w500,
+    height: 1.30,
+  );
+  static final _downloadLabelStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    color: AppColor.kPrimaryColor,
+    fontSize: 12.sp,
+    fontWeight: FontWeight.w600,
+  );
+
+  static final _downloadButtonStyle = OutlinedButton.styleFrom(
+    side: const BorderSide(color: AppColor.kPrimaryColor, width: 1),
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(10)),
+    ),
+  );
+
+  // Sizer ratios are fixed after app init — compute the full style once.
+  static ButtonStyle? _resolvedDownloadStyle;
+  ButtonStyle get _downloadStyle => _resolvedDownloadStyle ??=
+      _downloadButtonStyle.copyWith(
+        padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 12.h)),
+      );
+
   Color get _statusColor {
     switch (status.toLowerCase()) {
-      case 'success':
-        return const Color(0xFF008F67);
-      case 'pending':
-        return const Color(0xFFAF7700);
-      case 'failed':
-        return AppColor.kFailedRed;
-      default:
-        return const Color(0xFF0F1121);
+      case 'success': return const Color(0xFF008F67);
+      case 'pending': return const Color(0xFFAF7700);
+      case 'failed': return AppColor.kFailedRed;
+      default: return AppColor.kTextSecondaryDark;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.bssSubL10n;
+
     return Container(
       margin: EdgeInsets.only(bottom: 16.h),
       padding: EdgeInsets.all(16.w),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.06),
-            blurRadius: 16,
-            offset: const Offset(0, 0),
-          ),
-        ],
-      ),
+      decoration: _cardDecoration,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -219,23 +285,12 @@ class _TransactionCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: _LabelValue(label: 'BSS No', value: bssNo)),
+              Expanded(child: _LabelValue(label: l10n.bssNo, value: bssNo)),
               SizedBox(width: 8.w),
               Expanded(
-                child: _LabelValue(
-                  label: 'Txn. Reference',
-                  value: txnReference,
-                ),
+                child: _LabelValue(label: l10n.txnReference, value: txnReference),
               ),
-              Text(
-                '₹$amount',
-                style: TextStyle(
-                  fontFamily: 'GeneralSans',
-                  fontSize: 16.sp,
-                  fontWeight: FontWeight.w600,
-                  color: const Color(0xFF0F1121),
-                ),
-              ),
+              Text('₹$amount', style: _amountStyle),
             ],
           ),
 
@@ -245,10 +300,7 @@ class _TransactionCard extends StatelessWidget {
           Container(
             width: double.infinity,
             padding: EdgeInsets.all(12.w),
-            decoration: BoxDecoration(
-              color: AppColor.kSecondaryBackgroundColor,
-              borderRadius: BorderRadius.circular(10),
-            ),
+            decoration: _infoBgDecoration,
             child: Column(
               children: [
                 // Row 1: Package | Expiry Date | Status
@@ -256,21 +308,23 @@ class _TransactionCard extends StatelessWidget {
                   children: [
                     Expanded(
                       flex: 3,
-                      child: _LabelValue(label: 'Package', value: packageName),
+                      child: _LabelValue(label: l10n.package, value: packageName),
                     ),
                     SizedBox(width: 8.w),
                     Expanded(
                       flex: 2,
                       child: _LabelValue(
-                        label: 'Expire Date',
-                        value: expiryDate,
+                        label: l10n.expireDate,
+                        value: DateTime.tryParse(expiryDate) != null
+                            ? DateFormat('dd MMM yyyy').format(DateTime.parse(expiryDate))
+                            : expiryDate,
                       ),
                     ),
                     SizedBox(width: 8.w),
                     Expanded(
                       flex: 2,
                       child: _LabelValue(
-                        label: 'Status',
+                        label: l10n.status,
                         value: status,
                         valueColor: _statusColor,
                       ),
@@ -285,20 +339,22 @@ class _TransactionCard extends StatelessWidget {
                   children: [
                     Expanded(
                       flex: 3,
-                      child: _LabelValue(label: 'Paid On', value: paidOn),
-                    ),
-                    SizedBox(width: 8.w),
-                    Expanded(
-                      flex: 2,
-                      child: _LabelValue(label: 'Paid By', value: paidBy),
-                    ),
-                    SizedBox(width: 8.w),
-                    Expanded(
-                      flex: 2,
                       child: _LabelValue(
-                        label: 'Payment Gateway',
-                        value: paymentGateway,
+                        label: l10n.paidOn,
+                        value: DateTime.tryParse(paidOn) != null
+                            ? DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.parse(paidOn))
+                            : paidOn,
                       ),
+                    ),
+                    SizedBox(width: 8.w),
+                    Expanded(
+                      flex: 2,
+                      child: _LabelValue(label: l10n.paidBy, value: paidBy),
+                    ),
+                    SizedBox(width: 8.w),
+                    Expanded(
+                      flex: 2,
+                      child: _LabelValue(label: l10n.paymentGateway, value: paymentGateway),
                     ),
                   ],
                 ),
@@ -311,19 +367,9 @@ class _TransactionCard extends StatelessWidget {
           // ── Response Message ──
           RichText(
             text: TextSpan(
-              style: TextStyle(
-                fontFamily: 'GeneralSans',
-                fontSize: 10.sp,
-                fontWeight: FontWeight.w400,
-                color: const Color(0xFF717171),
-                height: 1.4,
-              ),
               children: [
-                TextSpan(
-                  text: 'Response Message : ',
-                  style: const TextStyle(fontWeight: FontWeight.w500),
-                ),
-                TextSpan(text: responseMessage),
+                TextSpan(text: l10n.responseMessage, style: _responseLabelStyle),
+                TextSpan(text: responseMessage, style: _responseValueStyle),
               ],
             ),
           ),
@@ -335,22 +381,8 @@ class _TransactionCard extends StatelessWidget {
             width: double.infinity,
             child: OutlinedButton(
               onPressed: onDownloadInvoice,
-              style: OutlinedButton.styleFrom(
-                side: BorderSide(color: AppColor.kPrimaryColor, width: 1),
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(10),
-                ),
-                padding: EdgeInsets.symmetric(vertical: 12.h),
-              ),
-              child: Text(
-                'Download Invoice',
-                style: TextStyle(
-                  fontFamily: 'GeneralSans',
-                  color: AppColor.kPrimaryColor,
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w600,
-                ),
-              ),
+              style: _downloadStyle,
+              child: Text(l10n.downloadInvoice, style: _downloadLabelStyle),
             ),
           ),
         ],
@@ -371,32 +403,32 @@ class _LabelValue extends StatelessWidget {
     this.valueColor,
   });
 
+  static final _labelStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    fontSize: 10.sp,
+    fontWeight: FontWeight.w500,
+    color: AppColor.kTextSecondary,
+    height: 1.3,
+  );
+  static final _defaultValueStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    fontSize: 10.sp,
+    fontWeight: FontWeight.w500,
+    color: AppColor.kTextSecondaryDark,
+    height: 1.3,
+  );
+
   @override
   Widget build(BuildContext context) {
+    final valueStyle = valueColor == null
+        ? _defaultValueStyle
+        : _defaultValueStyle.copyWith(color: valueColor);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontFamily: 'GeneralSans',
-            fontSize: 9.sp,
-            fontWeight: FontWeight.w400,
-            color: const Color(0xFF717171),
-            height: 1.3,
-          ),
-        ),
+        Text(label, style: _labelStyle),
         SizedBox(height: 3.h),
-        Text(
-          value.isNotEmpty ? value : '-',
-          style: TextStyle(
-            fontFamily: 'GeneralSans',
-            fontSize: 11.sp,
-            fontWeight: FontWeight.w500,
-            color: valueColor ?? const Color(0xFF0F1121),
-            height: 1.3,
-          ),
-        ),
+        Text(value.isNotEmpty ? value : '-', style: valueStyle),
       ],
     );
   }

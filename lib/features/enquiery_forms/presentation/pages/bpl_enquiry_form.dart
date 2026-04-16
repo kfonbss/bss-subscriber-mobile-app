@@ -1,21 +1,20 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/data/model/bpl_enquiry_form_params.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/domain/repository/enquiery_form.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/presentation/bloc/bpl_form/bpl_enquiry_form_cubit.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/presentation/bloc/bpl_form/bpl_enquiry_form_state.dart';
-
 import 'package:kfon_subscriber/features/enquiery_forms/presentation/components/enquiery_form_footer.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/presentation/components/enquiry_form_header.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/presentation/components/enquiry_form_preview.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_check_box.dart';
-
 import 'package:kfon_subscriber/presentation/ui_component/common_text_area.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_text_field.dart';
 import 'package:kfon_subscriber/presentation/ui_component/form_app_bar.dart';
 import 'package:kfon_subscriber/service_locator.dart';
-import 'package:kfon_subscriber/core/util/dialog_util.dart';
 
 class BPLEnquiryForm extends StatefulWidget {
   const BPLEnquiryForm({super.key});
@@ -39,12 +38,7 @@ class _BPLEnquiryFormState extends State<BPLEnquiryForm> {
   final _districtTextFieldController = TextEditingController();
   final _referralCodeTextFieldController = TextEditingController();
   bool _declarationStatus = false;
-  final _pageCount = 3;
-
-  @override
-  void initState() {
-    super.initState();
-  }
+  static const _pageCount = 3;
 
   BplEnquiryFormParams get params => BplEnquiryFormParams(
     rationCardHolderName: _rationCardHolderNameTextFieldController.text,
@@ -69,20 +63,22 @@ class _BPLEnquiryFormState extends State<BPLEnquiryForm> {
     _pinCodeTextFieldController.dispose();
     _postOfficeTextFieldController.dispose();
     _districtTextFieldController.dispose();
+    _enquiryFormCubit.close();
     super.dispose();
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.bssSubL10n;
+
     return BlocConsumer<BplEnquiryFormCubit, BplEnquiryFormState>(
       bloc: _enquiryFormCubit,
-      listenWhen:
-          (previousState, currentState) =>
-              currentState is GetPostOfficesDistrictError ||
-              currentState is BplFormValidationError ||
-              currentState is SubmitBplFormError ||
-              currentState is GetPostOfficesDistrictLoading ||
-              currentState is SubmitBplFormSuccess,
+      listenWhen: (previousState, currentState) =>
+      currentState is GetPostOfficesDistrictError ||
+          currentState is BplFormValidationError ||
+          currentState is SubmitBplFormError ||
+          currentState is GetPostOfficesDistrictLoading ||
+          currentState is SubmitBplFormSuccess,
       listener: (context, state) {
         if (state is GetPostOfficesDistrictError) {
           _dialogUtil.showMessage(state.errorMessage, context);
@@ -95,18 +91,17 @@ class _BPLEnquiryFormState extends State<BPLEnquiryForm> {
           _postOfficeTextFieldController.clear();
         } else if (state is SubmitBplFormSuccess) {
           _dialogUtil.showMessage(
-            'Success',
+            l10n.successMessage,
             context,
-            backgroundColor: Colors.green,
+            backgroundColor: AppColor.kSuccessGreen,
           );
           Navigator.of(context).pop();
         }
       },
-      buildWhen:
-          (previous, current) =>
-              current is ShowAddressInformationForm ||
-              current is ShowPersonalInformationForm ||
-              current is ShowPreview,
+      buildWhen: (previous, current) =>
+      current is ShowAddressInformationForm ||
+          current is ShowPersonalInformationForm ||
+          current is ShowPreview,
       builder: (context, state) {
         return FormAppBar(
           showBackButton: false,
@@ -114,169 +109,156 @@ class _BPLEnquiryFormState extends State<BPLEnquiryForm> {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               EnquiryFormHeader(
-                heading: 'BPL Subscription Enquiry',
+                heading: l10n.bplSubscriptionEnquiry,
                 pageCount: _pageCount,
-                currentPage:
-                    state is ShowPreview
-                        ? _pageCount
-                        : state is ShowPersonalInformationForm
-                        ? _pageCount - 2
-                        : _pageCount - 1,
+                currentPage: state is ShowPreview
+                    ? _pageCount
+                    : state is ShowPersonalInformationForm
+                    ? _pageCount - 2
+                    : _pageCount - 1,
               ),
               Expanded(
                 child: Scrollbar(
                   thumbVisibility: true,
                   child: SingleChildScrollView(
-                    reverse: state is ShowPreview ? true : false,
+                    reverse: state is ShowPreview,
                     padding: const EdgeInsets.all(20),
-                    child:
-                        state is ShowPreview
-                            ? Column(
-                              spacing: 20,
-                              crossAxisAlignment: CrossAxisAlignment.stretch,
-                              children: [
-                                Text(
-                                  '3. Preview',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColor.kBlackHeadingColor,
-                                  ),
-                                ),
-                                EnquiryFormPreview(
-                                  map: params.personalInfoToMap(),
-                                  heading: 'Personal Information',
-                                ),
-                                EnquiryFormPreview(
-                                  map: params.addressInfoToMap(),
-                                  heading: 'Address Information',
-                                ),
-                              ],
-                            )
-                            : state is ShowPersonalInformationForm
-                            ? Column(
-                              spacing: 30,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '1. Personal Information',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColor.kBlackHeadingColor,
-                                  ),
-                                ),
-                                CommonTextField(
-                                  label: "Ration Card Holder's Name*",
-                                  hintText: "Enter Ration Card Holder's Name",
-                                  textEditingController:
-                                      _rationCardHolderNameTextFieldController,
-                                ),
-                                CommonTextField(
-                                  label:
-                                      'Aadhar linked mobile number of the ration card holder*',
-                                  hintText: 'Enter Mobile Number',
-                                  textInputType: TextInputType.number,
-                                  maxLength: 10,
-                                  textEditingController:
-                                      _rationCardHolderMobTextFieldController,
-                                ),
-                                CommonTextField(
-                                  label: 'KSEB Consumer No*',
-                                  hintText: 'Enter KSEB Consumer No',
-                                  textInputType: TextInputType.number,
-                                  textEditingController:
-                                      _ksebConsumerNoTextFieldController,
-                                ),
-                                CommonTextField(
-                                  label:
-                                      'Aadhar number of the ration card holder*',
-                                  hintText:
-                                      'Enter Aadhar number of the ration card holder',
-                                  textInputType: TextInputType.number,
-                                  textEditingController:
-                                      _aadharCardNumberTextFieldController,
-                                ),
-                                CommonTextArea(
-                                  label: 'Installation Address*',
-                                  hintText: 'Enter Installation Address',
-                                  textEditingController:
-                                      _addressTextFieldController,
-                                ),
-                              ],
-                            )
-                            : Column(
-                              spacing: 30,
-                              crossAxisAlignment: CrossAxisAlignment.start,
-                              children: [
-                                Text(
-                                  '2. Address Information',
-                                  style: TextStyle(
-                                    fontSize: 16,
-                                    fontWeight: FontWeight.w600,
-                                    color: AppColor.kBlackHeadingColor,
-                                  ),
-                                ),
-                                CommonTextField(
-                                  label: 'Pincode*',
-                                  hintText: 'Enter Pincode',
-                                  maxLength: 6,
-                                  textInputType: TextInputType.number,
-                                  textEditingController:
-                                      _pinCodeTextFieldController,
-                                ),
-                                CommonTextField(
-                                  label: 'Referral Code',
-                                  hintText: 'Enter Referral Code',
-                                  textEditingController:
-                                      _referralCodeTextFieldController,
-                                ),
-                                CommonCheckBox(
-                                  initialStatus: _declarationStatus,
-                                  title:
-                                      'I hereby give my consent to receive calls, texts, WhatsApp and emails regarding updates, newsletters, and other important information from or on behalf of KFON at the mobile number provided above.',
-                                  onChanged:
-                                      (isChecked) =>
-                                          _declarationStatus = isChecked,
-                                ),
-                              ],
-                            ),
+                    child: state is ShowPreview
+                        ? Column(
+                      spacing: 20,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      children: [
+                        Text(
+                          l10n.previewStep,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: AppColor.kBlackHeadingColor,
+                          ),
+                        ),
+                        EnquiryFormPreview(
+                          map: params.personalInfoToMap(),
+                          heading: l10n.personalInformation,
+                        ),
+                        EnquiryFormPreview(
+                          map: params.addressInfoToMap(),
+                          heading: l10n.addressInformation,
+                        ),
+                      ],
+                    )
+                        : state is ShowPersonalInformationForm
+                        ? Column(
+                      spacing: 30,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.personalInformationStep,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: AppColor.kBlackHeadingColor,
+                          ),
+                        ),
+                        CommonTextField(
+                          label: l10n.rationCardHolderName,
+                          hintText: l10n.enterRationCardHolderName,
+                          textEditingController:
+                          _rationCardHolderNameTextFieldController,
+                        ),
+                        CommonTextField(
+                          label: l10n.aadharLinkedMobileNumber,
+                          hintText: l10n.enterMobileNumber,
+                          textInputType: TextInputType.number,
+                          maxLength: 10,
+                          textEditingController:
+                          _rationCardHolderMobTextFieldController,
+                        ),
+                        CommonTextField(
+                          label: l10n.ksebConsumerNo,
+                          hintText: l10n.enterKsebConsumerNo,
+                          textInputType: TextInputType.number,
+                          textEditingController:
+                          _ksebConsumerNoTextFieldController,
+                        ),
+                        CommonTextField(
+                          label:
+                          l10n.aadharNumberOfRationCardHolder,
+                          hintText:
+                          l10n.enterAadharNumberOfRationCardHolder,
+                          textInputType: TextInputType.number,
+                          textEditingController:
+                          _aadharCardNumberTextFieldController,
+                        ),
+                        CommonTextArea(
+                          label: l10n.installationAddress,
+                          hintText: l10n.enterInstallationAddress,
+                          textEditingController:
+                          _addressTextFieldController,
+                        ),
+                      ],
+                    )
+                        : Column(
+                      spacing: 30,
+                      crossAxisAlignment: CrossAxisAlignment.start,
+                      children: [
+                        Text(
+                          l10n.addressInformationStep,
+                          style: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
+                            color: AppColor.kBlackHeadingColor,
+                          ),
+                        ),
+                        CommonTextField(
+                          label: l10n.pincode,
+                          hintText: l10n.enterPincode,
+                          maxLength: 6,
+                          textInputType: TextInputType.number,
+                          textEditingController:
+                          _pinCodeTextFieldController,
+                        ),
+                        CommonTextField(
+                          label: l10n.referralCode,
+                          hintText: l10n.enterReferralCode,
+                          textEditingController:
+                          _referralCodeTextFieldController,
+                        ),
+                        CommonCheckBox(
+                          initialStatus: _declarationStatus,
+                          title: l10n.declarationConsent,
+                          onChanged: (isChecked) =>
+                          _declarationStatus = isChecked,
+                        ),
+                      ],
+                    ),
                   ),
                 ),
               ),
               BlocBuilder<BplEnquiryFormCubit, BplEnquiryFormState>(
                 bloc: _enquiryFormCubit,
-                buildWhen:
-                    (previous, current) =>
-                        current is SubmitBplFormLoading ||
-                        current is SubmitBplFormError ||
-                        current is SubmitBplFormSuccess,
+                buildWhen: (previous, current) =>
+                current is SubmitBplFormLoading ||
+                    current is SubmitBplFormError ||
+                    current is SubmitBplFormSuccess,
                 builder: (context, buttonState) {
                   return EnquiryFormFooter(
                     pageCount: _pageCount,
-                    currentPage:
-                        state is ShowPreview
-                            ? _pageCount
-                            : state is ShowPersonalInformationForm
-                            ? _pageCount - 2
-                            : _pageCount - 1,
-                    primaryButtonCallback:
-                        () =>
-                            state is ShowPreview
-                                ? _enquiryFormCubit.submitForm(params: params)
-                                : state is ShowAddressInformationForm
-                                ? _enquiryFormCubit.validateAddressForm(
-                                  params,
-                                  _declarationStatus,
-                                )
-                                : _enquiryFormCubit.validatePersonalForm(
-                                  params,
-                                ),
-                    secondaryButtonCallback:
-                        () =>
-                            state is ShowPreview
-                                ? _enquiryFormCubit.showAddressInformationForm()
-                                : _enquiryFormCubit.showPersonalCompanyForm(),
+                    currentPage: state is ShowPreview
+                        ? _pageCount
+                        : state is ShowPersonalInformationForm
+                        ? _pageCount - 2
+                        : _pageCount - 1,
+                    primaryButtonCallback: () => state is ShowPreview
+                        ? _enquiryFormCubit.submitForm(params: params)
+                        : state is ShowAddressInformationForm
+                        ? _enquiryFormCubit.validateAddressForm(
+                      params,
+                      _declarationStatus,
+                    )
+                        : _enquiryFormCubit.validatePersonalForm(params),
+                    secondaryButtonCallback: () => state is ShowPreview
+                        ? _enquiryFormCubit.showAddressInformationForm()
+                        : _enquiryFormCubit.showPersonalCompanyForm(),
                     showLoading: buttonState is SubmitBplFormLoading,
                   );
                 },

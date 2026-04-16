@@ -1,8 +1,8 @@
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/features/top_up/domain/entity/topup_params.dart';
 import 'package:kfon_subscriber/features/top_up/domain/repository/topup_repository.dart';
 import 'package:kfon_subscriber/features/top_up/presentation/bloc/topup_event.dart';
 import 'package:kfon_subscriber/features/top_up/presentation/bloc/topup_state.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
 
 
 class TopupBloc extends Bloc<TopupEvent, TopupState> {
@@ -20,19 +20,23 @@ class TopupBloc extends Bloc<TopupEvent, TopupState> {
     InitiateTopup event,
     Emitter<TopupState> emit,
   ) async {
-    emit(const TopupLoading());
+    try {
+      emit(const TopupLoading());
 
-    final params = TopupParams(
-      amount: event.amount,
-      type: event.paymentType,
-    );
+      final params = TopupParams(
+        amount: event.amount,
+        type: event.paymentType,
+      );
 
-    final result = await repository.initiateTopup(params);
+      final result = await repository.initiateTopup(params);
 
-    result.fold(
-      (failure) => emit(TopupError(errorMessage: failure.message)),
-      (redirectData) => emit(TopupSuccess(redirectData: redirectData)),
-    );
+      result.fold(
+        (failure) => emit(TopupError(errorMessage: failure.message)),
+        (redirectData) => emit(TopupSuccess(redirectData: redirectData)),
+      );
+    } catch (e) {
+      emit(TopupError(errorMessage: e.toString()));
+    }
   }
 
   void _onPaymentCompleted(

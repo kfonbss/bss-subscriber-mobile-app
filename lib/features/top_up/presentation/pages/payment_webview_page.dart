@@ -1,17 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/features/top_up/domain/entity/topup_entity.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:webview_flutter_plus/webview_flutter_plus.dart';
-
 /// Result of payment from WebView
 enum PaymentResult { success, failed, cancelled }
 
 /// Simple Payment WebView page that loads a URL.
 class PaymentWebViewPage extends StatefulWidget {
-  /// The URL to load in the WebView
   final TopupRedirectEntity redirectEntity;
-
-  /// Optional callback URL pattern to detect payment completion.
   final String? successUrlPattern;
   final String? failureUrlPattern;
 
@@ -46,15 +43,10 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
     await _controller.setNavigationDelegate(
       NavigationDelegate(
         onPageStarted: (String url) {
-          if (mounted) {
-            setState(() => _isLoading = true);
-          }
-          _checkForPaymentResult(url);
+          if (mounted) setState(() => _isLoading = true);
         },
         onPageFinished: (String url) {
-          if (mounted) {
-            setState(() => _isLoading = false);
-          }
+          if (mounted) setState(() => _isLoading = false);
         },
         onNavigationRequest: (NavigationRequest request) {
           final result = _getPaymentResultFromUrl(request.url);
@@ -67,26 +59,21 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
       ),
     );
 
-    if (mounted) {
-      setState(() => _isInitialized = true);
-    }
+    if (!mounted) return;
+    setState(() => _isInitialized = true);
 
     final actionUrl = widget.redirectEntity.actionUrl;
     final params = widget.redirectEntity.params;
 
-    // Build hidden input fields for form submission
-    // Only escape double quotes to prevent breaking the value="" attribute
     final inputFields = params.entries
         .map((entry) {
-          final key = entry.key;
-          final value = entry.value.replaceAll('"', '&quot;');
-          return '<input type="hidden" name="$key" value="$value" />';
-        })
+      final key = _escapeHtml(entry.key);
+      final value = _escapeHtml(entry.value);
+      return '<input type="hidden" name="$key" value="$value" />';
+    })
         .join('\n');
 
-    // Create HTML with auto-submitting POST form (CCAvenue format)
-    final html =
-        '''
+    final html = '''
 <form method="POST" action="$actionUrl">
   $inputFields
 </form>
@@ -96,17 +83,7 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
 </script>
 ''';
 
-    print("actionUrl: $actionUrl");
-    print("params: $params");
-
     await _controller.loadHtmlString(html);
-  }
-
-  void _checkForPaymentResult(String url) {
-    final result = _getPaymentResultFromUrl(url);
-    if (result != null && mounted) {
-      Navigator.of(context).pop(result);
-    }
   }
 
   PaymentResult? _getPaymentResultFromUrl(String url) {
@@ -122,33 +99,37 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
     }
 
     final path = url.toLowerCase();
-    if (path.contains('success') || path.contains('complete')) {
-      return PaymentResult.success;
-    }
-    if (path.contains('fail') || path.contains('error')) {
-      return PaymentResult.failed;
-    }
-    if (path.contains('cancel')) {
-      return PaymentResult.cancelled;
-    }
+    if (path.contains('success') || path.contains('complete')) return PaymentResult.success;
+    if (path.contains('fail') || path.contains('error')) return PaymentResult.failed;
+    if (path.contains('cancel')) return PaymentResult.cancelled;
 
     return null;
   }
 
+  /// Escapes all HTML special characters so they are safe inside attribute values.
+  String _escapeHtml(String s) => s
+      .replaceAll('&', '&amp;')
+      .replaceAll('"', '&quot;')
+      .replaceAll("'", '&#x27;')
+      .replaceAll('<', '&lt;')
+      .replaceAll('>', '&gt;');
+
   Future<void> _onClose() async {
+    final l10n = context.bssSubL10n;
+
     final shouldCancel = await showDialog<bool>(
       context: context,
       builder: (context) => AlertDialog(
-        title: const Text('Cancel Payment?'),
-        content: const Text('Are you sure you want to cancel this payment?'),
+        title: Text(l10n.cancelPaymentTitle),
+        content: Text(l10n.cancelPaymentMessage),
         actions: [
           TextButton(
             onPressed: () => Navigator.pop(context, false),
-            child: const Text('No'),
+            child: Text(l10n.no),
           ),
           TextButton(
             onPressed: () => Navigator.pop(context, true),
-            child: const Text('Yes'),
+            child: Text(l10n.yes),
           ),
         ],
       ),
@@ -161,6 +142,8 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.bssSubL10n;
+
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) async {
@@ -170,9 +153,9 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
         appBar: AppBar(
           backgroundColor: AppColor.kPrimaryColor,
           foregroundColor: Colors.white,
-          title: const Text(
-            'Payment',
-            style: TextStyle(
+          title: Text(
+            l10n.payment,
+            style: const TextStyle(
               fontSize: 16,
               fontWeight: FontWeight.w600,
               fontFamily: 'GeneralSans',

@@ -15,6 +15,8 @@ class ShimmerBox extends StatelessWidget {
   final double height;
   final BorderRadius? borderRadius;
 
+  static const _defaultRadius = BorderRadius.all(Radius.circular(8));
+
   @override
   Widget build(BuildContext context) {
     return Container(
@@ -22,7 +24,7 @@ class ShimmerBox extends StatelessWidget {
       height: height,
       decoration: BoxDecoration(
         color: ShimmerColors.baseColor,
-        borderRadius: borderRadius ?? BorderRadius.circular(8),
+        borderRadius: borderRadius ?? _defaultRadius,
       ),
     );
   }

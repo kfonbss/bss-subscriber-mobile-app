@@ -11,10 +11,6 @@ class GetHomeData extends HomeEvent {
   const GetHomeData();
 }
 
-class GetActivePackageDetails extends HomeEvent {
-  const GetActivePackageDetails();
-}
-
 class GetPlans extends HomeEvent {
   final String packageId;
   final String subscriberUuid;

@@ -37,9 +37,9 @@ class Validators {
       return 'Please enter password';
     }
 
-    // if (value.length < 6) {
-    //   return 'Password must be at least 6 characters';
-    // }
+    if (value.trim().length < 6) {
+      return 'Password must be at least 6 characters';
+    }
 
     return null;
   }

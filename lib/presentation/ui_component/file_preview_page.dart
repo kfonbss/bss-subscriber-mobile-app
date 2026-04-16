@@ -71,7 +71,7 @@ class _FilePreviewPageState extends State<FilePreviewPage> {
                       borderRadius: BorderRadius.circular(12),
                       boxShadow: [
                         BoxShadow(
-                          color: Colors.black.withOpacity(0.1),
+                          color: Colors.black.withValues(alpha: 0.1),
                           blurRadius: 10,
                           offset: const Offset(0, 2),
                         ),
@@ -177,8 +177,8 @@ class _FilePreviewPageState extends State<FilePreviewPage> {
                 ),
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: AppColor.kPrimaryColor.withOpacity(
-                    _currentCarouselIndex == entry.key ? 0.9 : 0.4,
+                  color: AppColor.kPrimaryColor.withValues(
+                    alpha: _currentCarouselIndex == entry.key ? 0.9 : 0.4,
                   ),
                 ),
               );
@@ -226,7 +226,7 @@ class SmartFileViewer extends StatelessWidget {
               const Icon(
                 Icons.picture_as_pdf,
                 size: 64,
-                color: Color(0xFFD32F2F),
+                color: AppColor.kStatusFailRed,
               ),
               const SizedBox(height: 16),
               const Text(
@@ -290,7 +290,7 @@ class SmartFileViewer extends StatelessWidget {
             },
             errorBuilder: (context, error, stackTrace) {
               return const Center(
-                child: Icon(Icons.broken_image, size: 48, color: Colors.grey),
+                child: Icon(Icons.broken_image, size: 48, color: AppColor.kMediumGrey),
               );
             },
           ),
@@ -304,7 +304,7 @@ class SmartFileViewer extends StatelessWidget {
             fit: BoxFit.contain,
             errorBuilder: (errorContext, error, stackTrace) {
               return const Center(
-                child: Icon(Icons.broken_image, size: 48, color: Colors.grey),
+                child: Icon(Icons.broken_image, size: 48, color: AppColor.kMediumGrey),
               );
             },
           ),
@@ -322,7 +322,7 @@ class SmartFileViewer extends StatelessWidget {
       child: Text(
         'Preview not available',
         style: TextStyle(
-          color: Color(0xFF67697A),
+          color: AppColor.kSlateGrey,
           fontSize: 14,
           fontFamily: 'GeneralSans',
         ),

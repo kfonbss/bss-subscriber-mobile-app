@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
 
 class NotificationPage extends StatefulWidget {
@@ -12,20 +13,22 @@ class NotificationPage extends StatefulWidget {
 class _NotificationPageState extends State<NotificationPage>
     with SingleTickerProviderStateMixin {
   late final TabController _tabController;
-  final Color _gray = Color(0xFFF3F3FA);
+  static const Color _gray = AppColor.kIconContainerGrey;
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.bssSubL10n;
+
     return CommonAppBar(
       scaffoldColor: Colors.white,
       onBackPressed: () => Navigator.pop(context),
-      title: 'Notification',
+      title: l10n.notification,
       actions: [
         Padding(
           padding: EdgeInsets.only(right: 20),
           child: Icon(
-            Icons.settings_outlined, // Placeholder icon
-            color: Colors.black, // #0F1121
+            Icons.settings_outlined,
+            color: Colors.black,
             size: 24,
           ),
         ),
@@ -47,20 +50,19 @@ class _NotificationPageState extends State<NotificationPage>
                   borderRadius: BorderRadius.all(Radius.circular(50.0)),
                   color: Colors.white,
                 ),
-
                 indicatorSize: TabBarIndicatorSize.tab,
                 dividerHeight: 0,
                 indicatorWeight: 0.0,
                 labelColor: Colors.black,
-                unselectedLabelColor: Colors.grey.shade500,
+                unselectedLabelColor: AppColor.kMediumGrey,
                 padding: EdgeInsets.all(5),
                 labelStyle: const TextStyle(
                   fontWeight: FontWeight.w600,
                   fontSize: 14,
                 ),
-                tabs: const [
-                  Tab(text: "Notification"),
-                  Tab(text: "Promo & Offer"),
+                tabs: [
+                  Tab(text: l10n.notification),
+                  Tab(text: l10n.promoAndOffer),
                 ],
               ),
             ),
@@ -68,12 +70,13 @@ class _NotificationPageState extends State<NotificationPage>
               child: TabBarView(
                 controller: _tabController,
                 children: [
+                  // ── Notification Tab ──────────────────────────────────
                   Column(
                     spacing: 20,
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
-                        'Recently',
+                        l10n.recently,
                         style: TextStyle(
                           fontSize: 16,
                           fontWeight: FontWeight.w600,
@@ -91,7 +94,7 @@ class _NotificationPageState extends State<NotificationPage>
                                 children: [
                                   Row(
                                     crossAxisAlignment:
-                                        CrossAxisAlignment.start,
+                                    CrossAxisAlignment.start,
                                     children: [
                                       Container(
                                         width: 38,
@@ -100,7 +103,6 @@ class _NotificationPageState extends State<NotificationPage>
                                           shape: BoxShape.circle,
                                           color: _gray,
                                         ),
-                                        // Inner icon (Vector)
                                         child: Center(
                                           child: Image.asset(
                                             'assets/icons/glob.png',
@@ -114,29 +116,29 @@ class _NotificationPageState extends State<NotificationPage>
                                       Expanded(
                                         child: Column(
                                           crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                           spacing: 4,
                                           children: [
                                             Row(
                                               mainAxisAlignment:
-                                                  MainAxisAlignment
-                                                      .spaceBetween,
+                                              MainAxisAlignment
+                                                  .spaceBetween,
                                               crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                              CrossAxisAlignment.start,
                                               children: [
                                                 Expanded(
-                                                  child: const Text(
-                                                    'Account Verification',
+                                                  child: Text(
+                                                    l10n.accountVerification,
                                                     style: TextStyle(
                                                       fontWeight:
-                                                          FontWeight.w600,
+                                                      FontWeight.w600,
                                                       fontSize: 14,
                                                       height: 1.3,
-                                                      color: Color(0xFF0F1121),
+                                                      color: AppColor.kTextSecondaryDark,
                                                     ),
                                                     maxLines: 1,
                                                     overflow:
-                                                        TextOverflow.ellipsis,
+                                                    TextOverflow.ellipsis,
                                                   ),
                                                 ),
                                                 Text(
@@ -145,19 +147,19 @@ class _NotificationPageState extends State<NotificationPage>
                                                     fontWeight: FontWeight.w500,
                                                     fontSize: 12,
                                                     height: 1.3,
-                                                    color: Color(0xFF67697A),
+                                                    color: AppColor.kSlateGrey,
                                                   ),
                                                   textAlign: TextAlign.right,
                                                 ),
                                               ],
                                             ),
-                                            const Text(
-                                              'Please verify your account to gift an package to your friend.',
+                                            Text(
+                                              l10n.accountVerificationMessage,
                                               style: TextStyle(
                                                 fontWeight: FontWeight.w400,
                                                 fontSize: 12,
                                                 height: 1.6,
-                                                color: Color(0xFF67697A),
+                                                color: AppColor.kSlateGrey,
                                               ),
                                             ),
                                           ],
@@ -174,6 +176,8 @@ class _NotificationPageState extends State<NotificationPage>
                       ),
                     ],
                   ),
+
+                  // ── Promo & Offer Tab ─────────────────────────────────
                   Column(
                     spacing: 20,
                     crossAxisAlignment: CrossAxisAlignment.start,
@@ -182,7 +186,7 @@ class _NotificationPageState extends State<NotificationPage>
                         mainAxisAlignment: MainAxisAlignment.spaceBetween,
                         children: [
                           Text(
-                            'Yesterday',
+                            l10n.yesterday,
                             style: TextStyle(
                               fontSize: 16,
                               fontWeight: FontWeight.w600,
@@ -197,11 +201,11 @@ class _NotificationPageState extends State<NotificationPage>
                               tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                             ),
                             child: Text(
-                              'Clear All',
+                              l10n.clearAll,
                               style: TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w500,
-                                color: Colors.red,
+                                color: AppColor.kFailedRed,
                               ),
                             ),
                           ),
@@ -222,7 +226,8 @@ class _NotificationPageState extends State<NotificationPage>
                                   ),
                                   Row(
                                     spacing: 12,
-                                    crossAxisAlignment: CrossAxisAlignment.start,
+                                    crossAxisAlignment:
+                                    CrossAxisAlignment.start,
                                     children: [
                                       Container(
                                         width: 38,
@@ -231,7 +236,6 @@ class _NotificationPageState extends State<NotificationPage>
                                           shape: BoxShape.circle,
                                           color: _gray,
                                         ),
-
                                         child: Center(
                                           child: Image.asset(
                                             'assets/icons/offer_promo.png',
@@ -243,70 +247,65 @@ class _NotificationPageState extends State<NotificationPage>
                                       Expanded(
                                         child: Column(
                                           crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                          CrossAxisAlignment.start,
                                           spacing: 4,
                                           children: [
                                             Row(
                                               mainAxisAlignment:
-                                                  MainAxisAlignment.spaceBetween,
+                                              MainAxisAlignment
+                                                  .spaceBetween,
                                               crossAxisAlignment:
-                                                  CrossAxisAlignment.start,
+                                              CrossAxisAlignment.start,
                                               children: [
                                                 Expanded(
                                                   child: Text(
-                                                    'Best Deal Unlimited Call! 🥰',
+                                                    l10n.bestDealTitle,
                                                     style: TextStyle(
-                                                      fontFamily: 'General Sans',
+                                                      fontFamily: 'GeneralSans',
                                                       fontWeight: FontWeight.w600,
                                                       fontSize: 14,
                                                       height: 1.3,
-                                                      color: Color(0xFF0F1121),
+                                                      color: AppColor.kTextSecondaryDark,
                                                     ),
                                                     maxLines: 1,
                                                     overflow:
-                                                        TextOverflow.ellipsis,
+                                                    TextOverflow.ellipsis,
                                                   ),
                                                 ),
                                                 const Text(
                                                   '9:41 AM',
                                                   style: TextStyle(
-                                                    fontFamily: 'General Sans',
+                                                    fontFamily: 'GeneralSans',
                                                     fontWeight: FontWeight.w500,
                                                     fontSize: 12,
                                                     height: 1.3,
-                                                    color: Color(
-                                                      0xFF67697A,
-                                                    ), // Grey/500 - Main
+                                                    color: AppColor.kSlateGrey,
                                                   ),
                                                   textAlign: TextAlign.right,
                                                 ),
                                               ],
                                             ),
                                             Text(
-                                              "Don't miss out on this incredible deal! We're excited to offer you unlimited calling to any operator, 24 hours a day. That's right, you can chat with your loved ones or colleagues anytime you want without worrying about time or cost limitations.",
+                                              l10n.bestDealMessage,
                                               style: TextStyle(
-                                                fontFamily: 'General Sans',
+                                                fontFamily: 'GeneralSans',
                                                 fontWeight: FontWeight.w400,
                                                 fontSize: 12,
                                                 height: 1.6,
-                                                // line-height: 160%
-                                                color: Color(0xFF67697A),
+                                                color: AppColor.kSlateGrey,
                                               ),
                                               maxLines: 6,
-                                              // Adjusted to roughly match the 114px height (6 lines * 19px/line)
                                               overflow: TextOverflow.ellipsis,
                                             ),
                                             SizedBox(height: 12),
                                             Text(
-                                              'Get it Now',
+                                              l10n.getItNow,
                                               style: TextStyle(
-                                                fontFamily: 'General Sans',
+                                                fontFamily: 'GeneralSans',
                                                 fontWeight: FontWeight.w600,
                                                 fontSize: 12,
                                                 height: 1.3,
-                                                color: Color(
-                                                  0xFF8D0247,
-                                                ), // Main color
+                                                color: AppColor.kPrimaryColor,
                                               ),
                                             ),
                                           ],

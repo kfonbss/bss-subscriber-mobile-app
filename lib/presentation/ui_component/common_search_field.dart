@@ -54,7 +54,7 @@ class CommonSearchField extends StatelessWidget {
               width: 24,
               height: 24,
               colorFilter: const ColorFilter.mode(
-                Color(0xFF606169),
+                AppColor.kSlateGrey,
                 BlendMode.srcIn,
               ),
             ),

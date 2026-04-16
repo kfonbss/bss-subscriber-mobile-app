@@ -1,6 +1,6 @@
-import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class CommonPasswordTextField extends StatefulWidget {
   final TextEditingController textEditingController;
@@ -64,7 +64,7 @@ class _CommonPasswordTextFieldState extends State<CommonPasswordTextField> {
             ).textTheme.bodyMedium?.copyWith(color: AppColor.kTextFiledHintColor),
             errorStyle: Theme.of(
               context,
-            ).textTheme.bodySmall?.copyWith(color: Colors.red),
+            ).textTheme.bodySmall?.copyWith(color: AppColor.kFailedRed),
             contentPadding: EdgeInsets.all(12),
 
             suffixIcon: IconButton(
@@ -86,7 +86,7 @@ class _CommonPasswordTextFieldState extends State<CommonPasswordTextField> {
             ),
             enabledBorder: OutlineInputBorder(
               borderSide: BorderSide(
-                color: const Color(0xFFEAEAEA),
+                color: AppColor.kinputFiledLightBorder,
                 width: 1.0,
               ),
               borderRadius: BorderRadius.all(Radius.circular(12.0)),

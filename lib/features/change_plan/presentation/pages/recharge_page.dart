@@ -1,58 +1,89 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entity.dart';
+import 'package:kfon_subscriber/features/change_plan/domain/entity/recharge_payment_status_entity.dart';
+import 'package:kfon_subscriber/features/change_plan/domain/params/recharge_change_plan_params.dart';
+import 'package:kfon_subscriber/features/change_plan/presentation/bloc/change_plan_bloc.dart';
+import 'package:kfon_subscriber/features/change_plan/presentation/bloc/change_plan_event.dart';
+import 'package:kfon_subscriber/features/change_plan/presentation/bloc/change_plan_state.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/pages/components/plan_tile.dart';
+import 'package:kfon_subscriber/features/change_plan/presentation/pages/payment_webview_page.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/painter/dashed_line_painter.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
 import 'package:kfon_subscriber/presentation/ui_component/primary_button.dart';
 
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kfon_subscriber/core/util/preference_util.dart';
-import 'package:kfon_subscriber/features/change_plan/presentation/bloc/change_plan_bloc.dart';
-import 'package:kfon_subscriber/features/change_plan/presentation/bloc/change_plan_event.dart';
-import 'package:kfon_subscriber/features/change_plan/presentation/bloc/change_plan_state.dart';
-import 'package:kfon_subscriber/features/change_plan/domain/params/recharge_change_plan_params.dart';
-import 'package:kfon_subscriber/features/change_plan/domain/entity/recharge_payment_status_entity.dart';
-import 'package:kfon_subscriber/features/change_plan/presentation/pages/payment_webview_page.dart';
-
 class RechargePage extends StatelessWidget {
   final PackageEntity package;
 
-  RechargePage({super.key, required this.package});
+  const RechargePage({super.key, required this.package});
+
+  // ── Shared dialog constants ──────────────────────────────────────────────────
+  // 0x80 = 128 = 50% of 255 → Colors.black @ 50% opacity
+  static const _backdropColor = Color(0x80000000);
+  static const _dialogContainerDecoration = BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.all(Radius.circular(20)),
+  );
+  // ElevatedButton.styleFrom() is not const — computed once as static final.
+  static final _dialogButtonStyle = ElevatedButton.styleFrom(
+    backgroundColor: AppColor.kPrimaryColor,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(8)),
+    ),
+  );
+  // DashedLinePainter has no const constructor — computed once as static final.
+  // 0x1A = 26 ≈ 0.1 × 255 → Colors.black @ 10% opacity
+  static final _dashedPainter = DashedLinePainter(
+    color: const Color(0x1A000000),
+    strokeWidth: 1,
+  );
+  static const _contentPadding = EdgeInsets.only(
+    left: 20,
+    right: 20,
+    top: 140,
+    bottom: 20,
+  );
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.bssSubL10n;
+
     return CommonAppBar(
-      title: 'Recharge',
+      title: l10n.recharge,
       onBackPressed: () => Navigator.pop(context),
       appbarColor: Colors.transparent,
       extendBodyBehindAppBar: true,
       circleColor: Colors.white,
       titleColor: Colors.white,
       body: BlocConsumer<ChangePlanBloc, ChangePlanState>(
-        listenWhen:
-            (previous, current) =>
-                previous.actionStatus != current.actionStatus ||
-                previous.paymentStatus != current.paymentStatus,
+        listenWhen: (previous, current) =>
+            previous.actionStatus != current.actionStatus ||
+            previous.paymentStatus != current.paymentStatus,
         listener: (context, state) {
-          if (state.actionStatus == ActionStatus.success &&
+          if (state.paymentStatus == PaymentStatus.success &&
+              state.paymentStatusEntity != null) {
+            _showTopUpSuccessDialog(state.paymentStatusEntity!, context);
+          } else if (state.paymentStatus == PaymentStatus.failed) {
+            _showTopUpFailDialog(package.price, context);
+          } else if (state.actionStatus == ActionStatus.success &&
               state.redirectEntity != null) {
-            Navigator.pop(context); // Close PaymentMethodSheet if open
+            Navigator.pop(context);
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder:
-                    (context) => PaymentWebViewPage(
-                      redirectEntity: state.redirectEntity!,
-                    ),
+                builder: (context) => PaymentWebViewPage(
+                  redirectEntity: state.redirectEntity!,
+                ),
               ),
             ).then((result) {
+              if (!context.mounted) return;
               if (result == PaymentResult.success) {
-                // Fetch payment status from API
-                if (context.mounted && state.orderId != null) {
+                if (state.orderId != null) {
                   context.read<ChangePlanBloc>().add(
                     FetchRechargePaymentStatus(orderId: state.orderId!),
                   );
@@ -62,28 +93,22 @@ class RechargePage extends StatelessWidget {
               } else if (result == PaymentResult.cancelled) {
                 DialogUtil().showCustomSnackbar(
                   context: context,
-                  content: 'Recharge payemnt is cancelled',
+                  content: l10n.rechargePaymentCancelled,
                   backgroundColor: AppColor.kPendingOrange,
                 );
               }
             });
           } else if (state.actionStatus == ActionStatus.error) {
-            Navigator.pop(context); // Close PaymentMethodSheet if open
+            Navigator.pop(context);
             DialogUtil().showCustomSnackbar(
               context: context,
-              content: 'Recharge failed: ${state.errorMessage}',
+              content: l10n.rechargeFailedError(state.errorMessage ?? ''),
               backgroundColor: AppColor.kSuspendedStatusText,
             );
           }
-
-          // Handle payment status response
-          if (state.paymentStatus == PaymentStatus.success &&
-              state.paymentStatusEntity != null) {
-            _showTopUpSuccessDialog(state.paymentStatusEntity!, context);
-          } else if (state.paymentStatus == PaymentStatus.failed) {
-            _showTopUpFailDialog(package.price, context);
-          }
         },
+        buildWhen: (previous, current) =>
+            previous.actionStatus != current.actionStatus,
         builder: (context, state) {
           return Stack(
             children: [
@@ -96,37 +121,31 @@ class RechargePage extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: EdgeInsets.only(
-                  left: 20,
-                  right: 20,
-                  top: 140,
-                  bottom: 20,
-                ),
+                padding: _contentPadding,
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
                     PlanTile(package: package, isSelected: false, onTap: () {}),
                     PrimaryButton(
-                      label: 'Pay Now',
+                      label: l10n.payNow,
                       isLoading: state.actionStatus == ActionStatus.loading,
-                      onClicked:
-                          () => showPaymentMethodSheet(
-                            context,
-                            onNext: (gateway) async {
-                              if (context.mounted) {
-                                context.read<ChangePlanBloc>().add(
-                                  RechargeChangePlan(
-                                    params: RechargeChangePlanParams(
-                                      packageId: package.packageId,
-                                      gateway: gateway,
-                                      amount: package.price,
-                                      durationDays: package.validity,
-                                    ),
-                                  ),
-                                );
-                              }
-                            },
-                          ),
+                      onClicked: () => showPaymentMethodSheet(
+                        context,
+                        onNext: (gateway) async {
+                          if (context.mounted) {
+                            context.read<ChangePlanBloc>().add(
+                              RechargeChangePlan(
+                                params: RechargeChangePlanParams(
+                                  packageId: package.packageId,
+                                  gateway: gateway,
+                                  amount: package.price,
+                                  durationDays: package.validity,
+                                ),
+                              ),
+                            );
+                          }
+                        },
+                      ),
                     ),
                   ],
                 ),
@@ -146,15 +165,10 @@ class RechargePage extends StatelessWidget {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder:
-          (_) => BlocProvider.value(
-            value: context.read<ChangePlanBloc>(),
-            child: PaymentMethodSheet(
-              onNext: (gateway) {
-                onNext(gateway);
-              },
-            ),
-          ),
+      builder: (_) => BlocProvider.value(
+        value: context.read<ChangePlanBloc>(),
+        child: PaymentMethodSheet(onNext: (gateway) => onNext(gateway)),
+      ),
     );
   }
 
@@ -162,35 +176,32 @@ class RechargePage extends StatelessWidget {
     RechargePaymentStatusEntity paymentStatus,
     BuildContext context,
   ) {
+    final l10n = context.bssSubL10n;
+
     showDialog(
       context: context,
       barrierDismissible: false,
-      barrierColor: Colors.black.withValues(alpha: 0.5),
+      barrierColor: _backdropColor,
       builder: (BuildContext context) {
         return Dialog(
           backgroundColor: Colors.transparent,
           insetPadding: const EdgeInsets.symmetric(horizontal: 30),
           child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
+            decoration: _dialogContainerDecoration,
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 24),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Success Icon
                 SvgPicture.asset(
                   'assets/images/top-up_successfull.svg',
                   width: 80,
                   height: 80,
                 ),
                 const SizedBox(height: 26),
-                // Title
                 Text(
-                  'Recharge Successful!',
-                  style: TextStyle(
-                    color: const Color(0xFF0F1121),
+                  l10n.rechargeSuccessful,
+                  style: const TextStyle(
+                    color: AppColor.kTextSecondaryDark,
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                     height: 1.3,
@@ -198,11 +209,12 @@ class RechargePage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-                // Message
                 Text(
-                  'Your recharge of ₹${paymentStatus.amount.toStringAsFixed(2)} has been completed successfully.',
-                  style: TextStyle(
-                    color: const Color(0xFF354259),
+                  l10n.rechargeSuccessMessage(
+                    paymentStatus.amount.toStringAsFixed(2),
+                  ),
+                  style: const TextStyle(
+                    color: AppColor.kDarkBlue,
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                     height: 1.54,
@@ -215,43 +227,32 @@ class RechargePage extends StatelessWidget {
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(horizontal: 20.w),
                   height: 1,
-                  child: CustomPaint(
-                    painter: DashedLinePainter(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      strokeWidth: 1,
-                    ),
-                  ),
+                  child: CustomPaint(painter: _dashedPainter),
                 ),
                 const SizedBox(height: 18),
                 Text(
-                  'Transaction ID: ${paymentStatus.txnId}',
-                  style: TextStyle(
-                    color: const Color(0xFF354259),
+                  l10n.transactionId(paymentStatus.txnId),
+                  style: const TextStyle(
+                    color: AppColor.kDarkBlue,
                     fontSize: 14,
-                    fontFamily: 'General Sans',
+                    fontFamily: 'GeneralSans',
                     fontWeight: FontWeight.w500,
                     height: 1.43,
                   ),
                 ),
                 const SizedBox(height: 24),
-                // Ok Button
                 SizedBox(
                   width: double.infinity,
                   height: 52,
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context);
-                      Navigator.pop(context); // Go back to previous screen
+                      Navigator.pop(context);
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColor.kPrimaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
+                    style: _dialogButtonStyle,
                     child: Text(
-                      'Ok',
-                      style: TextStyle(
+                      l10n.ok,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -270,35 +271,32 @@ class RechargePage extends StatelessWidget {
   }
 
   void _showTopUpFailDialog(double amount, BuildContext context) {
+    final l10n = context.bssSubL10n;
+
     showDialog(
       context: context,
       barrierDismissible: false,
-      barrierColor: Colors.black.withValues(alpha: 0.5),
+      barrierColor: _backdropColor,
       builder: (BuildContext context) {
         return Dialog(
           backgroundColor: Colors.transparent,
           insetPadding: const EdgeInsets.symmetric(horizontal: 30),
           child: Container(
-            decoration: BoxDecoration(
-              color: Colors.white,
-              borderRadius: BorderRadius.circular(20),
-            ),
+            decoration: _dialogContainerDecoration,
             padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 24),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
-                // Success Icon
                 SvgPicture.asset(
                   'assets/images/top-up_fail.svg',
                   width: 80,
                   height: 80,
                 ),
                 const SizedBox(height: 26),
-                // Title
                 Text(
-                  'Recharge Failed',
-                  style: TextStyle(
-                    color: const Color(0xFF0F1121),
+                  l10n.rechargeFailed,
+                  style: const TextStyle(
+                    color: AppColor.kTextSecondaryDark,
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                     height: 1.3,
@@ -306,11 +304,10 @@ class RechargePage extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(height: 12),
-                // Message
                 Text(
-                  'Your recharge of ₹500 could not be completed.',
-                  style: TextStyle(
-                    color: const Color(0xFF354259),
+                  l10n.rechargeFailedMessage,
+                  style: const TextStyle(
+                    color: AppColor.kDarkBlue,
                     fontSize: 13,
                     fontWeight: FontWeight.w500,
                     height: 1.54,
@@ -320,12 +317,12 @@ class RechargePage extends StatelessWidget {
                 ),
                 const SizedBox(height: 13),
                 Text(
-                  'Please check your payment method or network connection and try again.',
+                  l10n.topUpFailedRetryMessage,
                   textAlign: TextAlign.center,
-                  style: TextStyle(
-                    color: const Color(0xFF354259),
+                  style: const TextStyle(
+                    color: AppColor.kDarkBlue,
                     fontSize: 13,
-                    fontFamily: 'General Sans',
+                    fontFamily: 'GeneralSans',
                     fontWeight: FontWeight.w500,
                     height: 1.54,
                   ),
@@ -335,32 +332,21 @@ class RechargePage extends StatelessWidget {
                   width: double.infinity,
                   padding: EdgeInsets.symmetric(horizontal: 20.w),
                   height: 1,
-                  child: CustomPaint(
-                    painter: DashedLinePainter(
-                      color: Colors.black.withValues(alpha: 0.1),
-                      strokeWidth: 1,
-                    ),
-                  ),
+                  child: CustomPaint(painter: _dashedPainter),
                 ),
                 const SizedBox(height: 24),
-                // Ok Button
                 SizedBox(
                   width: double.infinity,
                   height: 52,
                   child: ElevatedButton(
                     onPressed: () {
                       Navigator.pop(context);
-                      Navigator.pop(context); // Go back to previous screen
+                      Navigator.pop(context);
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColor.kPrimaryColor,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(8),
-                      ),
-                    ),
+                    style: _dialogButtonStyle,
                     child: Text(
-                      'Ok',
-                      style: TextStyle(
+                      l10n.ok,
+                      style: const TextStyle(
                         color: Colors.white,
                         fontSize: 16,
                         fontWeight: FontWeight.w600,
@@ -391,63 +377,72 @@ class PaymentMethodSheet extends StatefulWidget {
 class _PaymentMethodSheetState extends State<PaymentMethodSheet> {
   String _selected = 'HDFC';
 
-  final _methods = [
+  static const _methods = [
     PaymentMethod(name: 'HDFC', logo: 'assets/images/hdfc_logo.png'),
     PaymentMethod(name: 'IKM', logo: 'assets/images/ikm_logo.png'),
   ];
 
+  // ── Static decorations ───────────────────────────────────────────────────────
+  static const _sheetDecoration = BoxDecoration(
+    color: AppColor.kWarmBackground,
+    borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
+  );
+  static const _handleDecoration = BoxDecoration(
+    color: AppColor.kDisabledGrey,
+    borderRadius: BorderRadius.all(Radius.circular(2)),
+  );
+  // Sizer.sp is fixed after MaterialApp.builder — computed once as static final.
+  static final _titleStyle = TextStyle(
+    fontSize: 16.sp,
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w600,
+    height: 1.30,
+    color: Colors.black,
+  );
+
   @override
   Widget build(BuildContext context) {
+    final l10n = context.bssSubL10n;
+
     return Container(
-      decoration: BoxDecoration(
-        color: const Color(0xFFEFEBE5),
-        borderRadius: BorderRadius.vertical(top: Radius.circular(28)),
-      ),
+      decoration: _sheetDecoration,
       padding: EdgeInsets.fromLTRB(20.w, 12.h, 20.w, 28.h),
       child: Column(
         mainAxisSize: MainAxisSize.min,
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          // Handle
+          // Drag handle
           Center(
             child: Container(
               width: 40.w,
               height: 4.h,
-              decoration: BoxDecoration(
-                color: const Color(0xFFCCCCCC),
-                borderRadius: BorderRadius.circular(2),
-              ),
+              decoration: _handleDecoration,
             ),
           ),
           SizedBox(height: 20.h),
 
-          // Title
-          Text(
-            'Payment Method',
-            style: TextStyle(
-              fontSize: 16.sp,
-              fontFamily: 'General Sans',
-              fontWeight: FontWeight.w600,
-              height: 1.30,
-              color: Colors.black,
-            ),
-          ),
+          Text(l10n.paymentMethod, style: _titleStyle),
           SizedBox(height: 16.h),
 
-          // Payment options
-          ..._methods.map((m) => _buildOption(m)),
+          // Payment options — extracted to StatelessWidget for identity tracking.
+          ..._methods.map(
+            (m) => _PaymentOption(
+              method: m,
+              isSelected: _selected == m.name,
+              onTap: () => setState(() => _selected = m.name),
+            ),
+          ),
 
           SizedBox(height: 80.h),
 
-          // Next button
           BlocBuilder<ChangePlanBloc, ChangePlanState>(
+            buildWhen: (previous, current) =>
+                previous.actionStatus != current.actionStatus,
             builder: (context, state) {
               return PrimaryButton(
-                label: 'Next',
+                label: l10n.next,
                 isLoading: state.actionStatus == ActionStatus.loading,
-                onClicked: () {
-                  widget.onNext(_selected);
-                },
+                onClicked: () => widget.onNext(_selected),
               );
             },
           ),
@@ -455,83 +450,102 @@ class _PaymentMethodSheetState extends State<PaymentMethodSheet> {
       ),
     );
   }
+}
 
-  Widget _buildOption(PaymentMethod method) {
-    final isSelected = _selected == method.name;
+// ── Payment option card ───────────────────────────────────────────────────────
+// Extracted from _buildOption helper method so Flutter can track identity
+// and skip rebuilds when isSelected has not changed.
+class _PaymentOption extends StatelessWidget {
+  final PaymentMethod method;
+  final bool isSelected;
+  final VoidCallback onTap;
+
+  const _PaymentOption({
+    required this.method,
+    required this.isSelected,
+    required this.onTap,
+  });
+
+  // 0x0A = 10 ≈ 0.04 × 255 → Colors.black @ 4% opacity
+  static const _cardDecoration = BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.all(Radius.circular(14)),
+    boxShadow: [
+      BoxShadow(
+        color: Color(0x0A000000),
+        blurRadius: 8,
+        offset: Offset(0, 2),
+      ),
+    ],
+  );
+  static const _logoDecoration = ShapeDecoration(
+    color: Colors.white,
+    shape: RoundedRectangleBorder(
+      side: BorderSide(width: 1, color: AppColor.kBorderLightGrey),
+      borderRadius: BorderRadius.all(Radius.circular(6)),
+    ),
+  );
+  static const _selectedRadioDecoration = BoxDecoration(
+    shape: BoxShape.circle,
+    color: AppColor.kPrimaryColor,
+  );
+  // Border.fromBorderSide has a const constructor; Border.all does not.
+  static const _unselectedRadioDecoration = BoxDecoration(
+    shape: BoxShape.circle,
+    color: Colors.transparent,
+    border: Border.fromBorderSide(
+      BorderSide(color: AppColor.kDisabledGrey, width: 1.5),
+    ),
+  );
+  static const _centerDotDecoration = BoxDecoration(
+    color: Colors.white,
+    shape: BoxShape.circle,
+  );
+  static final _methodNameStyle = TextStyle(
+    fontSize: 15.sp,
+    fontWeight: FontWeight.w600,
+    color: AppColor.kRichBlack,
+  );
+
+  @override
+  Widget build(BuildContext context) {
     return GestureDetector(
-      onTap: () => setState(() => _selected = method.name),
+      onTap: onTap,
       child: Container(
         margin: EdgeInsets.only(bottom: 12.h),
         padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(14),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04),
-              blurRadius: 8,
-              offset: const Offset(0, 2),
-            ),
-          ],
-        ),
+        decoration: _cardDecoration,
         child: Row(
           children: [
-            // Logo
             Container(
               width: 46.w,
               height: 46.h,
-              padding: EdgeInsets.all(5),
-              decoration: ShapeDecoration(
-                color: Colors.white,
-                shape: RoundedRectangleBorder(
-                  side: BorderSide(width: 1, color: const Color(0xFFD9D9D9)),
-                  borderRadius: BorderRadius.circular(6),
-                ),
-              ),
+              padding: const EdgeInsets.all(5),
+              decoration: _logoDecoration,
               child: Image.asset(method.logo),
             ),
             SizedBox(width: 16.w),
-
-            // Name
             Expanded(
               child: Text(
                 method.name,
-                style: TextStyle(
-                  fontSize: 15.sp,
-                  fontWeight: FontWeight.w600,
-                  color: const Color(0xFF1A1A1A),
-                ),
+                style: _methodNameStyle,
               ),
             ),
-
-            // Radio
             Container(
               width: 20.w,
               height: 20.w,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color:
-                      isSelected
-                          ? AppColor.kPrimaryColor
-                          : const Color(0xFFCCCCCC),
-                  width: isSelected ? 0 : 1.5,
-                ),
-                color: isSelected ? AppColor.kPrimaryColor : Colors.transparent,
-              ),
-              child:
-                  isSelected
-                      ? Center(
-                        child: Container(
-                          width: 8.w,
-                          height: 8.w,
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                          ),
-                        ),
-                      )
-                      : null,
+              decoration: isSelected
+                  ? _selectedRadioDecoration
+                  : _unselectedRadioDecoration,
+              child: isSelected
+                  ? Center(
+                      child: Container(
+                        width: 8.w,
+                        height: 8.w,
+                        decoration: _centerDotDecoration,
+                      ),
+                    )
+                  : null,
             ),
           ],
         ),

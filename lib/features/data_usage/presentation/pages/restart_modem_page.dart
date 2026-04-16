@@ -1,6 +1,9 @@
+import 'dart:math' show pi;
+
+import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
-import 'package:flutter/material.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
 
 enum _RestartState { initial, loading, success, failed }
@@ -16,6 +19,24 @@ class _RestartModemPageState extends State<RestartModemPage>
     with SingleTickerProviderStateMixin {
   _RestartState _state = _RestartState.initial;
   late AnimationController _progressController;
+
+  // ── Hoisted to avoid per-frame allocations inside AnimatedBuilder ────────────
+  // BorderRadius.circular(N) is not const; BorderRadius.all(Radius.circular(N)) is.
+  static const _progressBarRadius = BorderRadius.all(Radius.circular(4));
+  // kPrimaryColor(0xFF8D0247) @ 15% opacity: 0.15 × 255 ≈ 38 = 0x26
+  static const _progressBgColor = Color(0x268D0247);
+  // Dialog shape — shared between success and failure dialogs.
+  static const _dialogShape = RoundedRectangleBorder(
+    borderRadius: BorderRadius.all(Radius.circular(20)),
+  );
+  // OutlinedButton.styleFrom() is not const — computed once as static final.
+  static final _cancelButtonStyle = OutlinedButton.styleFrom(
+    padding: const EdgeInsets.symmetric(vertical: 14),
+    side: const BorderSide(color: AppColor.kPrimaryColor),
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(10)),
+    ),
+  );
 
   @override
   void initState() {
@@ -46,6 +67,7 @@ class _RestartModemPageState extends State<RestartModemPage>
     _showFailedDialog();
   }
 
+  // ignore: unused_element
   void _showSuccessDialog() {
     setState(() => _state = _RestartState.success);
 
@@ -54,7 +76,7 @@ class _RestartModemPageState extends State<RestartModemPage>
       barrierDismissible: false,
       builder: (ctx) => Dialog(
         backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: _dialogShape,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
           child: Column(
@@ -63,7 +85,7 @@ class _RestartModemPageState extends State<RestartModemPage>
               Image.asset('assets/images/modem_restart_success.png', height: 100.h),
               const SizedBox(height: 24),
               Text(
-                'Modem Restarted Successfully!',
+                context.bssSubL10n.modemRestartedSuccessfully,
                 textAlign: TextAlign.center,
                 style: Theme.of(
                   context,
@@ -71,7 +93,7 @@ class _RestartModemPageState extends State<RestartModemPage>
               ),
               const SizedBox(height: 8),
               Text(
-                'Your modem has been restarted. Connection restored and ready to use.',
+                context.bssSubL10n.modemRestartedDescription,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: AppColor.kTextSecondaryDark,
@@ -87,7 +109,7 @@ class _RestartModemPageState extends State<RestartModemPage>
                     Navigator.of(ctx).pop();
                     Navigator.of(context).pop();
                   },
-                  child: Text('Ok'),
+                  child: Text(context.bssSubL10n.ok),
                 ),
               ),
             ],
@@ -105,7 +127,7 @@ class _RestartModemPageState extends State<RestartModemPage>
       barrierDismissible: false,
       builder: (ctx) => Dialog(
         backgroundColor: Colors.white,
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(20)),
+        shape: _dialogShape,
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
           child: Column(
@@ -114,7 +136,7 @@ class _RestartModemPageState extends State<RestartModemPage>
               Image.asset('assets/images/modem_restart_fail.png', height: 100.h),
               const SizedBox(height: 24),
               Text(
-                'Restart Failed',
+                context.bssSubL10n.restartFailed,
                 textAlign: TextAlign.center,
                 style: Theme.of(
                   context,
@@ -122,7 +144,7 @@ class _RestartModemPageState extends State<RestartModemPage>
               ),
               const SizedBox(height: 8),
               Text(
-                "We couldn't restart your modem. Please try again or contact support.",
+                context.bssSubL10n.restartFailedDescription,
                 textAlign: TextAlign.center,
                 style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                   color: AppColor.kTextSecondaryDark,
@@ -138,7 +160,7 @@ class _RestartModemPageState extends State<RestartModemPage>
                     Navigator.of(ctx).pop();
                     _onRestartPressed();
                   },
-                  child: Text('Retry'),
+                  child: Text(context.bssSubL10n.retry),
                 ),
               ),
               const SizedBox(height: 12),
@@ -149,14 +171,8 @@ class _RestartModemPageState extends State<RestartModemPage>
                     Navigator.of(ctx).pop();
                     Navigator.of(context).pop();
                   },
-                  style: OutlinedButton.styleFrom(
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    side: const BorderSide(color: AppColor.kPrimaryColor),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                  ),
-                  child: Text('Cancel'),
+                  style: _cancelButtonStyle,
+                  child: Text(context.bssSubL10n.cancel),
                 ),
               ),
             ],
@@ -171,7 +187,7 @@ class _RestartModemPageState extends State<RestartModemPage>
 
     return CommonAppBar(
       onBackPressed: () => Navigator.pop(context),
-      title: 'Restart Modem',
+      title: context.bssSubL10n.restartModem,
       body: Center(
         child: Padding(
           padding: const EdgeInsets.symmetric(horizontal: 24),
@@ -191,14 +207,14 @@ class _RestartModemPageState extends State<RestartModemPage>
         Image.asset('assets/images/modem_restart_image.png', height: 100.h),
         const SizedBox(height: 32),
         Text(
-          'Restart Your Modem',
+          context.bssSubL10n.restartYourModem,
           style: Theme.of(
             context,
           ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 12),
         Text(
-          'Restarting your modem helps fix connection issues and improve performance.\nThis will take about 2-3 minutes.',
+          context.bssSubL10n.restartYourModemDescription,
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w500,
@@ -213,7 +229,7 @@ class _RestartModemPageState extends State<RestartModemPage>
           child: ElevatedButton(
             onPressed: _onRestartPressed,
             child: Text(
-              'Restart Now',
+              context.bssSubL10n.restartNow,
               style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
             ),
           ),
@@ -230,14 +246,14 @@ class _RestartModemPageState extends State<RestartModemPage>
         const _PillSpinner(size: 120, color: AppColor.kPrimaryColor),
         const SizedBox(height: 32),
         Text(
-          'Restarting Modem',
+          context.bssSubL10n.restartingModem,
           style: Theme.of(
             context,
           ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
         ),
         const SizedBox(height: 8),
         Text(
-          'Restarting your modem... please wait.',
+          context.bssSubL10n.restartingModemDescription,
           textAlign: TextAlign.center,
           style: Theme.of(context).textTheme.bodyMedium?.copyWith(
             fontWeight: FontWeight.w500,
@@ -251,7 +267,7 @@ class _RestartModemPageState extends State<RestartModemPage>
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Restarting.....',
+              context.bssSubL10n.restartingDots,
               style: Theme.of(
                 context,
               ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
@@ -260,14 +276,14 @@ class _RestartModemPageState extends State<RestartModemPage>
             AnimatedBuilder(
               animation: _progressController,
               builder: (context, child) {
+                // _progressBarRadius and _progressBgColor are static const —
+                // no new objects allocated per animation frame.
                 return ClipRRect(
-                  borderRadius: BorderRadius.circular(4),
+                  borderRadius: _progressBarRadius,
                   child: LinearProgressIndicator(
                     value: _progressController.value,
                     minHeight: 8,
-                    backgroundColor: AppColor.kPrimaryColor.withValues(
-                      alpha: 0.15,
-                    ),
+                    backgroundColor: _progressBgColor,
                     valueColor: const AlwaysStoppedAnimation<Color>(
                       AppColor.kPrimaryColor,
                     ),
@@ -349,7 +365,7 @@ class _PillSpinnerPainter extends CustomPainter {
     final activeIndex = (progress * pillCount).floor() % pillCount;
 
     for (int i = 0; i < pillCount; i++) {
-      final angle = (i * 360 / pillCount) * (3.14159265 / 180);
+      final angle = (i * 360 / pillCount) * (pi / 180);
 
       // Active pill is brightest, others fade away
       final distance = (i - activeIndex) % pillCount;
@@ -381,5 +397,5 @@ class _PillSpinnerPainter extends CustomPainter {
 
   @override
   bool shouldRepaint(_PillSpinnerPainter oldDelegate) =>
-      oldDelegate.progress != progress;
+      oldDelegate.progress != progress || oldDelegate.color != color;
 }

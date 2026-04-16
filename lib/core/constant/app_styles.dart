@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 
 class AppStyles {
   AppStyles._();
@@ -46,7 +47,7 @@ class AppStyles {
     ),
     errorBorder: OutlineInputBorder(
       borderRadius: BorderRadius.circular(12),
-      borderSide: const BorderSide(color: Colors.red),
+      borderSide: const BorderSide(color: AppColor.kFailedRed),
     ),
     contentPadding: const EdgeInsets.symmetric(horizontal: 16, vertical: 14),
   );

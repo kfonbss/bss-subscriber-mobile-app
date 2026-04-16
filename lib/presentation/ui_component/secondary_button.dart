@@ -68,7 +68,7 @@ class SecondaryButton extends StatelessWidget {
         textStyle: textStyle ??
              TextStyle(
               fontSize: 12.sp,
-              fontFamily: 'General Sans',
+              fontFamily: 'GeneralSans',
               fontWeight: FontWeight.w500,
               height: 1.3,
 

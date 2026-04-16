@@ -12,29 +12,29 @@ import 'package:kfon_subscriber/features/ticket/data/model/submit_ticket_req.dar
 import 'package:kfon_subscriber/features/ticket/data/model/submit_ticket_respo.dart';
 import 'package:kfon_subscriber/features/ticket/data/model/tickets_list_response_model.dart';
 import 'package:kfon_subscriber/features/ticket/data/model/visibility_model.dart';
-import 'package:kfon_subscriber/features/ticket/domain/repository/ticket_repository.dart';
-import 'package:kfon_subscriber/features/ticket/domain/entity/subject_entity.dart';
+import 'package:kfon_subscriber/features/ticket/domain/entity/add_note_respo_entity.dart';
 import 'package:kfon_subscriber/features/ticket/domain/entity/priority_entity.dart';
-import 'package:kfon_subscriber/features/ticket/domain/entity/visibility_entity.dart';
+import 'package:kfon_subscriber/features/ticket/domain/entity/subject_entity.dart';
 import 'package:kfon_subscriber/features/ticket/domain/entity/submit_ticket_respo_entity.dart';
 import 'package:kfon_subscriber/features/ticket/domain/entity/tickets_list_response_entity.dart';
-import 'package:kfon_subscriber/features/ticket/domain/entity/add_note_respo_entity.dart';
+import 'package:kfon_subscriber/features/ticket/domain/entity/visibility_entity.dart';
 import 'package:kfon_subscriber/features/ticket/domain/params/get_tickets_list_params.dart';
-import 'package:kfon_subscriber/service_locator.dart';
+import 'package:kfon_subscriber/features/ticket/domain/repository/ticket_repository.dart';
 
 class TicketRepositoryImp extends TicketRepository {
+  final DioClient _client;
+
+  TicketRepositoryImp({required DioClient client}) : _client = client;
+
   @override
   Future<Either<Failure, List<SubjectEntity>>> getSubjects() async {
-    APIResponse response = await sl<DioClient>().get(ApiUrls.subjectURL);
+    final response = await _client.get(ApiUrls.subjectURL);
     if (response.isSuccess) {
       final dataList = response.data as List<dynamic>? ?? [];
-      final subjects =
-          dataList
-              .map(
-                (e) => Subject.fromJson(e as Map<String, dynamic>).toEntity(),
-              )
-              .where((s) => s.isActive) // Filter only active subjects
-              .toList();
+      final subjects = dataList
+          .map((e) => Subject.fromJson(e as Map<String, dynamic>).toEntity())
+          .where((s) => s.isActive)
+          .toList();
       return Right(subjects);
     } else {
       return Left(response.failure);
@@ -43,19 +43,15 @@ class TicketRepositoryImp extends TicketRepository {
 
   @override
   Future<Either<Failure, List<PriorityEntity>>> getPriorities() async {
-    APIResponse response = await sl<DioClient>().get(ApiUrls.prioritiesURL);
+    final response = await _client.get(ApiUrls.prioritiesURL);
     if (response.isSuccess) {
       final dataList = response.data as List<dynamic>? ?? [];
-      final priorities =
-          dataList
-              .map(
-                (e) =>
-                    PriorityModel.fromJson(
-                      e as Map<String, dynamic>,
-                    ).toEntity(),
-              )
-              .where((p) => p.isActive) // Filter only active priorities
-              .toList();
+      final priorities = dataList
+          .map(
+            (e) => PriorityModel.fromJson(e as Map<String, dynamic>).toEntity(),
+          )
+          .where((p) => p.isActive)
+          .toList();
       return Right(priorities);
     } else {
       return Left(response.failure);
@@ -63,23 +59,17 @@ class TicketRepositoryImp extends TicketRepository {
   }
 
   @override
-  Future<Either<Failure, List<VisibilityEntity>>>
-  getVisibilityPermissions() async {
-    APIResponse response = await sl<DioClient>().get(
-      ApiUrls.visibilityPermissionURL,
-    );
+  Future<Either<Failure, List<VisibilityEntity>>> getVisibilityPermissions() async {
+    final response = await _client.get(ApiUrls.visibilityPermissionURL);
     if (response.isSuccess) {
       final dataList = response.data as List<dynamic>? ?? [];
-      final visibilities =
-          dataList
-              .map(
-                (e) =>
-                    VisibilityModel.fromJson(
-                      e as Map<String, dynamic>,
-                    ).toEntity(),
-              )
-              .where((v) => v.isActive)
-              .toList();
+      final visibilities = dataList
+          .map(
+            (e) =>
+                VisibilityModel.fromJson(e as Map<String, dynamic>).toEntity(),
+          )
+          .where((v) => v.isActive)
+          .toList();
       return Right(visibilities);
     } else {
       return Left(response.failure);
@@ -91,7 +81,7 @@ class TicketRepositoryImp extends TicketRepository {
     SubmitTicketReq params,
   ) async {
     // Step 1: Create ticket
-    APIResponse createResponse = await sl<DioClient>().post(
+    APIResponse createResponse = await _client.post(
       ApiUrls.submitTicketURL,
       data: params.toJson(),
     );
@@ -116,7 +106,7 @@ class TicketRepositoryImp extends TicketRepository {
             filename: file.name,
           );
 
-          final uploadResponse = await sl<DioClient>().post(
+          final uploadResponse = await _client.post(
             fileUploadUrl,
             data: FormData.fromMap({'file': multipartFile}),
             options: Options(contentType: 'multipart/form-data'),
@@ -136,7 +126,7 @@ class TicketRepositoryImp extends TicketRepository {
   Future<Either<Failure, TicketsListResponseEntity>> getTickets(
     GetTicketsListParams params,
   ) async {
-    APIResponse response = await sl<DioClient>().get(
+    final response = await _client.get(
       ApiUrls.submitTicketURL,
       queryParameters: params.toQueryParams(),
     );
@@ -151,7 +141,7 @@ class TicketRepositoryImp extends TicketRepository {
 
   @override
   Future<Either<Failure, AddNoteRespoEntity>> addNote(AddNoteReq params) async {
-    APIResponse response = await sl<DioClient>().post(
+    final response = await _client.post(
       '${ApiUrls.addNoteURL}/${params.ticketUuid}',
       data: params.toJson(),
     );

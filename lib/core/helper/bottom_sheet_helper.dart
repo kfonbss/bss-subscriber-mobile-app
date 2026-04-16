@@ -39,14 +39,14 @@ class _BottomSheetLayout extends StatelessWidget {
             height: 5,
             margin: const EdgeInsets.only(bottom: 16),
             decoration: BoxDecoration(
-              color: const Color(0xFFB9BAC0),
+              color: AppColor.kDragHandleGrey,
               borderRadius: BorderRadius.circular(100),
             ),
           ),
           Text(
             title,
             style: TextStyle(
-              color: Color(0xFF262629),
+              color: AppColor.kNearBlack,
               fontSize: 18.sp,
               fontWeight: FontWeight.w600,
               height: 1.4,

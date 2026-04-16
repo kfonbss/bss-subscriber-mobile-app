@@ -1,39 +1,36 @@
-library subscriber_data_usage_page;
-
+import 'package:fl_chart/fl_chart.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/svg.dart';
+import 'package:intl/intl.dart';
 import 'package:kfon_subscriber/core/constant/app_styles.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/active_package_details/domain/entity/active_packages_details_entity.dart';
+import 'package:kfon_subscriber/features/data_usage/domain/entity/data_usage_entity.dart';
 import 'package:kfon_subscriber/features/data_usage/domain/params/get_subscriber_data_usage_params.dart';
 import 'package:kfon_subscriber/features/data_usage/domain/repository/data_usage_repository.dart';
 import 'package:kfon_subscriber/features/data_usage/presentation/bloc/data_usage_bloc.dart';
 import 'package:kfon_subscriber/features/data_usage/presentation/bloc/data_usage_event.dart';
 import 'package:kfon_subscriber/features/data_usage/presentation/bloc/data_usage_state.dart';
-import 'package:kfon_subscriber/features/data_usage/presentation/pages/session_history_detail_page.dart';
-import 'package:fl_chart/fl_chart.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kfon_subscriber/features/data_usage/domain/entity/data_usage_entity.dart';
-import 'package:flutter_svg/svg.dart';
-import 'package:intl/intl.dart';
 import 'package:kfon_subscriber/features/data_usage/presentation/pages/restart_modem_page.dart';
+import 'package:kfon_subscriber/features/data_usage/presentation/pages/session_history_detail_page.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/presentation/page_component/package_info_card.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
 import 'package:kfon_subscriber/presentation/ui_component/shimmer/shimmer_base.dart';
 import 'package:kfon_subscriber/presentation/ui_component/shimmer/shimmer_box.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 
-part '../components/data_usage_chart.dart';
-
 part '../components/active_session_card.dart';
-
+part '../components/data_usage_chart.dart';
 part '../components/data_usage_session_history_card.dart';
 
 class DataUsageView extends StatefulWidget {
   final String subscriberUuid;
   final ActivePackagesDetailsEntity? entity;
 
-  DataUsageView(
+  const DataUsageView(
       {super.key, required this.subscriberUuid, required this.entity});
 
   @override
@@ -41,31 +38,44 @@ class DataUsageView extends StatefulWidget {
 }
 
 class _DataUsageViewState extends State<DataUsageView> {
-  late DataUsageBloc bloc;
+  static const _modemAvatarBg = Color(0x0D8D0247); // kPrimaryColor @ 5% opacity
+  static const _modemIconColorFilter =
+      ColorFilter.mode(AppColor.kPrimaryColor, BlendMode.srcIn);
+  static const _cardRadius = BorderRadius.all(Radius.circular(12));
+
+  late DataUsageBloc _bloc;
 
   @override
   void initState() {
     super.initState();
-    _loadDataUsage();
+    _bloc = DataUsageBloc(repository: sl<DataUsageRepository>());
+    _bloc.add(
+      LoadSubscriberDataUsage(
+        params: GetSubscriberDataUsageParams(
+          subscriberUuid: widget.subscriberUuid,
+          period: 'month',
+        ),
+      ),
+    );
   }
 
-  void _loadDataUsage() {
-    bloc = DataUsageBloc(repository: sl<DataUsageRepository>());
-    final state = bloc.state;
-    if (state.status == DataUsageStatus.initial || state.data == null) {
-      bloc.add(
-        LoadSubscriberDataUsage(
-          params: GetSubscriberDataUsageParams(
-            subscriberUuid: widget.subscriberUuid,
-            period: 'month',
-          ),
+  void _onRetry() {
+    final old = _bloc;
+    final newBloc = DataUsageBloc(repository: sl<DataUsageRepository>());
+    newBloc.add(
+      LoadSubscriberDataUsage(
+        params: GetSubscriberDataUsageParams(
+          subscriberUuid: widget.subscriberUuid,
+          period: 'month',
         ),
-      );
-    }
+      ),
+    );
+    setState(() => _bloc = newBloc);
+    old.close();
   }
 
   void _onPeriodChanged(String period) {
-    context.read<DataUsageBloc>().add(
+    _bloc.add(
       LoadSubscriberDataUsage(
         params: GetSubscriberDataUsageParams(
           subscriberUuid: widget.subscriberUuid,
@@ -76,11 +86,17 @@ class _DataUsageViewState extends State<DataUsageView> {
   }
 
   @override
+  void dispose() {
+    _bloc.close();
+    super.dispose();
+  }
+
+  @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
 
     return CommonAppBar(
-      title: 'View Usage',
+      title: context.bssSubL10n.viewUsage,
       onBackPressed: () => Navigator.pop(context),
       appbarColor: Colors.transparent,
       extendBodyBehindAppBar: true,
@@ -103,9 +119,9 @@ class _DataUsageViewState extends State<DataUsageView> {
             ),
             Positioned.fill(
               child: Padding(
-                padding: EdgeInsets.only(left: 20, right: 20, top: 140),
+                padding: const EdgeInsets.only(left: 20, right: 20, top: 140),
                 child: BlocBuilder<DataUsageBloc, DataUsageState>(
-                bloc: bloc,
+                bloc: _bloc,
                 buildWhen: (prev, curr) => prev.status != curr.status,
                 builder: (context, state) {
                   final dataUsageState = state;
@@ -141,7 +157,7 @@ class _DataUsageViewState extends State<DataUsageView> {
                           ),
                           const SizedBox(height: 16),
                           Text(
-                            dataUsageState.error ?? 'Something went wrong',
+                            dataUsageState.error ?? context.bssSubL10n.somethingWentWrong,
                             style: theme.textTheme.bodyMedium?.copyWith(
                               color: AppColor.kTextSecondaryDark,
                             ),
@@ -149,8 +165,8 @@ class _DataUsageViewState extends State<DataUsageView> {
                           ),
                           const SizedBox(height: 16),
                           ElevatedButton(
-                            onPressed: _loadDataUsage,
-                            child: Text('Retry'),
+                            onPressed: _onRetry,
+                            child: Text(context.bssSubL10n.retry),
                           ),
                         ],
                       ),
@@ -177,7 +193,7 @@ class _DataUsageViewState extends State<DataUsageView> {
                             onPeriodChanged: _onPeriodChanged,
                           ),
                           const SizedBox(height: 24),
-                          GestureDetector(
+                          InkWell(
                             onTap: () {
                               Navigator.push(
                                 context,
@@ -186,6 +202,7 @@ class _DataUsageViewState extends State<DataUsageView> {
                                 ),
                               );
                             },
+                            borderRadius: _cardRadius,
                             child: Container(
                               decoration: AppStyles.boxDecorationMedium,
                               padding: const EdgeInsets.symmetric(
@@ -197,14 +214,10 @@ class _DataUsageViewState extends State<DataUsageView> {
                                   CircleAvatar(
                                     minRadius: 24,
                                     maxRadius: 24,
-                                    backgroundColor: AppColor.kPrimaryColor
-                                        .withValues(alpha: 0.05),
+                                    backgroundColor: _modemAvatarBg,
                                     child: SvgPicture.asset(
                                       'assets/icons/modem_restart.svg',
-                                      colorFilter: ColorFilter.mode(
-                                        AppColor.kPrimaryColor,
-                                        BlendMode.srcIn,
-                                      ),
+                                      colorFilter: _modemIconColorFilter,
                                       width: 22,
                                       height: 22,
                                     ),
@@ -212,7 +225,7 @@ class _DataUsageViewState extends State<DataUsageView> {
                                   const SizedBox(width: 12),
                                   Expanded(
                                     child: Text(
-                                      'Restart Modem',
+                                      context.bssSubL10n.restartModem,
                                       style: Theme
                                           .of(
                                         context,
@@ -269,7 +282,7 @@ class _DataUsageViewState extends State<DataUsageView> {
           ),
           const SizedBox(height: 16),
           Text(
-            'NoDataFound',
+            context.bssSubL10n.noDataFound,
             style: theme.textTheme.bodyMedium?.copyWith(
               color: AppColor.kTextSecondaryDark,
             ),

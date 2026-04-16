@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/extensions.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
@@ -22,6 +21,11 @@ class CommonAppBar extends StatelessWidget {
   final bool? centerTitle;
   final double? titleFontSize;
 
+  /// Whether the body should resize when the keyboard appears.
+  /// Defaults to `true` so pages with text fields are not obscured.
+  /// Set to `false` only for pages that must not resize (e.g. map/camera views).
+  final bool resizeToAvoidBottomInset;
+
   const CommonAppBar({
     super.key,
     this.actions,
@@ -36,6 +40,7 @@ class CommonAppBar extends StatelessWidget {
     this.floatingActionButton,
     this.centerTitle,
     this.titleFontSize,
+    this.resizeToAvoidBottomInset = true,
   });
 
   @override
@@ -50,7 +55,7 @@ class CommonAppBar extends StatelessWidget {
     final topBottomMargin = 16.0;
 
     return Scaffold(
-      resizeToAvoidBottomInset: false,
+      resizeToAvoidBottomInset: resizeToAvoidBottomInset,
       extendBodyBehindAppBar: extendBodyBehindAppBar ?? false,
       backgroundColor: scaffoldColor ?? AppColor.kMainBackgroundColor,
       appBar: AppBar(
@@ -105,7 +110,7 @@ class CommonAppBar extends StatelessWidget {
               fontFamily: 'GeneralSans',
               fontWeight: FontWeight.w600,
               fontSize: titleFontSize??14.sp,
-              color: titleColor ?? const Color(0xFF0F1121),
+              color: titleColor ?? AppColor.kTextSecondaryDark,
               height: 1.3,
               letterSpacing: 0,
             ),

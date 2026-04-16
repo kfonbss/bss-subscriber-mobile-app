@@ -1,19 +1,20 @@
-import 'package:kfon_subscriber/core/constant/app_styles.dart';
-import 'package:kfon_subscriber/core/routes/app_routes.dart';
-import 'package:kfon_subscriber/core/validator/validators.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kfon_subscriber/core/constant/app_styles.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/routes/app_routes.dart';
+import 'package:kfon_subscriber/core/util/dialog_util.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/core/validator/validators.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_event.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_state.dart';
-import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/features/auth/presentation/components/auth_header.dart';
 import 'package:kfon_subscriber/features/auth/presentation/components/login_text_field.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/presentation/ui_component/login_password_text_field.dart';
 import 'package:kfon_subscriber/presentation/ui_component/white_button.dart';
-import 'package:kfon_subscriber/core/util/dialog_util.dart';
-import 'package:kfon_subscriber/core/util/sizer.dart';
 
 
 class LoginPage extends StatefulWidget {
@@ -25,12 +26,36 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  // lnp
-  final _usernameTextFieldController = TextEditingController(
-    text: 'Kfon.elliot',
-  );
-  final _passwordTextFieldController = TextEditingController(text: 'pass123');
+  final _usernameTextFieldController = TextEditingController();
+  final _passwordTextFieldController = TextEditingController();
   final DialogUtil _dialogUtil = DialogUtil();
+
+  // ── Static decorations ───────────────────────────────────────────────────────
+  static const _backgroundDecoration = BoxDecoration(
+    image: DecorationImage(
+      image: AssetImage('assets/images/login_background.png'),
+      fit: BoxFit.cover,
+    ),
+  );
+  static const _websitePillDecoration = BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.all(Radius.circular(23)),
+  );
+  static const _websiteMargin = EdgeInsets.only(bottom: 50, left: 100, right: 100);
+
+  // Sizer.isTablet is a static bool fixed after MaterialApp.builder — compute once.
+  static final _forgotPasswordStyle = TextStyle(
+    fontSize: Sizer.isTablet ? 15.0 : 14.0,
+    fontWeight: FontWeight.w500,
+    color: Colors.white,
+    fontFamily: 'GeneralSans',
+  );
+
+  // SystemUiOverlayStyle is const-constructible and AppColor values are const.
+  static const _systemUiStyle = SystemUiOverlayStyle(
+    statusBarBrightness: Brightness.dark,
+    statusBarColor: AppColor.kPrimaryColor,
+  );
 
   @override
   void dispose() {
@@ -44,8 +69,8 @@ class _LoginPageState extends State<LoginPage> {
       return;
     }
 
-    String username = _usernameTextFieldController.text.trim();
-    String password = _passwordTextFieldController.text.trim();
+    final username = _usernameTextFieldController.text.trim();
+    final password = _passwordTextFieldController.text;
 
     context.read<AuthBloc>().add(
       LoginRequested(username: username, password: password),
@@ -56,10 +81,7 @@ class _LoginPageState extends State<LoginPage> {
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion(
-      value: SystemUiOverlayStyle(
-        statusBarBrightness: Brightness.dark,
-        statusBarColor: AppColor.kPrimaryColor,
-      ),
+      value: _systemUiStyle,
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is LoginFailure) {
@@ -78,14 +100,9 @@ class _LoginPageState extends State<LoginPage> {
         },
         child: Scaffold(
           backgroundColor: AppColor.kPrimaryColor,
-          resizeToAvoidBottomInset: false,
+          resizeToAvoidBottomInset: true,
           body: Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/login_background.png'),
-                fit: BoxFit.cover,
-              ),
-            ),
+            decoration: _backgroundDecoration,
             child: Stack(
               children: [
                 // Center content on tablets, full width on mobile
@@ -99,7 +116,7 @@ class _LoginPageState extends State<LoginPage> {
                     child: Column(
                       children: [
                         AuthHeader(
-                          heading: 'Welcome to KFON',
+                          heading: context.bssSubL10n.welcomeToKfon,
                           description: '',
                           onClicked: () {},
                         ),
@@ -119,7 +136,7 @@ class _LoginPageState extends State<LoginPage> {
                                     vertical: 11.h, // Proportional scaling
                                   ),
                                   child: LoginTextField(
-                                    hintText: 'Enter Username',
+                                    hintText: context.bssSubL10n.enterUsername,
                                     textEditingController:
                                         _usernameTextFieldController,
                                     iconName: 'user.png',
@@ -132,7 +149,7 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                 ),
                                 Divider(
-                                  color: Colors.grey.shade200,
+                                  color: AppColor.kDividerGrey,
                                   thickness: 1,
                                   height: 2,
                                 ),
@@ -145,7 +162,7 @@ class _LoginPageState extends State<LoginPage> {
                                   child: LoginPasswordTextField(
                                     textEditingController:
                                         _passwordTextFieldController,
-                                    hintText: 'Enter Password',
+                                    hintText: context.bssSubL10n.enterPassword,
                                     validator: Validators.validatePassword,
                                   ),
                                 ),
@@ -172,13 +189,8 @@ class _LoginPageState extends State<LoginPage> {
                                   AppRoutes.forgotPassword,
                                 ),
                                 child: Text(
-                                  'Forgot Password?',
-                                  style: TextStyle(
-                                    fontSize: Sizer.isTablet ? 15.0 : 14.0,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.white,
-                                    fontFamily: 'GeneralSans',
-                                  ),
+                                  context.bssSubL10n.forgotPassword,
+                                  style: _forgotPasswordStyle,
                                 ),
                               ),
                             ],
@@ -190,14 +202,17 @@ class _LoginPageState extends State<LoginPage> {
                             horizontal: 20.w, // Proportional scaling
                           ),
                           child: BlocBuilder<AuthBloc, AuthState>(
+                            // Only rebuild when loading status changes — LoginFailure,
+                            // LoginSuccess, etc. don't affect the button appearance.
+                            buildWhen: (prev, curr) =>
+                                (curr is AuthLoading) != (prev is AuthLoading),
                             builder: (context, state) {
                               return WhiteButton(
                                 isLoading: state is AuthLoading,
-                                label: 'Sign In',
+                                label: context.bssSubL10n.signIn,
                                 borderRadius: 10,
                                 textColor: AppColor.kPrimaryColor,
-                                onClicked: () => _doLogin(),
-                                //Navigator.pushNamed(context, AppRoutes.mainPage),
+                                onClicked: _doLogin,
                               );
                             },
                           ),
@@ -216,7 +231,7 @@ class _LoginPageState extends State<LoginPage> {
                         padding:  EdgeInsets.symmetric(horizontal:20.w, ),
                         child: WhiteButton(
                           isLoading: false,
-                          label: 'Enquiry Forms',
+                          label: context.bssSubL10n.enquiryForms,
                           borderRadius: 10,
                           textColor: AppColor.kPrimaryColor,
                           onClicked: () => Navigator.pushNamed(context, AppRoutes.enquiryListPage),
@@ -224,15 +239,12 @@ class _LoginPageState extends State<LoginPage> {
                       ),
                       Container(
                         height: 30.h,
-                        margin: EdgeInsets.only(bottom: 50,left: 100,right: 100),
-                        decoration: BoxDecoration(
-                          color: Colors.white,
-                          borderRadius: BorderRadius.circular(23),
-                        ),
-                        child: const Center(
+                        margin: _websiteMargin,
+                        decoration: _websitePillDecoration,
+                        child: Center(
                           child: Text(
-                            'www.kerlainternet.com',
-                            style: TextStyle(
+                            context.bssSubL10n.kerlaInternetWebsite,
+                            style: const TextStyle(
                               color: AppColor.kPrimaryColor,
                               fontSize: 12,
                               fontWeight: FontWeight.w400,

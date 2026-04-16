@@ -9,12 +9,13 @@ import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_event.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_state.dart';
+import 'package:kfon_subscriber/features/profile/presentation/pages/security_settings_page.dart';
 import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profile_bloc.dart';
 import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profile_event.dart';
 import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profile_state.dart';
-import 'package:kfon_subscriber/features/profile/presentation/pages/security_settings_page.dart';
-import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/pages/tickets_page.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
+import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});
@@ -24,247 +25,239 @@ class ProfilePage extends StatefulWidget {
 }
 
 class _ProfilePageState extends State<ProfilePage> {
+  // ── Header card ───────────────────────────────────────────────────────────
+  static const _headerDecoration = BoxDecoration(
+    color: AppColor.kPrimaryColor,
+    borderRadius: BorderRadius.all(Radius.circular(12)),
+  );
+  static final _headerPadding = EdgeInsets.symmetric(horizontal: 16.w);
+  static final double _headerHeight = 100.h;
+  static final _nameStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w600,
+    fontSize: 14.sp,
+    height: 1.3,
+    color: Colors.white,
+  );
+  static final _subscriberIdStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w500,
+    fontSize: 12.sp,
+    height: 1.6,
+    color: Colors.white,
+  );
+  static final _statusStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w500,
+    fontSize: 9.sp,
+    height: 1.6,
+    color: AppColor.kCompletedGreen,
+  );
+  // BorderRadius.all(Radius.circular(21)) is const; .circular(21) is not.
+  static const _statusBadgeDecoration = BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.all(Radius.circular(21)),
+  );
+  static final _statusBadgePadding =
+      EdgeInsets.symmetric(horizontal: 6.w, vertical: 2.h);
+
+  // ── Section heading ───────────────────────────────────────────────────────
+  static final _sectionHeadingStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w600,
+    fontSize: 16.sp,
+    color: Colors.black,
+  );
+
+  // ── List decoration (shared across all items) ─────────────────────────────
+  static const _listItemDecoration = BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.all(Radius.circular(12)),
+    border: Border.fromBorderSide(
+      BorderSide(color: AppColor.kinputFiledLightBorder, width: 1),
+    ),
+  );
+
   @override
   void initState() {
     super.initState();
     context.read<ProfileBloc>().add(const FetchProfileRequested());
   }
 
-  Widget _createAccountListItems(
-    String image,
-    String label, {
-    Color? textColor,
-  }) {
-    return Container(
-      margin: EdgeInsets.only(bottom: 17.h),
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
-      height: 70.h,
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFEAEAEA), width: 1),
-      ),
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 38.w,
-                height: 38.h,
-                padding: EdgeInsets.all(9),
-                decoration: const BoxDecoration(
-                  shape: BoxShape.circle,
-                  color: Color(0xFFF3F3FA),
-                ),
-                child: Center(
-                  child: SvgPicture.asset(
-                    'assets/icons/$image.svg',
-                    fit: BoxFit.contain,
-                  ),
-                ),
-              ),
-              SizedBox(width: 12.w),
-              Text(
-                label,
-                style: TextStyle(
-                  fontFamily: 'General Sans',
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14.sp,
-                  height: 1.3,
-                  color: textColor ?? const Color(0xFF0F1121),
-                ),
-              ),
-            ],
-          ),
-          Icon(
-            Icons.arrow_forward_ios,
-            size: 16.sp,
-            color: const Color(0xFF67697A),
-          ),
-        ],
-      ),
-    );
-  }
-
   @override
   Widget build(BuildContext context) {
+    final l10n = context.bssSubL10n;
+
     return CommonAppBar(
-      title: 'My Profile',
+      title: l10n.myProfile,
       centerTitle: false,
       titleFontSize: 20.sp,
-      body: ListView(
-        padding: EdgeInsets.symmetric(horizontal: 20),
-        children: [
-          // ── Profile Header (from BLoC) ──
-          BlocBuilder<ProfileBloc, ProfileState>(
-            builder: (context, state) {
-              String name = 'Loading...';
-              String subscriberId = '';
-              String status = '';
+      body: RefreshIndicator(
+        onRefresh: () async {
+          context.read<ProfileBloc>().add(const FetchProfileRequested());
+        },
+        child: ListView(
+          padding: EdgeInsets.symmetric(horizontal: 20),
+          children: [
+            // ── Profile Header (from BLoC) ──
+            BlocBuilder<ProfileBloc, ProfileState>(
+              buildWhen: (previous, current) =>
+                  current is ProfileLoaded ||
+                  current is ProfileError ||
+                  current is ProfileLoading,
+              builder: (context, state) {
+                String name = l10n.loadingText;
+                String subscriberId = '';
+                String status = '';
 
-              if (state is ProfileLoaded) {
-                name = state.profile.name;
-                subscriberId = state.profile.subscriberId.toString();
-                status = state.profile.status;
-              } else if (state is ProfileError) {
-                name = 'Error loading profile';
-              }
+                if (state is ProfileLoaded) {
+                  name = state.profile.name;
+                  subscriberId = state.profile.subscriberId.toString();
+                  status = state.profile.status;
+                } else if (state is ProfileError) {
+                  name = l10n.somethingWentWrong;
+                }
 
-              return Container(
-                height: 100.h,
-                decoration: BoxDecoration(
-                  color: AppColor.kPrimaryColor,
-                  borderRadius: BorderRadius.circular(12),
-                ),
-                child: Padding(
-                  padding: EdgeInsets.only(left: 16.w),
-                  child: Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
-                    children: [
-                      CircleAvatar(
-                        radius: 34,
-                        backgroundImage: const NetworkImage(
-                          'https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPrsHSSBc63zNawuN6LUuXgj58de3ciuETGw&s',
-                        ),
-                        backgroundColor: Colors.white,
-                      ),
-                      SizedBox(width: 12.w),
-                      Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        spacing: 4,
-                        children: [
-                          Text(
-                            name,
-                            style: TextStyle(
-                              fontFamily: 'General Sans',
-                              fontWeight: FontWeight.w600,
-                              fontSize: 14.sp,
-                              height: 1.3,
-                              color: Colors.white,
+                return Container(
+                  height: _headerHeight,
+                  decoration: _headerDecoration,
+                  child: Padding(
+                    padding: _headerPadding,
+                    child: Row(
+                      crossAxisAlignment: CrossAxisAlignment.center,
+                      children: [
+                        CircleAvatar(
+                          radius: 34,
+                          backgroundColor: Colors.white,
+                          child: Text(
+                            name.isNotEmpty ? name[0].toUpperCase() : '?',
+                            style: const TextStyle(
+                              fontSize: 24,
+                              fontWeight: FontWeight.bold,
+                              color: AppColor.kPrimaryColor,
                             ),
                           ),
-                          if (subscriberId.isNotEmpty)
-                            Text(
-                              'ID : $subscriberId',
-                              style: TextStyle(
-                                fontFamily: 'General Sans',
-                                fontWeight: FontWeight.w500,
-                                fontSize: 12.sp,
-                                height: 1.6,
-                                color: Colors.white,
-                              ),
-                            ),
-                          if (status.isNotEmpty)
-                            Container(
-                              padding: EdgeInsets.symmetric(
-                                horizontal: 6.w,
-                                vertical: 2.h,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                borderRadius: BorderRadius.circular(21),
-                              ),
-                              child: Text(
-                                status,
-                                style: TextStyle(
-                                  fontFamily: 'General Sans',
-                                  fontWeight: FontWeight.w500,
-                                  fontSize: 9.sp,
-                                  height: 1.6,
-                                  color: const Color(0xFF219653),
+                        ),
+                        SizedBox(width: 12.w),
+                        Expanded(
+                          child: Column(
+                            mainAxisAlignment: MainAxisAlignment.center,
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            spacing: 4,
+                            children: [
+                              Text(name, style: _nameStyle),
+                              if (subscriberId.isNotEmpty)
+                                Text(
+                                  l10n.idLabel(subscriberId),
+                                  style: _subscriberIdStyle,
                                 ),
-                              ),
-                            ),
-                        ],
-                      ),
+                              if (status.isNotEmpty)
+                                Container(
+                                  padding: _statusBadgePadding,
+                                  decoration: _statusBadgeDecoration,
+                                  child: Text(status, style: _statusStyle),
+                                ),
+                            ],
+                          ),
+                        ),
+                        if (state is ProfileError)
+                          IconButton(
+                            icon: const Icon(Icons.refresh, color: Colors.white),
+                            tooltip: 'Retry',
+                            onPressed: () => context
+                                .read<ProfileBloc>()
+                                .add(const FetchProfileRequested()),
+                          ),
+                      ],
+                    ),
+                  ),
+                );
+              },
+            ),
+            SizedBox(height: 24.h),
+            Text(l10n.account, style: _sectionHeadingStyle),
+            SizedBox(height: 17),
+            InkWell(
+              onTap: () => Navigator.pushNamed(
+                  context, AppRoutes.accountInformationPage),
+              borderRadius: const BorderRadius.all(Radius.circular(12)),
+              child: _ProfileListItem(
+                image: 'account_information',
+                label: l10n.accountInformation,
+                decoration: _listItemDecoration,
+              ),
+            ),
+            InkWell(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute<void>(
+                  builder: (context) => SecuritySettingsPage(
+                    types: [
+                      PasswordChangeEnum.bss,
+                      PasswordChangeEnum.internet,
                     ],
                   ),
                 ),
-              );
-            },
-          ),
-          SizedBox(height: 24.h),
-          Text(
-            'Account',
-            style: TextStyle(
-              fontFamily: 'General Sans',
-              fontWeight: FontWeight.w600,
-              fontSize: 16.sp,
-              color: Colors.black,
+              ),
+              borderRadius: const BorderRadius.all(Radius.circular(12)),
+              child: _ProfileListItem(
+                image: 'security_settings',
+                label: l10n.securitySettings,
+                decoration: _listItemDecoration,
+              ),
             ),
-          ),
-          SizedBox(height: 17),
-          GestureDetector(
-            onTap:
-                () => Navigator.pushNamed(context, AppRoutes.accountInformationPage),
-            child: _createAccountListItems(
-              'account_information',
-              'Account Information',
+            InkWell(
+              onTap: () => Navigator.push(
+                context,
+                MaterialPageRoute(builder: (context) => const TicketsPage()),
+              ),
+              borderRadius: const BorderRadius.all(Radius.circular(12)),
+              child: _ProfileListItem(
+                image: 'my_tickets',
+                label: l10n.myTickets,
+                decoration: _listItemDecoration,
+              ),
             ),
-          ),
-          GestureDetector(
-            onTap:
-                () => Navigator.push(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder:
-                        (context) => SecuritySettingsPage(
-                          types: [
-                            PasswordChangeEnum.bss,
-                            PasswordChangeEnum.internet,
-                          ],
-                        ),
-                  ),
-                ),
-            child: _createAccountListItems(
-              'security_settings',
-              'Security Settings',
+            InkWell(
+              onTap: () =>
+                  Navigator.pushNamed(context, AppRoutes.settingsPage),
+              borderRadius: const BorderRadius.all(Radius.circular(12)),
+              child: _ProfileListItem(
+                image: 'settings',
+                label: l10n.settings,
+                decoration: _listItemDecoration,
+              ),
             ),
-          ),
-          GestureDetector(
-            onTap:
-                () => Navigator.push(
-                  context,
-                  MaterialPageRoute(builder: (context) => const TicketsPage()),
-                ),
-            child: _createAccountListItems('my_tickets', 'My Tickets'),
-          ),
-          GestureDetector(
-            onTap: () => Navigator.pushNamed(context, AppRoutes.settingsPage),
-            child: _createAccountListItems('settings', 'Settings'),
-          ),
-          GestureDetector(
-            onTap: () => _showLogoutDialog(context),
-            child: _createAccountListItems(
-              'logout',
-              'Logout',
-              textColor: Colors.red,
+            InkWell(
+              onTap: () => _showLogoutDialog(context),
+              borderRadius: const BorderRadius.all(Radius.circular(12)),
+              child: _ProfileListItem(
+                image: 'logout',
+                label: l10n.logout,
+                decoration: _listItemDecoration,
+                textColor: AppColor.kFailedRed,
+              ),
             ),
-          ),
-        ],
+          ],
+        ),
       ),
     );
   }
 
   void _showLogoutDialog(BuildContext context) {
+    final l10n = context.bssSubL10n;
+
     showModalBottomSheet(
       context: context,
       backgroundColor:
           context.isTablet ? Colors.transparent : AppColor.kMainBackgroundColor,
       isScrollControlled: true,
       shape: RoundedRectangleBorder(
-        borderRadius:
-            context.isTablet
-                ? BorderRadius.circular(24.w)
-                : BorderRadius.vertical(top: Radius.circular(24.w)),
+        borderRadius: context.isTablet
+            ? BorderRadius.circular(24.w)
+            : BorderRadius.vertical(top: Radius.circular(24.w)),
       ),
       builder: (BuildContext context) {
-        // Calculate responsive sizes for tablet
         final handleWidth = context.isTablet ? 42.0 * 1.2 : 42.w;
         final handleHeight = context.isTablet ? 6.0 * 1.2 : 6.h;
         final topPadding = context.isTablet ? 53.0 * 1.2 : 53.h;
@@ -292,141 +285,135 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Column(
                 mainAxisSize: MainAxisSize.min,
                 children: [
-                  Column(
-                    children: [
-                      SizedBox(
-                        width: titleWidth,
-                        child: Text(
-                          'Are you sure you want to logout?',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontFamily: 'GeneralSans',
-                            color: const Color(0xFF0F1121),
-                            fontSize: context.isTablet ? 18.0 * 1.2 : 18.sp,
-                            fontWeight: FontWeight.w600,
-                            height: 1.2999999523162842,
-                            letterSpacing: 0,
-                          ),
-                        ),
+                  SizedBox(
+                    width: titleWidth,
+                    child: Text(
+                      l10n.logoutConfirmTitle,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'GeneralSans',
+                        color: AppColor.kTextSecondaryDark,
+                        fontSize: context.isTablet ? 18.0 * 1.2 : 18.sp,
+                        fontWeight: FontWeight.w600,
+                        height: 1.3,
+                        letterSpacing: 0,
                       ),
-                      SizedBox(height: gapBetweenTitleDesc),
-                      SizedBox(
-                        width: descWidth,
-                        child: Text(
-                          'This will return you to the log in screen.',
-                          textAlign: TextAlign.center,
-                          style: TextStyle(
-                            fontFamily: 'GeneralSans',
-                            color: const Color(0xFF67697A),
-                            fontSize: context.isTablet ? 12.0 * 1.2 : 12.sp,
-                            fontWeight: FontWeight.w600,
-                            height: 1.6,
-                            letterSpacing: 0,
-                          ),
-                        ),
+                    ),
+                  ),
+                  SizedBox(height: gapBetweenTitleDesc),
+                  SizedBox(
+                    width: descWidth,
+                    child: Text(
+                      l10n.logoutConfirmDescription,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'GeneralSans',
+                        color: AppColor.kSlateGrey,
+                        fontSize: context.isTablet ? 12.0 * 1.2 : 12.sp,
+                        fontWeight: FontWeight.w600,
+                        height: 1.6,
+                        letterSpacing: 0,
                       ),
-                    ],
+                    ),
                   ),
                   SizedBox(height: gapBeforeButtons),
-                  Column(
-                    children: [
-                      SizedBox(
-                        width: double.infinity,
-                        height: buttonHeight,
-                        child: BlocConsumer<AuthBloc, AuthState>(
-                          listener: (context, state) {
-                            if (state is LogoutSuccess) {
-                              Navigator.of(context).pushNamedAndRemoveUntil(
-                                AppRoutes.login,
-                                (Route<dynamic> route) => false,
-                              );
-                            } else if (state is LogoutFailure) {
-                              DialogUtil().showCustomSnackbar(
-                                context: context,
-                                content: state.errorMessage,
-                                backgroundColor: AppColor.kFailedRed,
-                              );
-                            }
-                          },
-                          builder: (context, state) {
-                            final isLoading = state is LogoutLoading;
+                  SizedBox(
+                    width: double.infinity,
+                    height: buttonHeight,
+                    child: BlocConsumer<AuthBloc, AuthState>(
+                      listenWhen: (previous, current) =>
+                          current is LogoutSuccess || current is LogoutFailure,
+                      buildWhen: (previous, current) =>
+                          current is LogoutLoading ||
+                          current is LogoutSuccess ||
+                          current is LogoutFailure,
+                      listener: (context, state) {
+                        if (state is LogoutSuccess) {
+                          Navigator.of(context).pushNamedAndRemoveUntil(
+                            AppRoutes.login,
+                            (Route<dynamic> route) => false,
+                          );
+                        } else if (state is LogoutFailure) {
+                          DialogUtil().showCustomSnackbar(
+                            context: context,
+                            content: state.errorMessage,
+                            backgroundColor: AppColor.kFailedRed,
+                          );
+                        }
+                      },
+                      builder: (context, state) {
+                        final isLoading = state is LogoutLoading;
 
-                            return ElevatedButton(
-                              onPressed:
-                                  isLoading
-                                      ? null
-                                      : () {
-                                        context.read<AuthBloc>().add(
-                                          const LogoutRequested(),
-                                        );
-                                      },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColor.kFailedRed,
-                                foregroundColor: Colors.white,
-                                disabledBackgroundColor: AppColor.kFailedRed
-                                    .withValues(alpha: 0.6),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.w),
-                                ),
-                                elevation: 0,
-                              ),
-                              child:
-                                  isLoading
-                                      ? SizedBox(
-                                        height: 20,
-                                        width: 20,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          valueColor:
-                                              AlwaysStoppedAnimation<Color>(
-                                                Colors.white,
-                                              ),
-                                        ),
-                                      )
-                                      : Text(
-                                        'Logout',
-                                        style: TextStyle(
-                                          fontFamily: 'GeneralSans',
-                                          fontSize:
-                                              context.isTablet
-                                                  ? 14.0 * 1.2
-                                                  : 14.sp,
-                                          fontWeight: FontWeight.w600,
-                                          height: 1.2999999523162842,
-                                          letterSpacing: 0,
-                                        ),
-                                      ),
-                            );
-                          },
-                        ),
-                      ),
-                      SizedBox(height: gapBetweenButtons),
-                      SizedBox(
-                        width: double.infinity,
-                        height: buttonHeight,
-                        child: ElevatedButton(
-                          onPressed: () => Navigator.of(context).pop(),
+                        return ElevatedButton(
+                          onPressed: isLoading
+                              ? null
+                              : () {
+                                  context
+                                      .read<AuthBloc>()
+                                      .add(const LogoutRequested());
+                                },
                           style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: const Color.fromRGBO(0, 0, 0, 0.8),
+                            backgroundColor: AppColor.kFailedRed,
+                            foregroundColor: Colors.white,
+                            disabledBackgroundColor:
+                                AppColor.kFailedRed.withValues(alpha: 0.6),
                             shape: RoundedRectangleBorder(
                               borderRadius: BorderRadius.circular(10.w),
                             ),
                             elevation: 0,
                           ),
-                          child: Text(
-                            'Cancel',
-                            style: TextStyle(
-                              fontFamily: 'GeneralSans',
-                              fontSize: context.isTablet ? 14.0 * 1.2 : 14.sp,
-                              fontWeight: FontWeight.w600,
-                              height: 1.2999999523162842,
-                              letterSpacing: 0,
-                            ),
-                          ),
+                          child: isLoading
+                              ? const SizedBox(
+                                  height: 20,
+                                  width: 20,
+                                  child: CircularProgressIndicator(
+                                    strokeWidth: 2,
+                                    valueColor: AlwaysStoppedAnimation<Color>(
+                                      Colors.white,
+                                    ),
+                                  ),
+                                )
+                              : Text(
+                                  l10n.logout,
+                                  style: TextStyle(
+                                    fontFamily: 'GeneralSans',
+                                    fontSize: context.isTablet
+                                        ? 14.0 * 1.2
+                                        : 14.sp,
+                                    fontWeight: FontWeight.w600,
+                                    height: 1.3,
+                                    letterSpacing: 0,
+                                  ),
+                                ),
+                        );
+                      },
+                    ),
+                  ),
+                  SizedBox(height: gapBetweenButtons),
+                  SizedBox(
+                    width: double.infinity,
+                    height: buttonHeight,
+                    child: ElevatedButton(
+                      onPressed: () => Navigator.of(context).pop(),
+                      style: ElevatedButton.styleFrom(
+                        backgroundColor: Colors.white,
+                        foregroundColor: const Color.fromRGBO(0, 0, 0, 0.8),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(10.w),
+                        ),
+                        elevation: 0,
+                      ),
+                      child: Text(
+                        l10n.cancel,
+                        style: TextStyle(
+                          fontFamily: 'GeneralSans',
+                          fontSize: context.isTablet ? 14.0 * 1.2 : 14.sp,
+                          fontWeight: FontWeight.w600,
+                          height: 1.3,
+                          letterSpacing: 0,
                         ),
                       ),
-                    ],
+                    ),
                   ),
                 ],
               ),
@@ -439,9 +426,9 @@ class _ProfilePageState extends State<ProfilePage> {
                 child: Container(
                   width: handleWidth,
                   height: handleHeight,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE1E1E4),
-                    borderRadius: BorderRadius.circular(100),
+                  decoration: const BoxDecoration(
+                    color: AppColor.kDividerGrey,
+                    borderRadius: BorderRadius.all(Radius.circular(100)),
                   ),
                 ),
               ),
@@ -457,7 +444,7 @@ class _ProfilePageState extends State<ProfilePage> {
               child: Container(
                 constraints: BoxConstraints(
                   maxWidth: maxWidth,
-                  maxHeight: MediaQuery.of(context).size.height * 0.6,
+                  maxHeight: MediaQuery.sizeOf(context).height * 0.6,
                 ),
                 decoration: BoxDecoration(
                   color: AppColor.kMainBackgroundColor,
@@ -471,6 +458,95 @@ class _ProfilePageState extends State<ProfilePage> {
 
         return SafeArea(top: false, child: content);
       },
+    );
+  }
+}
+
+// ── Profile list item ─────────────────────────────────────────────────────────
+// Extracted from _createAccountListItems so Flutter can track element identity.
+class _ProfileListItem extends StatelessWidget {
+  final String image;
+  final String label;
+  final BoxDecoration decoration;
+  final Color? textColor;
+
+  const _ProfileListItem({
+    required this.image,
+    required this.label,
+    required this.decoration,
+    this.textColor,
+  });
+
+  // Sizer values — fixed after MaterialApp.builder, computed once.
+  static final double _height = 70.h;
+  static final EdgeInsets _margin = EdgeInsets.only(bottom: 17.h);
+  static final EdgeInsets _padding =
+      EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h);
+  static final double _iconContainerSize = 38.w;
+  static final double _iconContainerHeight = 38.h;
+  static const _iconContainerPadding = EdgeInsets.all(9);
+  static const _iconBgDecoration = BoxDecoration(
+    shape: BoxShape.circle,
+    color: AppColor.kIconContainerGrey,
+  );
+  // Default label style — used for all items except logout.
+  static final _defaultLabelStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w600,
+    fontSize: 14.sp,
+    height: 1.3,
+    color: AppColor.kTextSecondaryDark,
+  );
+  // Pre-computed logout style — avoids copyWith per build.
+  static final _logoutLabelStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w600,
+    fontSize: 14.sp,
+    height: 1.3,
+    color: AppColor.kFailedRed,
+  );
+  static final double _arrowSize = 16.sp;
+
+  @override
+  Widget build(BuildContext context) {
+    final labelStyle = textColor == null ? _defaultLabelStyle : _logoutLabelStyle;
+
+    return Container(
+      margin: _margin,
+      padding: _padding,
+      height: _height,
+      decoration: decoration,
+      child: Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        crossAxisAlignment: CrossAxisAlignment.center,
+        children: [
+          Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Container(
+                width: _iconContainerSize,
+                height: _iconContainerHeight,
+                padding: _iconContainerPadding,
+                decoration: _iconBgDecoration,
+                child: Center(
+                  child: SvgPicture.asset(
+                    'assets/icons/$image.svg',
+                    fit: BoxFit.contain,
+                  ),
+                ),
+              ),
+              SizedBox(width: 12.w),
+              Text(label, style: labelStyle),
+            ],
+          ),
+          Icon(
+            Icons.arrow_forward_ios,
+            size: _arrowSize,
+            color: AppColor.kSlateGrey,
+          ),
+        ],
+      ),
     );
   }
 }

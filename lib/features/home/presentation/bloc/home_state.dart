@@ -13,6 +13,9 @@ class HomeInitial extends HomeState {
   const HomeInitial();
 }
 
+class HomeLoading extends HomeState {
+  const HomeLoading();
+}
 
 class GetDataSuccess extends HomeState {
   final HomeEntity homeEntity;
@@ -36,6 +39,15 @@ class GetDataFailure extends HomeState {
   final String errorMessage;
 
   const GetDataFailure({required this.errorMessage});
+
+  @override
+  List<Object?> get props => [errorMessage];
+}
+
+class GetPlansFailure extends HomeState {
+  final String errorMessage;
+
+  const GetPlansFailure({required this.errorMessage});
 
   @override
   List<Object?> get props => [errorMessage];

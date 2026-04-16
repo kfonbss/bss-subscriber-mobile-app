@@ -37,11 +37,11 @@ dependencies:
   flutter_svg: ^2.1.0
   webview_flutter_plus:
   flutter_bloc:
+  equatable:
   dio:
+  http:
   get_it:
   dartz:
-  logger:
-  shared_preferences:
   file_picker: ^8.0.0
   shimmer:
   readmore: ^3.0.0
@@ -93,6 +93,7 @@ dev_dependencies:
 
 # The following section is specific to Flutter packages.
 flutter:
+  generate: true
 
   # The following line ensures that the Material Icons font is
   # included with your application, so that you can use the icons in

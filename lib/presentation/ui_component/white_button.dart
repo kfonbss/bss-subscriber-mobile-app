@@ -25,9 +25,9 @@ class WhiteButton extends StatelessWidget {
         elevation: 0,
         minimumSize: Size(double.infinity, 50),
         fixedSize: Size(double.infinity, 50),
-        backgroundColor: const Color.fromRGBO(255, 255, 255, 1),
+        backgroundColor: Colors.white,
         foregroundColor: textColor ?? Colors.black,
-        disabledBackgroundColor: Colors.grey,
+        disabledBackgroundColor: AppColor.kMediumGrey,
         disabledForegroundColor: Colors.black,
         padding: EdgeInsets.zero,
         shape: RoundedRectangleBorder(

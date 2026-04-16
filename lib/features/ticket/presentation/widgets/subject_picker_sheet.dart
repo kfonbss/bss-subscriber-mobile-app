@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/features/profile/presentation/components/common_radio_button.dart';
 import 'package:kfon_subscriber/features/ticket/domain/entity/subject_entity.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/bloc/ticket_bloc.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/bloc/ticket_event.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/bloc/ticket_state.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_search_field.dart';
 import 'package:kfon_subscriber/presentation/ui_component/shimmer/list_shimmers.dart';
 
@@ -25,17 +27,18 @@ class SubjectPickerSheet extends StatefulWidget {
 }
 
 class _SubjectPickerSheetState extends State<SubjectPickerSheet> {
-  String searchQuery = '';
+  String _searchQuery = '';
 
   @override
   void initState() {
     super.initState();
-    // Load subjects if not already loaded
     widget.ticketBloc.add(const LoadSubjects());
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.bssSubL10n;
+
     return BlocBuilder<TicketBloc, TicketState>(
       bloc: widget.ticketBloc,
       builder: (context, state) {
@@ -51,14 +54,13 @@ class _SubjectPickerSheetState extends State<SubjectPickerSheet> {
           errorMessage = state.errorMessage;
         }
 
-        final filteredList =
-            subjects
-                .where(
-                  (subject) => subject.name.toLowerCase().contains(
-                    searchQuery.toLowerCase(),
-                  ),
-                )
-                .toList();
+        final filteredList = subjects
+            .where(
+              (subject) => subject.name.toLowerCase().contains(
+                _searchQuery.toLowerCase(),
+              ),
+            )
+            .toList();
 
         return Padding(
           padding: EdgeInsets.only(
@@ -71,27 +73,26 @@ class _SubjectPickerSheetState extends State<SubjectPickerSheet> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                const Text(
-                  'Select subject',
+                Text(
+                  l10n.selectSubject,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontFamily: 'GeneralSans',
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
                     height: 1.4,
-                    color: Color(0xFF0F1121),
+                    color: AppColor.kTextSecondaryDark,
                   ),
                 ),
                 const SizedBox(height: 20),
                 if (!isLoading && errorMessage == null)
-                  // Search Bar - only show when not loading or in error state
                   CommonSearchField(
                     onChanged: (query) {
                       setState(() {
-                        searchQuery = query;
+                        _searchQuery = query;
                       });
                     },
-                    hintText: 'Select Subject',
+                    hintText: l10n.selectSubjectHint,
                   ),
                 if (!isLoading && errorMessage == null)
                   const SizedBox(height: 20),
@@ -109,11 +110,11 @@ class _SubjectPickerSheetState extends State<SubjectPickerSheet> {
                       mainAxisSize: MainAxisSize.min,
                       children: [
                         Text(
-                          'Error loading subjects',
+                          l10n.errorLoadingSubjects,
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFFE53935),
+                            color: AppColor.kUrgentRed,
                             fontFamily: 'GeneralSans',
                           ),
                         ),
@@ -123,7 +124,7 @@ class _SubjectPickerSheetState extends State<SubjectPickerSheet> {
                           textAlign: TextAlign.center,
                           style: const TextStyle(
                             fontSize: 12,
-                            color: Color(0xFF67697A),
+                            color: AppColor.kSlateGrey,
                             fontFamily: 'GeneralSans',
                           ),
                         ),
@@ -132,29 +133,29 @@ class _SubjectPickerSheetState extends State<SubjectPickerSheet> {
                           onPressed: () {
                             widget.ticketBloc.add(const LoadSubjects());
                           },
-                          child: const Text('Retry'),
+                          child: Text(l10n.retry),
                         ),
                       ],
                     ),
                   )
-                else if (filteredList.isEmpty && searchQuery.isNotEmpty)
+                else if (filteredList.isEmpty && _searchQuery.isNotEmpty)
                   SizedBox(
                     height: (subjects.length * 56.0).clamp(0.0, 400.0),
-                    child: const Align(
+                    child: Align(
                       alignment: Alignment.topCenter,
                       child: Padding(
-                        padding: EdgeInsets.symmetric(vertical: 32),
+                        padding: const EdgeInsets.symmetric(vertical: 32),
                         child: Text(
-                          'No matching items found',
-                          style: TextStyle(color: Colors.grey),
+                          l10n.noMatchingItemsFound,
+                          style: const TextStyle(color: AppColor.kMediumGrey),
                         ),
                       ),
                     ),
                   )
                 else if (subjects.isEmpty)
-                  const Padding(
-                    padding: EdgeInsets.all(20.0),
-                    child: Text('No subjects available'),
+                  Padding(
+                    padding: const EdgeInsets.all(20.0),
+                    child: Text(l10n.noSubjectsAvailable),
                   )
                 else
                   SizedBox(
@@ -186,7 +187,7 @@ class _SubjectPickerSheetState extends State<SubjectPickerSheet> {
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,
-              color: Color(0xFF0F1121),
+              color: AppColor.kTextSecondaryDark,
               fontFamily: 'GeneralSans',
             ),
           ),

@@ -1,7 +1,5 @@
-import 'package:dartz/dartz.dart';
-import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kfon_subscriber/core/usecase/usecase.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/extensions.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/data/model/dark_fibre_enquiry_form_params.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/domain/repository/enquiery_form.dart';
@@ -33,20 +31,20 @@ class DarkFibreFormCubit extends Cubit<DarkFibreFormState> {
       emit(
         DarkFibreFormMessage(
           message: 'Downloading, please wait...',
-          color: Colors.green,
+          color: AppColor.kSuccessGreen,
         ),
       );
       final result = await repository.downloadLetterFormat(url);
       result.fold(
         (error) {
-          emit(DarkFibreFormMessage(message: error, color: Colors.red));
+          emit(DarkFibreFormMessage(message: error, color: AppColor.kFailedRed));
         },
         (data) {
-          emit(DarkFibreFormMessage(message: 'Success', color: Colors.green));
+          emit(DarkFibreFormMessage(message: 'Success', color: AppColor.kSuccessGreen));
         },
       );
     } catch (e) {
-      emit(DarkFibreFormMessage(message: e.toString(), color: Colors.red));
+      emit(DarkFibreFormMessage(message: e.toString(), color: AppColor.kFailedRed));
     }
   }
 
@@ -57,7 +55,7 @@ class DarkFibreFormCubit extends Cubit<DarkFibreFormState> {
       emit(
         DarkFibreFormMessage(
           message: 'Enter Name Of The Firm',
-          color: Colors.red,
+          color: AppColor.kFailedRed,
         ),
       );
     } else if (params.firmContactNumber.trim().isEmpty ||
@@ -65,21 +63,21 @@ class DarkFibreFormCubit extends Cubit<DarkFibreFormState> {
       emit(
         DarkFibreFormMessage(
           message: 'Enter Valid Firm Phone Number',
-          color: Colors.red,
+          color: AppColor.kFailedRed,
         ),
       );
     } else if (!params.email.isValidEmail) {
       emit(
         DarkFibreFormMessage(
           message: 'Enter Valid Firm Email',
-          color: Colors.red,
+          color: AppColor.kFailedRed,
         ),
       );
     } else if (params.contactPersonName.trim().isEmpty) {
       emit(
         DarkFibreFormMessage(
           message: 'Enter Contact Person Name',
-          color: Colors.red,
+          color: AppColor.kFailedRed,
         ),
       );
     } else if (params.contactPersonPhone.trim().isEmpty ||
@@ -87,14 +85,14 @@ class DarkFibreFormCubit extends Cubit<DarkFibreFormState> {
       emit(
         DarkFibreFormMessage(
           message: 'Enter Valid Contact Person Phone Number',
-          color: Colors.red,
+          color: AppColor.kFailedRed,
         ),
       );
     } else if (!params.contactPersonEmail.isValidEmail) {
       emit(
         DarkFibreFormMessage(
           message: 'Enter Valid Contact Person  Email',
-          color: Colors.red,
+          color: AppColor.kFailedRed,
         ),
       );
     } else {
@@ -109,7 +107,7 @@ class DarkFibreFormCubit extends Cubit<DarkFibreFormState> {
       emit(
         DarkFibreFormMessage(
           message: 'Upload Internet Service License',
-          color: Colors.red,
+          color: AppColor.kFailedRed,
         ),
       );
     } else {

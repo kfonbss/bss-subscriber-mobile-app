@@ -45,7 +45,7 @@ class LNPEnquiryFormParams {
   });
 
   Future<FormData> toFormData() async {
-    String partnerCableTvRegCopy = await ImageUtil().convertImageToBase64(
+    final partnerCableTvRegCopy = await ImageUtil().convertImageToBase64(
       selectedFiles.first,
     );
     // MultipartFile routeFormCopy=await MultipartFile.fromFile(selectedFiles.first.path!,filename: selectedFiles.first.path!.split('/').last);

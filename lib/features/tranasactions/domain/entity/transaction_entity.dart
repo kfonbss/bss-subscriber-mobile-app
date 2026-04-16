@@ -12,6 +12,10 @@ class TransactionEntity {
   final String paymentGateway;
   final String responseMessage;
 
+  /// Full URL for downloading the transaction invoice PDF.
+  /// Empty string if the API did not return a URL for this transaction.
+  final String invoiceUrl;
+
   const TransactionEntity({
     required this.transactionId,
     required this.bssNo,
@@ -24,6 +28,7 @@ class TransactionEntity {
     required this.paidBy,
     required this.paymentGateway,
     required this.responseMessage,
+    required this.invoiceUrl,
   });
 }
 

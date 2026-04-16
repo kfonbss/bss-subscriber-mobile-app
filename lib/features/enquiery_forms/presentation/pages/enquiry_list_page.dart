@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/presentation/ui_component/form_app_bar.dart';
 import 'package:kfon_subscriber/presentation/ui_component/secondary_button.dart';
 
@@ -8,6 +9,8 @@ class EnquiryFormList extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.bssSubL10n;
+
     return FormAppBar(
       showBackButton: true,
       body: Padding(
@@ -17,40 +20,39 @@ class EnquiryFormList extends StatelessWidget {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             SecondaryButton(
-              label: 'Home',
-              onClicked:
-                  () => Navigator.pushNamed(context, AppRoutes.homeEnquiryForm),
+              label: l10n.home,
+              onClicked: () =>
+                  Navigator.pushNamed(context, AppRoutes.homeEnquiryForm),
             ),
             SecondaryButton(
-              label: 'Corporate',
-              onClicked:
-                  () => Navigator.pushNamed(context, '/corporate_enquiry_form'),
+              label: l10n.corporate,
+              onClicked: () =>
+                  Navigator.pushNamed(context, '/corporate_enquiry_form'),
             ),
             SecondaryButton(
-              label: 'Government',
-              onClicked:
-                  () => Navigator.pushNamed(context, AppRoutes.governmentEnquiryForm),
+              label: l10n.government,
+              onClicked: () =>
+                  Navigator.pushNamed(context, AppRoutes.governmentEnquiryForm),
             ),
             SecondaryButton(
-              label: 'BPL Enquiry',
-              onClicked:
-                  () => Navigator.pushNamed(context, AppRoutes.bplEnquiryForm),
+              label: l10n.bplEnquiry,
+              onClicked: () =>
+                  Navigator.pushNamed(context, AppRoutes.bplEnquiryForm),
             ),
             SecondaryButton(
-              label: 'LNP Enquiry',
-              onClicked:
-                  () => Navigator.pushNamed(context, AppRoutes.lnpEnquiryForm),
+              label: l10n.lnpEnquiry,
+              onClicked: () =>
+                  Navigator.pushNamed(context, AppRoutes.lnpEnquiryForm),
             ),
             SecondaryButton(
-              label: 'AGNP Enquiry',
-              onClicked:
-                  () => Navigator.pushNamed(context, AppRoutes.agnpEnquiryForm),
+              label: l10n.agnpEnquiry,
+              onClicked: () =>
+                  Navigator.pushNamed(context, AppRoutes.agnpEnquiryForm),
             ),
             SecondaryButton(
-              label: 'Dark Fibre Enquiry',
-              onClicked:
-                  () =>
-                      Navigator.pushNamed(context, AppRoutes.darkFibreEnquiryForm),
+              label: l10n.darkFibreEnquiry,
+              onClicked: () =>
+                  Navigator.pushNamed(context, AppRoutes.darkFibreEnquiryForm),
             ),
           ],
         ),

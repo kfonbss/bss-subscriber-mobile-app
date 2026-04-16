@@ -23,6 +23,14 @@ class LoginTextField extends StatelessWidget {
     this.validator,
   });
 
+  // Precomputed — pure compile-time values, no Sizer dependency.
+  static const _prefixIconConstraints = BoxConstraints(
+    minWidth: 28,
+    maxWidth: 28,
+    minHeight: 18,
+    maxHeight: 18,
+  );
+
   @override
   Widget build(BuildContext context) {
     return TextFormField(
@@ -48,19 +56,14 @@ class LoginTextField extends StatelessWidget {
         ).textTheme.bodyMedium?.copyWith(color: AppColor.kTextFiledHintColor),
         errorStyle: Theme.of(
           context,
-        ).textTheme.bodySmall?.copyWith(color: Colors.red),
-        contentPadding: EdgeInsets.symmetric(vertical: 4),
-        prefixIconConstraints: BoxConstraints(
-          minWidth: 28,
-          maxWidth: 28,
-          minHeight: 18,
-          maxHeight: 18,
-        ),
+        ).textTheme.bodySmall?.copyWith(color: AppColor.kFailedRed),
+        contentPadding: const EdgeInsets.symmetric(vertical: 4),
+        prefixIconConstraints: _prefixIconConstraints,
         prefixIcon: Padding(
           padding: const EdgeInsets.only(right: 10.0),
           child: Image.asset('assets/icons/$iconName'),
         ),
-        suffixIcon: SizedBox(),
+        suffixIcon: const SizedBox.shrink(),
         border: InputBorder.none,
         errorBorder: InputBorder.none,
         focusedBorder: InputBorder.none,

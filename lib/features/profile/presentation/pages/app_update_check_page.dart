@@ -1,8 +1,8 @@
-import 'package:kfon_subscriber/core/util/extensions.dart';
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
-import 'package:flutter_svg/flutter_svg.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
 import 'package:kfon_subscriber/presentation/ui_component/primary_button.dart';
 
@@ -14,118 +14,42 @@ class AppUpdateCheckPage extends StatefulWidget {
 }
 
 class _AppUpdateCheckPageState extends State<AppUpdateCheckPage> {
-  String _appVersion = '1.23.121'; // Current app version
+  final String _appVersion = '1.23.121';
   bool _isChecking = false;
 
-  // TODO: Load actual app version from package_info_plus or pubspec.yaml
-  // For now using hardcoded version
+  // ── Static styles ────────────────────────────────────────────────────────────
+  static final _sectionHeadingStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    color: AppColor.kTextSecondaryDark,
+    fontSize: 16.sp,
+    fontWeight: FontWeight.w600,
+    height: 1.3,
+    letterSpacing: 0,
+  );
+  // 0xB3 = 179 ≈ 0.7 × 255 → Colors.black @ 70% opacity
+  static final _infoTextStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    color: const Color(0xB3000000),
+    fontSize: 12.sp,
+    fontWeight: FontWeight.w400,
+    height: 1.6,
+    letterSpacing: 0,
+  );
 
   Future<void> _checkForUpdate() async {
-    setState(() {
-      _isChecking = true;
-    });
-
-    // Simulate API call to check for updates
+    setState(() => _isChecking = true);
     await Future.delayed(const Duration(seconds: 2));
-
-    setState(() {
-      _isChecking = false;
-      // TODO: Update _isUpToDate based on API response
-      // If update is available, show different message in the UI
-    });
-
-    // TODO: Implement actual update check logic
-    // This would typically call an API to check for new versions
-  }
-
-  Widget _buildInfoCard({required String title, required String subtitle}) {
-    return Container(
-      height: 77.h,
-      margin: EdgeInsets.only(bottom: 22.h),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(12.w),
-        border: Border.all(color: const Color(0xFFEAEAEA), width: 1.w),
-      ),
-      child: Padding(
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-        child: Row(
-          children: [
-            Builder(
-              builder: (context) {
-                double containerSize;
-                double iconSize;
-                if (context.isTablet) {
-                  containerSize = 53.0 * 1.2; // ~64px on tablets
-                  iconSize = 18.0 * 1.2; // ~22px on tablets
-                } else {
-                  containerSize = 53.w;
-                  iconSize = 18.w;
-                }
-                return Container(
-                  width: containerSize,
-                  height: containerSize,
-                  decoration: BoxDecoration(
-                    color: AppColor.kPrimaryColor.withOpacity(0.05),
-                    shape: BoxShape.circle,
-                  ),
-                  child: Center(
-                    child: SvgPicture.asset(
-                      'assets/icons/app_update_check.svg',
-                      width: iconSize,
-                      height: iconSize,
-                      colorFilter: const ColorFilter.mode(
-                        AppColor.kPrimaryColor,
-                        BlendMode.srcIn,
-                      ),
-                    ),
-                  ),
-                );
-              },
-            ),
-            SizedBox(width: 16.w),
-            Expanded(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                crossAxisAlignment: CrossAxisAlignment.start,
-                children: [
-                  Text(
-                    title,
-                    style: TextStyle(
-                      fontFamily: 'GeneralSans',
-                      color: const Color(0xFF0F1121),
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w600,
-                      height: 1.3,
-                      letterSpacing: 0,
-                    ),
-                  ),
-                  SizedBox(height: 6.h),
-                  Text(
-                    subtitle,
-                    style: TextStyle(
-                      fontFamily: 'GeneralSans',
-                      color: Colors.black.withOpacity(0.7),
-                      fontSize: 12.sp,
-                      fontWeight: FontWeight.w400,
-                      height: 1.3,
-                      letterSpacing: 0,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
+    if (!mounted) return;
+    setState(() => _isChecking = false);
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.bssSubL10n;
+
     return CommonAppBar(
       onBackPressed: () => Navigator.pop(context),
-      title: 'App Update Check',
+      title: l10n.appUpdateCheck,
       body: SingleChildScrollView(
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -135,69 +59,125 @@ class _AppUpdateCheckPageState extends State<AppUpdateCheckPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  // Current Version Section
-                  Text(
-                    'Current Version',
-                    style: TextStyle(
-                      fontFamily: 'GeneralSans',
-                      color: const Color(0xFF0F1121),
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
-                      height: 1.3,
-                      letterSpacing: 0,
-                    ),
-                  ),
+                  Text(l10n.currentVersion, style: _sectionHeadingStyle),
                   SizedBox(height: 16.h),
-                  _buildInfoCard(
-                    title: 'App Version',
-                    subtitle: 'Version ${_appVersion}',
+                  _InfoCard(
+                    title: l10n.appVersion,
+                    subtitle: l10n.versionLabel(_appVersion),
                   ),
                   SizedBox(height: 5.h),
-                  // Update Status Section
-                  Text(
-                    'Update Status',
-                    style: TextStyle(
-                      fontFamily: 'GeneralSans',
-                      color: const Color(0xFF0F1121),
-                      fontSize: 16.sp,
-                      fontWeight: FontWeight.w600,
-                      height: 1.3,
-                      letterSpacing: 0,
-                    ),
-                  ),
+                  Text(l10n.updateStatus, style: _sectionHeadingStyle),
                   SizedBox(height: 16.h),
-                  _buildInfoCard(
-                    title: 'Up to Date',
-                    subtitle: 'No new updates available',
+                  _InfoCard(
+                    title: l10n.upToDate,
+                    subtitle: l10n.noNewUpdatesAvailable,
                   ),
                   SizedBox(height: 22.h),
-                  // Informational text
                   Center(
                     child: SizedBox(
                       width: 236.w,
                       child: Text(
-                        'Your app is up to date. We will notify you when a new version is avaliable.',
+                        l10n.appIsUpToDateMessage,
                         textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontFamily: 'GeneralSans',
-                          color: Colors.black.withOpacity(0.7),
-                          fontSize: 12.sp,
-                          fontWeight: FontWeight.w400,
-                          height: 1.6,
-                          letterSpacing: 0,
-                        ),
+                        style: _infoTextStyle,
                       ),
                     ),
                   ),
                   SizedBox(height: 22.h),
-                  // Check For Update Button
                   PrimaryButton(
-                    label: 'Check For Update',
+                    label: l10n.checkForUpdate,
                     isLoading: _isChecking,
                     onClicked: _checkForUpdate,
                     borderRadius: 10,
                     height: 52.h,
                   ),
+                ],
+              ),
+            ),
+          ],
+        ),
+      ),
+    );
+  }
+}
+
+// ── Info card ─────────────────────────────────────────────────────────────────
+// Extracted from _buildInfoCard. The inner Builder (for tablet sizing) is
+// replaced with static finals — Sizer.isTablet is fixed after MaterialApp.
+class _InfoCard extends StatelessWidget {
+  final String title;
+  final String subtitle;
+
+  const _InfoCard({required this.title, required this.subtitle});
+
+  static final double _containerSize =
+      Sizer.isTablet ? 53.0 * 1.2 : 53.w;
+  static final double _iconSize =
+      Sizer.isTablet ? 18.0 * 1.2 : 18.w;
+  static final _cardDecoration = BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.all(Radius.circular(12.w)),
+    border: Border.fromBorderSide(
+      BorderSide(color: AppColor.kinputFiledLightBorder, width: 1.w),
+    ),
+  );
+  // kPrimaryColor(0xFF8D0247) @ 5%: 0x0D8D0247
+  static const _iconBgDecoration = BoxDecoration(
+    color: Color(0x0D8D0247),
+    shape: BoxShape.circle,
+  );
+  static const _iconColorFilter =
+      ColorFilter.mode(AppColor.kPrimaryColor, BlendMode.srcIn);
+  static final _titleStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    color: AppColor.kTextSecondaryDark,
+    fontSize: 14.sp,
+    fontWeight: FontWeight.w600,
+    height: 1.3,
+    letterSpacing: 0,
+  );
+  // 0xB3 = 179 ≈ 0.7 × 255 → Colors.black @ 70% opacity
+  static final _subtitleStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    color: const Color(0xB3000000),
+    fontSize: 12.sp,
+    fontWeight: FontWeight.w400,
+    height: 1.3,
+    letterSpacing: 0,
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      height: 77.h,
+      margin: EdgeInsets.only(bottom: 22.h),
+      decoration: _cardDecoration,
+      child: Padding(
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+        child: Row(
+          children: [
+            Container(
+              width: _containerSize,
+              height: _containerSize,
+              decoration: _iconBgDecoration,
+              child: Center(
+                child: SvgPicture.asset(
+                  'assets/icons/app_update_check.svg',
+                  width: _iconSize,
+                  height: _iconSize,
+                  colorFilter: _iconColorFilter,
+                ),
+              ),
+            ),
+            SizedBox(width: 16.w),
+            Expanded(
+              child: Column(
+                mainAxisAlignment: MainAxisAlignment.center,
+                crossAxisAlignment: CrossAxisAlignment.start,
+                children: [
+                  Text(title, style: _titleStyle),
+                  SizedBox(height: 6.h),
+                  Text(subtitle, style: _subtitleStyle),
                 ],
               ),
             ),

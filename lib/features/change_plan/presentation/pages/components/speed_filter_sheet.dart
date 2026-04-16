@@ -1,5 +1,7 @@
-import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/l10n/bss_sub_localizations.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 
 class SpeedFilterSheet extends StatefulWidget {
   final int? currentSpeed;
@@ -16,6 +18,25 @@ class _SpeedFilterSheetState extends State<SpeedFilterSheet> {
 
   static const List<int> _speedOptions = [10, 20, 30, 60, 100, 150];
 
+  static const _dragHandleDecoration = BoxDecoration(
+    color: AppColor.kDragHandleGrey,
+    borderRadius: BorderRadius.all(Radius.circular(2)),
+  );
+  static final _cancelButtonStyle = OutlinedButton.styleFrom(
+    side: const BorderSide(color: AppColor.kPrimaryColor),
+    padding: const EdgeInsets.symmetric(vertical: 14),
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(12)),
+    ),
+  );
+  static final _applyButtonStyle = ElevatedButton.styleFrom(
+    backgroundColor: AppColor.kPrimaryColor,
+    padding: const EdgeInsets.symmetric(vertical: 14),
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(12)),
+    ),
+  );
+
   @override
   void initState() {
     super.initState();
@@ -25,6 +46,7 @@ class _SpeedFilterSheetState extends State<SpeedFilterSheet> {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
+    final l10n = context.bssSubL10n;
 
     return Padding(
       padding: const EdgeInsets.all(20),
@@ -37,10 +59,7 @@ class _SpeedFilterSheetState extends State<SpeedFilterSheet> {
               width: 40,
               height: 4,
               margin: const EdgeInsets.only(bottom: 16),
-              decoration: BoxDecoration(
-                color: AppColor.kDragHandleGrey,
-                borderRadius: BorderRadius.circular(2),
-              ),
+              decoration: _dragHandleDecoration,
             ),
           ),
           Stack(
@@ -48,7 +67,7 @@ class _SpeedFilterSheetState extends State<SpeedFilterSheet> {
               Align(
                 alignment: Alignment.center,
                 child: Text(
-                  'Filter By Speed',
+                  l10n.filterBySpeed,
                   style: theme.textTheme.titleMedium?.copyWith(
                     fontWeight: FontWeight.w600,
                   ),
@@ -57,11 +76,9 @@ class _SpeedFilterSheetState extends State<SpeedFilterSheet> {
               Align(
                 alignment: Alignment.centerRight,
                 child: GestureDetector(
-                  onTap: () {
-                    setState(() => _selectedSpeed = null);
-                  },
+                  onTap: () => setState(() => _selectedSpeed = null),
                   child: Text(
-                    'Clear',
+                    l10n.clear,
                     style: TextStyle(color: AppColor.kPrimaryColor),
                   ),
                 ),
@@ -75,7 +92,7 @@ class _SpeedFilterSheetState extends State<SpeedFilterSheet> {
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: _speedOptions
-                  .map((speed) => _buildSpeedTile(speed, theme))
+                  .map((speed) => _buildSpeedTile(speed, theme, l10n))
                   .toList(),
             ),
           ),
@@ -85,16 +102,10 @@ class _SpeedFilterSheetState extends State<SpeedFilterSheet> {
               Expanded(
                 child: OutlinedButton(
                   onPressed: () => Navigator.pop(context),
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: AppColor.kPrimaryColor),
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
+                  style: _cancelButtonStyle,
                   child: Text(
-                    'Cancel',
-                    style: TextStyle(color: AppColor.kPrimaryColor),
+                    l10n.cancel,
+                    style: const TextStyle(color: AppColor.kPrimaryColor),
                   ),
                 ),
               ),
@@ -105,15 +116,9 @@ class _SpeedFilterSheetState extends State<SpeedFilterSheet> {
                     Navigator.pop(context);
                     widget.onApply(_selectedSpeed);
                   },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColor.kPrimaryColor,
-                    padding: const EdgeInsets.symmetric(vertical: 14),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
+                  style: _applyButtonStyle,
                   child: Text(
-                    'Search',
+                    l10n.search,
                     style: const TextStyle(color: Colors.white),
                   ),
                 ),
@@ -125,7 +130,7 @@ class _SpeedFilterSheetState extends State<SpeedFilterSheet> {
     );
   }
 
-  Widget _buildSpeedTile(int speed, ThemeData theme) {
+  Widget _buildSpeedTile(int speed, ThemeData theme, BssSubLocalizations l10n) {
     return InkWell(
       onTap: () => setState(() => _selectedSpeed = speed),
       child: Padding(
@@ -143,7 +148,7 @@ class _SpeedFilterSheetState extends State<SpeedFilterSheet> {
               ),
             ),
             const SizedBox(width: 12),
-            Text('$speed Mbps', style: theme.textTheme.bodyMedium),
+            Text(l10n.mbps(speed), style: theme.textTheme.bodyMedium),
           ],
         ),
       ),

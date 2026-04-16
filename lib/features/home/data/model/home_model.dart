@@ -53,7 +53,7 @@ class PackageDetailsModel {
   final double renewalFee;
   final int totalPackageCount;
   final double availableVolumeGb;
-  final double totalVolumeGb;
+  final int totalVolumeGb;
   final List<ActiveAdoOnModel> activeAddOns;
 
   const PackageDetailsModel({
@@ -81,7 +81,7 @@ class PackageDetailsModel {
       renewalFee: (json['renewalFee'] as num?)?.toDouble() ?? 0.0,
       totalPackageCount: json['totalPackageCount'] as int? ?? 0,
       availableVolumeGb: (json['availableVolumeGb'] as num?)?.toDouble() ?? 0.0,
-      totalVolumeGb: (json['totalVolumeGb'] as num?)?.toDouble() ?? 0.0,
+      totalVolumeGb: json['totalVolumeGb'] as int? ?? 0,
       activeAddOns:
           (json['activeAddOns'] as List<dynamic>?)
               ?.map((e) => ActiveAdoOnModel.fromJson(e as Map<String, dynamic>))

@@ -66,16 +66,27 @@ class TicketsRefreshing extends TicketState {
 class TicketsLoaded extends TicketState {
   final TicketsListResponseEntity data;
   final bool isLoadingMore;
+  final String? paginationError;
 
-  const TicketsLoaded({required this.data, this.isLoadingMore = false});
+  const TicketsLoaded({
+    required this.data,
+    this.isLoadingMore = false,
+    this.paginationError,
+  });
+
+  static const _clear = Object();
 
   TicketsLoaded copyWith({
     TicketsListResponseEntity? data,
     bool? isLoadingMore,
+    Object? paginationError = _clear,
   }) {
     return TicketsLoaded(
       data: data ?? this.data,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
+      paginationError: identical(paginationError, _clear)
+          ? this.paginationError
+          : paginationError as String?,
     );
   }
 }
@@ -97,7 +108,11 @@ class NoteSubmitting extends TicketState {
 class NoteSubmitted extends TicketState {
   final AddNoteRespoEntity respoEntity;
 
-  const NoteSubmitted({required this.respoEntity});
+  /// The original note text, carried through state so the UI can
+  /// perform an optimistic update without relying on mutable page-level state.
+  final String note;
+
+  const NoteSubmitted({required this.respoEntity, required this.note});
 }
 
 class OnError extends TicketState {

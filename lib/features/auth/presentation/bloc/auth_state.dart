@@ -1,5 +1,5 @@
-import 'package:kfon_subscriber/features/auth/domain/entity/auth_entity.dart';
 import 'package:equatable/equatable.dart';
+import 'package:kfon_subscriber/features/auth/domain/entity/auth_entity.dart';
 
 abstract class AuthState extends Equatable {
   const AuthState();

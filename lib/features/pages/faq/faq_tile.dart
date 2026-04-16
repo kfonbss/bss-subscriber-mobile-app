@@ -1,5 +1,5 @@
-import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:flutter/material.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class FaqTile extends StatefulWidget {
@@ -23,14 +23,14 @@ class _FaqTileState extends State<FaqTile> {
   final TextStyle questionStyle = TextStyle(
     color: AppColor.kTextSecondaryDark,
     fontSize: 14.sp,
-    fontFamily: 'General Sans',
+    fontFamily: 'GeneralSans',
     fontWeight: FontWeight.w600,
     height: 1.30,
   );
   final TextStyle answerStyle = TextStyle(
     color: Colors.black.withValues(alpha: 0.70),
     fontSize: 12.sp,
-    fontFamily: 'General Sans',
+    fontFamily: 'GeneralSans',
     fontWeight: FontWeight.w500,
     height: 1.60,
   );

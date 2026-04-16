@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kfon_subscriber/core/util/preference_util.dart';
 import 'package:kfon_subscriber/features/auth/domain/entity/auth_entity.dart';
 import 'package:kfon_subscriber/features/auth/domain/params/login_params.dart';
 import 'package:kfon_subscriber/features/auth/domain/params/reset_password_params.dart';
@@ -6,10 +7,6 @@ import 'package:kfon_subscriber/features/auth/domain/params/verify_otp_params.da
 import 'package:kfon_subscriber/features/auth/domain/repository/auth_repository.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_event.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_state.dart';
-import 'package:kfon_subscriber/core/util/preference_util.dart';
-
-/// Set to true to skip OTP send/verify APIs after login (temporary bypass).
-const bool kBypassLoginOtp = false;
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository authRepository;
@@ -69,18 +66,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         (authEntity) async {
           otpRefId = null;
 
-          if (kBypassLoginOtp) {
-            // Temporary bypass: skip OTP send/verify, save tokens and go to main
-            PreferenceUtils.saveAllTokens(
-              accessToken: authEntity.token,
-              refreshToken: authEntity.refreshToken,
-              expiresIn: authEntity.expiresIn,
-            );
-            _authEntity = authEntity;
-            emit(LoginSuccess(user: authEntity));
-            return;
-          }
-
           // Send OTP after successful login
           final otpResult = await authRepository.sendOtp(
             authEntity.mobileNumber,
@@ -107,6 +92,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     LogoutRequested event,
     Emitter<AuthState> emit,
   ) async {
+    emit(const LogoutLoading());
     try {
       final refreshToken = await PreferenceUtils.getRefreshToken();
       if (refreshToken != null && refreshToken.isNotEmpty) {
@@ -120,6 +106,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
             otpRefId = null;
             _authEntity = null;
             forgotPasswordUsername = null;
+            forgotPasswordToken = null;
             emit(const LogoutSuccess());
             emit(const Unauthenticated());
           },
@@ -129,6 +116,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         otpRefId = null;
         _authEntity = null;
         forgotPasswordUsername = null;
+        forgotPasswordToken = null;
         emit(const LogoutSuccess());
         emit(const Unauthenticated());
       }
@@ -169,22 +157,30 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       emit(const AuthLoading());
 
+      if (otpRefId == null) {
+        emit(const OtpVerificationFailed(
+          errorMessage: 'OTP session expired. Please request a new OTP.',
+        ));
+        return;
+      }
+
       final params = VerifyOtpParams(otpRefId: otpRefId!, otp: event.otp);
 
       final result = await authRepository.verifyOtp(params);
 
-      result.fold(
-        (error) {
+      await result.fold(
+        (error) async {
           emit(OtpVerificationFailed(errorMessage: error.toString()));
         },
-        (_) {
+        (_) async {
           // Save token to storage after successful OTP verification
           if (_authEntity != null) {
-            PreferenceUtils.saveAllTokens(
+            await PreferenceUtils.saveAllTokens(
               accessToken: _authEntity!.token,
               refreshToken: _authEntity!.refreshToken,
               expiresIn: _authEntity!.expiresIn,
             );
+            _authEntity = null;
           }
           emit(const OtpVerified());
           otpRefId = null;
@@ -212,7 +208,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         (otpResponse) {
           forgotPasswordUsername = event.username;
           otpRefId = otpResponse.otpRefId;
-          String mobileNumber = otpResponse.mobileNumber ?? '';
+          final mobileNumber = otpResponse.mobileNumber ?? '';
           emit(OtpSent(mobileNumber: mobileNumber));
         },
       );
@@ -227,6 +223,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     try {
       emit(const AuthLoading());
+
+      if (otpRefId == null) {
+        emit(const OtpVerificationFailed(
+          errorMessage: 'OTP session expired. Please request a new OTP.',
+        ));
+        return;
+      }
 
       final params = VerifyOtpParams(otpRefId: otpRefId!, otp: event.otp);
 
@@ -254,6 +257,13 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       emit(const AuthLoading());
 
+      if (forgotPasswordUsername == null || forgotPasswordToken == null) {
+        emit(const PasswordResetError(
+          errorMessage: 'Session expired. Please restart the forgot password flow.',
+        ));
+        return;
+      }
+
       final params = ResetPasswordParams(
         username: forgotPasswordUsername!,
         newPassword: event.newPassword.trim(),
@@ -268,6 +278,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(PasswordResetError(errorMessage: error.toString()));
         },
         (_) {
+          forgotPasswordToken = null;
+          forgotPasswordUsername = null;
           emit(const PasswordResetSuccess());
         },
       );

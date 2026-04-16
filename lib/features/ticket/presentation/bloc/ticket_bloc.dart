@@ -1,6 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/features/ticket/domain/entity/tickets_list_response_entity.dart';
-
 import 'package:kfon_subscriber/features/ticket/domain/repository/ticket_repository.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/bloc/ticket_event.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/bloc/ticket_state.dart';
@@ -29,6 +28,7 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
     Emitter<TicketState> emit,
   ) async {
     try {
+      emit(const SubjectLoading());
       final result = await ticketRepository.getSubjects();
 
       result.fold(
@@ -162,7 +162,10 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
 
       result.fold(
         (error) {
-          emit(currentState.copyWith(isLoadingMore: false));
+          emit(currentState.copyWith(
+            isLoadingMore: false,
+            paginationError: error.toString(),
+          ));
         },
         (response) {
           final allTickets = [
@@ -182,7 +185,10 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
         },
       );
     } catch (e) {
-      emit(currentState.copyWith(isLoadingMore: false));
+      emit(currentState.copyWith(
+        isLoadingMore: false,
+        paginationError: e.toString(),
+      ));
     }
   }
 
@@ -196,7 +202,7 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
           emit(OnError(errorMessage: error.toString()));
         },
         (respoEntity) {
-          emit(NoteSubmitted(respoEntity: respoEntity));
+          emit(NoteSubmitted(respoEntity: respoEntity, note: event.params.remarks));
         },
       );
     } catch (e) {

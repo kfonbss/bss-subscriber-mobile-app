@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/presentation/ui_component/primary_button.dart';
 
@@ -33,10 +34,10 @@ class VerificationSuccessSheet extends StatelessWidget {
           Text(
             'Congratulations! your account has been verified from our system. Please login first before enjoy our amazing experience. We hope you enjoy it!',
             textAlign: TextAlign.center,
-            style: TextStyle(
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,
-              color: Colors.grey.shade600,
+              color: AppColor.kBodyTextGrey,
               height: 1.5,
             ),
           ),

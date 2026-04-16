@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 
 class CommonTextButton extends StatelessWidget {
   final String label;
@@ -10,7 +11,7 @@ class CommonTextButton extends StatelessWidget {
     return TextButton(
       onPressed: onPressed,
       style: TextButton.styleFrom(
-        foregroundColor: Colors.blue,
+        foregroundColor: AppColor.kPrimaryColorTwo,
         padding: EdgeInsets.zero,
         minimumSize: Size.zero,
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,

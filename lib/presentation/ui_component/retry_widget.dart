@@ -1,5 +1,5 @@
-import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:flutter/material.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class RetryWidget extends StatelessWidget {
   const RetryWidget({

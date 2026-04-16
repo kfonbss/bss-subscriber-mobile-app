@@ -1,6 +1,6 @@
 import 'package:dio/dio.dart';
+import 'package:flutter/foundation.dart';
 import 'package:kfon_subscriber/core/error/failure.dart';
-import 'package:flutter/material.dart';
 
 class APIResponse {
   final dynamic data;
@@ -56,9 +56,8 @@ class APIResponse {
       failure = UnknownFailure(errorMessage);
     }
 
-    debugPrint('APIResponse Error: $errorMessage');
     return APIResponse(
-      data: '',
+      data: null,
       message: '',
       error: errorMessage,
       failure: failure,
@@ -97,10 +96,10 @@ class APIResponse {
           failure: const ServerFailure('Request was cancelled.'),
         );
       case DioExceptionType.connectionError:
-        return (
-          message: 'No internet connection.',
-          failure: const NetworkFailure(),
-        );
+        final message = kIsWeb
+            ? 'Unable to reach the server. This may be a CORS issue when running on web.'
+            : 'No internet connection.';
+        return (message: message, failure: const NetworkFailure());
       default:
         return (
           message: 'Unknown error occurred',

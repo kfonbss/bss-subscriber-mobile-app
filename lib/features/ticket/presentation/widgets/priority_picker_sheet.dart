@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/features/profile/presentation/components/common_radio_button.dart';
 import 'package:kfon_subscriber/features/ticket/domain/entity/priority_entity.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/bloc/ticket_bloc.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/bloc/ticket_event.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/bloc/ticket_state.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/presentation/ui_component/shimmer/list_shimmers.dart';
 
 class PriorityPickerSheet extends StatefulWidget {
@@ -27,12 +29,13 @@ class _PriorityPickerSheetState extends State<PriorityPickerSheet> {
   @override
   void initState() {
     super.initState();
-    // Load priorities if not already loaded
     widget.ticketBloc.add(const LoadPriorities());
   }
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.bssSubL10n;
+
     return BlocBuilder<TicketBloc, TicketState>(
       bloc: widget.ticketBloc,
       builder: (context, state) {
@@ -55,15 +58,15 @@ class _PriorityPickerSheetState extends State<PriorityPickerSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Text(
-                'Select Priority',
+              Text(
+                l10n.selectPriority,
                 textAlign: TextAlign.center,
-                style: TextStyle(
+                style: const TextStyle(
                   fontFamily: 'GeneralSans',
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                   height: 1.4,
-                  color: Color(0xFF0F1121),
+                  color: AppColor.kTextSecondaryDark,
                 ),
               ),
               const SizedBox(height: 30),
@@ -81,11 +84,11 @@ class _PriorityPickerSheetState extends State<PriorityPickerSheet> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'Error loading priorities',
+                        l10n.errorLoadingPriorities,
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFFE53935),
+                          color: AppColor.kUrgentRed,
                           fontFamily: 'GeneralSans',
                         ),
                       ),
@@ -95,7 +98,7 @@ class _PriorityPickerSheetState extends State<PriorityPickerSheet> {
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontSize: 12,
-                          color: Color(0xFF67697A),
+                          color: AppColor.kSlateGrey,
                           fontFamily: 'GeneralSans',
                         ),
                       ),
@@ -104,15 +107,15 @@ class _PriorityPickerSheetState extends State<PriorityPickerSheet> {
                         onPressed: () {
                           widget.ticketBloc.add(const LoadPriorities());
                         },
-                        child: const Text('Retry'),
+                        child: Text(l10n.retry),
                       ),
                     ],
                   ),
                 )
               else if (priorities.isEmpty)
-                const Padding(
-                  padding: EdgeInsets.all(20.0),
-                  child: Text('No priorities available'),
+                Padding(
+                  padding: const EdgeInsets.all(20.0),
+                  child: Text(l10n.noPrioritiesAvailable),
                 )
               else
                 ConstrainedBox(
@@ -131,7 +134,7 @@ class _PriorityPickerSheetState extends State<PriorityPickerSheet> {
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
-                            color: Color(0xFF0F1121),
+                            color: AppColor.kTextSecondaryDark,
                             fontFamily: 'GeneralSans',
                           ),
                         ),

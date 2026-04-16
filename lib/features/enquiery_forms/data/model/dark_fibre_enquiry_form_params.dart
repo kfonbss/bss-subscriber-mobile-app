@@ -1,6 +1,3 @@
-import 'dart:convert';
-import 'dart:io';
-
 import 'package:dio/dio.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:kfon_subscriber/core/util/image_util.dart';
@@ -39,11 +36,11 @@ class DarkFibreEnquiryFormParams {
   });
 
   Future<FormData> toFormData() async {
-    ImageUtil imageUtil=ImageUtil();
-    String internetServiceLicenseCopy=await imageUtil.convertImageToBase64(internetServiceLicenseFiles.first);
-    String supportExperienceCertificate=await imageUtil.convertImageToBase64(experienceCertificateFiles.first);
-    String coveringLetterCopy=await imageUtil.convertImageToBase64(coveringLetterFiles.first);
-    String routeFormCopy=await imageUtil.convertImageToBase64(routeLeaseFiles.first);
+    final imageUtil = ImageUtil();
+    final internetServiceLicenseCopy = await imageUtil.convertImageToBase64(internetServiceLicenseFiles.first);
+    final supportExperienceCertificate = await imageUtil.convertImageToBase64(experienceCertificateFiles.first);
+    final coveringLetterCopy = await imageUtil.convertImageToBase64(coveringLetterFiles.first);
+    final routeFormCopy = await imageUtil.convertImageToBase64(routeLeaseFiles.first);
     // MultipartFile internetServiceLicenseCopy=await MultipartFile.fromFile(internetServiceLicenseFiles.first.path!,filename: internetServiceLicenseFiles.first.path!.split('/').last);
     // MultipartFile supportExperienceCertificate=await MultipartFile.fromFile(experienceCertificateFiles.first.path!,filename: experienceCertificateFiles.first.path!.split('/').last);
     // MultipartFile coveringLetterCopy=await MultipartFile.fromFile(coveringLetterFiles.first.path!,filename: coveringLetterFiles.first.path!.split('/').last);

@@ -16,15 +16,12 @@ class OfflineRechargeBloc
     GetData event,
     Emitter<OfflineRechargeState> emit,
   ) async {
+    emit(const Loading());
     try {
       final result = await repository.getRechargeData(event.subscriberUuid);
       result.fold(
-        (failure) {
-          emit(OnFailure(errorMessage: failure.toString()));
-        },
-        (entity) {
-          emit(GetDataSuccess(entity: entity));
-        },
+        (failure) => emit(OnFailure(errorMessage: failure.toString())),
+        (entity) => emit(GetDataSuccess(entity: entity)),
       );
     } catch (e) {
       emit(OnFailure(errorMessage: e.toString()));

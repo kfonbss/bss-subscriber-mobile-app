@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/constant/constant_dimensions.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/presentation/ui_component/primary_button.dart';
 import 'package:kfon_subscriber/presentation/ui_component/secondary_button.dart';
 
@@ -24,9 +25,9 @@ class EnquiryFormFooter extends StatelessWidget {
     return Expanded(
       child: Container(
         height: 5,
-        margin: EdgeInsets.symmetric(horizontal: 5),
+        margin: const EdgeInsets.symmetric(horizontal: 5),
         decoration: BoxDecoration(
-          color: isActive ? AppColor.kPrimaryColor : Color(0xFFD9D9D9),
+          color: isActive ? AppColor.kPrimaryColor : AppColor.kBorderLightGrey,
           borderRadius: BorderRadius.circular(20.0),
         ),
       ),
@@ -35,8 +36,10 @@ class EnquiryFormFooter extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.bssSubL10n;
+
     return Container(
-      padding: EdgeInsets.all(15),
+      padding: const EdgeInsets.all(15),
       decoration: BoxDecoration(
         color: Colors.white,
         boxShadow: [
@@ -44,7 +47,7 @@ class EnquiryFormFooter extends StatelessWidget {
             color: Colors.grey.withValues(alpha: 0.1),
             blurRadius: 10,
             spreadRadius: 2,
-            offset: Offset(0, -5), // Negative dy value to show shadow on top
+            offset: const Offset(0, -5),
           ),
         ],
       ),
@@ -52,13 +55,11 @@ class EnquiryFormFooter extends StatelessWidget {
         spacing: 20,
         children: [
           Padding(
-            padding: EdgeInsets.symmetric(horizontal: 100),
+            padding: const EdgeInsets.symmetric(horizontal: 100),
             child: Row(
               children: List.generate(
                 pageCount,
-                (index) => _getStep(
-                  currentPage == (index + 1) ? true : false,
-                ), // Or any other widget
+                    (index) => _getStep(currentPage == (index + 1)),
               ),
             ),
           ),
@@ -67,7 +68,7 @@ class EnquiryFormFooter extends StatelessWidget {
             children: [
               Expanded(
                 child: SecondaryButton(
-                  label: currentPage == 1 ? 'Cancel' : 'Back',
+                  label: currentPage == 1 ? l10n.cancel : l10n.back,
                   icon: Icon(
                     currentPage == 1
                         ? Icons.cancel_outlined
@@ -75,16 +76,16 @@ class EnquiryFormFooter extends StatelessWidget {
                     color: AppColor.kPrimaryColor,
                     size: AppDimensions.kButtonIconSize,
                   ),
-                  onClicked:
-                      currentPage == 1
-                          ? () => Navigator.of(context).pop()
-                          : secondaryButtonCallback,
+                  onClicked: currentPage == 1
+                      ? () => Navigator.of(context).pop()
+                      : secondaryButtonCallback,
                 ),
               ),
               Expanded(
                 child: PrimaryButton(
-                  label:
-                      currentPage == pageCount ? 'Submit' : 'Save & Continue',
+                  label: currentPage == pageCount
+                      ? l10n.submit
+                      : l10n.saveAndContinue,
                   onClicked: primaryButtonCallback,
                   isLoading: showLoading,
                   icon: Icon(

@@ -9,6 +9,7 @@ import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/active_package_details/domain/entity/active_packages_details_entity.dart';
+import 'package:kfon_subscriber/features/active_package_details/presentation/pages/active_package_page.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/repository/change_plan_repository.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/bloc/change_plan_bloc.dart';
@@ -21,19 +22,17 @@ import 'package:kfon_subscriber/features/home/presentation/bloc/home_event.dart'
 import 'package:kfon_subscriber/features/home/presentation/bloc/home_state.dart';
 import 'package:kfon_subscriber/features/home/presentation/components/home_shimmer.dart';
 import 'package:kfon_subscriber/features/top_up/presentation/pages/topup_page.dart';
-import 'package:kfon_subscriber/features/active_package_details/presentation/pages/active_package_page.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/presentation/ui_component/primary_button.dart';
 import 'package:kfon_subscriber/presentation/ui_component/secondary_button.dart';
-import 'package:kfon_subscriber/presentation/ui_component/shimmer/shimmer_base.dart';
-import 'package:kfon_subscriber/presentation/ui_component/shimmer/shimmer_box.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 
 import '../../../offline_recharge/presentation/pages/offline_recharge_bottom_sheet.dart';
 
-const kTeal = Color(0xFF00A896);
-const kOrange = Color(0xFFFF6B2C);
-const kRed = Color(0xFFE84040);
-const kYellow = Color(0xFFFFD600);
+const _kTeal = Color(0xFF00A896);
+const _kOrange = Color(0xFFFF6B2C);
+const _kRed = Color(0xFFE84040);
+const _kYellow = Color(0xFFFFD600);
 
 class HomePage extends StatefulWidget {
   const HomePage({super.key});
@@ -43,25 +42,20 @@ class HomePage extends StatefulWidget {
 }
 
 class _HomePageState extends State<HomePage> {
-  late HomeBloc bloc;
+  late final HomeBloc bloc;
 
   @override
   void initState() {
     super.initState();
     bloc = context.read<HomeBloc>();
-    bloc.add(GetHomeData());
+    bloc.add(const GetHomeData());
   }
 
-  @override
-  void dispose() {
-    super.dispose();
-  }
-
-  void _showRechargeSheet(BuildContext context,String subscriberId) {
+  void _showRechargeSheet(BuildContext context, String subscriberId) {
     BottomSheetHelper.show(
       context: context,
-      title: 'Recharge',
-      child:  OfflineRechargeBottomSheet(subscriberUuid: subscriberId,),
+      title: context.bssSubL10n.recharge,
+      child: OfflineRechargeBottomSheet(subscriberUuid: subscriberId),
     );
   }
 
@@ -72,35 +66,16 @@ class _HomePageState extends State<HomePage> {
       appBar: AppBar(
         backgroundColor: AppColor.kToolbarBackground,
         toolbarHeight: AppDimensions.kDefaultToolbarHeights,
-        actionsPadding: EdgeInsets.only(right: 15),
+        actionsPadding: const EdgeInsets.only(right: 15),
         actions: [
-          GestureDetector(
-            onTap: () => Navigator.pushNamed(context, AppRoutes.notificationPage),
-            child: Image.asset(
+          IconButton(
+            onPressed: () =>
+                Navigator.pushNamed(context, AppRoutes.notificationPage),
+            icon: Image.asset(
               'assets/icons/notification_white.png',
               width: AppDimensions.kActionButtonSize,
               height: AppDimensions.kActionButtonSize,
               fit: BoxFit.cover,
-            ),
-          ),
-          SizedBox(width: 15),
-          Container(
-            width: 42.w,
-            height: 42.h,
-            decoration: ShapeDecoration(
-              image: DecorationImage(
-                image: NetworkImage(
-                  "https://encrypted-tbn0.gstatic.com/images?q=tbn:ANd9GcRPrsHSSBc63zNawuN6LUuXgj58de3ciuETGw&s",
-                ),
-                fit: BoxFit.cover,
-              ),
-              shape: OvalBorder(
-                side: BorderSide(
-                  width: 3,
-                  strokeAlign: BorderSide.strokeAlignOutside,
-                  color: Colors.white,
-                ),
-              ),
             ),
           ),
         ],
@@ -114,28 +89,57 @@ class _HomePageState extends State<HomePage> {
       ),
       body: BlocListener<HomeBloc, HomeState>(
         bloc: bloc,
-        listenWhen: (prev, curr) => curr is GetDataFailure,
+        listenWhen: (prev, curr) =>
+            curr is GetDataFailure || curr is GetDataSuccess,
         listener: (context, state) {
           if (state is GetDataFailure) {
             DialogUtil().showMessage(state.errorMessage, context);
+          } else if (state is GetDataSuccess) {
+            final pkg = state.homeEntity.packageDetails;
+            if (pkg != null) {
+              bloc.add(GetPlans(
+                packageId: pkg.packageId,
+                subscriberUuid: state.homeEntity.subscriberId,
+              ));
+            }
           }
         },
         child: BlocBuilder<HomeBloc, HomeState>(
           bloc: bloc,
-          buildWhen: (prev, curr) => curr is GetDataSuccess,
+          buildWhen: (prev, curr) =>
+              curr is GetDataSuccess || curr is GetDataFailure,
           builder: (context, state) {
+            if (state is GetDataFailure) {
+              return Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Text(
+                      state.errorMessage,
+                      textAlign: TextAlign.center,
+                      style: const TextStyle(color: AppColor.kFailedRed),
+                    ),
+                    const SizedBox(height: 16),
+                    ElevatedButton(
+                      onPressed: () => bloc.add(const GetHomeData()),
+                      child: const Text('Retry'),
+                    ),
+                  ],
+                ),
+              );
+            }
             if (state is GetDataSuccess) {
-              final HomeEntity balance = state.homeEntity;
-              final PackageDetailsEntity? pkg = balance.packageDetails;
-              final String subscriberId = balance.subscriberId;
-              bloc.add(GetPlans(packageId: pkg!.packageId, subscriberUuid: subscriberId));
+              final HomeEntity home = state.homeEntity;
+              final PackageDetailsEntity? pkg = home.packageDetails;
+              final String subscriberId = home.subscriberId;
+              final String packageId = pkg?.packageId ?? '';
               return SingleChildScrollView(
                 child: Stack(
                   children: [
                     SizedBox(
-                      height: 250,
+                      height: 250.h,
                       child: ClipRRect(
-                        borderRadius: BorderRadius.only(
+                        borderRadius: const BorderRadius.only(
                           bottomLeft: Radius.circular(30.0),
                           bottomRight: Radius.circular(30.0),
                         ),
@@ -149,22 +153,21 @@ class _HomePageState extends State<HomePage> {
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _WalletCard(balance: balance),
+                        _WalletCard(home: home),
                         if (pkg != null)
                           _ComboCard(pkg: pkg, subscriberId: subscriberId),
                         const SizedBox(height: 16),
                         _QuickActions(
-                          onRechargeTap: () => _showRechargeSheet(context,subscriberId),
-                          onTransactionsTap:
-                              () => Navigator.pushNamed(
-                                context,
-                                AppRoutes.transactionHistoryPage,
-                              ),
-                          onInvoiceTap:
-                              () => Navigator.pushNamed(
-                                context,
-                                AppRoutes.invoiceListPage,
-                              ),
+                          onRechargeTap: () =>
+                              _showRechargeSheet(context, subscriberId),
+                          onTransactionsTap: () => Navigator.pushNamed(
+                            context,
+                            AppRoutes.transactionHistoryPage,
+                          ),
+                          onInvoiceTap: () => Navigator.pushNamed(
+                            context,
+                            AppRoutes.invoiceListPage,
+                          ),
                         ),
                         const SizedBox(height: 24),
                         BlocBuilder<HomeBloc, HomeState>(
@@ -174,15 +177,15 @@ class _HomePageState extends State<HomePage> {
                             return state is GetPlansSuccess &&
                                     state.packageEntities.isNotEmpty
                                 ? _PlanChangeSection(
-                                  subscriberUuid: subscriberId,
-                                  currentPackageId: pkg.packageId,
-                                  plans: state.packageEntities,
-                                )
-                                : SizedBox.shrink();
+                                    subscriberUuid: subscriberId,
+                                    currentPackageId: packageId,
+                                    plans: state.packageEntities,
+                                  )
+                                : const SizedBox.shrink();
                           },
                         ),
                         const SizedBox(height: 24),
-                        _ServicesSection(),
+                        const _ServicesSection(),
                         const SizedBox(height: 80),
                       ],
                     ),
@@ -190,7 +193,7 @@ class _HomePageState extends State<HomePage> {
                 ),
               );
             }
-            return HomeShimmer();
+            return const HomeShimmer();
           },
         ),
       ),
@@ -201,80 +204,80 @@ class _HomePageState extends State<HomePage> {
 // ─── Wallet Card ─────────────────────────────────────────────────────────────
 
 class _WalletCard extends StatelessWidget {
-  final HomeEntity balance;
+  final HomeEntity home;
 
-  const _WalletCard({required this.balance});
+  const _WalletCard({required this.home});
+
+  static final _balanceFmt = NumberFormat.currency(
+    locale: 'en_IN',
+    symbol: '₹ ',
+    decimalDigits: 0,
+  );
+  static final _dateFmt = DateFormat('dd MMM yyyy');
+
+  // Styles — Sizer values fixed after MaterialApp.builder.
+  static final _walletLabelStyle = TextStyle(
+    color: Colors.white70,
+    fontSize: 14.sp,
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w500,
+  );
+  static final _balanceStyle = TextStyle(
+    color: Colors.white,
+    fontSize: 30.sp,
+    fontWeight: FontWeight.bold,
+  );
+  static final _updatedStyle = TextStyle(
+    color: Colors.white54,
+    fontSize: 8.sp,
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w500,
+  );
+  static final _topUpButtonStyle = ElevatedButton.styleFrom(
+    backgroundColor: _kYellow,
+    foregroundColor: AppColor.kBlackHeadingColor,
+    shape: const StadiumBorder(),
+    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+    minimumSize: Size.zero,
+    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+  );
+  static final _topUpTextStyle = TextStyle(
+    fontSize: 12.sp,
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w600,
+    height: 1.3,
+  );
 
   @override
   Widget build(BuildContext context) {
-    // Format: ₹ 38,200
-    final formattedBalance =
-        '₹ ${balance.balance.toStringAsFixed(0).replaceAllMapped(RegExp(r'(\d{1,3})(?=(\d{3})+(?!\d))'), (m) => '${m[1]},')}';
-    // Format: Updated 09 Mar 2026
-    final formattedDate = DateFormat('dd MMM yyyy').format(balance.lastUpdated);
+    final formattedBalance = _balanceFmt.format(home.balance);
+    final formattedDate = _dateFmt.format(home.lastUpdated);
 
     return Padding(
       padding: const EdgeInsets.fromLTRB(20, 40, 20, 28),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Text(
-                'Wallet Balance',
-                style: TextStyle(
-                  color: Colors.white70,
-                  fontSize: 14.sp,
-                  fontFamily: 'General Sans',
-                  fontWeight: FontWeight.w500,
-                ),
-              ),
+              Text(context.bssSubL10n.walletBalance, style: _walletLabelStyle),
+              const SizedBox(height: 4),
+              Text(formattedBalance, style: _balanceStyle),
               const SizedBox(height: 4),
               Text(
-                formattedBalance,
-                style: TextStyle(
-                  color: Colors.white,
-                  fontSize: 30.sp,
-                  fontWeight: FontWeight.bold,
-                ),
-              ),
-              const SizedBox(height: 4),
-              Text(
-                'Updated $formattedDate',
-                style: TextStyle(
-                  color: Colors.white54,
-                  fontSize: 8.sp,
-                  fontFamily: 'General Sans',
-                  fontWeight: FontWeight.w500,
-                ),
+                context.bssSubL10n.updatedDate(formattedDate),
+                style: _updatedStyle,
               ),
             ],
           ),
           ElevatedButton(
-            onPressed:
-                () => Navigator.push(
-                  context,
-                  MaterialPageRoute<void>(builder: (_) => const TopupPage()),
-                ),
-            style: ElevatedButton.styleFrom(
-              backgroundColor: kYellow,
-              foregroundColor: AppColor.kBlackHeadingColor,
-              shape: StadiumBorder(),
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-              minimumSize: Size.zero,
-              tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+            onPressed: () => Navigator.push(
+              context,
+              MaterialPageRoute<void>(builder: (_) => const TopupPage()),
             ),
-            child: Text(
-              'Top up',
-              style: TextStyle(
-                fontSize: 12.sp,
-                fontFamily: 'General Sans',
-                fontWeight: FontWeight.w600,
-                height: 1.3,
-              ),
-            ),
+            style: _topUpButtonStyle,
+            child: Text(context.bssSubL10n.topUp, style: _topUpTextStyle),
           ),
         ],
       ),
@@ -290,26 +293,58 @@ class _ComboCard extends StatelessWidget {
 
   const _ComboCard({required this.pkg, required this.subscriberId});
 
+  static final _activeUntilFmt = DateFormat('MMM dd, yyyy');
+  static const _avatarBg = Color(0x1A005F73); // kPrimaryColor @ 10% opacity
+
+  // Static decorations — no new object created per build.
+  static const _cardDecoration = BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.all(Radius.circular(16)),
+    boxShadow: [
+      BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 2)),
+    ],
+  );
+  // _kYellow is a file-level const Color → this decoration is also const.
+  static const _daysLeftDecoration = BoxDecoration(
+    color: _kYellow,
+    borderRadius: BorderRadius.all(Radius.circular(20)),
+  );
+
+  static final _packageNameStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w500,
+    height: 1.3,
+    fontSize: 16.sp,
+    color: AppColor.kBlackHeadingColor,
+  );
+  static final _activeUntilStyle = TextStyle(
+    color: AppColor.kTextFiledHintColor,
+    fontSize: 10.sp,
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w500,
+    height: 1.6,
+  );
+  static final _daysLeftTextStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w500,
+    height: 1.3,
+    fontSize: 12.sp,
+    color: AppColor.kBlackHeadingColor,
+  );
+
   @override
   Widget build(BuildContext context) {
-    final activeUntilStr = DateFormat('MMM dd, yyyy').format(pkg.activeUntil);
+    final activeUntilStr = _activeUntilFmt.format(pkg.activeUntil);
     final speedStr = '${pkg.speedMbps.toStringAsFixed(0)} Mbps';
     final amountStr = '₹${pkg.renewalFee.toStringAsFixed(0)}';
-    final usageStr =
-        (pkg.availableVolumeGb > 0 || pkg.totalVolumeGb > 0)
-            ? '${pkg.availableVolumeGb.toStringAsFixed(0)} GB / ${pkg.totalVolumeGb.toStringAsFixed(0)} GB'
-            : 'Unlimited';
+    final usageStr = (pkg.availableVolumeGb > 0 || pkg.totalVolumeGb > 0)
+        ? '${pkg.availableVolumeGb.toStringAsFixed(0)} GB / ${pkg.totalVolumeGb.toStringAsFixed(0)} GB'
+        : 'Unlimited';
     final addOnCount = pkg.activeAddOns.length;
 
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 2)),
-        ],
-      ),
+      decoration: _cardDecoration,
       child: Column(
         children: [
           Padding(
@@ -323,10 +358,8 @@ class _ComboCard extends StatelessWidget {
                     children: [
                       CircleAvatar(
                         radius: 22,
-                        backgroundColor: AppColor.kPrimaryColor.withOpacity(
-                          0.1,
-                        ),
-                        child: Icon(
+                        backgroundColor: _avatarBg,
+                        child: const Icon(
                           Icons.language,
                           color: AppColor.kPrimaryColor,
                         ),
@@ -337,25 +370,11 @@ class _ComboCard extends StatelessWidget {
                           crossAxisAlignment: CrossAxisAlignment.start,
                           mainAxisSize: MainAxisSize.min,
                           children: [
+                            Text(pkg.packageName, style: _packageNameStyle),
                             Text(
-                              pkg.packageName, // ← entity
-                              style: TextStyle(
-                                fontFamily: 'General Sans',
-                                fontWeight: FontWeight.w500,
-                                height: 1.3,
-                                fontSize: 16.sp,
-                                color: AppColor.kBlackHeadingColor,
-                              ),
-                            ),
-                            Text(
-                              'Active until $activeUntilStr', // ← entity
-                              style: TextStyle(
-                                color: AppColor.kTextFiledHintColor,
-                                fontSize: 10.sp,
-                                fontFamily: 'General Sans',
-                                fontWeight: FontWeight.w500,
-                                height: 1.6,
-                              ),
+                              context.bssSubL10n
+                                  .activeUntilDate(activeUntilStr),
+                              style: _activeUntilStyle,
                             ),
                           ],
                         ),
@@ -365,42 +384,36 @@ class _ComboCard extends StatelessWidget {
                 ),
                 const SizedBox(width: 8),
                 Container(
-                  padding: EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-                  decoration: BoxDecoration(
-                    color: kYellow,
-                    borderRadius: BorderRadius.circular(20),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 6,
                   ),
+                  decoration: _daysLeftDecoration,
                   child: Text(
-                    '${pkg.daysLeft} Days left', // ← entity
-                    style: TextStyle(
-                      fontFamily: 'GeneralSans',
-                      fontWeight: FontWeight.w500,
-                      height: 1.3,
-                      fontSize: 12.sp,
-                      color: AppColor.kBlackHeadingColor,
-                    ),
+                    context.bssSubL10n.daysLeft(pkg.daysLeft.toString()),
+                    style: _daysLeftTextStyle,
                   ),
                 ),
               ],
             ),
           ),
           Container(
-            margin: EdgeInsets.symmetric(horizontal: 16),
+            margin: const EdgeInsets.symmetric(horizontal: 16),
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
             height: 60.h,
-            decoration: ShapeDecoration(
-              color: const Color(0xFFF5F5F5),
+            decoration: const ShapeDecoration(
+              color: AppColor.kSecondaryBackgroundColor,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(12),
+                borderRadius: BorderRadius.all(Radius.circular(12)),
               ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _Stat(label: 'Amount', value: amountStr), // ← renewalFee
-                _Stat(label: 'Speed', value: speedStr), // ← speedMbps
-                _Stat(label: 'FPU', value: pkg.packageType), // ← packageType
-                _Stat(label: 'Usage', value: usageStr), // ← volume fields
+                _Stat(label: context.bssSubL10n.amount, value: amountStr),
+                _Stat(label: context.bssSubL10n.speed, value: speedStr),
+                _Stat(label: context.bssSubL10n.fpu, value: pkg.packageType),
+                _Stat(label: context.bssSubL10n.usage, value: usageStr),
               ],
             ),
           ),
@@ -412,48 +425,43 @@ class _ComboCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: SecondaryButton(
-                      label: '+$addOnCount Pack Active',
-                      // ← activeAddOns.length
-                      onClicked:
-                          () => Navigator.push(
-                            context,
-                            MaterialPageRoute<void>(
-                              builder:
-                                  (_) => ActivePackagePage(
-                                    subscriberUuid: subscriberId,
-                                  ),
-                            ),
-                          ),
+                      label: context.bssSubL10n
+                          .packsActive(addOnCount.toString()),
+                      onClicked: () => Navigator.push(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (_) =>
+                              ActivePackagePage(subscriberUuid: subscriberId),
+                        ),
+                      ),
                     ),
                   ),
                   const SizedBox(width: 12),
                   Expanded(
                     child: PrimaryButton(
-                      label: 'View Usage',
+                      label: context.bssSubL10n.viewUsage,
                       isLoading: false,
-                      onClicked:
-                          () => Navigator.push(
-                            context,
-                            MaterialPageRoute<void>(
-                              builder:
-                                  (_) => DataUsageView(
-                                    subscriberUuid: pkg.packageId,
-                                    entity: ActivePackagesDetailsEntity(
-                                      packageId: pkg.packageId,
-                                      activeAddOns: [],
-                                      activeUntil: pkg.activeUntil,
-                                      availableVolumeGb: pkg.availableVolumeGb,
-                                      daysLeft: pkg.daysLeft,
-                                      packageName: pkg.packageName,
-                                      packageType: pkg.packageType,
-                                      renewalFee: pkg.renewalFee,
-                                      speedMbps: pkg.speedMbps,
-                                      totalPackageCount: pkg.totalPackageCount,
-                                      totalVolumeGb: pkg.totalPackageCount,
-                                    ),
-                                  ),
+                      onClicked: () => Navigator.push(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (_) => DataUsageView(
+                            subscriberUuid: subscriberId,
+                            entity: ActivePackagesDetailsEntity(
+                              packageId: pkg.packageId,
+                              activeAddOns: [],
+                              activeUntil: pkg.activeUntil,
+                              availableVolumeGb: pkg.availableVolumeGb,
+                              daysLeft: pkg.daysLeft,
+                              packageName: pkg.packageName,
+                              packageType: pkg.packageType,
+                              renewalFee: pkg.renewalFee,
+                              speedMbps: pkg.speedMbps,
+                              totalPackageCount: pkg.totalPackageCount,
+                              totalVolumeGb: pkg.totalVolumeGb,
                             ),
                           ),
+                        ),
+                      ),
                     ),
                   ),
                 ],
@@ -473,30 +481,27 @@ class _Stat extends StatelessWidget {
 
   const _Stat({required this.label, required this.value});
 
+  static final _labelStyle = TextStyle(
+    color: AppColor.kTextFiledHintColor,
+    fontSize: 10.sp,
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w500,
+  );
+  static final _valueStyle = TextStyle(
+    fontSize: 11.sp,
+    color: AppColor.kBlackHeadingColor,
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w500,
+  );
+
   @override
   Widget build(BuildContext context) {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            color: AppColor.kTextFiledHintColor,
-            fontSize: 10.sp,
-            fontFamily: 'General Sans',
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        Text(label, style: _labelStyle),
         const SizedBox(height: 2),
-        Text(
-          value,
-          style: TextStyle(
-            fontSize: 11.sp,
-            color: AppColor.kBlackHeadingColor,
-            fontFamily: 'General Sans',
-            fontWeight: FontWeight.w500,
-          ),
-        ),
+        Text(value, style: _valueStyle),
       ],
     );
   }
@@ -504,91 +509,114 @@ class _Stat extends StatelessWidget {
 
 // ─── Quick Actions ───────────────────────────────────────────────────────────
 
-class _QuickActions extends StatelessWidget {
+class _ActionItem {
+  final String label;
+  final Color color;
+  final String icon;
+  final VoidCallback onTap;
+
+  const _ActionItem({
+    required this.label,
+    required this.color,
+    required this.icon,
+    required this.onTap,
+  });
+}
+
+class _QuickActions extends StatefulWidget {
   final VoidCallback onRechargeTap;
   final VoidCallback onTransactionsTap;
   final VoidCallback onInvoiceTap;
 
   const _QuickActions({
-    super.key,
     required this.onRechargeTap,
     required this.onTransactionsTap,
     required this.onInvoiceTap,
   });
 
-  List<Map<String, dynamic>> get _actions => [
-    {
-      'label': 'Recharge',
-      'color': kTeal,
-      'icon': 'recharge_icon.svg',
-      'onTap': onRechargeTap,
-    },
-    {
-      'label': 'Transactions',
-      'color': kOrange,
-      'icon': 'money_icon.svg',
-      'onTap': onTransactionsTap,
-    },
-    {
-      'label': 'Invoice',
-      'color': kRed,
-      'icon': 'invoice_icon.svg',
-      'onTap': onInvoiceTap,
-    },
-  ];
+  @override
+  State<_QuickActions> createState() => _QuickActionsState();
+}
+
+class _QuickActionsState extends State<_QuickActions> {
+  late List<_ActionItem> _actions;
+
+  // Precomputed — shared across all action items.
+  static const _actionRadius = BorderRadius.all(Radius.circular(16));
+  static final _actionLabelStyle = TextStyle(
+    color: Colors.white,
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w500,
+    fontSize: 12.sp,
+  );
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final l10n = context.bssSubL10n;
+    _actions = [
+      _ActionItem(
+        label: l10n.recharge,
+        color: _kTeal,
+        icon: 'recharge_icon.svg',
+        onTap: widget.onRechargeTap,
+      ),
+      _ActionItem(
+        label: l10n.transactions,
+        color: _kOrange,
+        icon: 'money_icon.svg',
+        onTap: widget.onTransactionsTap,
+      ),
+      _ActionItem(
+        label: l10n.invoice,
+        color: _kRed,
+        icon: 'invoice_icon.svg',
+        onTap: widget.onInvoiceTap,
+      ),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
-        children:
-            _actions
-                .map(
-                  (a) => Expanded(
-                    child: GestureDetector(
-                      onTap: a['onTap'] as VoidCallback,
-                      child: Container(
-                        margin: EdgeInsets.symmetric(horizontal: 4),
-                        height: 110.h,
-                        decoration: BoxDecoration(
-                          color: a['color'] as Color,
-                          borderRadius: BorderRadius.circular(16),
+        children: _actions
+            .map(
+              (a) => Expanded(
+                child: GestureDetector(
+                  onTap: a.onTap,
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 4),
+                    height: 110.h,
+                    decoration: BoxDecoration(
+                      color: a.color,
+                      borderRadius: _actionRadius,
+                    ),
+                    child: Column(
+                      mainAxisAlignment: MainAxisAlignment.center,
+                      children: [
+                        Container(
+                          width: 46.h,
+                          height: 46.h,
+                          decoration: const BoxDecoration(
+                            color: Colors.white,
+                            shape: BoxShape.circle,
+                          ),
+                          child: Padding(
+                            padding: const EdgeInsets.all(10.0),
+                            child: SvgPicture.asset('assets/icons/${a.icon}'),
+                          ),
                         ),
-                        child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          children: [
-                            Container(
-                              width: 46.h,
-                              height: 46.h,
-                              decoration: BoxDecoration(
-                                color: Colors.white,
-                                shape: BoxShape.circle,
-                              ),
-                              child: Padding(
-                                padding: const EdgeInsets.all(10.0),
-                                child: SvgPicture.asset(
-                                  'assets/icons/${a['icon']}',
-                                ),
-                              ),
-                            ),
-                            const SizedBox(height: 10),
-                            Text(
-                              a['label'] as String,
-                              style: TextStyle(
-                                color: Colors.white,
-                                fontFamily: 'General Sans',
-                                fontWeight: FontWeight.w500,
-                                fontSize: 12.sp,
-                              ),
-                            ),
-                          ],
-                        ),
-                      ),
+                        const SizedBox(height: 10),
+                        Text(a.label, style: _actionLabelStyle),
+                      ],
                     ),
                   ),
-                )
-                .toList(),
+                ),
+              ),
+            )
+            .toList(),
       ),
     );
   }
@@ -607,6 +635,17 @@ class _PlanChangeSection extends StatelessWidget {
     required this.plans,
   });
 
+  static final _headingStyle = TextStyle(
+    fontSize: 16.sp,
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w600,
+    color: AppColor.kBlackHeadingColor,
+  );
+  static final _seeAllStyle = TextStyle(
+    color: AppColor.kPrimaryColor,
+    fontSize: 13.sp,
+  );
+
   @override
   Widget build(BuildContext context) {
     return Column(
@@ -617,37 +656,21 @@ class _PlanChangeSection extends StatelessWidget {
           child: Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
-              Text(
-                'Plan Change',
-                style: TextStyle(
-                  fontSize: 16.sp,
-                  fontFamily: 'General Sans',
-                  fontWeight: FontWeight.w600,
-                  color: AppColor.kBlackHeadingColor,
-                ),
-              ),
+              Text(context.bssSubL10n.planChange, style: _headingStyle),
               TextButton(
-                onPressed:
-                    () => Navigator.push(
-                      context,
-                      MaterialPageRoute<void>(
-                        builder:
-                            (_) => ChangePlanPage(
-                              subscriberUuid: subscriberUuid,
-                              currentPackageId: currentPackageId,
-                            ),
-                      ),
+                onPressed: () => Navigator.push(
+                  context,
+                  MaterialPageRoute<void>(
+                    builder: (_) => ChangePlanPage(
+                      subscriberUuid: subscriberUuid,
+                      currentPackageId: currentPackageId,
                     ),
+                  ),
+                ),
                 child: Row(
                   children: [
-                    Text(
-                      'See all',
-                      style: TextStyle(
-                        color: AppColor.kPrimaryColor,
-                        fontSize: 13.sp,
-                      ),
-                    ),
-                    Icon(
+                    Text(context.bssSubL10n.seeAll, style: _seeAllStyle),
+                    const Icon(
                       Icons.arrow_forward,
                       size: 16,
                       color: AppColor.kPrimaryColor,
@@ -659,19 +682,12 @@ class _PlanChangeSection extends StatelessWidget {
           ),
         ),
         const SizedBox(height: 8),
-        if (plans.isNotEmpty)
-          ListView.builder(
-            physics: const NeverScrollableScrollPhysics(),
-            shrinkWrap: true,
-            itemCount: plans.length,
-            itemBuilder: (context, index) {
-              return _PlanCard(
-                plan: plans[index],
-                subscriberUuid: subscriberUuid,
-                currentPackageId: currentPackageId,
-              );
-            },
-          ),
+        Column(
+          children: [
+            for (final plan in plans)
+              _PlanCard(key: ValueKey(plan.packageId), plan: plan),
+          ],
+        ),
       ],
     );
   }
@@ -681,27 +697,41 @@ class _PlanChangeSection extends StatelessWidget {
 
 class _PlanCard extends StatelessWidget {
   final PackageEntity plan;
-  final String subscriberUuid;
-  final String currentPackageId;
 
-  const _PlanCard({
-    required this.plan,
-    required this.subscriberUuid,
-    required this.currentPackageId,
-  });
+  const _PlanCard({super.key, required this.plan});
+
+  static const _avatarBg = Color(0x1A005F73); // kPrimaryColor @ 10% opacity
+  static const _cardDecoration = BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.all(Radius.circular(16)),
+    boxShadow: [
+      BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
+    ],
+  );
+  // kPrimaryColor is const → this decoration is also const.
+  static const _priceDecoration = BoxDecoration(
+    color: AppColor.kPrimaryColor,
+    borderRadius: BorderRadius.all(Radius.circular(8)),
+  );
+  static final _packageNameStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w600,
+    height: 1.3,
+    fontSize: 14.sp,
+    color: AppColor.kBlackHeadingColor,
+  );
+  static final _priceStyle = TextStyle(
+    color: Colors.white,
+    fontWeight: FontWeight.bold,
+    fontSize: 14.sp,
+  );
 
   @override
   Widget build(BuildContext context) {
     return Container(
       margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 6),
       padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
-        ],
-      ),
+      decoration: _cardDecoration,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -709,43 +739,38 @@ class _PlanCard extends StatelessWidget {
             children: [
               CircleAvatar(
                 radius: 18,
-                backgroundColor: AppColor.kPrimaryColor.withOpacity(0.1),
-                child: Icon(
+                backgroundColor: _avatarBg,
+                child: const Icon(
                   Icons.language,
                   color: AppColor.kPrimaryColor,
                   size: 18,
                 ),
               ),
               const SizedBox(width: 10),
-              Text(
-                plan.packageName,
-                style: TextStyle(
-                  fontFamily: 'General Sans',
-                  fontWeight: FontWeight.w600,
-                  height: 1.3,
-                  fontSize: 14.sp,
-                  color: AppColor.kBlackHeadingColor,
-                ),
-              ),
+              Text(plan.packageName, style: _packageNameStyle),
             ],
           ),
           const SizedBox(height: 12),
           Container(
             height: 55.h,
-            padding: EdgeInsets.all(8),
-            decoration: ShapeDecoration(
-              color: const Color(0xFFF5F5F5),
+            padding: const EdgeInsets.all(8),
+            decoration: const ShapeDecoration(
+              color: AppColor.kSecondaryBackgroundColor,
               shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(11),
+                borderRadius: BorderRadius.all(Radius.circular(11)),
               ),
             ),
             child: Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
-                _Stat(label: 'Data', value: '${plan.data} GB'),
-                _Stat(label: 'Speed', value: plan.speed),
-                _Stat(label: 'FPU', value: plan.planType),
-                _Stat(label: 'Validity', value: '${plan.validity} Days'),
+                _Stat(
+                    label: context.bssSubL10n.data,
+                    value: '${plan.data} GB'),
+                _Stat(label: context.bssSubL10n.speed, value: plan.speed),
+                _Stat(label: context.bssSubL10n.fpu, value: plan.planType),
+                _Stat(
+                    label: context.bssSubL10n.validity,
+                    value: '${plan.validity} Days'),
               ],
             ),
           ),
@@ -754,59 +779,29 @@ class _PlanCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-                decoration: BoxDecoration(
-                  color: AppColor.kPrimaryColor,
-                  borderRadius: BorderRadius.circular(8),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 8,
                 ),
-                child: Text(
-                  '₹ ${plan.price}',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontWeight: FontWeight.bold,
-                    fontSize: 14.sp,
-                  ),
-                ),
+                decoration: _priceDecoration,
+                child: Text('₹ ${plan.price}', style: _priceStyle),
               ),
               SizedBox(
                 height: 32.h,
                 width: 145.w,
                 child: SecondaryButton(
-                  label: 'Choose Plan',
-                  onClicked: () {
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute<void>(
-                        builder:
-                            (_) => BlocProvider.value(
-                              value: ChangePlanBloc(
-                                repository: sl<ChangePlanRepository>(),
-                              ),
-                              child: RechargePage(
-                                package: PackageEntity(
-                                  packageId: plan.packageId,
-                                  packageName: plan.packageName,
-                                  price: plan.price,
-                                  speed: plan.speed,
-                                  data: plan.data,
-                                  validity: plan.validity,
-                                  planType: plan.planType,
-                                ),
-                              ),
-                            ),
+                  label: context.bssSubL10n.choosePlan,
+                  onClicked: () => Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (_) => BlocProvider(
+                        create: (_) => ChangePlanBloc(
+                          repository: sl<ChangePlanRepository>(),
+                        ),
+                        child: RechargePage(package: plan),
                       ),
-                    );
-                  },
-                  // () => Navigator.push(
-                  //   context,
-                  //   MaterialPageRoute<void>(
-                  //     builder:
-                  //         (_) => ChangePlanPage(
-                  //           subscriberUuid: subscriberUuid,
-                  //           currentPackageId: currentPackageId,
-                  //         ),
-                  //   ),
-                  // ),
+                    ),
+                  ),
                 ),
               ),
             ],
@@ -819,18 +814,44 @@ class _PlanCard extends StatelessWidget {
 
 // ─── Services Section ─────────────────────────────────────────────────────────
 
-class _ServicesSection extends StatelessWidget {
-  final _services = const [
-    {'title': 'Fiber to Home\n(FTTH)', 'icon': 'thunder.svg'},
-    {
-      'title': 'Internet Leased\nline (IIL)',
-      'icon': 'internet_leased_line.svg',
-    },
-    {'title': 'Dark Fiber for\nLeased (DFL)', 'icon': 'dark_fiber.svg'},
-    {'title': 'Co-Location', 'icon': 'ip_location.svg'},
-    {'title': 'WiFi Services', 'icon': 'wifi.svg'},
-    {'title': 'Over-the-Top\n(OTT)', 'icon': 'ott.svg'},
-  ];
+class _ServiceItem {
+  final String title;
+  final String icon;
+
+  const _ServiceItem({required this.title, required this.icon});
+}
+
+class _ServicesSection extends StatefulWidget {
+  const _ServicesSection();
+
+  @override
+  State<_ServicesSection> createState() => _ServicesSectionState();
+}
+
+class _ServicesSectionState extends State<_ServicesSection> {
+  late List<_ServiceItem> _services;
+
+  static final _headingStyle = TextStyle(
+    fontSize: 16.sp,
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w600,
+    height: 1.3,
+    color: AppColor.kBlackHeadingColor,
+  );
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    final l10n = context.bssSubL10n;
+    _services = [
+      _ServiceItem(title: l10n.fiberToHome, icon: 'thunder.svg'),
+      _ServiceItem(title: l10n.internetLeasedLine, icon: 'internet_leased_line.svg'),
+      _ServiceItem(title: l10n.darkFiber, icon: 'dark_fiber.svg'),
+      _ServiceItem(title: l10n.coLocation, icon: 'ip_location.svg'),
+      _ServiceItem(title: l10n.wifiServices, icon: 'wifi.svg'),
+      _ServiceItem(title: l10n.ott, icon: 'ott.svg'),
+    ];
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -840,14 +861,8 @@ class _ServicesSection extends StatelessWidget {
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: Text(
-            'Services Offered',
-            style: TextStyle(
-              fontSize: 16.sp,
-              fontFamily: 'General Sans',
-              fontWeight: FontWeight.w600,
-              height: 1.3,
-              color: AppColor.kBlackHeadingColor,
-            ),
+            context.bssSubL10n.servicesOffered,
+            style: _headingStyle,
           ),
         ),
         const SizedBox(height: 12),
@@ -855,19 +870,18 @@ class _ServicesSection extends StatelessWidget {
           padding: const EdgeInsets.symmetric(horizontal: 16),
           child: GridView.builder(
             shrinkWrap: true,
-            physics: NeverScrollableScrollPhysics(),
-            gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
+            physics: const NeverScrollableScrollPhysics(),
+            gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
               crossAxisCount: 2,
               crossAxisSpacing: 12,
               mainAxisSpacing: 12,
               childAspectRatio: 1.4,
             ),
             itemCount: _services.length,
-            itemBuilder:
-                (_, i) => _ServiceCard(
-                  title: _services[i]['title'] as String,
-                  icon: _services[i]['icon'] as String,
-                ),
+            itemBuilder: (_, i) => _ServiceCard(
+              title: _services[i].title,
+              icon: _services[i].icon,
+            ),
           ),
         ),
       ],
@@ -883,36 +897,36 @@ class _ServiceCard extends StatelessWidget {
 
   const _ServiceCard({required this.title, required this.icon});
 
+  static const _decoration = BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.all(Radius.circular(14)),
+    boxShadow: [
+      BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
+    ],
+  );
+  static final _titleStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w500,
+    height: 1.5,
+    fontSize: 14.sp,
+    color: AppColor.kBlackHeadingColor,
+  );
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.all(14),
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(14),
-        boxShadow: [
-          BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
-        ],
-      ),
+      padding: const EdgeInsets.all(14),
+      decoration: _decoration,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontFamily: 'General Sans',
-              fontWeight: FontWeight.w500,
-              height: 1.5,
-              fontSize: 14.sp,
-              color: AppColor.kBlackHeadingColor,
-            ),
-          ),
-          Spacer(),
+          Text(title, style: _titleStyle),
+          const Spacer(),
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               SvgPicture.asset('assets/icons/$icon', height: 34.h, width: 34.w),
-              Icon(
+              const Icon(
                 Icons.arrow_forward,
                 color: AppColor.kTextFiledHintColor,
                 size: 18,

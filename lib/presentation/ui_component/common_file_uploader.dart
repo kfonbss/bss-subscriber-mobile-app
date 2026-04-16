@@ -153,7 +153,7 @@ class _CommonFileUploaderState extends State<CommonFileUploader> {
                                           constraints: BoxConstraints(),
                                           icon: Icon(Icons.cancel),
                                           iconSize: 20.0,
-                                          color: Colors.red,
+                                          color: AppColor.kFailedRed,
                                           onPressed: () {
                                             widget.selectedFiles.removeAt(index);
                                             _fileListCountNotifier.value =

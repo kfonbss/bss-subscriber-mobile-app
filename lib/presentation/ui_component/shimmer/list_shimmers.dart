@@ -1,5 +1,6 @@
-import 'package:kfon_subscriber/presentation/ui_component/shimmer/shimmer_box.dart';
 import 'package:flutter/material.dart';
+import 'package:kfon_subscriber/presentation/ui_component/shimmer/shimmer_base.dart';
+import 'package:kfon_subscriber/presentation/ui_component/shimmer/shimmer_box.dart';
 
 class ListShimmer extends StatelessWidget {
   final int itemCount;
@@ -21,19 +22,23 @@ class ListShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return ListView.separated(
-      padding: padding,
-      physics: const NeverScrollableScrollPhysics(),
-      shrinkWrap: true,
-      itemCount: itemCount,
-      separatorBuilder: (context, index) => SizedBox(height: separatorHeight),
-      itemBuilder: (context, index) {
-        return ShimmerBox(
-          height: itemHeight,
-          width: itemWidth ?? double.infinity,
-          borderRadius: itemBorderRadius,
-        );
-      },
+    return AppShimmer(
+      child: Padding(
+        padding: padding,
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            for (int i = 0; i < itemCount; i++) ...[
+              ShimmerBox(
+                height: itemHeight,
+                width: itemWidth ?? double.infinity,
+                borderRadius: itemBorderRadius,
+              ),
+              if (i < itemCount - 1) SizedBox(height: separatorHeight),
+            ],
+          ],
+        ),
+      ),
     );
   }
 }

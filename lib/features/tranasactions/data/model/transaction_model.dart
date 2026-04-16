@@ -13,6 +13,7 @@ class TransactionModel {
   final String paidBy;
   final String paymentGateway;
   final String responseMessage;
+  final String invoiceUrl;
 
   const TransactionModel({
     required this.transactionId,
@@ -26,6 +27,7 @@ class TransactionModel {
     required this.paidBy,
     required this.paymentGateway,
     required this.responseMessage,
+    required this.invoiceUrl,
   });
 
   factory TransactionModel.fromJson(Map<String, dynamic> json) {
@@ -42,6 +44,7 @@ class TransactionModel {
       paidBy: json['paidBy']?.toString() ?? '',
       paymentGateway: json['paymentGateway']?.toString() ?? '',
       responseMessage: json['responseMessage']?.toString() ?? '',
+      invoiceUrl: json['invoiceUrl']?.toString() ?? '',
     );
   }
 
@@ -58,6 +61,7 @@ class TransactionModel {
       paidBy: paidBy,
       paymentGateway: paymentGateway,
       responseMessage: responseMessage,
+      invoiceUrl: invoiceUrl,
     );
   }
 }

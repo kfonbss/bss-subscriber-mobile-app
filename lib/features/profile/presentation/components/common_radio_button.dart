@@ -52,7 +52,7 @@ class CommonRadioButton extends StatelessWidget {
             decoration: BoxDecoration(
               shape: BoxShape.circle,
               border: Border.all(
-                color: const Color(0xFF67697A),
+                color: AppColor.kSlateGrey,
                 width: 1,
               ),
             ),

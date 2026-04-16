@@ -3,7 +3,9 @@ part of '../pages/data_usage_view.dart';
 class SessionCard extends StatelessWidget {
   final SessionEntity? session;
 
-  const SessionCard({required this.session});
+  const SessionCard({super.key, required this.session});
+
+  static final _dateFormat = DateFormat('dd-MM-yyyy HH:mm:ss');
 
   @override
   Widget build(BuildContext context) {
@@ -11,7 +13,11 @@ class SessionCard extends StatelessWidget {
       return const SizedBox.shrink();
     }
     final theme = Theme.of(context);
-    final dateFormat = DateFormat('dd-MM-yyyy HH:mm:ss');
+    final s = session!;
+    final l10n = context.bssSubL10n;
+    final labelStyle = theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w400);
+    final valueStyle = theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500);
+    final sectionStyle = theme.textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600);
 
     return Container(
       width: double.infinity,
@@ -20,78 +26,44 @@ class SessionCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Text(
-            'Session Information',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          Text(l10n.sessionInformation, style: sectionStyle),
           const SizedBox(height: 10),
-          _infoRow('Start Time', dateFormat.format(session!.startTime), theme),
+          _infoRow(l10n.startTime, _dateFormat.format(s.startTime), labelStyle, valueStyle),
           _infoRow(
-            'End Time',
-            session!.endTime != null
-                ? dateFormat.format(session!.endTime!)
-                : 'Ongoing',
-            theme,
+            l10n.endTime,
+            s.endTime != null ? _dateFormat.format(s.endTime!) : l10n.ongoing,
+            labelStyle,
+            valueStyle,
           ),
-          _infoRow('Duration', session!.sessionDuration, theme),
+          _infoRow(l10n.duration, s.sessionDuration, labelStyle, valueStyle),
           const SizedBox(height: 16),
 
-          Text(
-            'Data Usage',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          Text(l10n.dataUsage, style: sectionStyle),
           const SizedBox(height: 10),
-          _infoRow('Upload', '${session!.uploadMb} MB', theme),
-          _infoRow('Download', '${session!.downloadMb} MB', theme),
-          _infoRow('Total', '${session!.totalMb} MB', theme),
+          _infoRow(l10n.upload, l10n.valueInMb(s.uploadMb.toString()), labelStyle, valueStyle),
+          _infoRow(l10n.download, l10n.valueInMb(s.downloadMb.toString()), labelStyle, valueStyle),
+          _infoRow(l10n.total, l10n.valueInMb(s.totalMb.toString()), labelStyle, valueStyle),
           const SizedBox(height: 16),
 
-          Text(
-            'Network Details',
-            style: theme.textTheme.titleMedium?.copyWith(
-              fontWeight: FontWeight.w600,
-            ),
-          ),
+          Text(l10n.networkDetails, style: sectionStyle),
           const SizedBox(height: 10),
-          _infoRow('MAC', session!.networkDetails.mac, theme),
-          _infoRow('Framed-IP', session!.networkDetails.framedIp, theme),
-          _infoRow(
-            'Framed-IPv6 Prefix',
-            session!.networkDetails.framedIpv6Prefix,
-            theme,
-          ),
-          _infoRow(
-            'Framed-IPv6 Delegated',
-            session!.networkDetails.framedIpv6Delegated,
-            theme,
-          ),
+          _infoRow(l10n.mac, s.networkDetails.mac, labelStyle, valueStyle),
+          _infoRow(l10n.framedIp, s.networkDetails.framedIp, labelStyle, valueStyle),
+          _infoRow(l10n.framedIpv6Prefix, s.networkDetails.framedIpv6Prefix, labelStyle, valueStyle),
+          _infoRow(l10n.framedIpv6Delegated, s.networkDetails.framedIpv6Delegated, labelStyle, valueStyle),
         ],
       ),
     );
   }
 
-  Widget _infoRow(String label, String value, ThemeData theme) {
+  Widget _infoRow(String label, String value, TextStyle? labelStyle, TextStyle? valueStyle) {
     return Padding(
       padding: const EdgeInsets.only(bottom: 8),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
-          Text(
-            label,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w400,
-            ),
-          ),
-          Text(
-            value,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              fontWeight: FontWeight.w500,
-            ),
-          ),
+          Text(label, style: labelStyle),
+          Text(value, style: valueStyle),
         ],
       ),
     );

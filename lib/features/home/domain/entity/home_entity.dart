@@ -35,7 +35,7 @@ class PackageDetailsEntity extends Equatable {
   final double renewalFee;
   final int totalPackageCount;
   final double availableVolumeGb;
-  final double totalVolumeGb;
+  final int totalVolumeGb;
   final List<ActiveAdOnEntity> activeAddOns;
 
   const PackageDetailsEntity({

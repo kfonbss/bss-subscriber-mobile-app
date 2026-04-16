@@ -76,9 +76,7 @@ class AGNPFormCubit extends Cubit<AGNPFormState> {
     }
   }
 
-  Future<void> showCompanyInformationForm() async =>
-      emit(ShowCompanyInformationForm());
+  void showCompanyInformationForm() => emit(ShowCompanyInformationForm());
 
-  Future<void> showGeographicInformationForm() async =>
-      emit(ShowGeographicInformationForm());
+  void showGeographicInformationForm() => emit(ShowGeographicInformationForm());
 }

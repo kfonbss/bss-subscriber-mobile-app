@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/presentation/ui_component/white_button.dart';
 
 class IntroScreenLayout extends StatelessWidget {
@@ -22,6 +23,8 @@ class IntroScreenLayout extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.bssSubL10n;
+
     return Padding(
       padding: const EdgeInsets.all(20.0),
       child: Column(
@@ -53,7 +56,7 @@ class IntroScreenLayout extends StatelessWidget {
                         width: 24.w,
                       ),
                       Text(
-                        'Introducing KFON app',
+                        l10n.introducingKfonApp,
                         style: TextStyle(
                           fontFamily: 'GeneralSans',
                           fontWeight: FontWeight.w400,
@@ -91,27 +94,21 @@ class IntroScreenLayout extends StatelessWidget {
                 children: [
                   Expanded(
                     child: FilledButton(
-                      onPressed:
-                          () => Navigator.pushReplacementNamed(
-                            context,
-                            AppRoutes.login,
-                          ),
+                      onPressed: () => Navigator.pushReplacementNamed(
+                        context,
+                        AppRoutes.login,
+                      ),
                       style: FilledButton.styleFrom(
                         elevation: 0,
-                        minimumSize: Size(double.infinity, 50),
-                        fixedSize: Size(double.infinity, 50),
-                        backgroundColor: const Color.fromRGBO(
-                          255,
-                          255,
-                          255,
-                          0.2,
-                        ),
+                        minimumSize: const Size(double.infinity, 50),
+                        fixedSize: const Size(double.infinity, 50),
+                        backgroundColor: const Color.fromRGBO(255, 255, 255, 0.2),
                         foregroundColor: Colors.white,
                         padding: EdgeInsets.zero,
                       ),
                       child: Text(
-                        'Sign In',
-                        style: TextStyle(
+                        l10n.signIn,
+                        style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
                         ),
@@ -120,7 +117,7 @@ class IntroScreenLayout extends StatelessWidget {
                   ),
                   Expanded(
                     child: WhiteButton(
-                      label: index == 2 ? 'Get Started' : 'Next',
+                      label: index == 2 ? l10n.getStarted : l10n.next,
                       borderRadius: 50,
                       isLoading: false,
                       onClicked: nextButtonCallback,

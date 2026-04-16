@@ -19,7 +19,7 @@ class AttachmentUploadField extends StatelessWidget {
   static const _kLabelStyle = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w600,
-    color: Color(0xFF0F1121),
+    color: AppColor.kTextSecondaryDark,
     height: 1.3,
     fontFamily: 'GeneralSans',
   );
@@ -141,5 +141,10 @@ class DashedBorderPainter extends CustomPainter {
   }
 
   @override
-  bool shouldRepaint(covariant CustomPainter oldDelegate) => false;
+  bool shouldRepaint(covariant DashedBorderPainter oldDelegate) =>
+      oldDelegate.color != color ||
+      oldDelegate.strokeWidth != strokeWidth ||
+      oldDelegate.dashWidth != dashWidth ||
+      oldDelegate.dashSpace != dashSpace ||
+      oldDelegate.borderRadius != borderRadius;
 }

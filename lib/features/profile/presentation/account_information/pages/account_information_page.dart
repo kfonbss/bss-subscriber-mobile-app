@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/profile/domain/entity/account_information_entity.dart';
@@ -6,6 +7,7 @@ import 'package:kfon_subscriber/features/profile/domain/repository/profile_repos
 import 'package:kfon_subscriber/features/profile/presentation/account_information/bloc/account_information_bloc.dart';
 import 'package:kfon_subscriber/features/profile/presentation/account_information/bloc/account_information_event.dart';
 import 'package:kfon_subscriber/features/profile/presentation/account_information/bloc/account_information_state.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 
@@ -17,8 +19,8 @@ class AccountInformationPage extends StatelessWidget {
     return BlocProvider(
       create:
           (_) =>
-              AccountInformationBloc(repository: sl<ProfileRepository>())
-                ..add(const FetchAccountInformationRequested()),
+      AccountInformationBloc(repository: sl<ProfileRepository>())
+        ..add(const FetchAccountInformationRequested()),
       child: const _AccountInformationView(),
     );
   }
@@ -27,86 +29,28 @@ class AccountInformationPage extends StatelessWidget {
 class _AccountInformationView extends StatelessWidget {
   const _AccountInformationView();
 
-  static final TextStyle _dataTextStyle = TextStyle(
-    fontFamily: 'General Sans',
-    fontSize: 14.sp,
-    color: const Color(0xFF0F1121),
-    fontWeight: FontWeight.w500,
-  );
-
-  static final TextStyle _labelStyle = TextStyle(
-    fontFamily: 'General Sans',
-    fontSize: 14.sp,
-    color: const Color(0xFF0F1121),
-    fontWeight: FontWeight.w400,
-  );
-
-  Widget _buildDetailsItem(String heading, Map<String, dynamic> data) {
-    return Card(
-      margin: EdgeInsets.only(bottom: 20),
-      color: Colors.white,
-      child: Padding(
-        padding: EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 20,
-          children: [
-            Text(
-              heading,
-              style: TextStyle(
-                fontFamily: 'General Sans',
-                fontWeight: FontWeight.w600,
-                fontSize: 16.sp,
-                color: Colors.black,
-              ),
-            ),
-            Column(
-              children: List.generate(
-                data.length,
-                (index) => Padding(
-                  padding: EdgeInsets.all(8.w),
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    children: [
-                      Text(data.keys.elementAt(index), style: _labelStyle),
-                      data.values.elementAt(index) is String
-                          ? Flexible(
-                            child: Text(
-                              data.values.elementAt(index),
-                              style: _dataTextStyle,
-                              textAlign: TextAlign.end,
-                            ),
-                          )
-                          : data.values.elementAt(index),
-                    ],
-                  ),
-                ),
-              ),
-            ),
-          ],
-        ),
-      ),
-    );
-  }
-
-  Widget _buildContent(AccountInformationEntity info) {
+  // Static helper — does not use `this`, extracted so it is not an instance
+  // closure allocation on every rebuild.
+  static Widget _buildContent(BuildContext context, AccountInformationEntity info) {
+    final l10n = context.bssSubL10n;
     final personal = info.personalInfo;
     final account = info.accountInfo;
     final tax = info.taxInfo;
     final lnp = info.lnpInfo;
 
     return ListView(
-      padding: EdgeInsets.symmetric(horizontal: 20),
+      padding: const EdgeInsets.symmetric(horizontal: 20),
       children: [
-        _buildDetailsItem('Personal Information', {
-          'Subscriber ID': '#${personal.subscriberId}',
-          'Username': personal.username,
-          'Name': personal.name,
-          'Mobile No.': personal.mobileNo,
-          'Address': personal.address,
+        _DetailsCard(heading: l10n.personalInformation, data: {
+          l10n.subscriberId: '#${personal.subscriberId}',
+          l10n.username: personal.username,
+          l10n.name: personal.name,
+          l10n.mobileNo: personal.mobileNo,
+          l10n.email: lnp.lnpEmail,
+          l10n.address: personal.address,
         }),
-        _buildDetailsItem('Account Details', {
-          'KYC/ID Proof': Row(
+        _DetailsCard(heading: l10n.accountDetails, data: {
+          l10n.kycIdProof: Row(
             mainAxisSize: MainAxisSize.min,
             spacing: 4,
             children: [
@@ -118,15 +62,15 @@ class _AccountInformationView extends StatelessWidget {
                 ),
               Text(
                 account.kycStatus.isNotEmpty ? account.kycStatus : '-',
-                style: _dataTextStyle,
+                style: _DetailsCard._dataTextStyle,
               ),
             ],
           ),
-          'Subscription':
+          l10n.subscription:
               account.subscriptionName.isNotEmpty
                   ? account.subscriptionName
                   : '-',
-          'Status': Row(
+          l10n.status: Row(
             mainAxisSize: MainAxisSize.min,
             spacing: 3,
             children: [
@@ -134,29 +78,29 @@ class _AccountInformationView extends StatelessWidget {
                 radius: 6,
                 backgroundColor:
                     account.subscriptionStatus.toLowerCase() == 'active'
-                        ? Colors.green
-                        : Colors.grey,
+                        ? AppColor.kCompletedGreen
+                        : AppColor.kMediumGrey,
               ),
               Text(
                 account.subscriptionStatus.isNotEmpty
                     ? account.subscriptionStatus
                     : '-',
-                style: _dataTextStyle,
+                style: _DetailsCard._dataTextStyle,
               ),
             ],
           ),
-          'Online Status':
+          l10n.onlineStatus:
               account.onlineStatus.isNotEmpty ? account.onlineStatus : '-',
         }),
-        _buildDetailsItem('Tax Information', {
-          'PAN': tax.pan.isNotEmpty ? tax.pan : 'Not available',
-          'GST': tax.gst.isNotEmpty ? tax.gst : 'Not available',
+        _DetailsCard(heading: l10n.taxInformation, data: {
+          l10n.pan: tax.pan.isNotEmpty ? tax.pan : l10n.notAvailable,
+          l10n.gst: tax.gst.isNotEmpty ? tax.gst : l10n.notAvailable,
         }),
-        _buildDetailsItem('LNP Contact Details', {
-          'LNP Name': lnp.lnpName.isNotEmpty ? lnp.lnpName : '-',
-          'Email': lnp.lnpEmail.isNotEmpty ? lnp.lnpEmail : '-',
-          'Mobile No.': lnp.lnpMobile.isNotEmpty ? lnp.lnpMobile : '-',
-          'LNP Address': lnp.lnpAddress.isNotEmpty ? lnp.lnpAddress : '-',
+        _DetailsCard(heading: l10n.lnpContactDetails, data: {
+          l10n.email: lnp.lnpEmail.isNotEmpty ? lnp.lnpEmail : '-',
+          l10n.mobileNo: lnp.lnpMobile.isNotEmpty ? lnp.lnpMobile : '-',
+          l10n.lnpName: lnp.lnpName.isNotEmpty ? lnp.lnpName : '-',
+          l10n.lnpAddress: lnp.lnpAddress.isNotEmpty ? lnp.lnpAddress : '-',
         }),
       ],
     );
@@ -164,21 +108,20 @@ class _AccountInformationView extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.bssSubL10n;
+
     return CommonAppBar(
-      // actions: [
-      //   IconButton(
-      //     icon: Image.asset('assets/icons/edit.png', height: 20.h, width: 20.w),
-      //     onPressed: () {},
-      //   ),
-      // ],
       onBackPressed: () => Navigator.pop(context),
-      title: 'Account Information',
+      title: l10n.accountInformation,
       body: BlocBuilder<AccountInformationBloc, AccountInformationState>(
+        // Only rebuild when the state type changes — prevents spurious rebuilds
+        // if the same state is emitted again.
+        buildWhen: (prev, curr) => prev.runtimeType != curr.runtimeType,
         builder: (context, state) {
           if (state is AccountInformationLoading) {
             return const Center(child: CircularProgressIndicator());
           } else if (state is AccountInformationLoaded) {
-            return _buildContent(state.accountInformation);
+            return _buildContent(context, state.accountInformation);
           } else if (state is AccountInformationError) {
             return Center(
               child: Padding(
@@ -190,18 +133,17 @@ class _AccountInformationView extends StatelessWidget {
                       state.message,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontFamily: 'General Sans',
+                        fontFamily: 'GeneralSans',
                         fontSize: 14.sp,
-                        color: const Color(0xFF67697A),
+                        color: AppColor.kSlateGrey,
                       ),
                     ),
                     SizedBox(height: 16.h),
                     ElevatedButton(
-                      onPressed:
-                          () => context.read<AccountInformationBloc>().add(
-                            const FetchAccountInformationRequested(),
-                          ),
-                      child: const Text('Retry'),
+                      onPressed: () => context.read<AccountInformationBloc>().add(
+                        const FetchAccountInformationRequested(),
+                      ),
+                      child: Text(l10n.retry),
                     ),
                   ],
                 ),
@@ -210,6 +152,80 @@ class _AccountInformationView extends StatelessWidget {
           }
           return const SizedBox.shrink();
         },
+      ),
+    );
+  }
+}
+
+// ── Details card ──────────────────────────────────────────────────────────────
+// Extracted from the _buildDetailsItem instance helper so Flutter can track
+// each card's identity and skip rebuilds independently.
+class _DetailsCard extends StatelessWidget {
+  final String heading;
+  final Map<String, dynamic> data;
+
+  const _DetailsCard({required this.heading, required this.data});
+
+  // Sizer ratios are fixed after MaterialApp.builder — computed once as static final.
+  static final TextStyle _dataTextStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    fontSize: 14.sp,
+    color: AppColor.kTextSecondaryDark,
+    fontWeight: FontWeight.w500,
+  );
+  static final TextStyle _labelStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    fontSize: 14.sp,
+    color: AppColor.kTextSecondaryDark,
+    fontWeight: FontWeight.w400,
+  );
+  static final TextStyle _headingStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    fontWeight: FontWeight.w600,
+    fontSize: 16.sp,
+    color: Colors.black,
+  );
+  // EdgeInsets.all(8.w) uses Sizer — computed once as static final.
+  static final EdgeInsets _rowPadding = EdgeInsets.all(8.w);
+
+  @override
+  Widget build(BuildContext context) {
+    return Card(
+      margin: const EdgeInsets.only(bottom: 20),
+      color: Colors.white,
+      child: Padding(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          spacing: 20,
+          children: [
+            Text(heading, style: _headingStyle),
+            Column(
+              children: List.generate(
+                data.length,
+                (index) => Padding(
+                  padding: _rowPadding,
+                  child: Row(
+                    spacing: 20,
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    children: [
+                      Text(data.keys.elementAt(index), style: _labelStyle),
+                      data.values.elementAt(index) is String
+                          ? Flexible(
+                              child: Text(
+                                data.values.elementAt(index),
+                                style: _dataTextStyle,
+                                textAlign: TextAlign.end,
+                              ),
+                            )
+                          : data.values.elementAt(index),
+                    ],
+                  ),
+                ),
+              ),
+            ),
+          ],
+        ),
       ),
     );
   }

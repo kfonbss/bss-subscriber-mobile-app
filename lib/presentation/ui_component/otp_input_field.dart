@@ -20,6 +20,7 @@ class OtpInputField extends StatefulWidget {
 class _OtpInputFieldState extends State<OtpInputField> {
   late List<TextEditingController> _controllers;
   late List<FocusNode> _focusNodes;
+  late List<FocusNode> _keyboardListenerFocusNodes;
 
   @override
   void initState() {
@@ -29,6 +30,10 @@ class _OtpInputFieldState extends State<OtpInputField> {
       (index) => TextEditingController(),
     );
     _focusNodes = List.generate(widget.length, (index) => FocusNode());
+    _keyboardListenerFocusNodes = List.generate(
+      widget.length,
+      (index) => FocusNode(),
+    );
   }
 
   @override
@@ -37,6 +42,9 @@ class _OtpInputFieldState extends State<OtpInputField> {
       controller.dispose();
     }
     for (var focusNode in _focusNodes) {
+      focusNode.dispose();
+    }
+    for (var focusNode in _keyboardListenerFocusNodes) {
       focusNode.dispose();
     }
     super.dispose();
@@ -88,7 +96,7 @@ class _OtpInputFieldState extends State<OtpInputField> {
       children: List.generate(
         widget.length,
         (index) => KeyboardListener(
-          focusNode: FocusNode(),
+          focusNode: _keyboardListenerFocusNodes[index],
           onKeyEvent: (event) => _onKeyEvent(event, index),
           child: SizedBox(
             width: 48,

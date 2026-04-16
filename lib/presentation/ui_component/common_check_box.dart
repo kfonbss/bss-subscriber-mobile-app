@@ -42,7 +42,7 @@ class _CommonCheckBoxState extends State<CommonCheckBox>
               5.0,
             ), // Adjust the radius as needed
           ),
-          side: BorderSide(color: Colors.grey, width: 1.0),
+          side: const BorderSide(color: AppColor.kMediumGrey, width: 1.0),
           materialTapTargetSize: MaterialTapTargetSize.shrinkWrap,
           visualDensity: VisualDensity(horizontal: -4, vertical: -4),
           value: _isChecked,
@@ -68,6 +68,5 @@ class _CommonCheckBoxState extends State<CommonCheckBox>
   }
 
   @override
-  // TODO: implement wantKeepAlive
   bool get wantKeepAlive => true;
 }

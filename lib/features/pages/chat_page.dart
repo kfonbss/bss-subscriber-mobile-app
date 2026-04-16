@@ -3,10 +3,23 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
 
-class ChatPage extends StatelessWidget {
+class ChatPage extends StatefulWidget {
   final String pageHeading;
 
   const ChatPage({super.key, required this.pageHeading});
+
+  @override
+  State<ChatPage> createState() => _ChatPageState();
+}
+
+class _ChatPageState extends State<ChatPage> {
+  final TextEditingController _messageController = TextEditingController();
+
+  @override
+  void dispose() {
+    _messageController.dispose();
+    super.dispose();
+  }
 
   Widget _createChatWidget(String message, String name, bool isOwnMessage) {
     return Align(
@@ -46,7 +59,7 @@ class ChatPage extends StatelessWidget {
             Text(
               message,
               style: TextStyle(
-                color: isOwnMessage ? Colors.white : const Color(0xFF1F2024),
+                color: isOwnMessage ? Colors.white : AppColor.kCharcoalDark,
                 fontSize: 14,
                 fontWeight: FontWeight.w400,
                 height: 1.43,
@@ -62,7 +75,7 @@ class ChatPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return CommonAppBar(
       onBackPressed: () => Navigator.pop(context),
-      title: pageHeading,
+      title: widget.pageHeading,
       body: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -120,21 +133,21 @@ class ChatPage extends StatelessWidget {
                       children: [
                         Expanded(
                           child: TextField(
+                            controller: _messageController,
                             decoration: const InputDecoration(
                               border: InputBorder.none,
                               hintText: 'Enter a search term',
                               hintStyle: TextStyle(
-                                color: Color(0xFF1F2024),
+                                color: AppColor.kCharcoalDark,
                                 fontSize: 14,
                               ),
                               contentPadding: EdgeInsets.zero,
                               isDense: true,
                             ),
                             style: const TextStyle(
-                              color: Color(0xFF1F2024),
+                              color: AppColor.kCharcoalDark,
                               fontSize: 14,
                             ),
-                            controller: TextEditingController(),
                             onChanged: (text) {},
                             textAlignVertical: TextAlignVertical.center,
                           ),

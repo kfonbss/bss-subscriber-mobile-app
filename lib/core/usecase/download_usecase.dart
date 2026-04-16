@@ -1,6 +1,6 @@
-abstract class DownloadUseCase<Type, Param, OnReceiveProgress, CancelToken> {
-  Future<Type> call({
-    Param param,
+abstract class DownloadUseCase<R, Params, OnReceiveProgress, CancelToken> {
+  Future<R> call({
+    Params param,
     OnReceiveProgress onReceiveProgress,
     CancelToken cancelToken,
   });

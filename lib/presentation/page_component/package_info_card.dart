@@ -8,30 +8,45 @@ class PackageInfoCard extends StatelessWidget {
   final ActivePackagesDetailsEntity? entity;
   const PackageInfoCard({super.key, required this.entity});
 
+  // 0.05 × 255 = 12.75 → 13 = 0x0D
+  static const _cardDecoration = BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.all(Radius.circular(16)),
+    boxShadow: [
+      BoxShadow(
+        color: Color(0x0D000000),
+        blurRadius: 12,
+        offset: Offset(0, 4),
+      ),
+    ],
+  );
+
+  static const _speedRowDecoration = BoxDecoration(
+    color: AppColor.kSecondaryBackgroundColor,
+    borderRadius: BorderRadius.all(Radius.circular(16)),
+  );
+
+  static const _daysLeftDecoration = BoxDecoration(
+    color: AppColor.kDaysLeftYellow,
+    borderRadius: BorderRadius.all(Radius.circular(20)),
+  );
+
+  static const _packCountDecoration = BoxDecoration(
+    color: AppColor.kSecondaryBackgroundColor,
+    borderRadius: BorderRadius.all(Radius.circular(80)),
+  );
+
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withValues(alpha: 0.05),
-            blurRadius: 12,
-            offset: const Offset(0, 4),
-          ),
-        ],
-      ),
+      decoration: _cardDecoration,
       child: Padding(
         padding: EdgeInsets.fromLTRB(8.w, 8.h, 8.w, 8.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Container(
-              decoration: BoxDecoration(
-                color: AppColor.kSecondaryBackgroundColor,
-                borderRadius: BorderRadius.circular(16),
-              ),
+              decoration: _speedRowDecoration,
               padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
               child: Row(
                 children: [
@@ -58,10 +73,7 @@ class PackageInfoCard extends StatelessWidget {
                       horizontal: 14.w,
                       vertical: 6.h,
                     ),
-                    decoration: BoxDecoration(
-                      color: Color(0xFFFDE933),
-                      borderRadius: BorderRadius.circular(20),
-                    ),
+                    decoration: _daysLeftDecoration,
                     child: Text(
                       '${entity!.daysLeft} Days left',
                       style: TextStyle(
@@ -91,7 +103,7 @@ class PackageInfoCard extends StatelessWidget {
                           color: AppColor.kPrimaryColor,
                           shape: BoxShape.circle,
                         ),
-                        child: Icon(
+                        child: const Icon(
                           Icons.language_rounded,
                           color: Colors.white,
                         ),
@@ -129,10 +141,7 @@ class PackageInfoCard extends StatelessWidget {
                           horizontal: 12.w,
                           vertical: 5.h,
                         ),
-                        decoration: BoxDecoration(
-                          color: AppColor.kSecondaryBackgroundColor,
-                          borderRadius: BorderRadius.circular(80),
-                        ),
+                        decoration: _packCountDecoration,
                         child: Text(
                           '+ ${entity!.totalPackageCount} Pack',
                           style: TextStyle(
@@ -166,6 +175,17 @@ class _DataUsageBar extends StatelessWidget {
 
   const _DataUsageBar({required this.usedGB, required this.totalGB});
 
+  // Shared across ClipRRect and both inner BoxDecorations.
+  static const _barRadius = BorderRadius.all(Radius.circular(6));
+  static const _trackDecoration = BoxDecoration(
+    color: AppColor.kDividerGrey,
+    borderRadius: _barRadius,
+  );
+  static const _fillDecoration = BoxDecoration(
+    color: AppColor.kPrimaryColor,
+    borderRadius: _barRadius,
+  );
+
   @override
   Widget build(BuildContext context) {
     final availableGB = totalGB - usedGB;
@@ -175,25 +195,15 @@ class _DataUsageBar extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         ClipRRect(
-          borderRadius: BorderRadius.circular(6),
+          borderRadius: _barRadius,
           child: SizedBox(
             height: 6.h,
             child: Stack(
               children: [
-                Container(
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE5E7EB),
-                    borderRadius: BorderRadius.circular(6),
-                  ),
-                ),
+                Container(decoration: _trackDecoration),
                 FractionallySizedBox(
                   widthFactor: progress.clamp(0.0, 1.0),
-                  child: Container(
-                    decoration: BoxDecoration(
-                      color: AppColor.kPrimaryColor,
-                      borderRadius: BorderRadius.circular(6),
-                    ),
-                  ),
+                  child: Container(decoration: _fillDecoration),
                 ),
               ],
             ),

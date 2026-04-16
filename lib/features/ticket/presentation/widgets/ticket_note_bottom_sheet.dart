@@ -5,6 +5,7 @@ import 'package:kfon_subscriber/features/profile/presentation/components/common_
 import 'package:kfon_subscriber/features/ticket/presentation/bloc/ticket_bloc.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/bloc/ticket_event.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/bloc/ticket_state.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/presentation/ui_component/primary_button.dart';
 
 class TicketNoteBottomSheet extends StatefulWidget {
@@ -42,6 +43,8 @@ class _TicketNoteBottomSheetState extends State<TicketNoteBottomSheet> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.bssSubL10n;
+
     return Container(
       padding: EdgeInsets.fromLTRB(
         20,
@@ -55,9 +58,9 @@ class _TicketNoteBottomSheetState extends State<TicketNoteBottomSheet> {
         children: [
           // Header
           Center(
-            child: const Text(
-              'Add Note',
-              style: TextStyle(
+            child: Text(
+              l10n.addNote,
+              style: const TextStyle(
                 fontFamily: 'GeneralSans',
                 fontSize: 18,
                 fontWeight: FontWeight.w600,
@@ -68,9 +71,9 @@ class _TicketNoteBottomSheetState extends State<TicketNoteBottomSheet> {
           const SizedBox(height: 24),
 
           // Visibility Selection
-          const Text(
-            'Visibility Permission',
-            style: TextStyle(
+          Text(
+            l10n.visibilityPermission,
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: AppColor.kTextSecondaryDark,
@@ -99,38 +102,36 @@ class _TicketNoteBottomSheetState extends State<TicketNoteBottomSheet> {
                   _selectedVisibilityCode = visibilities.first.code;
                 }
                 return Row(
-                  children:
-                      visibilities.map((option) {
-                        final isSelected =
-                            _selectedVisibilityCode == option.code;
-                        return GestureDetector(
-                          onTap: () {
-                            setState(() {
-                              _selectedVisibilityCode = option.code;
-                            });
-                          },
-                          child: Container(
-                            margin: const EdgeInsets.only(right: 24),
-                            color: Colors.transparent,
-                            child: Row(
-                              mainAxisSize: MainAxisSize.min,
-                              children: [
-                                CommonRadioButton(isSelected: isSelected),
-                                const SizedBox(width: 8),
-                                Text(
-                                  option.name,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w400,
-                                    color: AppColor.kTextSecondary,
-                                    fontFamily: 'GeneralSans',
-                                  ),
-                                ),
-                              ],
+                  children: visibilities.map((option) {
+                    final isSelected = _selectedVisibilityCode == option.code;
+                    return GestureDetector(
+                      onTap: () {
+                        setState(() {
+                          _selectedVisibilityCode = option.code;
+                        });
+                      },
+                      child: Container(
+                        margin: const EdgeInsets.only(right: 24),
+                        color: Colors.transparent,
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            CommonRadioButton(isSelected: isSelected),
+                            const SizedBox(width: 8),
+                            Text(
+                              option.name,
+                              style: const TextStyle(
+                                fontSize: 14,
+                                fontWeight: FontWeight.w400,
+                                color: AppColor.kTextSecondary,
+                                fontFamily: 'GeneralSans',
+                              ),
                             ),
-                          ),
-                        );
-                      }).toList(),
+                          ],
+                        ),
+                      ),
+                    );
+                  }).toList(),
                 );
               } else if (state is OnError) {
                 return Padding(
@@ -143,7 +144,7 @@ class _TicketNoteBottomSheetState extends State<TicketNoteBottomSheet> {
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontSize: 12,
-                          color: Color(0xFFE53935),
+                          color: AppColor.kUrgentRed,
                           fontFamily: 'GeneralSans',
                         ),
                       ),
@@ -154,7 +155,7 @@ class _TicketNoteBottomSheetState extends State<TicketNoteBottomSheet> {
                             const LoadVisibilityPermissions(),
                           );
                         },
-                        child: const Text('Retry'),
+                        child: Text(l10n.retry),
                       ),
                     ],
                   ),
@@ -166,9 +167,9 @@ class _TicketNoteBottomSheetState extends State<TicketNoteBottomSheet> {
           const SizedBox(height: 24),
 
           // Note Input
-          const Text(
-            'Note',
-            style: TextStyle(
+          Text(
+            l10n.note,
+            style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w600,
               color: AppColor.kTextSecondaryDark,
@@ -180,7 +181,7 @@ class _TicketNoteBottomSheetState extends State<TicketNoteBottomSheet> {
             controller: _noteController,
             maxLines: 4,
             decoration: InputDecoration(
-              hintText: 'Enter your note here...',
+              hintText: l10n.enterYourNoteHere,
               hintStyle: const TextStyle(
                 color: AppColor.kTextSecondary,
                 fontSize: 14,
@@ -189,21 +190,21 @@ class _TicketNoteBottomSheetState extends State<TicketNoteBottomSheet> {
               ),
               border: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+                borderSide: const BorderSide(color: AppColor.kShimmerBase),
               ),
               enabledBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
-                borderSide: const BorderSide(color: Color(0xFFE0E0E0)),
+                borderSide: const BorderSide(color: AppColor.kShimmerBase),
               ),
               focusedBorder: OutlineInputBorder(
                 borderRadius: BorderRadius.circular(12),
                 borderSide: const BorderSide(color: AppColor.kPrimaryColor),
               ),
               errorText:
-                  _noteController.text.isNotEmpty &&
-                          _noteController.text.trim().length < 10
-                      ? 'Remarks must be at least 10 characters'
-                      : null,
+              _noteController.text.isNotEmpty &&
+                  _noteController.text.trim().length < 10
+                  ? l10n.remarksMustBeAtLeast10Characters
+                  : null,
               contentPadding: const EdgeInsets.all(16),
             ),
             style: const TextStyle(
@@ -216,20 +217,20 @@ class _TicketNoteBottomSheetState extends State<TicketNoteBottomSheet> {
 
           // Submit Button
           PrimaryButton(
-            label: 'Save Note',
+            label: l10n.saveNote,
             isLoading: false,
             borderRadius: 12,
             onClicked:
-                _noteController.text.trim().length < 10 ||
-                        _selectedVisibilityCode == null
-                    ? null
-                    : () {
-                      widget.onSave(
-                        _noteController.text.trim(),
-                        _selectedVisibilityCode!,
-                      );
-                      Navigator.pop(context);
-                    },
+            _noteController.text.trim().length < 10 ||
+                _selectedVisibilityCode == null
+                ? null
+                : () {
+              widget.onSave(
+                _noteController.text.trim(),
+                _selectedVisibilityCode!,
+              );
+              Navigator.pop(context);
+            },
           ),
         ],
       ),

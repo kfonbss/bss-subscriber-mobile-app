@@ -1,26 +1,28 @@
 import 'package:dartz/dartz.dart';
 import 'package:kfon_subscriber/core/constant/api_urls.dart';
 import 'package:kfon_subscriber/core/error/failure.dart';
-import 'package:kfon_subscriber/core/network/api_response.dart';
 import 'package:kfon_subscriber/core/network/dio_client.dart';
 import 'package:kfon_subscriber/features/change_plan/data/models/package_model.dart';
-import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entity.dart';
-import 'package:kfon_subscriber/features/change_plan/domain/params/change_plan_request_params.dart';
-import 'package:kfon_subscriber/features/change_plan/domain/params/recharge_change_plan_params.dart';
 import 'package:kfon_subscriber/features/change_plan/data/models/recharge_change_plan_response_model.dart';
 import 'package:kfon_subscriber/features/change_plan/data/models/recharge_payment_status_model.dart';
+import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/recharge_change_plan_redirect_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/recharge_payment_status_entity.dart';
+import 'package:kfon_subscriber/features/change_plan/domain/params/change_plan_request_params.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/params/get_all_packages_parms.dart';
+import 'package:kfon_subscriber/features/change_plan/domain/params/recharge_change_plan_params.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/repository/change_plan_repository.dart';
-import 'package:kfon_subscriber/service_locator.dart';
 
 class ChangePlanRepositoryImp extends ChangePlanRepository {
+  final DioClient _client;
+
+  ChangePlanRepositoryImp({required DioClient client}) : _client = client;
+
   @override
   Future<Either<Failure, List<PackageEntity>>> getPackages(
     GetAllPackagesParams params,
   ) async {
-    APIResponse response = await sl<DioClient>().get(
+    final response = await _client.get(
       ApiUrls.listPackagesURL,
       queryParameters: params.toJson(),
     );
@@ -47,7 +49,7 @@ class ChangePlanRepositoryImp extends ChangePlanRepository {
     String subscriberUuid,
     ChangePlanRequestParams params,
   ) async {
-    APIResponse response = await sl<DioClient>().patch(
+    final response = await _client.patch(
       ApiUrls.changePlanURL(subscriberUuid: subscriberUuid),
       data: params.toJson(),
     );
@@ -63,7 +65,7 @@ class ChangePlanRepositoryImp extends ChangePlanRepository {
   Future<Either<Failure, RechargeChangePlanResponseEntity>> rechargeChangePlan(
     RechargeChangePlanParams params,
   ) async {
-    APIResponse response = await sl<DioClient>().post(
+    final response = await _client.post(
       ApiUrls.rechargeChangePlanURL,
       data: params.toJson(),
     );
@@ -82,7 +84,7 @@ class ChangePlanRepositoryImp extends ChangePlanRepository {
   Future<Either<Failure, RechargePaymentStatusEntity>> getRechargePaymentStatus(
     String orderId,
   ) async {
-    APIResponse response = await sl<DioClient>().get(
+    final response = await _client.get(
       ApiUrls.rechargePaymentStatus(orderId: orderId),
     );
 

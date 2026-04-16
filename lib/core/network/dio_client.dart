@@ -1,5 +1,3 @@
-import 'dart:convert';
-
 import 'package:dio/dio.dart';
 import 'package:kfon_subscriber/core/constant/api_urls.dart';
 import 'package:kfon_subscriber/core/network/api_response.dart';
@@ -43,7 +41,6 @@ class DioClient {
       );
       return APIResponse.fromJson(response.data);
     } catch (e) {
-      //  rethrow;
       return APIResponse.fromError(e);
     }
   }
@@ -51,7 +48,7 @@ class DioClient {
   // POST METHOD
   Future<APIResponse> post(
     String url, {
-    data,
+    dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
     ProgressCallback? onSendProgress,
@@ -61,13 +58,13 @@ class DioClient {
       final Response response = await _dio.post(
         url,
         data: data,
+        queryParameters: queryParameters,
         options: options,
         onSendProgress: onSendProgress,
         onReceiveProgress: onReceiveProgress,
       );
       return APIResponse.fromJson(response.data);
     } catch (e) {
-      print('Remya: $e');
       return APIResponse.fromError(e);
     }
   }
@@ -94,15 +91,14 @@ class DioClient {
       );
       return APIResponse.fromJson(response.data);
     } catch (e) {
-      //  rethrow;
       return APIResponse.fromError(e);
     }
   }
 
   // DELETE METHOD
-  Future<dynamic> delete(
+  Future<APIResponse> delete(
     String url, {
-    data,
+    dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
     CancelToken? cancelToken,
@@ -115,16 +111,16 @@ class DioClient {
         options: options,
         cancelToken: cancelToken,
       );
-      return response.data;
+      return APIResponse.fromJson(response.data);
     } catch (e) {
-      rethrow;
+      return APIResponse.fromError(e);
     }
   }
 
   // PATCH METHOD
   Future<APIResponse> patch(
     String url, {
-    data,
+    dynamic data,
     Map<String, dynamic>? queryParameters,
     Options? options,
     ProgressCallback? onSendProgress,
@@ -134,11 +130,11 @@ class DioClient {
       final Response response = await _dio.patch(
         url,
         data: data,
+        queryParameters: queryParameters,
         options: options,
         onSendProgress: onSendProgress,
         onReceiveProgress: onReceiveProgress,
       );
-
       return APIResponse.fromJson(response.data);
     } catch (e) {
       return APIResponse.fromError(e);
@@ -155,20 +151,24 @@ class DioClient {
     ProgressCallback? onReceiveProgress,
   }) async {
     try {
-      final Response response = await Dio().download(
+      final Response response = await _dio.download(
         url,
         downloadPath,
         queryParameters: queryParameters,
-        options: Options(
-          headers: {
-            'Content-Type': 'application/json; charset=UTF-8',
-            'Authorization': null,
-          },
-        ),
+        options: options,
         cancelToken: cancelToken,
         onReceiveProgress: onReceiveProgress,
       );
-      return APIResponse.fromJson(response.data);
+      // Dio streams bytes to disk; response.data is null for downloads.
+      // Treat any 2xx status as success instead of trying to parse a body.
+      final statusCode = response.statusCode ?? 0;
+      if (statusCode >= 200 && statusCode < 300) {
+        return APIResponse(message: 'Download successful', error: '');
+      }
+      return APIResponse(
+        message: '',
+        error: 'Download failed with status $statusCode',
+      );
     } catch (e) {
       return APIResponse.fromError(e);
     }
