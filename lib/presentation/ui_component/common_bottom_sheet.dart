@@ -5,11 +5,14 @@ Future<T?> showAppModalBottomSheet<T>({
   required BuildContext context,
   required WidgetBuilder builder,
   bool isScrollControlled = true,
-  bool useSafeAreaScroll = true, // Added flag to control scrolling
+  bool useSafeAreaScroll = true,
+  bool isDismissible= true, // 👈 prevents closing on outside tap
+  bool enableDrag= true,
 }) {
   return showModalBottomSheet<T>(
     context: context,
-    isDismissible: true,
+    isDismissible: isDismissible,
+    enableDrag: enableDrag,
     isScrollControlled: isScrollControlled,
     backgroundColor: AppColor.kMainBackgroundColor,
     shape: const RoundedRectangleBorder(

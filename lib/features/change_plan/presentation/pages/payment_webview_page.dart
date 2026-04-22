@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/recharge_change_plan_redirect_entity.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:webview_flutter_plus/webview_flutter_plus.dart';
@@ -39,20 +40,29 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
     await _controller.setNavigationDelegate(
       NavigationDelegate(
         onPageStarted: (String url) {
+          debugPrint('🌐 Page started: $url');
           if (mounted) setState(() => _isLoading = true);
         },
         onPageFinished: (String url) {
+          debugPrint('✅ Page finished: $url');
           if (mounted) setState(() => _isLoading = false);
         },
         onNavigationRequest: (NavigationRequest request) {
+          debugPrint('🔀 Navigation request: ${request.url}');
           final result = _getPaymentResultFromUrl(request.url);
           if (result != null) {
+            debugPrint('💳 Payment result: $result');
             Navigator.of(context).pop(result);
             return NavigationDecision.prevent;
           }
           return NavigationDecision.navigate;
         },
-        onWebResourceError: (WebResourceError error) {},
+        onWebResourceError: (WebResourceError error) {
+          debugPrint('❌ Web error: ${error.errorCode} - ${error.description}');
+          debugPrint('❌ Error URL: ${error.url}');           // ADD THIS
+          debugPrint('❌ Error type: ${error.errorType}');    // ADD THIS
+          debugPrint('❌ Is for main frame: ${error.isForMainFrame}');
+        },
       ),
     );
 
@@ -145,8 +155,8 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
           foregroundColor: Colors.white,
           title: Text(
             l10n.payment,
-            style: const TextStyle(
-              fontSize: 16,
+            style:  TextStyle(
+              fontSize: 16.sp,
               fontWeight: FontWeight.w600,
               fontFamily: 'GeneralSans',
             ),

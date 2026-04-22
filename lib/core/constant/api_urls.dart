@@ -9,10 +9,8 @@ class ApiUrls {
 
   static const String userRoleMapingService = 'bss-user-role-mapping-services/api';
   static const String coreExternalService = 'bss-core-external-services/api';
-
+  static const String fileStorageService = 'bss-file-storage-services/api/files';
   static const String billingFinanceService = 'bss-billing-finance-services/api';
-  static const forgotPasswordSendOTPURL = 'myforgotPasswordSendOTPURL';
-  static const forgotPasswordVerifyOTPURL = 'myforgotVerifyOTPURL';
   static const setNewPasswordURL =
       'bss-user-role-mapping-services/api/auth/forgot-password';
   static const lnpEnquiryFormURL =
@@ -27,8 +25,6 @@ class ApiUrls {
       'bss-enquiry-services/api/darkfibre-enquiries/save';
   static const bplEnquiryFormURL = 'bplEnquiryFormURL';
   static const getPostOfficesDistrictURL = 'get_post_offices.php';
-  static const signUpGetOTPFormURL = 'signUpGetOTPFormURL';
-  static const signUpVerifyOTPFormURL = 'signUpVerifyOTPFormURL';
   static const String homePageURL =
       '$subscriberManagementService/mobile/subscriber/home';
   static String subscriberDataUsageURL({required String subscriberUuid}) =>
@@ -37,6 +33,8 @@ class ApiUrls {
       '$packageManagementService/mobile/packages';
   static String changePlanURL({required String subscriberUuid}) =>
       '$subscriberManagementService/mobile/subscribers/$subscriberUuid/change-plan';
+  static String invoiceFileURL({required String fileId}) =>
+      '$fileStorageService/$fileId/view-url';
   static const String rechargeChangePlanURL =
       '$billingFinanceService/web/payment/recharge/online';
   static String rechargePaymentStatus({required String orderId}) =>

@@ -25,8 +25,7 @@ class ListShimmer extends StatelessWidget {
     return AppShimmer(
       child: Padding(
         padding: padding,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
+        child: ListView(
           children: [
             for (int i = 0; i < itemCount; i++) ...[
               ShimmerBox(

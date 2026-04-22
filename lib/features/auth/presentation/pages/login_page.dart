@@ -100,7 +100,7 @@ class _LoginPageState extends State<LoginPage> {
         },
         child: Scaffold(
           backgroundColor: AppColor.kPrimaryColor,
-          resizeToAvoidBottomInset: true,
+          resizeToAvoidBottomInset: false,
           body: Container(
             decoration: _backgroundDecoration,
             child: Stack(

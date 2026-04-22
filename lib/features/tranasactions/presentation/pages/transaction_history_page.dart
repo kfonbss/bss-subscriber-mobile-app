@@ -129,14 +129,14 @@ class _TransactionHistoryViewState extends State<_TransactionHistoryView> {
                   paidBy: txn.paidBy,
                   paymentGateway: txn.paymentGateway,
                   responseMessage: txn.responseMessage,
-                  onDownloadInvoice: txn.invoiceUrl.isEmpty
+                  onDownloadInvoice: txn.fileId.isEmpty
                       ? null
                       : () {
                           Navigator.of(context, rootNavigator: true).push(
                             MaterialPageRoute(
                               builder: (_) => PdfPreviewAndDownload(
                                 title: l10n.invoice,
-                                pdfUrl: txn.invoiceUrl,
+                                fileId: txn.fileId,
                               ),
                             ),
                           );

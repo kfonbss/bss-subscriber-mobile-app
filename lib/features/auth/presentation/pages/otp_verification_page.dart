@@ -154,6 +154,8 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
             } else {
               showAppModalBottomSheet(
                 context: context,
+                isDismissible: false,
+                enableDrag: false,
                 builder: (context) => const VerificationSuccessSheet(),
               );
             }

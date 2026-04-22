@@ -118,14 +118,14 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
                   invoiceNo: invoice.invoiceNo,
                   amount: invoice.amount.toStringAsFixed(2),
                   date: invoice.invoiceDate,
-                  onDownload: invoice.pdfUrl.isEmpty
+                  onDownload: invoice.fileId.isEmpty
                       ? null
                       : () {
                           Navigator.of(context, rootNavigator: true).push(
                             MaterialPageRoute(
                               builder: (_) => PdfPreviewAndDownload(
                                 title: l10n.invoice,
-                                pdfUrl: invoice.pdfUrl,
+                                fileId: invoice.fileId,
                               ),
                             ),
                           );

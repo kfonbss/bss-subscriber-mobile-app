@@ -14,7 +14,7 @@ class TransactionEntity {
 
   /// Full URL for downloading the transaction invoice PDF.
   /// Empty string if the API did not return a URL for this transaction.
-  final String invoiceUrl;
+  final String fileId;
 
   const TransactionEntity({
     required this.transactionId,
@@ -28,7 +28,7 @@ class TransactionEntity {
     required this.paidBy,
     required this.paymentGateway,
     required this.responseMessage,
-    required this.invoiceUrl,
+    required this.fileId,
   });
 }
 
