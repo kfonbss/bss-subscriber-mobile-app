@@ -6,7 +6,7 @@ import 'package:kfon_subscriber/features/profile/presentation/pages/security_set
 import 'package:kfon_subscriber/features/self_care/presentation/pages/connected_devices_page.dart';
 import 'package:kfon_subscriber/features/self_care/presentation/pages/speed_test_page.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
-import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
+import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
 
 class SelfCarePage extends StatelessWidget {
   const SelfCarePage({super.key});

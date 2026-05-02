@@ -8,7 +8,12 @@ abstract class HomeEvent extends Equatable {
 }
 
 class GetHomeData extends HomeEvent {
-  const GetHomeData();
+  final bool loadPackage;
+
+  const GetHomeData({required this.loadPackage});
+
+  @override
+  List<Object?> get props => [loadPackage];
 }
 
 class GetPlans extends HomeEvent {

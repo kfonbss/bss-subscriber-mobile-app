@@ -6,6 +6,8 @@ class GetAllPackagesParams extends Equatable {
   final String type;
   final int? speedMbps;
   final bool? ott;
+  final int page;
+  final int size;
 
   const GetAllPackagesParams({
     required this.subscriberId,
@@ -13,6 +15,8 @@ class GetAllPackagesParams extends Equatable {
     this.type = 'retail',
     this.speedMbps,
     this.ott,
+    required this.page,
+    required this.size,
   });
 
   Map<String, dynamic> toJson() {
@@ -22,9 +26,11 @@ class GetAllPackagesParams extends Equatable {
     params['type'] = type;
     if (speedMbps != null) params['speedMbps'] = speedMbps;
     if (ott != null) params['ott'] = ott;
+    params['page'] = page;
+    params['size'] = size;
     return params;
   }
 
   @override
-  List<Object?> get props => [subscriberId, search, type, speedMbps, ott];
+  List<Object?> get props => [subscriberId, search, type, speedMbps, ott,page,size];
 }

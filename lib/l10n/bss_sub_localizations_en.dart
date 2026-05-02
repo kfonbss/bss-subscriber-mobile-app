@@ -45,6 +45,48 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get signIn => 'Sign In';
 
   @override
+  String get selectSubjectKey => 'Select Subject';
+
+  @override
+  String resolvedIn(String time) {
+    return 'Resolved in $time';
+  }
+
+  @override
+  String get selectPriorityKey => 'Select Priority';
+
+  @override
+  String get priority => 'Priority';
+
+  @override
+  String get ticketCategory => 'Ticket Category';
+
+  @override
+  String get fileSizeMustBeLess => 'File size must be less than 5MB';
+
+  @override
+  String get pleaseAttachDocument => 'Please attach at least one document';
+
+  @override
+  String get attachments => 'Attachments';
+
+  @override
+  String get ticketFileInstructions =>
+      '*Please upload files in the following format :\nGIF, JPG, JPEG, PNG, PDF, MP4. The maximum allowed file\nsize is 5MB.';
+
+  @override
+  String get selectCategory => 'Select category';
+
+  @override
+  String get open => 'Open';
+
+  @override
+  String get progress => 'Progress';
+
+  @override
+  String get closed => 'Closed';
+
+  @override
   String get enquiryForms => 'Enquiry Forms';
 
   @override
@@ -53,6 +95,9 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   @override
   String get forgotPasswordDescription =>
       'Don\'t worry! Enter your registered username to reset your password.';
+
+  @override
+  String get ticketIdCopied => 'Ticket ID copied to clipboard';
 
   @override
   String get getOtp => 'Get OTP';
@@ -81,13 +126,36 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   }
 
   @override
+  String get yourTicketHasBeenCreated =>
+      'Your ticket has been created successfully!';
+
+  @override
+  String get ourSupportTeamWillGetBack =>
+      'Our support team will get back to you shortly';
+
+  @override
+  String get success => 'Success  🎉';
+
+  @override
+  String get filter => 'Filter';
+
+  @override
   String get verifyNow => 'Verify Now';
 
   @override
   String get resendOtp => 'Resend OTP';
 
   @override
+  String get all => 'All';
+
+  @override
+  String get attachment => 'Attachment';
+
+  @override
   String get recharge => 'Recharge';
+
+  @override
+  String get volume => 'Volume';
 
   @override
   String get walletBalance => 'Wallet Balance';

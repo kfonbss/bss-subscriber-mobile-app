@@ -160,6 +160,84 @@ abstract class BssSubLocalizations {
   /// **'Sign In'**
   String get signIn;
 
+  /// No description provided for @selectSubjectKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Subject'**
+  String get selectSubjectKey;
+
+  /// No description provided for @resolvedIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved in {time}'**
+  String resolvedIn(String time);
+
+  /// No description provided for @selectPriorityKey.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Priority'**
+  String get selectPriorityKey;
+
+  /// No description provided for @priority.
+  ///
+  /// In en, this message translates to:
+  /// **'Priority'**
+  String get priority;
+
+  /// No description provided for @ticketCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket Category'**
+  String get ticketCategory;
+
+  /// No description provided for @fileSizeMustBeLess.
+  ///
+  /// In en, this message translates to:
+  /// **'File size must be less than 5MB'**
+  String get fileSizeMustBeLess;
+
+  /// No description provided for @pleaseAttachDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'Please attach at least one document'**
+  String get pleaseAttachDocument;
+
+  /// No description provided for @attachments.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachments'**
+  String get attachments;
+
+  /// No description provided for @ticketFileInstructions.
+  ///
+  /// In en, this message translates to:
+  /// **'*Please upload files in the following format :\nGIF, JPG, JPEG, PNG, PDF, MP4. The maximum allowed file\nsize is 5MB.'**
+  String get ticketFileInstructions;
+
+  /// No description provided for @selectCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Select category'**
+  String get selectCategory;
+
+  /// No description provided for @open.
+  ///
+  /// In en, this message translates to:
+  /// **'Open'**
+  String get open;
+
+  /// No description provided for @progress.
+  ///
+  /// In en, this message translates to:
+  /// **'Progress'**
+  String get progress;
+
+  /// No description provided for @closed.
+  ///
+  /// In en, this message translates to:
+  /// **'Closed'**
+  String get closed;
+
   /// No description provided for @enquiryForms.
   ///
   /// In en, this message translates to:
@@ -177,6 +255,12 @@ abstract class BssSubLocalizations {
   /// In en, this message translates to:
   /// **'Don\'t worry! Enter your registered username to reset your password.'**
   String get forgotPasswordDescription;
+
+  /// No description provided for @ticketIdCopied.
+  ///
+  /// In en, this message translates to:
+  /// **'Ticket ID copied to clipboard'**
+  String get ticketIdCopied;
 
   /// No description provided for @getOtp.
   ///
@@ -226,6 +310,30 @@ abstract class BssSubLocalizations {
   /// **'We have sent you 6 digits verification code to {mobileNumber}'**
   String weHaveSentOtpTo(String mobileNumber);
 
+  /// No description provided for @yourTicketHasBeenCreated.
+  ///
+  /// In en, this message translates to:
+  /// **'Your ticket has been created successfully!'**
+  String get yourTicketHasBeenCreated;
+
+  /// No description provided for @ourSupportTeamWillGetBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Our support team will get back to you shortly'**
+  String get ourSupportTeamWillGetBack;
+
+  /// No description provided for @success.
+  ///
+  /// In en, this message translates to:
+  /// **'Success  🎉'**
+  String get success;
+
+  /// No description provided for @filter.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter'**
+  String get filter;
+
   /// No description provided for @verifyNow.
   ///
   /// In en, this message translates to:
@@ -238,11 +346,29 @@ abstract class BssSubLocalizations {
   /// **'Resend OTP'**
   String get resendOtp;
 
+  /// No description provided for @all.
+  ///
+  /// In en, this message translates to:
+  /// **'All'**
+  String get all;
+
+  /// No description provided for @attachment.
+  ///
+  /// In en, this message translates to:
+  /// **'Attachment'**
+  String get attachment;
+
   /// No description provided for @recharge.
   ///
   /// In en, this message translates to:
   /// **'Recharge'**
   String get recharge;
+
+  /// No description provided for @volume.
+  ///
+  /// In en, this message translates to:
+  /// **'Volume'**
+  String get volume;
 
   /// No description provided for @walletBalance.
   ///

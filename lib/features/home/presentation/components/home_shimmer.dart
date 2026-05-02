@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:kfon_subscriber/presentation/ui_component/shimmer/shimmer_base.dart';
-import 'package:kfon_subscriber/presentation/ui_component/shimmer/shimmer_box.dart';
+import 'package:kfon_subscriber/shared/widgets/shimmer/shimmer_base.dart';
+import 'package:kfon_subscriber/shared/widgets/shimmer/shimmer_box.dart';
 
 class HomeShimmer extends StatelessWidget {
   const HomeShimmer({super.key});

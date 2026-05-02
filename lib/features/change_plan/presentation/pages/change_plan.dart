@@ -8,14 +8,15 @@ import 'package:kfon_subscriber/features/change_plan/presentation/bloc/change_pl
 import 'package:kfon_subscriber/features/change_plan/presentation/bloc/change_plan_state.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/bloc/tab_plan_state.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/pages/components/plan_tile.dart';
+import 'package:kfon_subscriber/features/change_plan/presentation/pages/components/plan_tile_new.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/pages/components/speed_filter_sheet.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/pages/recharge_page.dart';
 import 'package:kfon_subscriber/l10n/bss_sub_localizations.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
-import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
-import 'package:kfon_subscriber/presentation/ui_component/no_data_found.dart';
-import 'package:kfon_subscriber/presentation/ui_component/retry_widget.dart';
-import 'package:kfon_subscriber/presentation/ui_component/shimmer/list_shimmers.dart';
+import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
+import 'package:kfon_subscriber/shared/widgets/no_data_found.dart';
+import 'package:kfon_subscriber/shared/widgets/retry_widget.dart';
+import 'package:kfon_subscriber/shared/widgets/shimmer/list_shimmers.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 
 class ChangePlanPage extends StatelessWidget {
@@ -31,14 +32,14 @@ class ChangePlanPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-      ChangePlanBloc(repository: sl<ChangePlanRepository>())..add(
-        LoadPackages(
-          tab: PlanTab.all,
-          packageId: currentPackageId,
-          subscriberUuid: subscriberUuid,
-        ),
-      ),
+      create:
+          (_) => ChangePlanBloc(repository: sl<ChangePlanRepository>())..add(
+            LoadPackages(
+              tab: PlanTab.all,
+              packageId: currentPackageId,
+              subscriberUuid: subscriberUuid,
+            ),
+          ),
       child: _ChangePlanView(
         subscriberUuid: subscriberUuid,
         currentPackageId: currentPackageId,
@@ -97,19 +98,25 @@ class _ChangePlanViewState extends State<_ChangePlanView>
 
   // WidgetStateProperty.all allocates a _MaterialStatePropertyAll wrapper on
   // every build() call — hoist to static final so it's created once.
-  static final _transparentOverlay =
-      WidgetStateProperty.all<Color>(Colors.transparent);
+  static final _transparentOverlay = WidgetStateProperty.all<Color>(
+    Colors.transparent,
+  );
 
   @override
   void initState() {
     super.initState();
     _tabController = TabController(length: _tabs.length, vsync: this);
     _tabController.addListener(_onTabChanged);
-    _tabViews = _tabs.map((tab) => _PlanTabContent(
-      tab: tab,
-      currentPackageId: widget.currentPackageId,
-      subscriberUuid: widget.subscriberUuid,
-    )).toList();
+    _tabViews =
+        _tabs
+            .map(
+              (tab) => _PlanTabContent(
+                tab: tab,
+                currentPackageId: widget.currentPackageId,
+                subscriberUuid: widget.subscriberUuid,
+              ),
+            )
+            .toList();
   }
 
   @override
@@ -158,25 +165,28 @@ class _ChangePlanViewState extends State<_ChangePlanView>
       shape: const RoundedRectangleBorder(
         borderRadius: BorderRadius.vertical(top: Radius.circular(20)),
       ),
-      builder: (_) => SpeedFilterSheet(
-        currentSpeed: bloc.state.speedFilter,
-        onApply: (speed) {
-          bloc.add(
-            FilterBySpeed(
-              speed: speed,
-              packageId: widget.currentPackageId,
-              subscriberUuid: widget.subscriberUuid,
-            ),
-          );
-        },
-      ),
+      builder:
+          (_) => SpeedFilterSheet(
+            currentSpeed: bloc.state.speedFilter,
+            onApply: (speed) {
+              bloc.add(
+                FilterBySpeed(
+                  speed: speed,
+                  packageId: widget.currentPackageId,
+                  subscriberUuid: widget.subscriberUuid,
+                ),
+              );
+            },
+          ),
     );
   }
 
   String _tabLabel(PlanTab tab, BssSubLocalizations l10n) {
     switch (tab) {
-      case PlanTab.all: return l10n.allPlans;
-      case PlanTab.ottPlans: return l10n.ottPlans;
+      case PlanTab.all:
+        return l10n.allPlans;
+      case PlanTab.ottPlans:
+        return l10n.ottPlans;
     }
   }
 
@@ -204,31 +214,37 @@ class _ChangePlanViewState extends State<_ChangePlanView>
                     padding: const EdgeInsets.all(4),
                     labelPadding: const EdgeInsets.symmetric(horizontal: 6),
                     overlayColor: _transparentOverlay,
-                    tabs: _tabs.asMap().entries.map((entry) {
-                      final index = entry.key;
-                      return Tab(
-                        height: 32,
-                        child: AnimatedBuilder(
-                          animation: _tabController,
-                          builder: (context, _) {
-                            final isSelected = _tabController.index == index;
-                            return Container(
-                              padding: const EdgeInsets.symmetric(horizontal: 16),
-                              decoration: isSelected
-                                  ? _selectedTabDecoration
-                                  : _unselectedTabDecoration,
-                              alignment: Alignment.center,
-                              child: Text(
-                                _tabLabels[index],
-                                style: isSelected
-                                    ? _selectedTabTextStyle
-                                    : _unselectedTabTextStyle,
-                              ),
-                            );
-                          },
-                        ),
-                      );
-                    }).toList(),
+                    tabs:
+                        _tabs.asMap().entries.map((entry) {
+                          final index = entry.key;
+                          return Tab(
+                            height: 32,
+                            child: AnimatedBuilder(
+                              animation: _tabController,
+                              builder: (context, _) {
+                                final isSelected =
+                                    _tabController.index == index;
+                                return Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 16,
+                                  ),
+                                  decoration:
+                                      isSelected
+                                          ? _selectedTabDecoration
+                                          : _unselectedTabDecoration,
+                                  alignment: Alignment.center,
+                                  child: Text(
+                                    _tabLabels[index],
+                                    style:
+                                        isSelected
+                                            ? _selectedTabTextStyle
+                                            : _unselectedTabTextStyle,
+                                  ),
+                                );
+                              },
+                            ),
+                          );
+                        }).toList(),
                   ),
                 ),
 
@@ -238,7 +254,8 @@ class _ChangePlanViewState extends State<_ChangePlanView>
                 BlocBuilder<ChangePlanBloc, ChangePlanState>(
                   buildWhen: (prev, curr) => prev.activeTab != curr.activeTab,
                   builder: (context, state) {
-                    if (state.activeTab != PlanTab.all) return const SizedBox.shrink();
+                    if (state.activeTab != PlanTab.all)
+                      return const SizedBox.shrink();
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Row(
@@ -306,9 +323,10 @@ class _ChangePlanViewState extends State<_ChangePlanView>
             child: Padding(
               padding: const EdgeInsets.all(16),
               child: BlocBuilder<ChangePlanBloc, ChangePlanState>(
-                buildWhen: (prev, curr) =>
-                    prev.actionStatus != curr.actionStatus ||
-                    prev.selectedPackageId != curr.selectedPackageId,
+                buildWhen:
+                    (prev, curr) =>
+                        prev.actionStatus != curr.actionStatus ||
+                        prev.selectedPackageId != curr.selectedPackageId,
                 builder: (context, state) {
                   final isLoading = state.actionStatus == ActionStatus.loading;
                   final selectedPackage = state.selectedPackage;
@@ -316,26 +334,33 @@ class _ChangePlanViewState extends State<_ChangePlanView>
                   return SizedBox(
                     width: double.infinity,
                     child: ElevatedButton(
-                      onPressed: selectedPackage == null || isLoading
-                          ? null
-                          : () {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute<void>(
-                            builder: (_) => BlocProvider.value(
-                              value: context.read<ChangePlanBloc>(),
-                              child: RechargePage(package: selectedPackage),
-                            ),
-                          ),
-                        );
-                      },
-                      child: isLoading
-                          ? const SizedBox(
-                        height: 20,
-                        width: 20,
-                        child: CircularProgressIndicator(strokeWidth: 2),
-                      )
-                          : Text(l10n.changePackage),
+                      onPressed:
+                          selectedPackage == null || isLoading
+                              ? null
+                              : () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute<void>(
+                                    builder:
+                                        (_) => BlocProvider.value(
+                                          value: context.read<ChangePlanBloc>(),
+                                          child: RechargePage(
+                                            package: selectedPackage,
+                                          ),
+                                        ),
+                                  ),
+                                );
+                              },
+                      child:
+                          isLoading
+                              ? const SizedBox(
+                                height: 20,
+                                width: 20,
+                                child: CircularProgressIndicator(
+                                  strokeWidth: 2,
+                                ),
+                              )
+                              : Text(l10n.changePackage),
                     ),
                   );
                 },
@@ -368,13 +393,46 @@ class _PlanTabContentState extends State<_PlanTabContent>
   final ScrollController _scrollController = ScrollController();
 
   @override
-  bool get wantKeepAlive => true;
+  void initState() {
+    super.initState();
+    _scrollController.addListener(_onScroll);
+  }
 
   @override
   void dispose() {
-    _scrollController.dispose();
+    _scrollController
+      ..removeListener(_onScroll)
+      ..dispose();
     super.dispose();
   }
+
+  void _onScroll() {
+    if (!_isBottom) return;
+    final state = context.read<ChangePlanBloc>().state;
+    final tabState = state.tabStates[widget.tab];
+    // Guard: only dispatch when loaded and not already paginating.
+    // Without this guard the listener fires on every scroll tick that
+    // satisfies _isBottom, flooding the BLoC event queue.
+    if (tabState!.hasMore && tabState.status != ListPlanStatus.loadingMore) {
+      context.read<ChangePlanBloc>().add(
+        LoadMorePackages(
+          tab: widget.tab,
+          packageId: widget.currentPackageId,
+          subscriberUuid: widget.subscriberUuid,
+        ),
+      );
+    }
+  }
+
+  bool get _isBottom {
+    if (!_scrollController.hasClients) return false;
+    final maxScroll = _scrollController.position.maxScrollExtent;
+    final currentScroll = _scrollController.offset;
+    return currentScroll >= (maxScroll * 0.9);
+  }
+
+  @override
+  bool get wantKeepAlive => true;
 
   @override
   Widget build(BuildContext context) {
@@ -398,13 +456,14 @@ class _PlanTabContentState extends State<_PlanTabContent>
         if (tabState.status == ListPlanStatus.error) {
           return RetryWidget(
             errorMessage: tabState.errorMessage ?? l10n.somethingWentWrong,
-            onRetry: () => context.read<ChangePlanBloc>().add(
-              LoadPackages(
-                tab: widget.tab,
-                packageId: widget.currentPackageId,
-                subscriberUuid: widget.subscriberUuid,
-              ),
-            ),
+            onRetry:
+                () => context.read<ChangePlanBloc>().add(
+                  LoadPackages(
+                    tab: widget.tab,
+                    packageId: widget.currentPackageId,
+                    subscriberUuid: widget.subscriberUuid,
+                  ),
+                ),
           );
         }
 
@@ -416,10 +475,9 @@ class _PlanTabContentState extends State<_PlanTabContent>
         return ListView.separated(
           controller: _scrollController,
           padding: const EdgeInsets.only(left: 16, right: 10, bottom: 84),
-          itemCount: tabState.packages.length +
-              (tabState.status == ListPlanStatus.loadingMore ? 1 : 0),
+          itemCount: tabState.packages.length + (tabState.hasMore ? 1 : 0),
           itemBuilder: (context, index) {
-            if (index >= tabState.packages.length) {
+            if (index >= tabState.packages.length && tabState.hasMore) {
               return const Center(
                 child: Padding(
                   padding: EdgeInsets.symmetric(vertical: 16),
@@ -428,13 +486,15 @@ class _PlanTabContentState extends State<_PlanTabContent>
               );
             }
             final package = tabState.packages[index];
-            return PlanTile(
-              key: ValueKey(package.packageId),
+            return PlanTileNew(
+              key: ValueKey(package.id),
               package: package,
-              isSelected: state.selectedPackageId == package.packageId,
-              onTap: () => context.read<ChangePlanBloc>().add(
-                SelectPackage(package.packageId),
-              ),
+              isSelected: state.selectedPackageId == package.id,
+              showSelectedBorder: true,
+              onTap:
+                  () => context.read<ChangePlanBloc>().add(
+                    SelectPackage(package.id),
+                  ),
             );
           },
           separatorBuilder: (context, index) => const SizedBox(height: 10),

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
+import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/util/preference_util.dart';
@@ -42,6 +43,9 @@ import 'features/auth/presentation/bloc/auth_state.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  FlutterNativeSplash.preserve(
+    widgetsBinding: WidgetsFlutterBinding.ensureInitialized(),
+  );
   await dotenv.load(fileName: "assets/env/.env.dev");
   SystemChrome.setPreferredOrientations([
     DeviceOrientation.portraitUp,
@@ -121,7 +125,7 @@ class _MyAppState extends State<MyApp> {
           ),
         ),
         builder: (context, child) {
-          Sizer.init(context, designHeight: 932.0, designWidth: 430.0);
+          Sizer.init(context, designHeight: 812.0, designWidth: 375.0);
           return child!;
         },
         localizationsDelegates: [BssSubLocalizations.delegate],
@@ -168,12 +172,9 @@ class _MyAppState extends State<MyApp> {
         home: BlocConsumer<AuthBloc, AuthState>(
           bloc: _authBloc,
           listener: (context, state) {
-            if (state is Authenticated) {
-              _profileBloc.add(const FetchProfileRequested());
-            }
+            FlutterNativeSplash.remove();
           },
           builder: (context, state) {
-           // return Container();
             if (state is Authenticated) {
               return MainPage();
             } else if (widget.showIntro) {

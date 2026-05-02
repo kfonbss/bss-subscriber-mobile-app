@@ -3,7 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
-import 'package:kfon_subscriber/presentation/ui_component/white_button.dart';
+import 'package:kfon_subscriber/shared/widgets/white_button.dart';
 
 class IntroScreenLayout extends StatelessWidget {
   final int index;

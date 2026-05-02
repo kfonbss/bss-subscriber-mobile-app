@@ -8,10 +8,10 @@ import 'package:kfon_subscriber/features/invoice_list/presentation/bloc/invoice_
 import 'package:kfon_subscriber/features/invoice_list/presentation/bloc/invoice_list_event.dart';
 import 'package:kfon_subscriber/features/invoice_list/presentation/bloc/invoice_list_state.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
-import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
-import 'package:kfon_subscriber/presentation/ui_component/no_data_found.dart';
-import 'package:kfon_subscriber/presentation/ui_component/retry_widget.dart';
-import 'package:kfon_subscriber/presentation/ui_component/shimmer/list_shimmers.dart';
+import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
+import 'package:kfon_subscriber/shared/widgets/no_data_found.dart';
+import 'package:kfon_subscriber/shared/widgets/retry_widget.dart';
+import 'package:kfon_subscriber/shared/widgets/shimmer/list_shimmers.dart';
 
 class InvoiceListPage extends StatefulWidget {
   const InvoiceListPage({super.key});

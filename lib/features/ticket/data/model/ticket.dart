@@ -76,6 +76,41 @@ class TicketSubject {
   }
 }
 
+/// Splits movement media arrays into direct URLs vs [fileId] references.
+class _MovementMediaParse {
+  _MovementMediaParse({required this.urls, required this.fileIds});
+
+  final List<String> urls;
+  final List<String> fileIds;
+}
+
+_MovementMediaParse _parseMovementMediaList(dynamic raw) {
+  final urls = <String>[];
+  final fileIds = <String>[];
+  if (raw is! List<dynamic>) {
+    return _MovementMediaParse(urls: urls, fileIds: fileIds);
+  }
+  for (final e in raw) {
+    if (e is Map<String, dynamic>) {
+      final fid = e['fileId']?.toString();
+      if (fid != null && fid.isNotEmpty) {
+        fileIds.add(fid);
+      }
+    } else if (e is String) {
+      final s = e.trim();
+      if (s.isEmpty) continue;
+      if (s.startsWith('http') ||
+          s.startsWith('/') ||
+          s.contains('://')) {
+        urls.add(s);
+      } else {
+        fileIds.add(s);
+      }
+    }
+  }
+  return _MovementMediaParse(urls: urls, fileIds: fileIds);
+}
+
 class TicketMovement {
   final String id;
   final String? note;
@@ -84,6 +119,10 @@ class TicketMovement {
   final DateTime? createdDate;
   final List<String> imageUrl;
   final List<String> videoUrl;
+  final List<String> documentUrl;
+  final List<String> imageFileIds;
+  final List<String> videoFileIds;
+  final List<String> documentFileIds;
 
   const TicketMovement({
     required this.id,
@@ -93,28 +132,31 @@ class TicketMovement {
     this.createdDate,
     this.imageUrl = const [],
     this.videoUrl = const [],
+    this.documentUrl = const [],
+    this.imageFileIds = const [],
+    this.videoFileIds = const [],
+    this.documentFileIds = const [],
   });
 
   factory TicketMovement.fromJson(Map<String, dynamic> json) {
+    final image = _parseMovementMediaList(json['imageUrl']);
+    final video = _parseMovementMediaList(json['videoUrl']);
+    final doc = _parseMovementMediaList(json['documentUrl']);
+
     return TicketMovement(
       id: json['id']?.toString() ?? '',
       note: json['note']?.toString(),
       status: json['status']?.toString() ?? '',
       assignedToName: json['assignedToName']?.toString(),
-      createdDate:
-          json['createdDate'] != null
-              ? DateTime.tryParse(json['createdDate'] as String)
-              : null,
-      imageUrl:
-          (json['imageUrl'] as List<dynamic>?)
-              ?.map((e) => e.toString())
-              .toList() ??
-          [],
-      videoUrl:
-          (json['videoUrl'] as List<dynamic>?)
-              ?.map((e) => e.toString())
-              .toList() ??
-          [],
+      createdDate: json['createdDate'] != null
+          ? DateTime.tryParse(json['createdDate'] as String)
+          : null,
+      imageUrl: image.urls,
+      videoUrl: video.urls,
+      documentUrl: doc.urls,
+      imageFileIds: image.fileIds,
+      videoFileIds: video.fileIds,
+      documentFileIds: doc.fileIds,
     );
   }
 
@@ -127,6 +169,10 @@ class TicketMovement {
       createdDate: createdDate,
       imageUrl: imageUrl,
       videoUrl: videoUrl,
+      documentUrl: documentUrl,
+      imageFileIds: imageFileIds,
+      videoFileIds: videoFileIds,
+      documentFileIds: documentFileIds,
     );
   }
 }
@@ -182,20 +228,17 @@ class Ticket {
     return Ticket(
       id: json['id']?.toString() ?? '',
       ticketId: json['ticketId'] as int?,
-      submitDate:
-          json['submitDate'] != null
-              ? DateTime.tryParse(json['submitDate'] as String)
-              : null,
-      dueDate:
-          json['dueDate'] != null
-              ? DateTime.tryParse(json['dueDate'] as String)
-              : null,
+      submitDate: json['submitDate'] != null
+          ? DateTime.tryParse(json['submitDate'] as String)
+          : null,
+      dueDate: json['dueDate'] != null
+          ? DateTime.tryParse(json['dueDate'] as String)
+          : null,
       status: json['status']?.toString() ?? '',
       priority: json['priority']?.toString() ?? '',
-      subject:
-          json['subject'] != null
-              ? TicketSubject.fromJson(json['subject'] as Map<String, dynamic>)
-              : null,
+      subject: json['subject'] != null
+          ? TicketSubject.fromJson(json['subject'] as Map<String, dynamic>)
+          : null,
       ticketType: json['ticketType']?.toString(),
       customerType: json['customerType']?.toString(),
       createdByUser: json['createdByUser']?.toString(),
@@ -229,16 +272,15 @@ class Ticket {
       'dueDate': dueDate?.toIso8601String(),
       'status': status,
       'priority': priority,
-      'subject':
-          subject != null
-              ? {
-                'id': subject!.id,
-                'code': subject!.code,
-                'name': subject!.name,
-                'nameInLocal': subject!.nameInLocal,
-                'isActive': subject!.isActive,
-              }
-              : null,
+      'subject': subject != null
+          ? {
+              'id': subject!.id,
+              'code': subject!.code,
+              'name': subject!.name,
+              'nameInLocal': subject!.nameInLocal,
+              'isActive': subject!.isActive,
+            }
+          : null,
       'ticketType': ticketType,
       'customerType': customerType,
       'createdByUser': createdByUser,

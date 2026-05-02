@@ -9,7 +9,7 @@ import 'package:kfon_subscriber/features/profile/presentation/pages/app_update_c
 import 'package:kfon_subscriber/features/profile/presentation/pages/language_selection_page.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/notification_settings_page.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
-import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
+import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});

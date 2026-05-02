@@ -11,11 +11,11 @@ import 'package:kfon_subscriber/features/enquiery_forms/presentation/components/
 import 'package:kfon_subscriber/features/enquiery_forms/presentation/components/enquiry_form_header.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/presentation/components/enquiry_form_preview.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
-import 'package:kfon_subscriber/presentation/ui_component/common_drop_down.dart';
-import 'package:kfon_subscriber/presentation/ui_component/common_file_uploader.dart';
-import 'package:kfon_subscriber/presentation/ui_component/common_text_area.dart';
-import 'package:kfon_subscriber/presentation/ui_component/common_text_field.dart';
-import 'package:kfon_subscriber/presentation/ui_component/form_app_bar.dart';
+import 'package:kfon_subscriber/shared/widgets/common_drop_down.dart';
+import 'package:kfon_subscriber/shared/widgets/common_file_uploader.dart';
+import 'package:kfon_subscriber/shared/widgets/common_text_area.dart';
+import 'package:kfon_subscriber/shared/widgets/common_text_field.dart';
+import 'package:kfon_subscriber/shared/widgets/form_app_bar.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 
 enum SIPStatus { yes, no }

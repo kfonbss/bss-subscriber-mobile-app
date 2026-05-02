@@ -9,9 +9,9 @@ import 'package:kfon_subscriber/features/tranasactions/presentation/bloc/transac
 import 'package:kfon_subscriber/features/tranasactions/presentation/bloc/transaction_history_event.dart';
 import 'package:kfon_subscriber/features/tranasactions/presentation/bloc/transaction_history_state.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
-import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
-import 'package:kfon_subscriber/presentation/ui_component/no_data_found.dart';
-import 'package:kfon_subscriber/presentation/ui_component/shimmer/list_shimmers.dart';
+import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
+import 'package:kfon_subscriber/shared/widgets/no_data_found.dart';
+import 'package:kfon_subscriber/shared/widgets/shimmer/list_shimmers.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 
 class TransactionHistoryPage extends StatelessWidget {

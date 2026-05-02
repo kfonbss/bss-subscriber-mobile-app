@@ -6,6 +6,7 @@ class PersonalInfo extends Equatable {
   final String name;
   final String mobileNo;
   final String address;
+  final String email;
 
   const PersonalInfo({
     required this.subscriberId,
@@ -13,10 +14,11 @@ class PersonalInfo extends Equatable {
     required this.name,
     required this.mobileNo,
     required this.address,
+    required this.email,
   });
 
   @override
-  List<Object?> get props => [subscriberId, username, name, mobileNo, address];
+  List<Object?> get props => [subscriberId, username, name, mobileNo, address,email];
 }
 
 class AccountInfo extends Equatable {

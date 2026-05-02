@@ -1,5 +1,5 @@
 import 'package:equatable/equatable.dart';
-import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entity.dart';
+import 'package:kfon_subscriber/features/change_plan/domain/entity/package_new_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/recharge_change_plan_redirect_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/recharge_payment_status_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/enums/subscriber_enums.dart';
@@ -15,6 +15,7 @@ const _sentinel = Object();
 
 class ChangePlanState extends Equatable {
   final Map<PlanTab, TabPlanState> tabStates;
+  final ListPlanStatus listPlanStatus;
   final PlanTab activeTab;
   final String? selectedPackageId;
   final ActionStatus actionStatus;
@@ -30,6 +31,7 @@ class ChangePlanState extends Equatable {
   const ChangePlanState({
     this.tabStates = const {},
     this.activeTab = PlanTab.all,
+    this.listPlanStatus = ListPlanStatus.success,
     this.selectedPackageId,
     this.actionStatus = ActionStatus.idle,
     this.paymentStatus = PaymentStatus.idle,
@@ -45,11 +47,11 @@ class ChangePlanState extends Equatable {
   TabPlanState get activeTabState =>
       tabStates[activeTab] ?? const TabPlanState();
 
-  PackageEntity? get selectedPackage {
+  PackageItemEntity? get selectedPackage {
     if (selectedPackageId == null) return null;
     for (final tabState in tabStates.values) {
       final match = tabState.packages
-          .where((p) => p.packageId == selectedPackageId)
+          .where((p) => p.id == selectedPackageId)
           .firstOrNull;
       if (match != null) return match;
     }
@@ -58,6 +60,7 @@ class ChangePlanState extends Equatable {
 
   ChangePlanState copyWith({
     Map<PlanTab, TabPlanState>? tabStates,
+    ListPlanStatus? listPlanStatus,
     PlanTab? activeTab,
     String? selectedPackageId,
     ActionStatus? actionStatus,
@@ -72,6 +75,7 @@ class ChangePlanState extends Equatable {
   }) {
     return ChangePlanState(
       tabStates: tabStates ?? this.tabStates,
+      listPlanStatus: listPlanStatus ?? this.listPlanStatus,
       activeTab: activeTab ?? this.activeTab,
       selectedPackageId: selectedPackageId ?? this.selectedPackageId,
       actionStatus: actionStatus ?? this.actionStatus,
@@ -81,7 +85,7 @@ class ChangePlanState extends Equatable {
       searchQuery: searchQuery ?? this.searchQuery,
       speedFilter:
           speedFilter == _sentinel ? this.speedFilter : speedFilter as int?,
-      redirectEntity: redirectEntity ?? this.redirectEntity,
+      redirectEntity: redirectEntity,
       orderId: orderId ?? this.orderId,
       paymentStatusEntity: paymentStatusEntity ?? this.paymentStatusEntity,
     );

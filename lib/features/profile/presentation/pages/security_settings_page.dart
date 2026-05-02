@@ -2,7 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/change_password_page.dart';
-import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
+import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
 
 enum PasswordChangeEnum { bss, internet, ssid, wifi }
 

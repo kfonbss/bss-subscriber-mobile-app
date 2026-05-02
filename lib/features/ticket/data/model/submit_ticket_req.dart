@@ -25,13 +25,13 @@ class SubmitTicketReq {
 
   Map<String, dynamic> toJson() {
     return {
+      'categoryId': ticketCategory,     // UUID from category picker
       'subjectId': subjectId,
-      'ticketCategory': ticketCategory,
       'priority': priority,
-      'remarks': remarks,
-      'customerType': customerType,
+      'customerTypeId': customerType,   // UUID from customer type
       'customerId': customerId,
       'customerName': customerName,
+      'remarks': remarks,
       'subjectResolve': subjectResolve,
     };
   }

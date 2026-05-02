@@ -171,7 +171,7 @@ class PackageInfoCard extends StatelessWidget {
 
 class _DataUsageBar extends StatelessWidget {
   final double usedGB;
-  final int totalGB;
+  final double totalGB;
 
   const _DataUsageBar({required this.usedGB, required this.totalGB});
 

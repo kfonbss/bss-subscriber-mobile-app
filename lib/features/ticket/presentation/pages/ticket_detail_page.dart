@@ -1,22 +1,25 @@
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:flutter_svg/flutter_svg.dart';
-import 'package:intl/intl.dart';
+import 'dart:io';
+
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/features/ticket/data/model/add_note_req.dart';
-import 'package:kfon_subscriber/features/ticket/data/model/ticket_models.dart';
-import 'package:kfon_subscriber/features/ticket/domain/entity/ticket_entity.dart';
+import 'package:kfon_subscriber/features/ticket/domain/entity/ticket_entity.dart'; // Import TicketEntity
 import 'package:kfon_subscriber/features/ticket/domain/repository/ticket_repository.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/bloc/ticket_bloc.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/bloc/ticket_event.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/bloc/ticket_state.dart';
+import 'package:kfon_subscriber/features/ticket/presentation/pages/ticket_models.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/widgets/ticket_note_bottom_sheet.dart';
-import 'package:kfon_subscriber/l10n/l10n_ext.dart';
-import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
-import 'package:kfon_subscriber/presentation/ui_component/common_bottom_sheet.dart';
-import 'package:kfon_subscriber/presentation/ui_component/file_preview_page.dart';
 import 'package:kfon_subscriber/service_locator.dart';
+import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
+import 'package:kfon_subscriber/shared/widgets/common_bottom_sheet.dart';
+import 'package:kfon_subscriber/shared/widgets/file_preview_page.dart'; // Import FilePreviewPage
+import 'package:file_picker/file_picker.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
+import 'package:intl/intl.dart';
 
 class TicketDetailPage extends StatefulWidget {
   final TicketEntity ticket;
@@ -33,113 +36,280 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
   );
   final DialogUtil _dialogUtil = DialogUtil();
   late List<TicketMovementEntity> _movements;
+  String? _lastAddedNote;
   bool _hasNewNotes = false;
 
-  static const _cardShadowColor = Color(0x08000000); // black @ 3% opacity
-  static const _cardDecoration = BoxDecoration(
-    color: Colors.white,
-    borderRadius: BorderRadius.all(Radius.circular(16)),
-    boxShadow: [
-      BoxShadow(color: _cardShadowColor, blurRadius: 10, offset: Offset(0, 4)),
-    ],
-  );
+  /// Files picked for the in-flight add-note request; tied to the new movement id on success.
+  List<PlatformFile>? _pendingNoteFiles;
 
-  late List<TicketMessage> _messages;
-  // Pre-computed once — widget.ticket.status is immutable so these never change.
-  late Color _headerStatusColor;
-  late ShapeDecoration _headerStatusDecoration;
-  late TextStyle _headerStatusTextStyle;
+  /// URLs for a just-created movement are only present after a full ticket refetch; keep local paths for immediate UI.
+  final Map<String, List<TicketAttachmentEntity>>
+  _localAttachmentsByMovementId = {};
 
   @override
   void initState() {
     super.initState();
     _movements = List.from(widget.ticket.movements);
-    _messages = _buildMessages();
-    _headerStatusColor = _getStatusColor(widget.ticket.status);
-    _headerStatusTextStyle = TextStyle(
-      color: _headerStatusColor,
-      fontSize: 12,
-      fontWeight: FontWeight.w500,
-      fontFamily: 'GeneralSans',
-    );
-    _headerStatusDecoration = ShapeDecoration(
-      color: _headerStatusColor.withValues(alpha: 0.1),
-      shape: RoundedRectangleBorder(
-        side: BorderSide(width: 1, color: _headerStatusColor),
-        borderRadius: const BorderRadius.all(Radius.circular(8)),
-      ),
-      shadows: const [
-        BoxShadow(
-          color: AppColor.kCardShadowDark,
-          blurRadius: 3.80,
-          offset: Offset(0, 4),
-          spreadRadius: 0,
+  }
+
+  // Helper to map String status to TicketStatus enum for UI colors
+  TicketStatus _mapStatusToEnum(String status) {
+    final lowerStatus = status.toLowerCase();
+    if (lowerStatus == 'open') {
+      return TicketStatus.open;
+    } else if (lowerStatus == 'progress' || lowerStatus == 'in progress') {
+      return TicketStatus.progress;
+    } else if (lowerStatus == 'closed') {
+      return TicketStatus.closed;
+    } else if (lowerStatus == 'resolved') {
+      return TicketStatus.resolved;
+    } else {
+      return TicketStatus.open; // Default
+    }
+  }
+
+  Color _getStatusColor(String status) {
+    final statusEnum = _mapStatusToEnum(status);
+    switch (statusEnum) {
+      case TicketStatus.open:
+        return const Color(0xFF01889F);
+      case TicketStatus.progress:
+        return const Color(0xFFFA872D);
+      case TicketStatus.closed:
+        return const Color(0xFF1C8E52);
+      case TicketStatus.resolved:
+        return const Color(0xFF8D0247);
+    }
+  }
+
+  String _getStatusText(String status) {
+    // Capitalize first letter
+    if (status.isEmpty) return '';
+    return status[0].toUpperCase() + status.substring(1).toLowerCase();
+  }
+
+  String _formatDateTime(DateTime? dateTime) {
+    if (dateTime == null) return '';
+    return DateFormat('EEE, dd-MM-yyyy  hh:mm a').format(dateTime);
+  }
+
+  /// API may send `""` for names; `name ?? fallback` keeps empty string, so avatars show "?".
+  String _senderDisplayName(String? name, String fallback) {
+    final t = name?.trim();
+    if (t == null || t.isEmpty) return fallback;
+    return t;
+  }
+
+  /// The API often returns movements newest-first. The opening note exists both as
+  /// [TicketEntity.remarks] and as a movement with the same text/time as [submitDate].
+  /// Skip that movement when we already render the remarks card — do not rely on
+  /// `movements.first` matching remarks (newest-first breaks that check).
+  bool _isDuplicateOfInitialRemarks({
+    required TicketMovementEntity movement,
+    required bool showingRemarksCard,
+  }) {
+    if (!showingRemarksCard) return false;
+    final remarks = widget.ticket.remarks?.trim();
+    final note = movement.note?.trim();
+    if (remarks == null || remarks.isEmpty || note != remarks) return false;
+    final submit = widget.ticket.submitDate;
+    final created = movement.createdDate;
+    if (submit == null || created == null) return note == remarks;
+    return created.difference(submit).inSeconds.abs() <= 120;
+  }
+
+  List<TicketAttachmentEntity> _attachmentsFromPlatformFiles(
+    List<PlatformFile> files,
+  ) {
+    final out = <TicketAttachmentEntity>[];
+    for (final pf in files) {
+      final path = pf.path;
+      if (path == null || path.isEmpty) continue;
+      final ext = (pf.extension ?? path.split('.').last).toLowerCase();
+      late final String fileType;
+      if (['jpg', 'jpeg', 'png', 'gif'].contains(ext)) {
+        fileType = 'IMAGE';
+      } else if (ext == 'mp4') {
+        fileType = 'VIDEO';
+      } else {
+        fileType = 'PDF';
+      }
+      out.add(
+        TicketAttachmentEntity(
+          id: '',
+          fileUrl: '',
+          filePath: path,
+          fileType: fileType,
         ),
-      ],
+      );
+    }
+    return out;
+  }
+
+  /// Root `attachments` lists every file on the ticket; movements scope files per note.
+  /// Exclude fileIds that belong to other (non–initial-remarks) movements from the top card.
+  Set<String> _fileIdsClaimedByNonInitialMovements({
+    required bool showingRemarksCard,
+  }) {
+    final ids = <String>{};
+    if (!showingRemarksCard) return ids;
+    for (final movement in _movements) {
+      if (_isDuplicateOfInitialRemarks(
+        movement: movement,
+        showingRemarksCard: showingRemarksCard,
+      )) {
+        continue;
+      }
+      ids.addAll(movement.imageFileIds);
+      ids.addAll(movement.videoFileIds);
+      ids.addAll(movement.documentFileIds);
+    }
+    return ids;
+  }
+
+  List<TicketAttachmentEntity> _attachmentsForRemarksCard({
+    required bool showingRemarksCard,
+  }) {
+    if (!showingRemarksCard) return [];
+    final claimed = _fileIdsClaimedByNonInitialMovements(
+      showingRemarksCard: showingRemarksCard,
     );
+    if (claimed.isEmpty) {
+      return widget.ticket.attachments;
+    }
+    return widget.ticket.attachments.where((a) {
+      final fid = a.fileId;
+      if (fid == null || fid.isEmpty) return true;
+      return !claimed.contains(fid);
+    }).toList();
   }
 
   @override
-  void dispose() {
-    _ticketBloc.close();
-    super.dispose();
-  }
+  Widget build(BuildContext context) {
+    // Construct messages from TicketEntity
+    // 1. Main ticket remarks (as the first message)
+    // 2. Movements (as subsequent messages)
 
-  List<TicketMessage> _buildMessages() {
-    final l10n = context.bssSubL10n;
     final List<TicketMessage> messages = [];
 
-    if (widget.ticket.remarks != null && widget.ticket.remarks!.isNotEmpty) {
+    // Add initial ticket as a message if remarks exist
+    final bool showingRemarksCard =
+        widget.ticket.remarks != null && widget.ticket.remarks!.isNotEmpty;
+    if (showingRemarksCard) {
       messages.add(
         TicketMessage(
           number: '01',
-          senderName: widget.ticket.partnerName ?? l10n.youSender,
+          senderName: _senderDisplayName(widget.ticket.partnerName, 'You'),
           senderRole: widget.ticket.customerType ?? 'Partner',
           dateTime: _formatDateTime(widget.ticket.submitDate),
           message: widget.ticket.remarks!,
-          attachments: widget.ticket.attachments,
+          attachments: _attachmentsForRemarksCard(
+            showingRemarksCard: showingRemarksCard,
+          ),
           status: widget.ticket.status,
           isMe: true,
         ),
       );
     }
 
-    final movements = _movements.toList()
-      ..sort((a, b) {
-        if (a.createdDate == null || b.createdDate == null) return 0;
-        return a.createdDate!.compareTo(b.createdDate!);
-      });
-
-    final int startIndex =
-        (movements.isNotEmpty &&
-            widget.ticket.remarks != null &&
-            movements.first.note == widget.ticket.remarks)
-        ? 1
-        : 0;
-
-    for (int i = startIndex; i < movements.length; i++) {
+    // Add movements; skip any row that duplicates the remarks card (see [_isDuplicateOfInitialRemarks])
+    final movements = _movements;
+    for (int i = 0; i < movements.length; i++) {
       final movement = movements[i];
+      if (_isDuplicateOfInitialRemarks(
+        movement: movement,
+        showingRemarksCard: showingRemarksCard,
+      )) {
+        continue;
+      }
       final number = (messages.length + 1).toString().padLeft(2, '0');
-      final isMe = movement.assignedToName == widget.ticket.createdByUser;
+
+      // If assignedToName matches the user who created the ticket, it's the partner
+      final bool isMe = movement.assignedToName == widget.ticket.createdByUser;
 
       final List<TicketAttachmentEntity> movementAttachments = [];
+      for (final fid in movement.imageFileIds) {
+        movementAttachments.add(
+          TicketAttachmentEntity(
+            id: '',
+            fileUrl: '',
+            filePath: '',
+            fileId: fid,
+            movementId: movement.id,
+            fileType: 'IMAGE',
+          ),
+        );
+      }
       for (final url in movement.imageUrl) {
-        movementAttachments.add(TicketAttachmentEntity(
-          id: '', fileUrl: url, filePath: '', fileType: 'IMAGE',
-        ));
+        if (url.isEmpty) continue;
+        movementAttachments.add(
+          TicketAttachmentEntity(
+            id: '',
+            fileUrl: url,
+            filePath: '',
+            movementId: movement.id,
+            fileType: 'IMAGE',
+          ),
+        );
+      }
+      for (final fid in movement.videoFileIds) {
+        movementAttachments.add(
+          TicketAttachmentEntity(
+            id: '',
+            fileUrl: '',
+            filePath: '',
+            fileId: fid,
+            movementId: movement.id,
+            fileType: 'VIDEO',
+          ),
+        );
       }
       for (final url in movement.videoUrl) {
-        movementAttachments.add(TicketAttachmentEntity(
-          id: '', fileUrl: url, filePath: '', fileType: 'VIDEO',
-        ));
+        if (url.isEmpty) continue;
+        movementAttachments.add(
+          TicketAttachmentEntity(
+            id: '',
+            fileUrl: url,
+            filePath: '',
+            movementId: movement.id,
+            fileType: 'VIDEO',
+          ),
+        );
       }
-
+      for (final fid in movement.documentFileIds) {
+        movementAttachments.add(
+          TicketAttachmentEntity(
+            id: '',
+            fileUrl: '',
+            filePath: '',
+            fileId: fid,
+            movementId: movement.id,
+            fileType: 'PDF',
+          ),
+        );
+      }
+      for (final url in movement.documentUrl) {
+        if (url.isEmpty) continue;
+        movementAttachments.add(
+          TicketAttachmentEntity(
+            id: '',
+            fileUrl: url,
+            filePath: '',
+            movementId: movement.id,
+            fileType: 'PDF',
+          ),
+        );
+      }
+      final locals = _localAttachmentsByMovementId[movement.id];
+      if (locals != null && locals.isNotEmpty) {
+        movementAttachments.addAll(locals);
+      }
       messages.add(
         TicketMessage(
           number: number,
           senderName: isMe
-              ? (widget.ticket.partnerName ?? l10n.youSender)
-              : (movement.assignedToName ?? l10n.supportSender),
+              ? _senderDisplayName(widget.ticket.partnerName, 'You')
+              : _senderDisplayName(movement.assignedToName, 'Support'),
           senderRole: isMe ? (widget.ticket.customerType ?? 'Partner') : 'KFON',
           dateTime: _formatDateTime(movement.createdDate),
           message: movement.note ?? '',
@@ -150,59 +320,42 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
       );
     }
 
-    return messages;
-  }
-
-  Color _getStatusColor(String status) {
-    final statusEnum = TicketStatus.fromString(status);
-    switch (statusEnum) {
-      case TicketStatus.open: return AppColor.kTicketOpenBlue;
-      case TicketStatus.progress: return AppColor.kTicketProgressOrange;
-      case TicketStatus.closed: return AppColor.kTicketClosedGreen;
-      case TicketStatus.resolved: return AppColor.kPrimaryColor;
-    }
-  }
-
-  String _getStatusText(String status) {
-    if (status.isEmpty) return '';
-    return status[0].toUpperCase() + status.substring(1).toLowerCase();
-  }
-
-  String _formatDateTime(DateTime? dateTime) {
-    if (dateTime == null) return '';
-    return DateFormat('EEE, dd-MM-yyyy  hh:mm a').format(dateTime);
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.bssSubL10n;
-
     return PopScope(
       canPop: false,
       onPopInvokedWithResult: (didPop, result) {
-        if (!didPop) Navigator.pop(context, _hasNewNotes);
+        if (!didPop) {
+          Navigator.pop(context, _hasNewNotes);
+        }
       },
       child: BlocListener<TicketBloc, TicketState>(
         bloc: _ticketBloc,
         listenWhen: (previous, current) =>
-        current is NoteSubmitted || current is OnError,
+            current is NoteSubmitted || current is OnError,
         listener: (context, state) {
           if (state is NoteSubmitted) {
             setState(() {
-              _movements.add(TicketMovementEntity(
-                id: state.respoEntity.movementId,
-                note: state.note,
-                status: state.respoEntity.status,
-                assignedToName: state.respoEntity.assignedToName,
-                createdDate: DateTime.now(),
-              ));
+              final mid = state.respoEntity.movementId;
+              final pending = _pendingNoteFiles;
+              _pendingNoteFiles = null;
+              if (pending != null && pending.isNotEmpty) {
+                _localAttachmentsByMovementId[mid] =
+                    _attachmentsFromPlatformFiles(pending);
+              }
+              _movements.add(
+                TicketMovementEntity(
+                  id: mid,
+                  note: _lastAddedNote,
+                  status: state.respoEntity.status,
+                  assignedToName: state.respoEntity.assignedToName,
+                  createdDate: DateTime.now(),
+                ),
+              );
+              _lastAddedNote = null;
               _hasNewNotes = true;
-              _messages = _buildMessages();
             });
             _dialogUtil.showCustomSnackbar(
               context: context,
-              content: l10n.noteSavedSuccessfully,
-              backgroundColor: AppColor.kTicketClosedGreen,
+              content: 'Note saved successfully',
             );
           } else if (state is OnError) {
             _dialogUtil.showMessage(state.errorMessage, context);
@@ -210,31 +363,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
         },
         child: CommonAppBar(
           onBackPressed: () => Navigator.pop(context, _hasNewNotes),
-          title: l10n.ticketIdTitle(widget.ticket.ticketId.toString()),
-          floatingActionButton: FloatingActionButton(
-            onPressed: () {
-              showAppModalBottomSheet(
-                context: context,
-                builder: (context) => TicketNoteBottomSheet(
-                  ticketBloc: _ticketBloc,
-                  onSave: (note, visibility) {
-                    _ticketBloc.add(
-                      OnAddNote(
-                        params: AddNoteReq(
-                          ticketUuid: widget.ticket.uuid,
-                          remarks: note,
-                          status: widget.ticket.status.toUpperCase(),
-                          visibility: visibility,
-                        ),
-                      ),
-                    );
-                  },
-                ),
-              );
-            },
-            backgroundColor: AppColor.kPrimaryColor,
-            child: const Icon(Icons.note_add_outlined, color: Colors.white),
-          ),
+          title: 'Ticket ID #${widget.ticket.ticketId}',
           body: SafeArea(
             child: ListView(
               padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
@@ -242,15 +371,26 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                 // Header Card
                 Container(
                   padding: const EdgeInsets.all(16),
-                  decoration: _cardDecoration,
+                  decoration: BoxDecoration(
+                    color: Colors.white,
+                    borderRadius: BorderRadius.circular(16),
+                    boxShadow: [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.03),
+                        blurRadius: 10,
+                        offset: const Offset(0, 4),
+                      ),
+                    ],
+                  ),
                   child: Row(
                     children: [
+                      // Ticket Icon
                       Container(
                         width: 40,
                         height: 40,
                         decoration: const BoxDecoration(
                           shape: BoxShape.circle,
-                          color: AppColor.kTicketDetailIconBg,
+                          color: Color(0xFFFFF0F6),
                         ),
                         child: Center(
                           child: SvgPicture.asset(
@@ -265,9 +405,10 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                         ),
                       ),
                       const SizedBox(width: 12),
+                      // Title
                       Expanded(
                         child: Text(
-                          widget.ticket.subject?.name ?? l10n.noSubject,
+                          widget.ticket.subject?.name ?? 'No Subject',
                           style: const TextStyle(
                             color: AppColor.kTextSecondaryDark,
                             fontSize: 14,
@@ -277,10 +418,30 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                         ),
                       ),
                       const SizedBox(width: 12),
+                      // Status Badge
                       Container(
                         height: 28,
                         padding: const EdgeInsets.symmetric(horizontal: 16),
-                        decoration: _headerStatusDecoration,
+                        decoration: ShapeDecoration(
+                          color: _getStatusColor(
+                            widget.ticket.status,
+                          ).withOpacity(0.1),
+                          shape: RoundedRectangleBorder(
+                            side: BorderSide(
+                              width: 1,
+                              color: _getStatusColor(widget.ticket.status),
+                            ),
+                            borderRadius: BorderRadius.circular(8),
+                          ),
+                          shadows: [
+                            BoxShadow(
+                              color: const Color(0x0C000000),
+                              blurRadius: 3.80,
+                              offset: const Offset(0, 4),
+                              spreadRadius: 0,
+                            ),
+                          ],
+                        ),
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           mainAxisAlignment: MainAxisAlignment.center,
@@ -288,7 +449,12 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                           children: [
                             Text(
                               _getStatusText(widget.ticket.status),
-                              style: _headerStatusTextStyle,
+                              style: TextStyle(
+                                color: _getStatusColor(widget.ticket.status),
+                                fontSize: 12,
+                                fontWeight: FontWeight.w500,
+                                fontFamily: 'GeneralSans',
+                              ),
                             ),
                           ],
                         ),
@@ -298,15 +464,8 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                 ),
                 const SizedBox(height: 16),
 
-                // Message Cards — _MessageCard is a StatelessWidget so Flutter
-                // can track identity and skip rebuilds for unchanged messages.
-                for (final message in _messages)
-                  _MessageCard(
-                    key: ValueKey(message.number),
-                    message: message,
-                    getStatusColor: _getStatusColor,
-                    getStatusText: _getStatusText,
-                  ),
+                // Message Cards
+                ...messages.map((message) => _buildMessageCard(message)),
               ],
             ),
           ),
@@ -315,103 +474,59 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
     );
   }
 
-}
-
-class TicketMessage {
-  final String number;
-  final String senderName;
-  final String senderRole;
-  final String dateTime;
-  final String message;
-  final List<TicketAttachmentEntity> attachments;
-  final String status;
-  final bool isMe;
-
-  TicketMessage({
-    required this.number,
-    required this.senderName,
-    required this.senderRole,
-    required this.dateTime,
-    required this.message,
-    required this.attachments,
-    required this.status,
-    required this.isMe,
-  });
-}
-
-/// Extracted from the old `_buildMessageCard` helper method.
-/// As a StatelessWidget, Flutter can track identity across setState calls
-/// (e.g. when a new note is added) and skip rebuilding unchanged cards.
-class _MessageCard extends StatelessWidget {
-  final TicketMessage message;
-  final Color Function(String) getStatusColor;
-  final String Function(String) getStatusText;
-
-  const _MessageCard({
-    super.key,
-    required this.message,
-    required this.getStatusColor,
-    required this.getStatusText,
-  });
-
-  static const _cardDecoration = BoxDecoration(
-    color: Colors.white,
-    borderRadius: BorderRadius.all(Radius.circular(16)),
-    boxShadow: [
-      BoxShadow(
-        color: Color(0x08000000),
-        blurRadius: 10,
-        offset: Offset(0, 4),
-      ),
-    ],
-  );
-
-  static const _statusBadgeShape = RoundedRectangleBorder(
-    borderRadius: BorderRadius.all(Radius.circular(8)),
-  );
-
-  @override
-  Widget build(BuildContext context) {
-    final l10n = context.bssSubL10n;
-    // Computed once per build — not per attachment chip.
-    final statusColor = getStatusColor(message.status);
-
+  Widget _buildMessageCard(TicketMessage message) {
     return Container(
       margin: const EdgeInsets.only(bottom: 16),
       padding: const EdgeInsets.all(16),
-      decoration: _cardDecoration,
+      decoration: BoxDecoration(
+        color: Colors.white,
+        borderRadius: BorderRadius.circular(16),
+        boxShadow: [
+          BoxShadow(
+            color: Colors.black.withOpacity(0.03),
+            blurRadius: 10,
+            offset: const Offset(0, 4),
+          ),
+        ],
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Number Badge
           Container(
-            width: 40,
-            height: 40,
-            alignment: Alignment.centerLeft,
+            width: 17,
+            height: 17,
+            alignment: Alignment.center,
+            decoration: BoxDecoration(
+              color: const Color(0xFFF97316),
+              borderRadius: BorderRadius.circular(4),
+            ),
             child: Text(
               message.number,
-              style: const TextStyle(
-                color: AppColor.kTextSecondaryDark,
-                fontSize: 14,
+              style: GoogleFonts.manrope(
+                color: Colors.white,
+                fontSize: 12,
                 fontWeight: FontWeight.w600,
-                fontFamily: 'GeneralSans',
+                height: 1.0,
               ),
             ),
           ),
-
+          const SizedBox(width: 10), // Gap configuration
           // Content
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
+                // Avatar and Header Row
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    // Avatar
                     Container(
                       width: 40,
                       height: 40,
                       decoration: const ShapeDecoration(
-                        color: AppColor.kAvatarSandBg,
+                        color: Color(0xFFF3E2C8),
                         shape: OvalBorder(),
                       ),
                       child: Center(
@@ -421,7 +536,7 @@ class _MessageCard extends StatelessWidget {
                                   : '?')
                               .toUpperCase(),
                           style: const TextStyle(
-                            color: AppColor.kAvatarGoldText,
+                            color: Color(0xFFC2A060),
                             fontSize: 18,
                             fontWeight: FontWeight.w600,
                             fontFamily: 'GeneralSans',
@@ -430,6 +545,8 @@ class _MessageCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 12),
+
+                    // Name and Role
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -447,7 +564,7 @@ class _MessageCard extends StatelessWidget {
                           Text(
                             message.senderRole,
                             style: const TextStyle(
-                              color: AppColor.kNavyBlue,
+                              color: Color(0xFF232F50),
                               fontSize: 10,
                               fontWeight: FontWeight.w400,
                               fontFamily: 'GeneralSans',
@@ -456,70 +573,188 @@ class _MessageCard extends StatelessWidget {
                         ],
                       ),
                     ),
-                    Text(
-                      message.dateTime,
-                      style: const TextStyle(
-                        color: AppColor.kNavyBlue,
-                        fontSize: 8,
-                        fontWeight: FontWeight.w600,
-                        fontFamily: 'GeneralSans',
+
+                    // Date Time
+                    Expanded(
+                      flex: 0,
+                      child: Text(
+                        message.dateTime,
+                        style: const TextStyle(
+                          color: Color(0xFF232F4F),
+                          fontSize: 8,
+                          fontWeight: FontWeight.w600,
+                          fontFamily: 'GeneralSans',
+                        ),
                       ),
                     ),
                   ],
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
 
+                // Message Text
                 Text(
                   message.message,
-                  style: const TextStyle(
-                    color: AppColor.kNavyBlue,
+                  style: GoogleFonts.figtree(
+                    color: const Color(0xFF232F50),
                     fontSize: 12,
                     fontWeight: FontWeight.w400,
-                    fontFamily: 'GeneralSans',
-                    height: 2,
+                    height: 2.0, // 12 * 2.0 = 24px line height
                   ),
                 ),
-                const SizedBox(height: 12),
+                const SizedBox(height: 16),
 
+                // Attachments + status: one line when it fits; Wrap only reflows on overflow
                 Row(
+                  crossAxisAlignment: CrossAxisAlignment.end,
                   children: [
-                    if (message.attachments.isNotEmpty) ...() {
-                        final images = message.attachments
-                            .where((a) => a.fileType.toUpperCase() == 'IMAGE')
-                            .toList();
-                        final videos = message.attachments
-                            .where((a) => a.fileType.toUpperCase() == 'VIDEO')
-                            .toList();
-                        final pdfs = message.attachments
-                            .where((a) => a.fileType.toUpperCase() == 'PDF')
-                            .toList();
-                        return [
-                          _AttachmentChip(
-                            label: l10n.routerImage,
-                            iconAsset: 'assets/images/Paperclip.svg',
-                            files: images,
-                          ),
-                          _AttachmentChip(
-                            label: l10n.document,
-                            iconAsset: 'assets/images/Paperclip.svg',
-                            files: pdfs,
-                          ),
-                          _AttachmentChip(
-                            label: l10n.video,
-                            iconAsset: 'assets/images/Video.svg',
-                            files: videos,
-                          ),
-                        ];
-                      }(),
+                    if (message.attachments.isNotEmpty)
+                      Expanded(
+                        child: Builder(
+                          builder: (context) {
+                            final images = message.attachments
+                                .where(
+                                  (a) => a.fileType.toUpperCase() == 'IMAGE',
+                                )
+                                .toList();
+                            final videos = message.attachments
+                                .where(
+                                  (a) => a.fileType.toUpperCase() == 'VIDEO',
+                                )
+                                .toList();
+                            final pdfs = message.attachments
+                                .where(
+                                  (a) =>
+                                      a.fileType.toUpperCase() == 'PDF' ||
+                                      a.fileType.toUpperCase() == 'DOCUMENT',
+                                )
+                                .toList();
 
-                    const Spacer(),
+                            Widget buildAttachmentChip(
+                              String label,
+                              String iconAsset,
+                              List<TicketAttachmentEntity> files,
+                            ) {
+                              if (files.isEmpty) {
+                                return const SizedBox.shrink();
+                              }
 
+                              Widget chip = Container(
+                                margin: const EdgeInsets.only(right: 8),
+                                width: 24,
+                                height: 24,
+                                decoration: BoxDecoration(
+                                  border: Border.all(
+                                    color: AppColor.kPrimaryColor,
+                                    width: 1,
+                                  ),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Center(
+                                  child: SvgPicture.asset(
+                                    iconAsset,
+                                    width: 16,
+                                    height: 16,
+                                    colorFilter: const ColorFilter.mode(
+                                      AppColor.kPrimaryColor,
+                                      BlendMode.srcIn,
+                                    ),
+                                  ),
+                                ),
+                              );
+
+                              if (files.length > 1) {
+                                chip = Badge(
+                                  label: Text('${files.length}'),
+                                  offset: const Offset(1, -8),
+                                  child: chip,
+                                );
+                              }
+
+                              return GestureDetector(
+                                onTap: () {
+                                  if (files.length == 1) {
+                                    final a = files.first;
+                                    final hasLocal = a.filePath.isNotEmpty;
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => FilePreviewPage(
+                                          file: hasLocal
+                                              ? File(a.filePath)
+                                              : null,
+                                          fileUrl: a.fileUrl.isNotEmpty
+                                              ? a.fileUrl
+                                              : null,
+                                          fileId: a.fileId,
+                                          fileName: label,
+                                          fileExtension:
+                                              a.fileType.toUpperCase() ==
+                                                  'VIDEO'
+                                              ? '.mp4'
+                                              : (a.fileType.toUpperCase() ==
+                                                        'PDF' ||
+                                                    a.fileType.toUpperCase() ==
+                                                        'DOCUMENT')
+                                              ? '.pdf'
+                                              : '.jpg',
+                                        ),
+                                      ),
+                                    );
+                                  } else {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder: (context) => FilePreviewPage(
+                                          files: files,
+                                          title: '$label Previews',
+                                          fileName: label,
+                                          fileExtension: '',
+                                        ),
+                                      ),
+                                    );
+                                  }
+                                },
+                                child: chip,
+                              );
+                            }
+
+                            return Wrap(
+                              spacing: 0,
+                              runSpacing: 8,
+                              crossAxisAlignment: WrapCrossAlignment.center,
+                              children: [
+                                buildAttachmentChip(
+                                  'Router Image',
+                                  'assets/icons/paperclip.svg',
+                                  images,
+                                ),
+                                buildAttachmentChip(
+                                  'Document',
+                                  'assets/icons/paperclip.svg',
+                                  pdfs,
+                                ),
+                                buildAttachmentChip(
+                                  'Video',
+                                  'assets/icons/video.svg',
+                                  videos,
+                                ),
+                              ],
+                            );
+                          },
+                        ),
+                      ),
+
+                    if (message.attachments.isEmpty) const Spacer(),
+
+                    // Status Badge
                     Container(
                       height: 24,
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       decoration: ShapeDecoration(
-                        color: statusColor.withValues(alpha: 0.1),
-                        shape: _statusBadgeShape,
+                        color: _getStatusColor(message.status).withOpacity(0.1),
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.circular(8),
+                        ),
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -527,9 +762,9 @@ class _MessageCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.center,
                         children: [
                           Text(
-                            getStatusText(message.status),
+                            _getStatusText(message.status),
                             style: TextStyle(
-                              color: statusColor,
+                              color: _getStatusColor(message.status),
                               fontSize: 14,
                               fontWeight: FontWeight.w500,
                               fontFamily: 'GeneralSans',
@@ -549,112 +784,25 @@ class _MessageCard extends StatelessWidget {
   }
 }
 
-/// Extracted from the old `buildAttachmentChip` local function.
-/// Local functions are re-defined on every builder invocation and cannot be
-/// reconciled by the framework. A StatelessWidget with [super.key] lets Flutter
-/// reuse the element when [label] and [files] are unchanged.
-class _AttachmentChip extends StatelessWidget {
-  final String label;
-  final String iconAsset;
-  final List<TicketAttachmentEntity> files;
+// Model for ticket messages
+class TicketMessage {
+  final String number;
+  final String senderName;
+  final String senderRole;
+  final String dateTime;
+  final String message;
+  final List<TicketAttachmentEntity> attachments;
+  final String status;
+  final bool isMe;
 
-  const _AttachmentChip({
-    required this.label,
-    required this.iconAsset,
-    required this.files,
+  TicketMessage({
+    required this.number,
+    required this.senderName,
+    required this.senderRole,
+    required this.dateTime,
+    required this.message,
+    required this.attachments,
+    required this.status,
+    required this.isMe, // useful for styling if needed
   });
-
-  static const _chipDecoration = BoxDecoration(
-    border: Border(
-      top: BorderSide(color: AppColor.kPrimaryColor),
-      bottom: BorderSide(color: AppColor.kPrimaryColor),
-      left: BorderSide(color: AppColor.kPrimaryColor),
-      right: BorderSide(color: AppColor.kPrimaryColor),
-    ),
-    borderRadius: BorderRadius.all(Radius.circular(8)),
-  );
-
-  static const _iconColorFilter =
-      ColorFilter.mode(AppColor.kPrimaryColor, BlendMode.srcIn);
-
-  @override
-  Widget build(BuildContext context) {
-    if (files.isEmpty) return const SizedBox.shrink();
-
-    Widget chip = Container(
-      margin: const EdgeInsets.only(right: 12),
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 6),
-      decoration: _chipDecoration,
-      child: Row(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          SvgPicture.asset(
-            iconAsset,
-            width: 14,
-            height: 14,
-            colorFilter: _iconColorFilter,
-          ),
-          const SizedBox(width: 4),
-          Flexible(
-            child: Text(
-              label,
-              style: const TextStyle(
-                color: AppColor.kPrimaryColor,
-                fontSize: 12,
-                fontWeight: FontWeight.w500,
-                fontFamily: 'GeneralSans',
-              ),
-              overflow: TextOverflow.ellipsis,
-            ),
-          ),
-        ],
-      ),
-    );
-
-    if (files.length > 1) {
-      chip = Badge(
-        label: Text('${files.length}'),
-        offset: const Offset(-8, -4),
-        child: chip,
-      );
-    }
-
-    return GestureDetector(
-      onTap: () {
-        if (files.length == 1) {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => FilePreviewPage(
-                fileUrl: files.first.fileUrl.isNotEmpty
-                    ? files.first.fileUrl
-                    : null,
-                fileId: files.first.fileId,
-                fileName: label,
-                fileExtension:
-                    files.first.fileType.toUpperCase() == 'VIDEO'
-                        ? '.mp4'
-                        : files.first.fileType.toUpperCase() == 'PDF'
-                            ? '.pdf'
-                            : '.jpg',
-              ),
-            ),
-          );
-        } else {
-          Navigator.push(
-            context,
-            MaterialPageRoute(
-              builder: (context) => FilePreviewPage(
-                files: files,
-                title: '$label Previews',
-                fileName: label,
-                fileExtension: '',
-              ),
-            ),
-          );
-        }
-      },
-      child: chip,
-    );
-  }
 }

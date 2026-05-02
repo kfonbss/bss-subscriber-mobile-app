@@ -38,8 +38,14 @@ class TicketMovementEntity {
   final String status;
   final String? assignedToName;
   final DateTime? createdDate;
+  /// Legacy: direct URL strings when API returns plain strings.
   final List<String> imageUrl;
   final List<String> videoUrl;
+  final List<String> documentUrl;
+  /// When API returns `{ fileId, attachmentsId, movementId }` objects per item.
+  final List<String> imageFileIds;
+  final List<String> videoFileIds;
+  final List<String> documentFileIds;
 
   const TicketMovementEntity({
     required this.id,
@@ -49,6 +55,10 @@ class TicketMovementEntity {
     this.createdDate,
     this.imageUrl = const [],
     this.videoUrl = const [],
+    this.documentUrl = const [],
+    this.imageFileIds = const [],
+    this.videoFileIds = const [],
+    this.documentFileIds = const [],
   });
 }
 

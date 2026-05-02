@@ -3,10 +3,10 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
-import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
+import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
-import '../../../../presentation/ui_component/primary_button.dart' show PrimaryButton;
+import '../../../../shared/widgets/primary_button.dart' show PrimaryButton;
 
 class SpeedTestPage extends StatelessWidget {
   const SpeedTestPage({super.key});

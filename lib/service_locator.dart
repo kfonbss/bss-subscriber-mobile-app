@@ -60,9 +60,7 @@ void setUpServiceLocator() {
   sl.registerLazySingleton<PackageDetailsRepository>(
     () => PackageDetailsRepositoryImp(client: sl<DioClient>()),
   );
-  sl.registerLazySingleton<TicketRepository>(
-    () => TicketRepositoryImp(client: sl<DioClient>()),
-  );
+  sl.registerSingleton<TicketRepository>(TicketRepositoryImp());
   sl.registerLazySingleton<InvoiceRepository>(
     () => InvoiceRepositoryImp(client: sl<DioClient>()),
   );

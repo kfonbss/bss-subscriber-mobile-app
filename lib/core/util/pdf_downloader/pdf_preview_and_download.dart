@@ -10,7 +10,7 @@ import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/core/util/pdf_downloader/pdf_download_controller.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/tranasactions/data/model/view_invoice_model.dart';
-import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
+import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 
 class PdfPreviewAndDownload extends StatefulWidget {

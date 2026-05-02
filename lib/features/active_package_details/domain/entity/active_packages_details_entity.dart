@@ -17,14 +17,14 @@ class AdOnEntity {
 class ActivePackagesDetailsEntity {
   final String packageId;
   final String packageName;
-  final double speedMbps;
+  final int speedMbps;
   final String packageType;
   final int daysLeft;
   final DateTime activeUntil;
   final double renewalFee;
   final int totalPackageCount;
   final double availableVolumeGb;
-  final int totalVolumeGb;
+  final double totalVolumeGb;
   final List<AdOnEntity> activeAddOns;
 
   const ActivePackagesDetailsEntity({

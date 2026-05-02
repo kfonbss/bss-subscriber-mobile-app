@@ -15,7 +15,7 @@ import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profi
 import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profile_state.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/pages/tickets_page.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
-import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
+import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
 
 class ProfilePage extends StatefulWidget {
   const ProfilePage({super.key});

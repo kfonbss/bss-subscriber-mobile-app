@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
-import 'package:kfon_subscriber/presentation/ui_component/primary_button.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 
 
 class VerificationSuccessSheet extends StatelessWidget {

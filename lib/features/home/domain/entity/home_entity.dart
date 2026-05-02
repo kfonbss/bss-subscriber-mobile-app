@@ -28,14 +28,15 @@ class ActiveAdOnEntity extends Equatable {
 class PackageDetailsEntity extends Equatable {
   final String packageId;
   final String packageName;
-  final double speedMbps;
+  final int speedMbps;
   final String packageType;
   final int daysLeft;
   final DateTime activeUntil;
   final double renewalFee;
   final int totalPackageCount;
   final double availableVolumeGb;
-  final int totalVolumeGb;
+  final double totalVolumeGb;
+  final int validity;
   final List<ActiveAdOnEntity> activeAddOns;
 
   const PackageDetailsEntity({
@@ -49,6 +50,7 @@ class PackageDetailsEntity extends Equatable {
     required this.totalPackageCount,
     required this.availableVolumeGb,
     required this.totalVolumeGb,
+    required this.validity,
     required this.activeAddOns,
   });
 
@@ -63,18 +65,23 @@ class PackageDetailsEntity extends Equatable {
     renewalFee,
     totalPackageCount,
     availableVolumeGb,
+    validity,
     totalVolumeGb,
     activeAddOns,
   ];
 }
 
 class HomeEntity extends Equatable {
+  final String firstName;
+  final String username;
   final double balance;
   final DateTime lastUpdated;
   final String subscriberId;
   final PackageDetailsEntity? packageDetails;
 
   const HomeEntity({
+    required this.username,
+    required this.firstName,
     required this.balance,
     required this.lastUpdated,
     required this.subscriberId,
@@ -82,6 +89,12 @@ class HomeEntity extends Equatable {
   });
 
   @override
-  List<Object?> get props => [balance, lastUpdated, packageDetails,subscriberId];
+  List<Object?> get props => [
+    balance,
+    lastUpdated,
+    packageDetails,
+    subscriberId,
+    username,
+    firstName,
+  ];
 }
-

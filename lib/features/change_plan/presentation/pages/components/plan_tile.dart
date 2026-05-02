@@ -2,10 +2,11 @@ import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/app_styles.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entity.dart';
+import 'package:kfon_subscriber/features/change_plan/domain/entity/package_new_entity.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 
 class PlanTile extends StatelessWidget {
-  final PackageEntity package;
+  final PackageItemEntity package;
   final bool isSelected;
   final VoidCallback onTap;
 
@@ -57,7 +58,7 @@ class PlanTile extends StatelessWidget {
                       child: Text(package.packageName, style: titleStyle),
                     ),
                     Text(
-                      '₹ ${package.price.toStringAsFixed(2)}',
+                      '₹ ${package.renewalFee.toStringAsFixed(2)}',
                       style: titleStyle,
                     ),
                   ],
@@ -76,15 +77,15 @@ class PlanTile extends StatelessWidget {
                   child: Row(
                     children: [
                       Expanded(
-                        child: _PlanDetail(label: l10n.data, value: package.data),
+                        child: _PlanDetail(label: l10n.data, value: '${package.allocatedVolume}'),
                       ),
                       Expanded(
-                        child: _PlanDetail(label: l10n.speed, value: package.speed),
+                        child: _PlanDetail(label: l10n.speed, value: '${package.speedInKbps/1024}'),
                       ),
                       Expanded(
                         child: _PlanDetail(
                           label: l10n.validity,
-                          value: '${package.validity} ${l10n.day}',
+                          value: '${package.renewPeriod} ${l10n.day}',
                         ),
                       ),
                     ],

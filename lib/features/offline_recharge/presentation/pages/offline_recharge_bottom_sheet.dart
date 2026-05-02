@@ -9,10 +9,10 @@ import 'package:kfon_subscriber/features/offline_recharge/presentation/bloc/offl
 import 'package:kfon_subscriber/features/offline_recharge/presentation/bloc/offline_recharge_event.dart';
 import 'package:kfon_subscriber/features/offline_recharge/presentation/bloc/offline_recharge_state.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
-import 'package:kfon_subscriber/presentation/ui_component/primary_button.dart';
-import 'package:kfon_subscriber/presentation/ui_component/secondary_button.dart';
-import 'package:kfon_subscriber/presentation/ui_component/shimmer/shimmer_base.dart';
-import 'package:kfon_subscriber/presentation/ui_component/shimmer/shimmer_box.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
+import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
+import 'package:kfon_subscriber/shared/widgets/shimmer/shimmer_base.dart';
+import 'package:kfon_subscriber/shared/widgets/shimmer/shimmer_box.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 
 class OfflineRechargeBottomSheet extends StatefulWidget {

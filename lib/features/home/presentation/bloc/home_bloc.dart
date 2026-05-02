@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kfon_subscriber/core/util/preference_util.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/params/get_all_packages_parms.dart';
 import 'package:kfon_subscriber/features/home/domain/repository/home_repository.dart';
 import 'package:kfon_subscriber/features/home/presentation/bloc/home_event.dart';
@@ -19,19 +20,28 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
     emit(const HomeLoading());
     try {
       final result = await repository.getHomePageData();
-      result.fold(
-        (failure) => emit(GetDataFailure(errorMessage: failure.toString())),
-        (homeEntity) => emit(GetDataSuccess(homeEntity: homeEntity)),
+      await result.fold(
+        (failure) async =>
+            emit(GetDataFailure(errorMessage: failure.toString())),
+        (homeEntity) async {
+          await PreferenceUtils.setUserDetails(
+            userId: homeEntity.subscriberId,
+            userName: homeEntity.firstName,
+          );
+          emit(
+            GetDataSuccess(
+              homeEntity: homeEntity,
+              loadPackage: event.loadPackage,
+            ),
+          );
+        },
       );
     } catch (e) {
       emit(GetDataFailure(errorMessage: e.toString()));
     }
   }
 
-  Future<void> _onLoadPlans(
-    GetPlans event,
-    Emitter<HomeState> emit,
-  ) async {
+  Future<void> _onLoadPlans(GetPlans event, Emitter<HomeState> emit) async {
     try {
       final result = await repository.getPackages(
         GetAllPackagesParams(
@@ -40,16 +50,20 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
           search: null,
           speedMbps: null,
           ott: null,
+          page: 0,
+          size: 2,
         ),
       );
       result.fold(
         (failure) => emit(GetPlansFailure(errorMessage: failure.toString())),
         (packages) => emit(
           GetPlansSuccess(
-            packageEntities: packages
-                .where((package) => package.packageId != event.packageId)
-                .take(2)
-                .toList(),
+            // packageEntities:
+            //     packages.content
+            //         .where((package) => package.id != event.packageId)
+            //         .take(2)
+            //         .toList(),
+            packageEntities: packages.content
           ),
         ),
       );

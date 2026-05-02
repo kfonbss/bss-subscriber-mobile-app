@@ -1,7 +1,9 @@
+import 'package:equatable/equatable.dart';
 import 'package:kfon_subscriber/features/ticket/domain/entity/add_note_respo_entity.dart';
 import 'package:kfon_subscriber/features/ticket/domain/entity/priority_entity.dart';
 import 'package:kfon_subscriber/features/ticket/domain/entity/subject_entity.dart';
 import 'package:kfon_subscriber/features/ticket/domain/entity/submit_ticket_respo_entity.dart';
+import 'package:kfon_subscriber/features/ticket/domain/entity/ticket_category_entity.dart';
 import 'package:kfon_subscriber/features/ticket/domain/entity/tickets_list_response_entity.dart';
 import 'package:kfon_subscriber/features/ticket/domain/entity/visibility_entity.dart';
 
@@ -13,34 +15,111 @@ class TicketInitial extends TicketState {
   const TicketInitial();
 }
 
-class SubjectLoading extends TicketState {
-  const SubjectLoading();
-}
+/// Master data for create-ticket pickers (subjects, categories, priorities).
+/// Kept in one state so concurrent loads (e.g. category + subject) do not
+/// overwrite each other.
+class TicketMasterDataState extends TicketState with EquatableMixin {
+  static const _unset = Object();
 
-class SubjectLoaded extends TicketState {
   final List<SubjectEntity> subjects;
+  final bool subjectsLoading;
+  final String? subjectsError;
 
-  const SubjectLoaded({required this.subjects});
-}
+  final List<TicketCategoryEntity> categories;
+  final bool categoriesLoading;
+  final String? categoriesError;
 
-class PriorityLoading extends TicketState {
-  const PriorityLoading();
-}
-
-class PriorityLoaded extends TicketState {
   final List<PriorityEntity> priorities;
+  final bool prioritiesLoading;
+  final String? prioritiesError;
 
-  const PriorityLoaded({required this.priorities});
-}
+  final SubjectEntity? selectedSubject;
+  final TicketCategoryEntity? selectedCategory;
 
-class FileSelected extends TicketState {
-  const FileSelected();
-}
+  /// Resolved UUID of the customer type matching the user's role code.
+  /// Null until [LoadCustomerTypeId] completes.
+  final String? customerTypeId;
 
-class SubjectSelected extends TicketState {
-  final SubjectEntity subject;
+  /// Bumps when attachments change so [BlocBuilder]s can rebuild without a
+  /// separate state that would drop master data.
+  final int fileUiEpoch;
 
-  const SubjectSelected({required this.subject});
+  const TicketMasterDataState({
+    this.subjects = const [],
+    this.subjectsLoading = false,
+    this.subjectsError,
+    this.categories = const [],
+    this.categoriesLoading = false,
+    this.categoriesError,
+    this.priorities = const [],
+    this.prioritiesLoading = false,
+    this.prioritiesError,
+    this.selectedSubject,
+    this.selectedCategory,
+    this.customerTypeId,
+    this.fileUiEpoch = 0,
+  });
+
+  TicketMasterDataState copyWith({
+    List<SubjectEntity>? subjects,
+    bool? subjectsLoading,
+    Object? subjectsError = _unset,
+    List<TicketCategoryEntity>? categories,
+    bool? categoriesLoading,
+    Object? categoriesError = _unset,
+    List<PriorityEntity>? priorities,
+    bool? prioritiesLoading,
+    Object? prioritiesError = _unset,
+    Object? selectedSubject = _unset,
+    Object? selectedCategory = _unset,
+    Object? customerTypeId = _unset,
+    int? fileUiEpoch,
+  }) {
+    return TicketMasterDataState(
+      subjects: subjects ?? this.subjects,
+      subjectsLoading: subjectsLoading ?? this.subjectsLoading,
+      subjectsError: subjectsError == _unset
+          ? this.subjectsError
+          : subjectsError as String?,
+      categories: categories ?? this.categories,
+      categoriesLoading: categoriesLoading ?? this.categoriesLoading,
+      categoriesError: categoriesError == _unset
+          ? this.categoriesError
+          : categoriesError as String?,
+      priorities: priorities ?? this.priorities,
+      prioritiesLoading: prioritiesLoading ?? this.prioritiesLoading,
+      prioritiesError: prioritiesError == _unset
+          ? this.prioritiesError
+          : prioritiesError as String?,
+      selectedSubject: selectedSubject == _unset
+          ? this.selectedSubject
+          : selectedSubject as SubjectEntity?,
+      selectedCategory: selectedCategory == _unset
+          ? this.selectedCategory
+          : selectedCategory as TicketCategoryEntity?,
+      customerTypeId: customerTypeId == _unset
+          ? this.customerTypeId
+          : customerTypeId as String?,
+      fileUiEpoch: fileUiEpoch ?? this.fileUiEpoch,
+    );
+  }
+
+  @override
+  List<Object?> get props => [
+    subjects,
+    subjectsLoading,
+    subjectsError,
+    categories,
+    categoriesLoading,
+    categoriesError,
+    priorities,
+    prioritiesLoading,
+    prioritiesError,
+    selectedSubject,
+    selectedCategory,
+    customerTypeId,
+    fileUiEpoch,
+  ];
 }
 
 class TicketSubmitting extends TicketState {
@@ -66,27 +145,16 @@ class TicketsRefreshing extends TicketState {
 class TicketsLoaded extends TicketState {
   final TicketsListResponseEntity data;
   final bool isLoadingMore;
-  final String? paginationError;
 
-  const TicketsLoaded({
-    required this.data,
-    this.isLoadingMore = false,
-    this.paginationError,
-  });
-
-  static const _clear = Object();
+  const TicketsLoaded({required this.data, this.isLoadingMore = false});
 
   TicketsLoaded copyWith({
     TicketsListResponseEntity? data,
     bool? isLoadingMore,
-    Object? paginationError = _clear,
   }) {
     return TicketsLoaded(
       data: data ?? this.data,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
-      paginationError: identical(paginationError, _clear)
-          ? this.paginationError
-          : paginationError as String?,
     );
   }
 }
@@ -108,11 +176,7 @@ class NoteSubmitting extends TicketState {
 class NoteSubmitted extends TicketState {
   final AddNoteRespoEntity respoEntity;
 
-  /// The original note text, carried through state so the UI can
-  /// perform an optimistic update without relying on mutable page-level state.
-  final String note;
-
-  const NoteSubmitted({required this.respoEntity, required this.note});
+  const NoteSubmitted({required this.respoEntity});
 }
 
 class OnError extends TicketState {

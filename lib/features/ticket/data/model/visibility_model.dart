@@ -20,6 +20,10 @@ class VisibilityModel {
   }
 
   VisibilityEntity toEntity() {
-    return VisibilityEntity(code: code, name: name, isActive: isActive);
+    return VisibilityEntity(
+      code: code,
+      name: name,
+      isActive: isActive,
+    );
   }
 }

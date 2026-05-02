@@ -46,14 +46,15 @@ class ActiveAdoOnModel {
 class PackageDetailsModel {
   final String packageId;
   final String packageName;
-  final double speedMbps;
+  final int speedMbps;
   final String packageType;
   final int daysLeft;
   final String activeUntil;
   final double renewalFee;
   final int totalPackageCount;
   final double availableVolumeGb;
-  final int totalVolumeGb;
+  final int validity;
+  final double totalVolumeGb;
   final List<ActiveAdoOnModel> activeAddOns;
 
   const PackageDetailsModel({
@@ -65,6 +66,7 @@ class PackageDetailsModel {
     required this.activeUntil,
     required this.renewalFee,
     required this.totalPackageCount,
+    required this.validity,
     required this.availableVolumeGb,
     required this.totalVolumeGb,
     required this.activeAddOns,
@@ -74,14 +76,15 @@ class PackageDetailsModel {
     return PackageDetailsModel(
       packageId: json['packageId'] as String? ?? '',
       packageName: json['packageName'] as String? ?? '',
-      speedMbps: (json['speedMbps'] as num?)?.toDouble() ?? 0.0,
+      speedMbps: json['speedMbps'] as int? ?? 0,
       packageType: json['packageType'] as String? ?? '',
       daysLeft: json['daysLeft'] as int? ?? 0,
       activeUntil: json['activeUntil'] as String? ?? '',
       renewalFee: (json['renewalFee'] as num?)?.toDouble() ?? 0.0,
       totalPackageCount: json['totalPackageCount'] as int? ?? 0,
+      validity:  json['validity'] as int? ?? 0,
       availableVolumeGb: (json['availableVolumeGb'] as num?)?.toDouble() ?? 0.0,
-      totalVolumeGb: json['totalVolumeGb'] as int? ?? 0,
+      totalVolumeGb: (json['totalVolumeGb'] as num?)?.toDouble() ?? 0.0,
       activeAddOns:
           (json['activeAddOns'] as List<dynamic>?)
               ?.map((e) => ActiveAdoOnModel.fromJson(e as Map<String, dynamic>))
@@ -100,6 +103,7 @@ class PackageDetailsModel {
     'renewalFee': renewalFee,
     'totalPackageCount': totalPackageCount,
     'availableVolumeGb': availableVolumeGb,
+    'validity': validity,
     'totalVolumeGb': totalVolumeGb,
     'activeAddOns': activeAddOns.map((e) => e.toJson()).toList(),
   };
@@ -114,18 +118,23 @@ class PackageDetailsModel {
     renewalFee: renewalFee,
     totalPackageCount: totalPackageCount,
     availableVolumeGb: availableVolumeGb,
+    validity: validity,
     totalVolumeGb: totalVolumeGb,
     activeAddOns: activeAddOns.map((e) => e.toEntity()).toList(),
   );
 }
 
 class HomeModel {
+  final String firstName;
+  final String username;
   final double balance;
   final String lastUpdated;
   final PackageDetailsModel? packageDetails;
   final String subscriberId;
 
   const HomeModel({
+    required this.firstName,
+    required this.username,
     required this.balance,
     required this.lastUpdated,
     required this.subscriberId,
@@ -135,6 +144,8 @@ class HomeModel {
   factory HomeModel.fromJson(Map<String, dynamic> json) {
     return HomeModel(
       balance: (json['balance'] as num?)?.toDouble() ?? 0.0,
+      username: json['username'] as String? ?? '',
+      firstName: json['firstName'] as String? ?? '',
       lastUpdated: json['lastUpdated'] as String? ?? '',
       subscriberId: json['subscriberId'] as String? ?? '',
       packageDetails:
@@ -154,6 +165,8 @@ class HomeModel {
   };
 
   HomeEntity toEntity() => HomeEntity(
+    username: username,
+    firstName: firstName,
     balance: balance,
     subscriberId: subscriberId,
     lastUpdated: DateTime.tryParse(lastUpdated) ?? DateTime.now(),

@@ -3,9 +3,11 @@ import 'package:kfon_subscriber/core/constant/api_urls.dart';
 import 'package:kfon_subscriber/core/error/failure.dart';
 import 'package:kfon_subscriber/core/network/dio_client.dart';
 import 'package:kfon_subscriber/features/change_plan/data/models/package_model.dart';
+import 'package:kfon_subscriber/features/change_plan/data/models/package_new_model.dart';
 import 'package:kfon_subscriber/features/change_plan/data/models/recharge_change_plan_response_model.dart';
 import 'package:kfon_subscriber/features/change_plan/data/models/recharge_payment_status_model.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entity.dart';
+import 'package:kfon_subscriber/features/change_plan/domain/entity/package_new_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/recharge_change_plan_redirect_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/recharge_payment_status_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/params/change_plan_request_params.dart';
@@ -19,7 +21,7 @@ class ChangePlanRepositoryImp extends ChangePlanRepository {
   ChangePlanRepositoryImp({required DioClient client}) : _client = client;
 
   @override
-  Future<Either<Failure, List<PackageEntity>>> getPackages(
+  Future<Either<Failure, PackageNewEntity>> getPackages(
     GetAllPackagesParams params,
   ) async {
     final response = await _client.get(
@@ -28,17 +30,18 @@ class ChangePlanRepositoryImp extends ChangePlanRepository {
     );
 
     if (response.isSuccess) {
-      final List<dynamic> packagesJson = response.data as List<dynamic>? ?? [];
-      final packages =
-          packagesJson
-              .map(
-                (json) =>
-                    PackageModel.fromJson(
-                      json as Map<String, dynamic>,
-                    ).toEntity(),
-              )
-              .toList();
-      return Right(packages);
+      // final List<dynamic> packagesJson = response.data as List<dynamic>? ?? [];
+      // final packages =
+      //     packagesJson
+      //         .map(
+      //           (json) =>
+      //               PackageNewModel.fromJson(
+      //                 json as Map<String, dynamic>,
+      //               ).toEntity(),
+      //         )
+      //         .toList();
+     // return Right(packages);
+      return Right(PackageNewModel.fromJson(response.data).toEntity());
     } else {
       return Left(response.failure);
     }

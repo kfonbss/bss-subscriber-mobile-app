@@ -10,9 +10,30 @@
   "enterPassword": "Enter Password",
   "forgotPassword": "Forgot Password?",
   "signIn": "Sign In",
+  "selectSubjectKey": "Select Subject",
+  "resolvedIn": "Resolved in {time}",
+  "@resolvedIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "selectPriorityKey": "Select Priority",
+  "priority": "Priority",
+  "ticketCategory": "Ticket Category",
+  "fileSizeMustBeLess": "File size must be less than 5MB",
+  "pleaseAttachDocument": "Please attach at least one document",
+  "attachments": "Attachments",
+  "ticketFileInstructions": "*Please upload files in the following format :\nGIF, JPG, JPEG, PNG, PDF, MP4. The maximum allowed file\nsize is 5MB.",
+  "selectCategory": "Select category",
+  "open": "Open",
+  "progress": "Progress",
+  "closed": "Closed",
   "enquiryForms": "Enquiry Forms",
   "kerlaInternetWebsite": "www.kerlainternet.com",
   "forgotPasswordDescription": "Don't worry! Enter your registered username to reset your password.",
+  "ticketIdCopied": "Ticket ID copied to clipboard",
   "getOtp": "Get OTP",
   "passwordUpdatedSuccessfully": "Password updated successfully",
   "enterNewPassword": "Enter New Password",
@@ -28,9 +49,16 @@
       }
     }
   },
+  "yourTicketHasBeenCreated": "Your ticket has been created successfully!",
+  "ourSupportTeamWillGetBack": "Our support team will get back to you shortly",
+  "success": "Success  🎉",
+  "filter": "Filter",
   "verifyNow": "Verify Now",
   "resendOtp": "Resend OTP",
+  "all": "All",
+  "attachment": "Attachment",
   "recharge": "Recharge",
+  "volume": "Volume",
   "walletBalance": "Wallet Balance",
   "updatedDate": "Updated {date}",
   "@updatedDate": { "placeholders": { "date": { "type": "String" } } },

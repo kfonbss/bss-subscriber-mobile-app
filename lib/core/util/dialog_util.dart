@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
-import 'package:kfon_subscriber/presentation/ui_component/common_bottom_sheet.dart';
+import 'package:kfon_subscriber/shared/widgets/common_bottom_sheet.dart';
 
 class DialogUtil {
   static final _contentStyle = const TextStyle(

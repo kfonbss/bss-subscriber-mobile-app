@@ -1,18 +1,17 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 
 class TicketSuccessBottomSheet extends StatelessWidget {
   final String ticketId;
   final VoidCallback onReturnHome;
-  final VoidCallback onViewTickets;
 
   const TicketSuccessBottomSheet({
     super.key,
     required this.ticketId,
     required this.onReturnHome,
-    required this.onViewTickets,
   });
 
   Future<void> _copyTicketId(BuildContext context) async {
@@ -21,7 +20,7 @@ class TicketSuccessBottomSheet extends StatelessWidget {
     if (context.mounted) {
       ScaffoldMessenger.of(context).showSnackBar(
         SnackBar(
-          content: Text(l10n.ticketIdCopiedToClipboard),
+          content: Text(l10n.ticketIdCopied),
           duration: const Duration(seconds: 2),
         ),
       );
@@ -31,9 +30,8 @@ class TicketSuccessBottomSheet extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final l10n = context.bssSubL10n;
-
     return Container(
-      height: 520,
+      height: 506,
       decoration: BoxDecoration(
         color: AppColor.kMainBackgroundColor,
         borderRadius: const BorderRadius.vertical(top: Radius.circular(20)),
@@ -46,7 +44,7 @@ class TicketSuccessBottomSheet extends StatelessWidget {
             height: 6,
             margin: const EdgeInsets.only(top: 8),
             decoration: BoxDecoration(
-              color: AppColor.kDividerGrey,
+              color: const Color(0xFFE1E1E4),
               borderRadius: BorderRadius.circular(100),
             ),
           ),
@@ -56,14 +54,11 @@ class TicketSuccessBottomSheet extends StatelessWidget {
             width: 140,
             height: 140,
             margin: const EdgeInsets.only(top: 48, bottom: 24),
-            decoration: BoxDecoration(
-              color: AppColor.kCompletedGreen.withValues(alpha: 0.1),
-              shape: BoxShape.circle,
-            ),
-            child: const Icon(
-              Icons.check_circle,
-              size: 80,
-              color: AppColor.kCompletedGreen,
+            child: SvgPicture.asset(
+              'assets/images/ticket_create_success.svg',
+              width: 140,
+              height: 140,
+              fit: BoxFit.contain,
             ),
           ),
 
@@ -73,35 +68,35 @@ class TicketSuccessBottomSheet extends StatelessWidget {
             child: Column(
               children: [
                 Text(
-                  l10n.successTitle,
+                  l10n.success,
                   style: const TextStyle(
                     fontSize: 18,
                     fontWeight: FontWeight.w600,
-                    color: AppColor.kTextSecondaryDark,
+                    color: Color(0xFF0F1121),
                     height: 1.3,
                     fontFamily: 'GeneralSans',
                   ),
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  l10n.ticketCreatedSuccessfully,
+                  l10n.yourTicketHasBeenCreated,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w600,
-                    color: AppColor.kSlateGrey,
+                    color: Color(0xFF67697A),
                     height: 1.6,
                     fontFamily: 'GeneralSans',
                   ),
                 ),
                 const SizedBox(height: 4),
                 Text(
-                  l10n.supportTeamWillGetBack,
+                  l10n.ourSupportTeamWillGetBack,
                   textAlign: TextAlign.center,
                   style: const TextStyle(
                     fontSize: 12,
                     fontWeight: FontWeight.w400,
-                    color: AppColor.kSlateGrey,
+                    color: Color(0xFF67697A),
                     height: 1.6,
                     fontFamily: 'GeneralSans',
                   ),
@@ -120,7 +115,7 @@ class TicketSuccessBottomSheet extends StatelessWidget {
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColor.kIconContainerGrey, width: 1),
+                border: Border.all(color: const Color(0xFFF3F3FA), width: 1),
               ),
               child: Row(
                 children: [
@@ -130,7 +125,7 @@ class TicketSuccessBottomSheet extends StatelessWidget {
                       style: const TextStyle(
                         fontSize: 12,
                         fontWeight: FontWeight.w500,
-                        color: AppColor.kSlateGrey,
+                        color: Color(0xFF67697A),
                         height: 1.3,
                         fontFamily: 'GeneralSans',
                       ),
@@ -138,10 +133,10 @@ class TicketSuccessBottomSheet extends StatelessWidget {
                   ),
                   GestureDetector(
                     onTap: () => _copyTicketId(context),
-                    child: const Icon(
+                    child: Icon(
                       Icons.copy,
                       size: 24,
-                      color: AppColor.kSlateGrey,
+                      color: const Color(0xFF67697A),
                     ),
                   ),
                 ],
@@ -189,7 +184,7 @@ class TicketSuccessBottomSheet extends StatelessWidget {
               width: 134,
               height: 5,
               decoration: BoxDecoration(
-                color: AppColor.kTextSecondaryDark,
+                color: const Color(0xFF0F1121),
                 borderRadius: BorderRadius.circular(100),
               ),
             ),

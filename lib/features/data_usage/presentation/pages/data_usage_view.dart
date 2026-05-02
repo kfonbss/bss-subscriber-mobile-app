@@ -17,9 +17,9 @@ import 'package:kfon_subscriber/features/data_usage/presentation/pages/restart_m
 import 'package:kfon_subscriber/features/data_usage/presentation/pages/session_history_detail_page.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/presentation/page_component/package_info_card.dart';
-import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
-import 'package:kfon_subscriber/presentation/ui_component/shimmer/shimmer_base.dart';
-import 'package:kfon_subscriber/presentation/ui_component/shimmer/shimmer_box.dart';
+import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
+import 'package:kfon_subscriber/shared/widgets/shimmer/shimmer_base.dart';
+import 'package:kfon_subscriber/shared/widgets/shimmer/shimmer_box.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 
 part '../components/active_session_card.dart';

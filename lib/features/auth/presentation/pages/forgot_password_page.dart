@@ -12,7 +12,7 @@ import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_state.dart'
 import 'package:kfon_subscriber/features/auth/presentation/components/auth_header.dart';
 import 'package:kfon_subscriber/features/auth/presentation/components/login_text_field.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
-import 'package:kfon_subscriber/presentation/ui_component/white_button.dart';
+import 'package:kfon_subscriber/shared/widgets/white_button.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});

@@ -61,6 +61,7 @@ dependencies:
   video_player: ^2.9.2
   url_launcher: ^6.3.0
   flutter_localization: ^0.3.3
+  google_fonts: ^6.2.1
 
 
 flutter_native_splash:

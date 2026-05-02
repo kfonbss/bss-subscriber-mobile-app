@@ -4,13 +4,13 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/constant/constant_dimensions.dart';
-import 'package:kfon_subscriber/core/helper/bottom_sheet_helper.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/active_package_details/domain/entity/active_packages_details_entity.dart';
 import 'package:kfon_subscriber/features/active_package_details/presentation/pages/active_package_page.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entity.dart';
+import 'package:kfon_subscriber/features/change_plan/domain/entity/package_new_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/repository/change_plan_repository.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/bloc/change_plan_bloc.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/pages/change_plan.dart';
@@ -23,11 +23,9 @@ import 'package:kfon_subscriber/features/home/presentation/bloc/home_state.dart'
 import 'package:kfon_subscriber/features/home/presentation/components/home_shimmer.dart';
 import 'package:kfon_subscriber/features/top_up/presentation/pages/topup_page.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
-import 'package:kfon_subscriber/presentation/ui_component/primary_button.dart';
-import 'package:kfon_subscriber/presentation/ui_component/secondary_button.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
+import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
 import 'package:kfon_subscriber/service_locator.dart';
-
-import '../../../offline_recharge/presentation/pages/offline_recharge_bottom_sheet.dart';
 
 const _kTeal = Color(0xFF00A896);
 const _kOrange = Color(0xFFFF6B2C);
@@ -48,14 +46,28 @@ class _HomePageState extends State<HomePage> {
   void initState() {
     super.initState();
     bloc = context.read<HomeBloc>();
-    bloc.add(const GetHomeData());
+    bloc.add(const GetHomeData(loadPackage: true));
   }
 
-  void _showRechargeSheet(BuildContext context, String subscriberId) {
-    BottomSheetHelper.show(
-      context: context,
-      title: context.bssSubL10n.recharge,
-      child: OfflineRechargeBottomSheet(subscriberUuid: subscriberId),
+  void _showRechargeSheet(
+    BuildContext context,
+    PackageItemEntity packageEntity,
+  ) {
+    // BottomSheetHelper.show(
+    //   context: context,
+    //   title: context.bssSubL10n.recharge,
+    //   child: OfflineRechargeBottomSheet(subscriberUuid: subscriberId),
+    // );
+    Navigator.push(
+      context,
+      MaterialPageRoute<void>(
+        builder:
+            (_) => BlocProvider(
+              create:
+                  (_) => ChangePlanBloc(repository: sl<ChangePlanRepository>()),
+              child: RechargePage(package: packageEntity),
+            ),
+      ),
     );
   }
 
@@ -69,13 +81,28 @@ class _HomePageState extends State<HomePage> {
         actionsPadding: const EdgeInsets.only(right: 15),
         actions: [
           IconButton(
-            onPressed: () =>
-                Navigator.pushNamed(context, AppRoutes.notificationPage),
+            onPressed:
+                () => Navigator.pushNamed(context, AppRoutes.notificationPage),
             icon: Image.asset(
               'assets/icons/notification_white.png',
               width: AppDimensions.kActionButtonSize,
               height: AppDimensions.kActionButtonSize,
               fit: BoxFit.cover,
+            ),
+          ),
+          Container(
+            width: 42.w,
+            height: 42.h,
+            decoration: BoxDecoration(
+              shape: BoxShape.circle,
+              border: Border.all(
+                color: Colors.white, // border color
+                width: 3, // border width
+              ),
+              image: const DecorationImage(
+                image: AssetImage('assets/images/avatar.jpg'),
+                fit: BoxFit.cover,
+              ),
             ),
           ),
         ],
@@ -89,25 +116,27 @@ class _HomePageState extends State<HomePage> {
       ),
       body: BlocListener<HomeBloc, HomeState>(
         bloc: bloc,
-        listenWhen: (prev, curr) =>
-            curr is GetDataFailure || curr is GetDataSuccess,
+        listenWhen:
+            (prev, curr) => curr is GetDataFailure || curr is GetDataSuccess,
         listener: (context, state) {
           if (state is GetDataFailure) {
             DialogUtil().showMessage(state.errorMessage, context);
           } else if (state is GetDataSuccess) {
             final pkg = state.homeEntity.packageDetails;
-            if (pkg != null) {
-              bloc.add(GetPlans(
-                packageId: pkg.packageId,
-                subscriberUuid: state.homeEntity.subscriberId,
-              ));
+            if (pkg != null && state.loadPackage) {
+              bloc.add(
+                GetPlans(
+                  packageId: pkg.packageId,
+                  subscriberUuid: state.homeEntity.subscriberId,
+                ),
+              );
             }
           }
         },
         child: BlocBuilder<HomeBloc, HomeState>(
           bloc: bloc,
-          buildWhen: (prev, curr) =>
-              curr is GetDataSuccess || curr is GetDataFailure,
+          buildWhen:
+              (prev, curr) => curr is GetDataSuccess || curr is GetDataFailure,
           builder: (context, state) {
             if (state is GetDataFailure) {
               return Center(
@@ -121,7 +150,8 @@ class _HomePageState extends State<HomePage> {
                     ),
                     const SizedBox(height: 16),
                     ElevatedButton(
-                      onPressed: () => bloc.add(const GetHomeData()),
+                      onPressed:
+                          () => bloc.add(const GetHomeData(loadPackage: true)),
                       child: const Text('Retry'),
                     ),
                   ],
@@ -137,7 +167,7 @@ class _HomePageState extends State<HomePage> {
                 child: Stack(
                   children: [
                     SizedBox(
-                      height: 250.h,
+                      height: 200.h,
                       child: ClipRRect(
                         borderRadius: const BorderRadius.only(
                           bottomLeft: Radius.circular(30.0),
@@ -158,16 +188,32 @@ class _HomePageState extends State<HomePage> {
                           _ComboCard(pkg: pkg, subscriberId: subscriberId),
                         const SizedBox(height: 16),
                         _QuickActions(
-                          onRechargeTap: () =>
-                              _showRechargeSheet(context, subscriberId),
-                          onTransactionsTap: () => Navigator.pushNamed(
-                            context,
-                            AppRoutes.transactionHistoryPage,
-                          ),
-                          onInvoiceTap: () => Navigator.pushNamed(
-                            context,
-                            AppRoutes.invoiceListPage,
-                          ),
+                          onRechargeTap:
+                              () => _showRechargeSheet(
+                                context,
+                                PackageItemEntity(
+                                  id: packageId,
+                                  packageName: pkg!.packageName,
+                                  freeValidity: 0,
+                                  initialFreeValidity: 0,
+                                  renewalFee: pkg.renewalFee,
+                                  allocatedVolume: pkg.availableVolumeGb,
+                                  fallbackSpeed: '0UL',
+                                  subPackageCount: 0,
+                                  renewPeriod: pkg.validity,
+                                  speedInKbps: pkg.speedMbps * 1024.toInt(),
+                                ),
+                              ),
+                          onTransactionsTap:
+                              () => Navigator.pushNamed(
+                                context,
+                                AppRoutes.transactionHistoryPage,
+                              ),
+                          onInvoiceTap:
+                              () => Navigator.pushNamed(
+                                context,
+                                AppRoutes.invoiceListPage,
+                              ),
                         ),
                         const SizedBox(height: 24),
                         BlocBuilder<HomeBloc, HomeState>(
@@ -177,10 +223,10 @@ class _HomePageState extends State<HomePage> {
                             return state is GetPlansSuccess &&
                                     state.packageEntities.isNotEmpty
                                 ? _PlanChangeSection(
-                                    subscriberUuid: subscriberId,
-                                    currentPackageId: packageId,
-                                    plans: state.packageEntities,
-                                  )
+                                  subscriberUuid: subscriberId,
+                                  currentPackageId: packageId,
+                                  plans: state.packageEntities,
+                                )
                                 : const SizedBox.shrink();
                           },
                         ),
@@ -271,14 +317,15 @@ class _WalletCard extends StatelessWidget {
               ),
             ],
           ),
-          ElevatedButton(
-            onPressed: () => Navigator.push(
-              context,
-              MaterialPageRoute<void>(builder: (_) => const TopupPage()),
-            ),
-            style: _topUpButtonStyle,
-            child: Text(context.bssSubL10n.topUp, style: _topUpTextStyle),
-          ),
+          // ElevatedButton(
+          //   onPressed:
+          //       () => Navigator.push(
+          //         context,
+          //         MaterialPageRoute<void>(builder: (_) => const TopupPage()),
+          //       ),
+          //   style: _topUpButtonStyle,
+          //   child: Text(context.bssSubL10n.topUp, style: _topUpTextStyle),
+          // ),
         ],
       ),
     );
@@ -304,6 +351,7 @@ class _ComboCard extends StatelessWidget {
       BoxShadow(color: Colors.black12, blurRadius: 8, offset: Offset(0, 2)),
     ],
   );
+
   // _kYellow is a file-level const Color → this decoration is also const.
   static const _daysLeftDecoration = BoxDecoration(
     color: _kYellow,
@@ -337,9 +385,10 @@ class _ComboCard extends StatelessWidget {
     final activeUntilStr = _activeUntilFmt.format(pkg.activeUntil);
     final speedStr = '${pkg.speedMbps.toStringAsFixed(0)} Mbps';
     final amountStr = '₹${pkg.renewalFee.toStringAsFixed(0)}';
-    final usageStr = (pkg.availableVolumeGb > 0 || pkg.totalVolumeGb > 0)
-        ? '${pkg.availableVolumeGb.toStringAsFixed(0)} GB / ${pkg.totalVolumeGb.toStringAsFixed(0)} GB'
-        : 'Unlimited';
+    final usageStr =
+        (pkg.availableVolumeGb > 0 || pkg.totalVolumeGb > 0)
+            ? '${pkg.availableVolumeGb.toStringAsFixed(0)} GB / ${pkg.totalVolumeGb.toStringAsFixed(0)} GB'
+            : 'Unlimited';
     final addOnCount = pkg.activeAddOns.length;
 
     return Container(
@@ -372,8 +421,9 @@ class _ComboCard extends StatelessWidget {
                           children: [
                             Text(pkg.packageName, style: _packageNameStyle),
                             Text(
-                              context.bssSubL10n
-                                  .activeUntilDate(activeUntilStr),
+                              context.bssSubL10n.activeUntilDate(
+                                activeUntilStr,
+                              ),
                               style: _activeUntilStyle,
                             ),
                           ],
@@ -425,15 +475,19 @@ class _ComboCard extends StatelessWidget {
                 children: [
                   Expanded(
                     child: SecondaryButton(
-                      label: context.bssSubL10n
-                          .packsActive(addOnCount.toString()),
-                      onClicked: () => Navigator.push(
-                        context,
-                        MaterialPageRoute<void>(
-                          builder: (_) =>
-                              ActivePackagePage(subscriberUuid: subscriberId),
-                        ),
+                      label: context.bssSubL10n.packsActive(
+                        addOnCount.toString(),
                       ),
+                      onClicked:
+                          () => Navigator.push(
+                            context,
+                            MaterialPageRoute<void>(
+                              builder:
+                                  (_) => ActivePackagePage(
+                                    subscriberUuid: subscriberId,
+                                  ),
+                            ),
+                          ),
                     ),
                   ),
                   const SizedBox(width: 12),
@@ -441,27 +495,29 @@ class _ComboCard extends StatelessWidget {
                     child: PrimaryButton(
                       label: context.bssSubL10n.viewUsage,
                       isLoading: false,
-                      onClicked: () => Navigator.push(
-                        context,
-                        MaterialPageRoute<void>(
-                          builder: (_) => DataUsageView(
-                            subscriberUuid: subscriberId,
-                            entity: ActivePackagesDetailsEntity(
-                              packageId: pkg.packageId,
-                              activeAddOns: [],
-                              activeUntil: pkg.activeUntil,
-                              availableVolumeGb: pkg.availableVolumeGb,
-                              daysLeft: pkg.daysLeft,
-                              packageName: pkg.packageName,
-                              packageType: pkg.packageType,
-                              renewalFee: pkg.renewalFee,
-                              speedMbps: pkg.speedMbps,
-                              totalPackageCount: pkg.totalPackageCount,
-                              totalVolumeGb: pkg.totalVolumeGb,
+                      onClicked:
+                          () => Navigator.push(
+                            context,
+                            MaterialPageRoute<void>(
+                              builder:
+                                  (_) => DataUsageView(
+                                    subscriberUuid: subscriberId,
+                                    entity: ActivePackagesDetailsEntity(
+                                      packageId: pkg.packageId,
+                                      activeAddOns: [],
+                                      activeUntil: pkg.activeUntil,
+                                      availableVolumeGb: pkg.availableVolumeGb,
+                                      daysLeft: pkg.daysLeft,
+                                      packageName: pkg.packageName,
+                                      packageType: pkg.packageType,
+                                      renewalFee: pkg.renewalFee,
+                                      speedMbps: pkg.speedMbps,
+                                      totalPackageCount: pkg.totalPackageCount,
+                                      totalVolumeGb: pkg.totalVolumeGb,
+                                    ),
+                                  ),
                             ),
                           ),
-                        ),
-                      ),
                     ),
                   ),
                 ],
@@ -581,42 +637,45 @@ class _QuickActionsState extends State<_QuickActions> {
     return Padding(
       padding: const EdgeInsets.symmetric(horizontal: 16),
       child: Row(
-        children: _actions
-            .map(
-              (a) => Expanded(
-                child: GestureDetector(
-                  onTap: a.onTap,
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 4),
-                    height: 110.h,
-                    decoration: BoxDecoration(
-                      color: a.color,
-                      borderRadius: _actionRadius,
-                    ),
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      children: [
-                        Container(
-                          width: 46.h,
-                          height: 46.h,
-                          decoration: const BoxDecoration(
-                            color: Colors.white,
-                            shape: BoxShape.circle,
-                          ),
-                          child: Padding(
-                            padding: const EdgeInsets.all(10.0),
-                            child: SvgPicture.asset('assets/icons/${a.icon}'),
-                          ),
+        children:
+            _actions
+                .map(
+                  (a) => Expanded(
+                    child: GestureDetector(
+                      onTap: a.onTap,
+                      child: Container(
+                        margin: const EdgeInsets.symmetric(horizontal: 4),
+                        height: 110.h,
+                        decoration: BoxDecoration(
+                          color: a.color,
+                          borderRadius: _actionRadius,
                         ),
-                        const SizedBox(height: 10),
-                        Text(a.label, style: _actionLabelStyle),
-                      ],
+                        child: Column(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Container(
+                              width: 46.h,
+                              height: 46.h,
+                              decoration: const BoxDecoration(
+                                color: Colors.white,
+                                shape: BoxShape.circle,
+                              ),
+                              child: Padding(
+                                padding: const EdgeInsets.all(10.0),
+                                child: SvgPicture.asset(
+                                  'assets/icons/${a.icon}',
+                                ),
+                              ),
+                            ),
+                            const SizedBox(height: 10),
+                            Text(a.label, style: _actionLabelStyle),
+                          ],
+                        ),
+                      ),
                     ),
                   ),
-                ),
-              ),
-            )
-            .toList(),
+                )
+                .toList(),
       ),
     );
   }
@@ -627,7 +686,7 @@ class _QuickActionsState extends State<_QuickActions> {
 class _PlanChangeSection extends StatelessWidget {
   final String subscriberUuid;
   final String currentPackageId;
-  final List<PackageEntity> plans;
+  final List<PackageItemEntity> plans;
 
   const _PlanChangeSection({
     required this.subscriberUuid,
@@ -658,15 +717,17 @@ class _PlanChangeSection extends StatelessWidget {
             children: [
               Text(context.bssSubL10n.planChange, style: _headingStyle),
               TextButton(
-                onPressed: () => Navigator.push(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder: (_) => ChangePlanPage(
-                      subscriberUuid: subscriberUuid,
-                      currentPackageId: currentPackageId,
+                onPressed:
+                    () => Navigator.push(
+                      context,
+                      MaterialPageRoute<void>(
+                        builder:
+                            (_) => ChangePlanPage(
+                              subscriberUuid: subscriberUuid,
+                              currentPackageId: currentPackageId,
+                            ),
+                      ),
                     ),
-                  ),
-                ),
                 child: Row(
                   children: [
                     Text(context.bssSubL10n.seeAll, style: _seeAllStyle),
@@ -685,7 +746,7 @@ class _PlanChangeSection extends StatelessWidget {
         Column(
           children: [
             for (final plan in plans)
-              _PlanCard(key: ValueKey(plan.packageId), plan: plan),
+              _PlanCard(key: ValueKey(plan.id), plan: plan),
           ],
         ),
       ],
@@ -696,7 +757,7 @@ class _PlanChangeSection extends StatelessWidget {
 // ─── Plan Card ───────────────────────────────────────────────────────────────
 
 class _PlanCard extends StatelessWidget {
-  final PackageEntity plan;
+  final PackageItemEntity plan;
 
   const _PlanCard({super.key, required this.plan});
 
@@ -708,6 +769,7 @@ class _PlanCard extends StatelessWidget {
       BoxShadow(color: Colors.black12, blurRadius: 6, offset: Offset(0, 2)),
     ],
   );
+
   // kPrimaryColor is const → this decoration is also const.
   static const _priceDecoration = BoxDecoration(
     color: AppColor.kPrimaryColor,
@@ -764,13 +826,21 @@ class _PlanCard extends StatelessWidget {
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
               children: [
                 _Stat(
-                    label: context.bssSubL10n.data,
-                    value: '${plan.data} GB'),
-                _Stat(label: context.bssSubL10n.speed, value: plan.speed),
-                _Stat(label: context.bssSubL10n.fpu, value: plan.planType),
+                  label: context.bssSubL10n.data,
+                  value: '${plan.allocatedVolume} GB',
+                ),
                 _Stat(
-                    label: context.bssSubL10n.validity,
-                    value: '${plan.validity} Days'),
+                  label: context.bssSubL10n.speed,
+                  value: '${plan.speedInKbps / 1020}',
+                ),
+                _Stat(
+                  label: context.bssSubL10n.fpu,
+                  value: plan.packageType!.name,
+                ),
+                _Stat(
+                  label: context.bssSubL10n.validity,
+                  value: '${plan.renewPeriod} Days',
+                ),
               ],
             ),
           ),
@@ -784,24 +854,27 @@ class _PlanCard extends StatelessWidget {
                   vertical: 8,
                 ),
                 decoration: _priceDecoration,
-                child: Text('₹ ${plan.price}', style: _priceStyle),
+                child: Text('₹ ${plan.renewalFee}', style: _priceStyle),
               ),
               SizedBox(
                 height: 32.h,
                 width: 145.w,
                 child: SecondaryButton(
                   label: context.bssSubL10n.choosePlan,
-                  onClicked: () => Navigator.push(
-                    context,
-                    MaterialPageRoute<void>(
-                      builder: (_) => BlocProvider(
-                        create: (_) => ChangePlanBloc(
-                          repository: sl<ChangePlanRepository>(),
+                  onClicked:
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder:
+                              (_) => BlocProvider(
+                                create:
+                                    (_) => ChangePlanBloc(
+                                      repository: sl<ChangePlanRepository>(),
+                                    ),
+                                child: RechargePage(package: plan),
+                              ),
                         ),
-                        child: RechargePage(package: plan),
                       ),
-                    ),
-                  ),
                 ),
               ),
             ],
@@ -845,7 +918,10 @@ class _ServicesSectionState extends State<_ServicesSection> {
     final l10n = context.bssSubL10n;
     _services = [
       _ServiceItem(title: l10n.fiberToHome, icon: 'thunder.svg'),
-      _ServiceItem(title: l10n.internetLeasedLine, icon: 'internet_leased_line.svg'),
+      _ServiceItem(
+        title: l10n.internetLeasedLine,
+        icon: 'internet_leased_line.svg',
+      ),
       _ServiceItem(title: l10n.darkFiber, icon: 'dark_fiber.svg'),
       _ServiceItem(title: l10n.coLocation, icon: 'ip_location.svg'),
       _ServiceItem(title: l10n.wifiServices, icon: 'wifi.svg'),
@@ -860,10 +936,7 @@ class _ServicesSectionState extends State<_ServicesSection> {
       children: [
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 16),
-          child: Text(
-            context.bssSubL10n.servicesOffered,
-            style: _headingStyle,
-          ),
+          child: Text(context.bssSubL10n.servicesOffered, style: _headingStyle),
         ),
         const SizedBox(height: 12),
         Padding(
@@ -878,10 +951,11 @@ class _ServicesSectionState extends State<_ServicesSection> {
               childAspectRatio: 1.4,
             ),
             itemCount: _services.length,
-            itemBuilder: (_, i) => _ServiceCard(
-              title: _services[i].title,
-              icon: _services[i].icon,
-            ),
+            itemBuilder:
+                (_, i) => _ServiceCard(
+                  title: _services[i].title,
+                  icon: _services[i].icon,
+                ),
           ),
         ),
       ],

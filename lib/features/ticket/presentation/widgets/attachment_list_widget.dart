@@ -20,68 +20,67 @@ class AttachmentListWidget extends StatelessWidget {
     if (selectedFiles.isEmpty) return const SizedBox.shrink();
 
     return Column(
-      children:
-          selectedFiles.map((file) {
-            return Container(
-              margin: const EdgeInsets.only(bottom: 8),
-              height: 48,
-              padding: const EdgeInsets.symmetric(horizontal: 20),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(12),
-                border: Border.all(color: AppColor.kDividerGrey, width: 1),
+      children: selectedFiles.map((file) {
+        return Container(
+          margin: const EdgeInsets.only(bottom: 8),
+          height: 48,
+          padding: const EdgeInsets.symmetric(horizontal: 20),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: const Color(0xFFCBCBCB), width: 1),
+          ),
+          child: Row(
+            children: [
+              SvgPicture.asset(
+                'assets/icons/document-submit.svg',
+                width: 24,
+                height: 24,
+                colorFilter: ColorFilter.mode(
+                  AppColor.kPrimaryColor,
+                  BlendMode.srcIn,
+                ),
               ),
-              child: Row(
-                children: [
-                  SvgPicture.asset(
-                    'assets/icons/document-submit.svg',
-                    width: 24,
-                    height: 24,
-                    colorFilter: ColorFilter.mode(
-                      AppColor.kPrimaryColor,
-                      BlendMode.srcIn,
-                    ),
+              const SizedBox(width: 12),
+              Expanded(
+                child: Text(
+                  file.name,
+                  style: const TextStyle(
+                    color: Color(0xFF262629),
+                    fontSize: 14,
+                    fontWeight: FontWeight.w500,
+                    height: 1.0,
+                    fontFamily: 'GeneralSans',
                   ),
-                  const SizedBox(width: 12),
-                  Expanded(
-                    child: Text(
-                      file.name,
-                      style: const TextStyle(
-                        color: AppColor.kNearBlack,
-                        fontSize: 14,
-                        fontWeight: FontWeight.w500,
-                        height: 1.0,
-                        fontFamily: 'GeneralSans',
-                      ),
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  GestureDetector(
-                    onTap: () => onViewFile(file),
-                    child: ImageIcon(
-                      const AssetImage('assets/icons/eye.png'),
-                      size: 20,
-                      color: AppColor.kMutedIconGrey,
-                    ),
-                  ),
-                  const SizedBox(width: 12),
-                  GestureDetector(
-                    onTap: () => onDeleteFile(file),
-                    child: SvgPicture.asset(
-                      'assets/icons/delete.svg',
-                      width: 20,
-                      height: 20,
-                      colorFilter: const ColorFilter.mode(
-                        AppColor.kMutedIconGrey,
-                        BlendMode.srcIn,
-                      ),
-                    ),
-                  ),
-                ],
+                  overflow: TextOverflow.ellipsis,
+                ),
               ),
-            );
-          }).toList(),
+              const SizedBox(width: 12),
+              GestureDetector(
+                onTap: () => onViewFile(file),
+                child: ImageIcon(
+                  const AssetImage('assets/icons/eye.png'),
+                  size: 20,
+                  color: const Color(0xFF767681),
+                ),
+              ),
+              const SizedBox(width: 12),
+              GestureDetector(
+                onTap: () => onDeleteFile(file),
+                child: SvgPicture.asset(
+                  'assets/icons/delete.svg',
+                  width: 20,
+                  height: 20,
+                  colorFilter: const ColorFilter.mode(
+                    Color(0xFF767681),
+                    BlendMode.srcIn,
+                  ),
+                ),
+              ),
+            ],
+          ),
+        );
+      }).toList(),
     );
   }
 }

@@ -23,7 +23,7 @@ class _DataUsageChartState extends State<_DataUsageChart> {
   // Allocated once per app-lifetime — AppColor.kYellowBackground and the
   // radius are compile-time constants so the whole BoxDecoration is too.
   static const _periodButtonDecoration = BoxDecoration(
-    color: AppColor.kYellowBackground,
+    color: AppColor.kDaysLeftYellow,
     borderRadius: BorderRadius.all(Radius.circular(12.5)),
   );
 

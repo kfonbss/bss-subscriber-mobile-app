@@ -8,8 +8,8 @@ import 'package:kfon_subscriber/features/profile/presentation/profile/pages/prof
 import 'package:kfon_subscriber/features/self_care/presentation/pages/self_care_page.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/pages/create_ticket_page.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
-import 'package:kfon_subscriber/presentation/ui_component/help_option_card.dart';
-import 'package:kfon_subscriber/presentation/ui_component/tabbar_material_widget.dart';
+import 'package:kfon_subscriber/shared/widgets/help_option_card.dart';
+import 'package:kfon_subscriber/shared/widgets/tabbar_material_widget.dart';
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});

@@ -3,7 +3,7 @@ import 'package:intl/intl.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/features/data_usage/domain/entity/data_usage_entity.dart';
 import 'package:kfon_subscriber/features/data_usage/presentation/pages/data_usage_view.dart';
-import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
+import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
 
 class SessionHistoryDetailPage extends StatelessWidget {
   final SessionEntity session;

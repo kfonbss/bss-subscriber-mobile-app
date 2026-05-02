@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
-import 'package:kfon_subscriber/presentation/ui_component/form_app_bar.dart';
-import 'package:kfon_subscriber/presentation/ui_component/secondary_button.dart';
+import 'package:kfon_subscriber/shared/widgets/form_app_bar.dart';
+import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
 
 class EnquiryFormList extends StatelessWidget {
   const EnquiryFormList({super.key});

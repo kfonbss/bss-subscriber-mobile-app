@@ -55,7 +55,7 @@ class ActivePackagesDetailsModel extends ActivePackagesDetailsEntity {
     return ActivePackagesDetailsModel(
       packageId: json['packageId'] as String,
       packageName: json['packageName'] as String,
-      speedMbps: (json['speedMbps'] as num).toDouble(),
+      speedMbps: json['speedMbps'] as int,
       packageType: json['packageType'] as String,
       daysLeft: json['daysLeft'] as int,
       activeUntil: DateTime.parse(json['activeUntil'] as String),

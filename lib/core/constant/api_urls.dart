@@ -29,8 +29,10 @@ class ApiUrls {
       '$subscriberManagementService/mobile/subscriber/home';
   static String subscriberDataUsageURL({required String subscriberUuid}) =>
       '$subscriberManagementService/mobile/subscribers/$subscriberUuid/data-usage';
+  // static const String listPackagesURL =
+  //     '$packageManagementService/mobile/packages';
   static const String listPackagesURL =
-      '$packageManagementService/mobile/packages';
+      '$billingFinanceService/rule-engine/packages/seasonal-preview';
   static String changePlanURL({required String subscriberUuid}) =>
       '$subscriberManagementService/mobile/subscribers/$subscriberUuid/change-plan';
   static String invoiceFileURL({required String fileId}) =>
@@ -58,7 +60,10 @@ class ApiUrls {
       '$subscriberManagementService/mobile/subscriber/profile';
   static const String accountInformationURL =
       '$subscriberManagementService/mobile/subscriber/account-information';
-
+  static String get ticketCategoriesURL =>
+      '$userRoleMapingService/crm/ticket-categories';
+  static String get customerTypesURL =>
+      '$userRoleMapingService/crm/customer-types';
   //transactions
   static const String rechargeTransactionsURL =
       '$billingFinanceService/mobile/subscriber/recharge-transactions';

@@ -8,7 +8,7 @@ import 'package:kfon_subscriber/features/profile/presentation/account_informatio
 import 'package:kfon_subscriber/features/profile/presentation/account_information/bloc/account_information_event.dart';
 import 'package:kfon_subscriber/features/profile/presentation/account_information/bloc/account_information_state.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
-import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
+import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 
 class AccountInformationPage extends StatelessWidget {
@@ -46,7 +46,7 @@ class _AccountInformationView extends StatelessWidget {
           l10n.username: personal.username,
           l10n.name: personal.name,
           l10n.mobileNo: personal.mobileNo,
-          l10n.email: lnp.lnpEmail,
+          l10n.email: personal.email,
           l10n.address: personal.address,
         }),
         _DetailsCard(heading: l10n.accountDetails, data: {

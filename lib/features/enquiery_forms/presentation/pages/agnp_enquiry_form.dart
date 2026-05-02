@@ -10,12 +10,12 @@ import 'package:kfon_subscriber/features/enquiery_forms/presentation/components/
 import 'package:kfon_subscriber/features/enquiery_forms/presentation/components/enquiry_form_preview.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/lnp_enquiry_form.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
-import 'package:kfon_subscriber/presentation/ui_component/common_text_area.dart';
-import 'package:kfon_subscriber/presentation/ui_component/form_app_bar.dart';
+import 'package:kfon_subscriber/shared/widgets/common_text_area.dart';
+import 'package:kfon_subscriber/shared/widgets/form_app_bar.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 
 import '../../../../core/constant/constant_colors.dart';
-import '../../../../presentation/ui_component/common_text_field.dart';
+import '../../../../shared/widgets/common_text_field.dart';
 
 class AGNPEnquiryForm extends StatefulWidget {
   const AGNPEnquiryForm({super.key});

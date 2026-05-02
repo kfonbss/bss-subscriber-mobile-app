@@ -7,6 +7,7 @@ class PreferenceUtils {
   static const _keyRefreshToken = 'refreshToken';
   static const _keyTokenExpiryAt = 'tokenExpiryAt';
   static const _keyUserId = 'userId';
+  static const _keyUserName = 'userName';
   static const _introScreenStatus = 'introScreenStatus';
 
   static Future<String?> getAccessToken() async =>
@@ -59,11 +60,27 @@ class PreferenceUtils {
     ]);
   }
 
-  static Future<void> setUserId(String userId) async =>
-      await _storage.write(key: _keyUserId, value: userId);
+  static Future<void> setUserDetails({required String userId,required String userName}) async {
+    await Future.wait([
+      _storage.write(key: _keyUserId, value: userId),
+      _storage.write(key: _keyUserName, value: userName)
+    ]);
+  }
 
   static Future<String?> getUserId() async =>
       await _storage.read(key: _keyUserId);
+  static Future<String?> getUserName() async =>
+      await _storage.read(key: _keyUserName);
 
-  static Future<void> clearAll() async => await _storage.deleteAll();
+  static Future<void> clearAll() async{
+    await Future.wait([
+      _storage.delete(key: _keyAccessToken),
+      _storage.delete(key: _keyRefreshToken),
+      _storage.delete(key: _keyTokenExpiryAt),
+      _storage.delete(key: _keyUserId),
+      _storage.delete(key: _keyUserName),
+    ]);
+ // await _storage.deleteAll();
+
+}
 }

@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entity.dart';
+import 'package:kfon_subscriber/features/change_plan/domain/entity/package_new_entity.dart';
 import 'package:kfon_subscriber/features/home/domain/entity/home_entity.dart';
 
 abstract class HomeState extends Equatable {
@@ -19,15 +20,16 @@ class HomeLoading extends HomeState {
 
 class GetDataSuccess extends HomeState {
   final HomeEntity homeEntity;
+  final bool loadPackage;
 
-  const GetDataSuccess({required this.homeEntity});
+  const GetDataSuccess({required this.homeEntity, required this.loadPackage});
 
   @override
-  List<Object?> get props => [homeEntity];
+  List<Object?> get props => [homeEntity, loadPackage];
 }
 
 class GetPlansSuccess extends HomeState {
-  final List<PackageEntity> packageEntities;
+  final List<PackageItemEntity> packageEntities;
 
   const GetPlansSuccess({required this.packageEntities});
 

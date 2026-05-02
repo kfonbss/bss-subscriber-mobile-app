@@ -1,6 +1,7 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
+import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/api_urls.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/routes/navigator_key.dart';
@@ -55,6 +56,7 @@ class AuthInterceptor extends Interceptor {
   /// Ensures we have a valid token
   Future<void> _ensureValidToken() async {
     final isExpired = await PreferenceUtils.isTokenExpired();
+    print('Ajith:isExpired $isExpired');
 
     if (isExpired) {
       if (_isRefreshing) {
@@ -80,7 +82,7 @@ class AuthInterceptor extends Interceptor {
 
     try {
       final refreshToken = await _getValidRefreshToken();
-
+      print('Ajith:refreshToken $refreshToken');
       if (refreshToken == null) {
         // _handleRefreshFailure already called inside _getValidRefreshToken.
         // Complete so that any concurrent request waiting on the completer
@@ -93,6 +95,7 @@ class AuthInterceptor extends Interceptor {
 
       _refreshCompleter?.complete();
     } catch (e) {
+      print('Ajith:catch ${e.toString()}');
       await _handleRefreshFailure();
       _refreshCompleter?.completeError(e);
     } finally {
@@ -119,7 +122,7 @@ class AuthInterceptor extends Interceptor {
   /// Calls the refresh token API and saves new tokens
   Future<void> _callRefreshApi(String refreshToken) async {
     final result = await _repository.refreshToken(refreshToken);
-
+    print('Ajith:_callRefreshApi result $result');
     await result.fold(
       (error) => _handleRefreshFailure(),
       (authModel) => _saveNewTokens(authModel),
@@ -139,9 +142,15 @@ class AuthInterceptor extends Interceptor {
     await PreferenceUtils.clearAll();
 
     // Navigate to login and clear navigation stack
-    navigatorKey.currentState?.pushNamedAndRemoveUntil(
-      AppRoutes.login,
-      (route) => false,
-    );
+    // navigatorKey.currentState?.pushNamedAndRemoveUntil(
+    //   AppRoutes.login,
+    //   (route) => false,
+    // );
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      navigatorKey.currentState?.pushNamedAndRemoveUntil(
+        AppRoutes.login,
+            (route) => false,
+      );
+    });
   }
 }

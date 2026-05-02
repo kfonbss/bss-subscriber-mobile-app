@@ -5,20 +5,24 @@ import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entity.dart';
+import 'package:kfon_subscriber/features/change_plan/domain/entity/package_new_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/recharge_payment_status_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/params/recharge_change_plan_params.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/bloc/change_plan_bloc.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/bloc/change_plan_event.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/bloc/change_plan_state.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/pages/components/plan_tile.dart';
+import 'package:kfon_subscriber/features/change_plan/presentation/pages/components/plan_tile_new.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/pages/payment_webview_page.dart';
+import 'package:kfon_subscriber/features/home/presentation/bloc/home_bloc.dart';
+import 'package:kfon_subscriber/features/home/presentation/bloc/home_event.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/painter/dashed_line_painter.dart';
-import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
-import 'package:kfon_subscriber/presentation/ui_component/primary_button.dart';
+import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 
 class RechargePage extends StatelessWidget {
-  final PackageEntity package;
+  final PackageItemEntity package;
 
   const RechargePage({super.key, required this.package});
 
@@ -29,6 +33,7 @@ class RechargePage extends StatelessWidget {
     color: Colors.white,
     borderRadius: BorderRadius.all(Radius.circular(20)),
   );
+
   // ElevatedButton.styleFrom() is not const — computed once as static final.
   static final _dialogButtonStyle = ElevatedButton.styleFrom(
     backgroundColor: AppColor.kPrimaryColor,
@@ -36,6 +41,7 @@ class RechargePage extends StatelessWidget {
       borderRadius: BorderRadius.all(Radius.circular(8)),
     ),
   );
+
   // DashedLinePainter has no const constructor — computed once as static final.
   // 0x1A = 26 ≈ 0.1 × 255 → Colors.black @ 10% opacity
   static final _dashedPainter = DashedLinePainter(
@@ -61,24 +67,27 @@ class RechargePage extends StatelessWidget {
       circleColor: Colors.white,
       titleColor: Colors.white,
       body: BlocConsumer<ChangePlanBloc, ChangePlanState>(
-        listenWhen: (previous, current) =>
-            previous.actionStatus != current.actionStatus ||
-            previous.paymentStatus != current.paymentStatus,
+        listenWhen:
+            (previous, current) =>
+                previous.actionStatus != current.actionStatus ||
+                previous.paymentStatus != current.paymentStatus,
         listener: (context, state) {
           if (state.paymentStatus == PaymentStatus.success &&
               state.paymentStatusEntity != null) {
+            context.read<HomeBloc>().add(const GetHomeData(loadPackage: false));
             _showTopUpSuccessDialog(state.paymentStatusEntity!, context);
           } else if (state.paymentStatus == PaymentStatus.failed) {
-            _showTopUpFailDialog(package.price, context);
+            _showTopUpFailDialog(package.renewalFee, context);
           } else if (state.actionStatus == ActionStatus.success &&
               state.redirectEntity != null) {
-            Navigator.pop(context);
+            Navigator.of(context).pop();
             Navigator.push(
               context,
               MaterialPageRoute(
-                builder: (context) => PaymentWebViewPage(
-                  redirectEntity: state.redirectEntity!,
-                ),
+                builder:
+                    (context) => PaymentWebViewPage(
+                      redirectEntity: state.redirectEntity!,
+                    ),
               ),
             ).then((result) {
               if (!context.mounted) return;
@@ -89,7 +98,7 @@ class RechargePage extends StatelessWidget {
                   );
                 }
               } else if (result == PaymentResult.failed) {
-                _showTopUpFailDialog(package.price, context);
+                _showTopUpFailDialog(package.renewalFee, context);
               } else if (result == PaymentResult.cancelled) {
                 DialogUtil().showCustomSnackbar(
                   context: context,
@@ -107,8 +116,9 @@ class RechargePage extends StatelessWidget {
             );
           }
         },
-        buildWhen: (previous, current) =>
-            previous.actionStatus != current.actionStatus,
+        buildWhen:
+            (previous, current) =>
+                previous.actionStatus != current.actionStatus,
         builder: (context, state) {
           return Stack(
             children: [
@@ -125,27 +135,33 @@ class RechargePage extends StatelessWidget {
                 child: Column(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   children: [
-                    PlanTile(package: package, isSelected: false, onTap: () {}),
+                    PlanTileNew(
+                      package: package,
+                      isSelected: true,
+                      showSelectedBorder: false,
+                      onTap: () {},
+                    ),
                     PrimaryButton(
                       label: l10n.payNow,
                       isLoading: state.actionStatus == ActionStatus.loading,
-                      onClicked: () => showPaymentMethodSheet(
-                        context,
-                        onNext: (gateway) async {
-                          if (context.mounted) {
-                            context.read<ChangePlanBloc>().add(
-                              RechargeChangePlan(
-                                params: RechargeChangePlanParams(
-                                  packageId: package.packageId,
-                                  gateway: gateway,
-                                  amount: package.price,
-                                  durationDays: package.validity,
-                                ),
-                              ),
-                            );
-                          }
-                        },
-                      ),
+                      onClicked:
+                          () => showPaymentMethodSheet(
+                            context,
+                            onNext: (gateway) async {
+                              if (context.mounted) {
+                                context.read<ChangePlanBloc>().add(
+                                  RechargeChangePlan(
+                                    params: RechargeChangePlanParams(
+                                      packageId: package.id,
+                                      gateway: gateway,
+                                      amount: package.renewalFee,
+                                      durationDays: package.renewPeriod,
+                                    ),
+                                  ),
+                                );
+                              }
+                            },
+                          ),
                     ),
                   ],
                 ),
@@ -165,10 +181,11 @@ class RechargePage extends StatelessWidget {
       context: context,
       backgroundColor: Colors.transparent,
       isScrollControlled: true,
-      builder: (_) => BlocProvider.value(
-        value: context.read<ChangePlanBloc>(),
-        child: PaymentMethodSheet(onNext: (gateway) => onNext(gateway)),
-      ),
+      builder:
+          (_) => BlocProvider.value(
+            value: context.read<ChangePlanBloc>(),
+            child: PaymentMethodSheet(onNext: (gateway) => onNext(gateway)),
+          ),
     );
   }
 
@@ -391,6 +408,7 @@ class _PaymentMethodSheetState extends State<PaymentMethodSheet> {
     color: AppColor.kDisabledGrey,
     borderRadius: BorderRadius.all(Radius.circular(2)),
   );
+
   // Sizer.sp is fixed after MaterialApp.builder — computed once as static final.
   static final _titleStyle = TextStyle(
     fontSize: 16.sp,
@@ -436,8 +454,9 @@ class _PaymentMethodSheetState extends State<PaymentMethodSheet> {
           SizedBox(height: 80.h),
 
           BlocBuilder<ChangePlanBloc, ChangePlanState>(
-            buildWhen: (previous, current) =>
-                previous.actionStatus != current.actionStatus,
+            buildWhen:
+                (previous, current) =>
+                    previous.actionStatus != current.actionStatus,
             builder: (context, state) {
               return PrimaryButton(
                 label: l10n.next,
@@ -471,11 +490,7 @@ class _PaymentOption extends StatelessWidget {
     color: Colors.white,
     borderRadius: BorderRadius.all(Radius.circular(14)),
     boxShadow: [
-      BoxShadow(
-        color: Color(0x0A000000),
-        blurRadius: 8,
-        offset: Offset(0, 2),
-      ),
+      BoxShadow(color: Color(0x0A000000), blurRadius: 8, offset: Offset(0, 2)),
     ],
   );
   static const _logoDecoration = ShapeDecoration(
@@ -489,6 +504,7 @@ class _PaymentOption extends StatelessWidget {
     shape: BoxShape.circle,
     color: AppColor.kPrimaryColor,
   );
+
   // Border.fromBorderSide has a const constructor; Border.all does not.
   static const _unselectedRadioDecoration = BoxDecoration(
     shape: BoxShape.circle,
@@ -525,27 +541,24 @@ class _PaymentOption extends StatelessWidget {
               child: Image.asset(method.logo),
             ),
             SizedBox(width: 16.w),
-            Expanded(
-              child: Text(
-                method.name,
-                style: _methodNameStyle,
-              ),
-            ),
+            Expanded(child: Text(method.name, style: _methodNameStyle)),
             Container(
               width: 20.w,
               height: 20.w,
-              decoration: isSelected
-                  ? _selectedRadioDecoration
-                  : _unselectedRadioDecoration,
-              child: isSelected
-                  ? Center(
-                      child: Container(
-                        width: 8.w,
-                        height: 8.w,
-                        decoration: _centerDotDecoration,
-                      ),
-                    )
-                  : null,
+              decoration:
+                  isSelected
+                      ? _selectedRadioDecoration
+                      : _unselectedRadioDecoration,
+              child:
+                  isSelected
+                      ? Center(
+                        child: Container(
+                          width: 8.w,
+                          height: 8.w,
+                          decoration: _centerDotDecoration,
+                        ),
+                      )
+                      : null,
             ),
           ],
         ),

@@ -28,7 +28,7 @@ class LoggerInterceptor extends Interceptor {
     _log('🚀 ${options.method} request ==> $requestPath');
 
     // Log Headers (optional, but sometimes useful. Keep it minimal or remove if "unwanted" implies this)
-    // _log('Headers: ${options.headers}');
+     _log('Headers: ${options.headers}');
 
     // Log Query Parameters
     if (options.queryParameters.isNotEmpty) {

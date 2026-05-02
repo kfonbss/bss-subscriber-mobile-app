@@ -4,9 +4,9 @@ import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/security_settings_page.dart';
 import 'package:kfon_subscriber/l10n/bss_sub_localizations.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
-import 'package:kfon_subscriber/presentation/ui_component/common_app_bar.dart';
-import 'package:kfon_subscriber/presentation/ui_component/common_password_text_field.dart';
-import 'package:kfon_subscriber/presentation/ui_component/primary_button.dart';
+import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
+import 'package:kfon_subscriber/shared/widgets/common_password_text_field.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   final PasswordChangeEnum type;

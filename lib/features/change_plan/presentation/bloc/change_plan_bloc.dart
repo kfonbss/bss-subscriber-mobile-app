@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kfon_subscriber/features/change_plan/domain/entity/package_new_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/enums/subscriber_enums.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/params/get_all_packages_parms.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/repository/change_plan_repository.dart';
@@ -8,9 +9,11 @@ import 'package:kfon_subscriber/features/change_plan/presentation/bloc/tab_plan_
 
 class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
   final ChangePlanRepository repository;
+  final size = 10;
 
   ChangePlanBloc({required this.repository}) : super(const ChangePlanState()) {
     on<LoadPackages>(_onLoadPackages);
+    on<LoadMorePackages>(_onLoadMorePackages);
     on<SwitchTab>(_onSwitchTab);
     on<SearchPackages>(_onSearchPackages);
     on<FilterBySpeed>(_onFilterBySpeed);
@@ -47,6 +50,8 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
           search: tab == PlanTab.all ? state.searchQuery : null,
           speedMbps: tab == PlanTab.all ? state.speedFilter : null,
           ott: _ottForTab(tab),
+          page: 0,
+          size: size,
         ),
       );
 
@@ -59,13 +64,16 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
             errorMessage: failure.toString(),
           );
         },
-        (packages) {
+        (packageDetails) {
           final filtered =
-              packages.where((p) => p.packageId != event.packageId).toList();
+              packageDetails.content
+                  .where((p) => p.id != event.packageId)
+                  .toList();
           updatedTabStates[tab] = TabPlanState(
             status: ListPlanStatus.success,
             packages: filtered,
-            hasMore: false,
+            hasMore: size < packageDetails.totalElements && filtered.isNotEmpty,
+            totalPage: packageDetails.totalElements,
           );
         },
       );
@@ -81,17 +89,78 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
     }
   }
 
+  Future<void> _onLoadMorePackages(
+    LoadMorePackages event,
+    Emitter<ChangePlanState> emit,
+  ) async {
+    final tab = event.tab;
+    final currentTabStates = Map<PlanTab, TabPlanState>.from(state.tabStates);
+    currentTabStates[tab] = currentTabStates[tab]!.copyWith(
+      status: ListPlanStatus.loadingMore,
+    );
+    emit(state.copyWith(tabStates: currentTabStates));
+    final currentPage = currentTabStates[tab]!.packages.length;
+    final totalPage = currentTabStates[tab]!.totalPage;
+    try {
+      final result = await repository.getPackages(
+        GetAllPackagesParams(
+          subscriberId: event.subscriberUuid,
+          type: 'retail',
+          search: tab == PlanTab.all ? state.searchQuery : null,
+          speedMbps: tab == PlanTab.all ? state.speedFilter : null,
+          ott: _ottForTab(tab),
+          page: currentPage+1,
+          size: size,
+        ),
+      );
+      final updatedTabStates = Map<PlanTab, TabPlanState>.from(state.tabStates);
+      result.fold(
+        (failure) {
+          updatedTabStates[tab] = updatedTabStates[tab]!.copyWith(
+            status: ListPlanStatus.error,
+            errorMessage: failure.toString(),
+          );
+        },
+        (packageDetails) {
+          final filtered =
+              packageDetails.content
+                  .where((p) => p.id != event.packageId)
+                  .toList();
+          final existingPackage = List<PackageItemEntity>.from(
+            updatedTabStates[tab]!.packages,
+          );
+          existingPackage.addAll(filtered);
+          updatedTabStates[tab] = updatedTabStates[tab]!.copyWith(
+            status: ListPlanStatus.success,
+            packages: existingPackage,
+            hasMore: existingPackage.length < totalPage && filtered.isNotEmpty,
+          );
+        },
+      );
+      emit(state.copyWith(tabStates: updatedTabStates));
+    } catch (e) {
+      final updatedTabStates = Map<PlanTab, TabPlanState>.from(state.tabStates);
+      updatedTabStates[tab] = updatedTabStates[tab]!.copyWith(
+        status: ListPlanStatus.error,
+        errorMessage: e.toString(),
+      );
+      emit(state.copyWith(tabStates: updatedTabStates));
+    }
+  }
+
   void _onSwitchTab(SwitchTab event, Emitter<ChangePlanState> emit) {
     emit(state.copyWith(activeTab: event.tab));
 
     // Load data for the tab if it hasn't been loaded yet
     final tabState = state.tabStates[event.tab];
     if (tabState == null || tabState.status == ListPlanStatus.initial) {
-      add(LoadPackages(
-        tab: event.tab,
-        packageId: event.packageId,
-        subscriberUuid: event.subscriberUuid,
-      ));
+      add(
+        LoadPackages(
+          tab: event.tab,
+          packageId: event.packageId,
+          subscriberUuid: event.subscriberUuid,
+        ),
+      );
     }
   }
 
@@ -100,11 +169,13 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
     Emitter<ChangePlanState> emit,
   ) async {
     emit(state.copyWith(searchQuery: event.query));
-    add(LoadPackages(
-      tab: PlanTab.all,
-      packageId: event.packageId,
-      subscriberUuid: event.subscriberUuid,
-    ));
+    add(
+      LoadPackages(
+        tab: PlanTab.all,
+        packageId: event.packageId,
+        subscriberUuid: event.subscriberUuid,
+      ),
+    );
   }
 
   Future<void> _onFilterBySpeed(
@@ -112,11 +183,13 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
     Emitter<ChangePlanState> emit,
   ) async {
     emit(state.copyWith(speedFilter: event.speed));
-    add(LoadPackages(
-      tab: PlanTab.all,
-      packageId: event.packageId,
-      subscriberUuid: event.subscriberUuid,
-    ));
+    add(
+      LoadPackages(
+        tab: PlanTab.all,
+        packageId: event.packageId,
+        subscriberUuid: event.subscriberUuid,
+      ),
+    );
   }
 
   void _onSelectPackage(SelectPackage event, Emitter<ChangePlanState> emit) {
@@ -145,10 +218,12 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
         (_) => emit(state.copyWith(actionStatus: ActionStatus.success)),
       );
     } catch (e) {
-      emit(state.copyWith(
-        actionStatus: ActionStatus.error,
-        errorMessage: e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          actionStatus: ActionStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -177,10 +252,12 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
         ),
       );
     } catch (e) {
-      emit(state.copyWith(
-        actionStatus: ActionStatus.error,
-        errorMessage: e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          actionStatus: ActionStatus.error,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 
@@ -189,7 +266,12 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
     Emitter<ChangePlanState> emit,
   ) async {
     try {
-      emit(state.copyWith(paymentStatus: PaymentStatus.loading));
+      emit(
+        state.copyWith(
+          paymentStatus: PaymentStatus.loading,
+          redirectEntity: null,
+        ),
+      );
 
       final result = await repository.getRechargePaymentStatus(event.orderId);
 
@@ -208,10 +290,12 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
         ),
       );
     } catch (e) {
-      emit(state.copyWith(
-        paymentStatus: PaymentStatus.failed,
-        errorMessage: e.toString(),
-      ));
+      emit(
+        state.copyWith(
+          paymentStatus: PaymentStatus.failed,
+          errorMessage: e.toString(),
+        ),
+      );
     }
   }
 }

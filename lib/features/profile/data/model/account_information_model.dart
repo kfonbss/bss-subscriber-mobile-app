@@ -24,6 +24,7 @@ class AccountInformationModel extends AccountInformationEntity {
       name: json['name'] ?? '',
       mobileNo: json['mobileNo'] ?? '',
       address: json['address'] ?? '',
+      email: json['email'] ?? '',
     );
   }
 
