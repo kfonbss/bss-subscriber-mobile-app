@@ -3,7 +3,7 @@ import 'package:file_picker/file_picker.dart';
 class SubmitTicketReq {
   final String subjectId;
   final String ticketCategory;
-  final String priority;
+  final String? priority;
   final String remarks;
   final String customerType;
   final String customerId;
@@ -14,7 +14,7 @@ class SubmitTicketReq {
   SubmitTicketReq({
     required this.subjectId,
     required this.ticketCategory,
-    required this.priority,
+    this.priority,
     required this.remarks,
     required this.customerType,
     required this.customerId,

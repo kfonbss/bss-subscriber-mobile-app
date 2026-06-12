@@ -6,7 +6,7 @@ import 'package:kfon_subscriber/features/change_plan/domain/entity/package_new_e
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 
 class PlanTile extends StatelessWidget {
-  final PackageItemEntity package;
+  final PackageInfoEntity package;
   final bool isSelected;
   final VoidCallback onTap;
 

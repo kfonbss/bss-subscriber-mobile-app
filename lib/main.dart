@@ -5,6 +5,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
+import 'package:kfon_subscriber/core/routes/navigator_key.dart';
 import 'package:kfon_subscriber/core/util/preference_util.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_bloc.dart';
@@ -13,6 +14,7 @@ import 'package:kfon_subscriber/features/auth/presentation/pages/forgot_password
 import 'package:kfon_subscriber/features/auth/presentation/pages/login_page.dart';
 import 'package:kfon_subscriber/features/auth/presentation/pages/new_password_page.dart';
 import 'package:kfon_subscriber/features/auth/presentation/pages/otp_verification_page.dart';
+import 'package:kfon_subscriber/features/auth/presentation/pages/tenant_screen.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/agnp_enquiry_form.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/bpl_enquiry_form.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/dark_fibre_enquiry_form.dart';
@@ -33,7 +35,6 @@ import 'package:kfon_subscriber/features/profile/domain/repository/profile_repos
 import 'package:kfon_subscriber/features/profile/presentation/account_information/pages/account_information_page.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/settings_page.dart';
 import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profile_bloc.dart';
-import 'package:kfon_subscriber/features/profile/presentation/profile/bloc/profile_event.dart';
 import 'package:kfon_subscriber/features/tranasactions/presentation/pages/transaction_history_page.dart';
 import 'package:kfon_subscriber/l10n/bss_sub_localizations.dart';
 import 'package:kfon_subscriber/service_locator.dart';
@@ -56,14 +57,20 @@ Future<void> main() async {
   );
   setUpServiceLocator();
   final showIntro = await PreferenceUtils.showIntroScreen();
-
-  runApp(MyApp(showIntro: showIntro));
+  final tenantId = await PreferenceUtils.getTenantId() ?? '';
+  runApp(
+    MyApp(showIntro: showIntro, tenantId: tenantId),
+  );
 }
 
 class MyApp extends StatefulWidget {
   final bool showIntro;
-
-  const MyApp({super.key, required this.showIntro});
+  final String tenantId;
+  const MyApp({
+    super.key,
+    required this.showIntro,
+    required this.tenantId,
+  });
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -71,9 +78,9 @@ class MyApp extends StatefulWidget {
 
 class _MyAppState extends State<MyApp> {
   final AuthBloc _authBloc = AuthBloc(authRepository: sl<AuthRepository>());
+
   late final ProfileBloc _profileBloc;
   late final HomeBloc _homeBloc;
-
   @override
   void initState() {
     super.initState();
@@ -93,6 +100,7 @@ class _MyAppState extends State<MyApp> {
         BlocProvider.value(value: _homeBloc),
       ],
       child: MaterialApp(
+        navigatorKey: navigatorKey,
         theme: theme.copyWith(
           primaryColor: AppColor.kPrimaryColor,
           scaffoldBackgroundColor: AppColor.kMainBackgroundColor,
@@ -131,13 +139,15 @@ class _MyAppState extends State<MyApp> {
         localizationsDelegates: [BssSubLocalizations.delegate],
         supportedLocales: [const Locale('en')],
         routes: {
-          AppRoutes.login: (context) => LoginPage(),
+          AppRoutes.tenant: (context) => TenantScreen(),
+          AppRoutes.login: (context)=>LoginPage(),
           AppRoutes.otpVerification: (context) {
             final args =
                 ModalRoute.of(context)?.settings.arguments
                     as Map<String, dynamic>?;
             return OtpVerificationPage(
               mobileNumber: args?['mobileNumber'] ?? '',
+              token: args?['token'] ?? '',
               isFromForgotPassword: args?['isFromForgotPassword'] ?? false,
             );
           },
@@ -179,6 +189,8 @@ class _MyAppState extends State<MyApp> {
               return MainPage();
             } else if (widget.showIntro) {
               return IntroScreenPage();
+            } else if (widget.tenantId.isEmpty) {
+              return TenantScreen();
             } else {
               return LoginPage();
             }

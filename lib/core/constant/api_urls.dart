@@ -11,6 +11,9 @@ class ApiUrls {
   static const String coreExternalService = 'bss-core-external-services/api';
   static const String fileStorageService = 'bss-file-storage-services/api/files';
   static const String billingFinanceService = 'bss-billing-finance-services/api';
+
+  static String bssCoreDmdmService =
+      'bss-core-dmdm-service/api';
   static const setNewPasswordURL =
       'bss-user-role-mapping-services/api/auth/forgot-password';
   static const lnpEnquiryFormURL =
@@ -42,11 +45,14 @@ class ApiUrls {
   static String rechargePaymentStatus({required String orderId}) =>
       '$billingFinanceService/web/payment/recharge/status/$orderId';
 
+  static String rechargeSeasonId =
+      '$billingFinanceService/rule-engine/packages/seasonal-discount';
+
   static const String walletTopupURL =
       '$billingFinanceService/mobile/payment/top-up';
-  static const String loginURL = '$userRoleMapingService/mobile/login';
-  static const String sendOTPURL = '$coreExternalService/otp/send';
-  static const String verifyOTPURL = '$coreExternalService/otp/verify';
+  static String get loginURL => '$userRoleMapingService/mobile/login';
+  static String get resendOTPURL => '$userRoleMapingService/mobile/login/resend-otp';
+  static String get verifyOTPURL => '$userRoleMapingService/mobile/login/verify-otp';
   static const String sendForgotPasswordOTPURL =
       '$userRoleMapingService/mobile/forgot-password/send-otp';
   static const String verifyForgotPasswordOTPURL =
@@ -81,5 +87,16 @@ class ApiUrls {
       '$userRoleMapingService/crm/visibility-permission';
   static const String submitTicketURL = '$userRoleMapingService/mobile/tickets';
 
+  static String get subscriberDiscountRuleEngineURL =>
+      '$billingFinanceService/rule-engine/packages/subscriber-discount';
   static const String addNoteURL = '$userRoleMapingService/mobile/note';
+
+  /// File Storage: Get view URL by file ID (GET)
+  static String fileViewUrlByFileId(String fileId) =>
+      '$fileStorageService/files/$fileId/view-url';
+
+  /// File Storage: Get download URL by file ID (GET)
+  static String fileDownloadUrlByFileId(String fileId) =>
+      '$fileStorageService/files/$fileId/download-url';
+  static String get tenantsURL => '$bssCoreDmdmService/state/fetch-all';
 }

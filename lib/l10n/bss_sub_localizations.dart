@@ -94,6 +94,36 @@ abstract class BssSubLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[Locale('en')];
 
+  /// No description provided for @welcomeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Welcome to KFON'**
+  String get welcomeLabel;
+
+  /// No description provided for @otpSentMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'We have sent you 6 digits verification code to \n {mobileNumber}'**
+  String otpSentMessage(Object mobileNumber);
+
+  /// No description provided for @areYouSureLogout.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure you want to logout?'**
+  String get areYouSureLogout;
+
+  /// No description provided for @willReturnToLoginScreen.
+  ///
+  /// In en, this message translates to:
+  /// **'This will return you to the log in screen.'**
+  String get willReturnToLoginScreen;
+
+  /// No description provided for @downloadPdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Download PDF'**
+  String get downloadPdf;
+
   /// No description provided for @stayConnectedAlways.
   ///
   /// In en, this message translates to:
@@ -3111,6 +3141,138 @@ abstract class BssSubLocalizations {
   /// In en, this message translates to:
   /// **'Enter Partner Contact Name'**
   String get enterPartnerContactName;
+
+  /// No description provided for @orderSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Order Summary'**
+  String get orderSummary;
+
+  /// No description provided for @packageDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Package Details'**
+  String get packageDetails;
+
+  /// No description provided for @referralCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Referral Code'**
+  String get referralCodeLabel;
+
+  /// No description provided for @referralCodeHint.
+  ///
+  /// In en, this message translates to:
+  /// **'ENTER CODE (E.G. ONAM8F3A)'**
+  String get referralCodeHint;
+
+  /// No description provided for @referralHelperText.
+  ///
+  /// In en, this message translates to:
+  /// **'Have a referral code? Enter it for an additional discount.'**
+  String get referralHelperText;
+
+  /// No description provided for @priceBreakdown.
+  ///
+  /// In en, this message translates to:
+  /// **'Price Breakdown'**
+  String get priceBreakdown;
+
+  /// No description provided for @packageBreakdownLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Package — {packageName}'**
+  String packageBreakdownLabel(String packageName);
+
+  /// No description provided for @seasonDiscount.
+  ///
+  /// In en, this message translates to:
+  /// **'Season Discount'**
+  String get seasonDiscount;
+
+  /// No description provided for @seasonDiscountRule.
+  ///
+  /// In en, this message translates to:
+  /// **'{ruleName} - {discountValue}% OFF via Rule Engine'**
+  String seasonDiscountRule(String ruleName, String discountValue);
+
+  /// No description provided for @gstLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'GST (18%)'**
+  String get gstLabel;
+
+  /// No description provided for @totalPayable.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Payable'**
+  String get totalPayable;
+
+  /// No description provided for @billingDetails.
+  ///
+  /// In en, this message translates to:
+  /// **'Billing Details'**
+  String get billingDetails;
+
+  /// No description provided for @paymentMode.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Mode'**
+  String get paymentMode;
+
+  /// No description provided for @subscriberCategory.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscriber Category'**
+  String get subscriberCategory;
+
+  /// No description provided for @subPackage.
+  ///
+  /// In en, this message translates to:
+  /// **'Sub-Package'**
+  String get subPackage;
+
+  /// No description provided for @rechargeDays.
+  ///
+  /// In en, this message translates to:
+  /// **'Recharge Days'**
+  String get rechargeDays;
+
+  /// No description provided for @confirmAndPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Confirm & Pay {amount}'**
+  String confirmAndPay(String amount);
+
+  /// No description provided for @discountAppliedHeader.
+  ///
+  /// In en, this message translates to:
+  /// **'{ruleName} — {discountValue}% OFF Applied!'**
+  String discountAppliedHeader(String ruleName, String discountValue);
+
+  /// No description provided for @discountAppliedSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Discount resolved via Rule Engine - auto-applied'**
+  String get discountAppliedSubtitle;
+
+  /// No description provided for @referralCodeApplied.
+  ///
+  /// In en, this message translates to:
+  /// **'Referral Code Applied Successfully!'**
+  String get referralCodeApplied;
+
+  /// No description provided for @remove.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove'**
+  String get remove;
+
+  /// No description provided for @apply.
+  ///
+  /// In en, this message translates to:
+  /// **'Apply'**
+  String get apply;
 }
 
 class _BssSubLocalizationsDelegate

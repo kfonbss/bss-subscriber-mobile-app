@@ -25,12 +25,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
-      TextEditingController();
-
-  static const _systemUiStyle = SystemUiOverlayStyle(
-    statusBarBrightness: Brightness.dark,
-    statusBarColor: AppColor.kPrimaryColor,
-  );
+  TextEditingController();
 
   @override
   void dispose() {
@@ -44,39 +39,41 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
       return;
     }
 
-    final newPassword = _newPasswordController.text.trim();
-    final authBloc = context.read<AuthBloc>();
+    String newPassword = _newPasswordController.text.trim();
 
-    authBloc.add(
-      ResetPasswordRequested(
-        username: authBloc.forgotPasswordUsername ?? '',
-        newPassword: newPassword,
-      ),
+    context.read<AuthBloc>().add(
+      ResetPasswordRequested(username: '_username', newPassword: newPassword),
     );
   }
 
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion(
-      value: _systemUiStyle,
+      value: SystemUiOverlayStyle(
+        statusBarBrightness: Brightness.dark,
+        statusBarColor: AppColor.kPrimaryColor,
+      ),
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is PasswordResetSuccess) {
             DialogUtil().showCustomSnackbar(
               context: context,
-              content: context.bssSubL10n.passwordUpdatedSuccessfully,
-              backgroundColor: AppColor.kSuccessGreen,
+              content: 'Password updated successfully',
             );
-            Navigator.pushNamedAndRemoveUntil(
-              context,
-              AppRoutes.login,
-              (route) => false,
-            );
+
+            Future.delayed(const Duration(seconds: 1), () {
+              if (!mounted) return;
+              Navigator.pushNamedAndRemoveUntil(
+                context,
+                AppRoutes.login,
+                    (route) => false,
+              );
+            });
           } else if (state is PasswordResetError) {
             DialogUtil().showCustomSnackbar(
               context: context,
               content: state.errorMessage,
-              backgroundColor: AppColor.kFailedRed,
+              isError: true,
             );
           }
         },
@@ -93,9 +90,8 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
             child: Column(
               children: [
                 AuthHeader(
-                  heading: context.bssSubL10n.welcomeToKfon,
+                  heading: 'Welcome to KFON',
                   description: '',
-                  onClicked: () {},
                 ),
 
                 Form(
@@ -113,12 +109,12 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                           ),
                           child: LoginPasswordTextField(
                             textEditingController: _newPasswordController,
-                            hintText: context.bssSubL10n.enterNewPassword,
+                            hintText: 'Enter New Password',
                             validator: Validators.validatePassword,
                           ),
                         ),
-                        const Divider(
-                          color: AppColor.kDividerGrey,
+                        Divider(
+                          color: Colors.grey.shade200,
                           thickness: 1,
                           height: 2,
                         ),
@@ -130,7 +126,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                           ),
                           child: LoginPasswordTextField(
                             textEditingController: _confirmPasswordController,
-                            hintText: context.bssSubL10n.enterConfirmPassword,
+                            hintText: 'Enter Confirm Password',
                             validator: (value) =>
                                 Validators.validateConfirmPassword(
                                   value,
@@ -149,12 +145,12 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                   padding: const EdgeInsets.symmetric(horizontal: 20),
                   child: BlocBuilder<AuthBloc, AuthState>(
                     buildWhen: (previous, current) =>
-                        (previous is AuthLoading) != (current is AuthLoading),
+                    (previous is AuthLoading) != (current is AuthLoading),
                     builder: (context, state) {
                       final isLoading = state is AuthLoading;
                       return WhiteButton(
                         isLoading: isLoading,
-                        label: context.bssSubL10n.resetPassword,
+                        label: 'Reset Password',
                         borderRadius: 10,
                         textColor: AppColor.kPrimaryColor,
                         onClicked: _resetPassword,

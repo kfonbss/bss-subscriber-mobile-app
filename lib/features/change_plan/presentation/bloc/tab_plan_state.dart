@@ -5,7 +5,7 @@ import 'package:kfon_subscriber/features/change_plan/presentation/bloc/change_pl
 
 class TabPlanState extends Equatable {
   final ListPlanStatus status;
-  final List<PackageItemEntity> packages;
+  final List<PackageInfoEntity> packages;
   final int totalPage;
   final bool hasMore;
   final String? errorMessage;
@@ -20,7 +20,7 @@ class TabPlanState extends Equatable {
 
   TabPlanState copyWith({
     ListPlanStatus? status,
-    List<PackageItemEntity>? packages,
+    List<PackageInfoEntity>? packages,
     int? totalPage,
     bool? hasMore,
     String? errorMessage,

@@ -4,15 +4,11 @@ import 'package:kfon_subscriber/core/util/sizer.dart';
 class AuthHeader extends StatelessWidget {
   final String heading;
   final String description;
-  final String? clickableText;
-  final VoidCallback onClicked;
 
   const AuthHeader({
     super.key,
     required this.heading,
     required this.description,
-    this.clickableText,
-    required this.onClicked,
   });
 
   // Sizer ratios and Sizer.isTablet are fixed after MaterialApp.builder —

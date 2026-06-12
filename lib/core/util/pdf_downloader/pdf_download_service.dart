@@ -6,36 +6,65 @@ import 'package:path_provider/path_provider.dart';
 import 'package:permission_handler/permission_handler.dart';
 
 class PdfDownloadService {
+  Future<Directory> _resolveDownloadDirectory() async {
+    if (Platform.isAndroid) {
+      final status = await Permission.storage.request();
+      if (!status.isGranted) {
+        throw Exception('Storage permission denied');
+      }
+      final dir = Directory('/storage/emulated/0/Download');
+      if (!await dir.exists()) {
+        await dir.create(recursive: true);
+      }
+      return dir;
+    }
+
+    // iOS/macOS/windows/linux fallback.
+    final dir = await getApplicationDocumentsDirectory();
+    final downloadDir = Directory('${dir.path}/Downloads');
+    if (!await downloadDir.exists()) {
+      await downloadDir.create(recursive: true);
+    }
+    return downloadDir;
+  }
+
   Future<File> downloadToCache(String url) async {
+    final uri = Uri.parse(url);
     final token = await PreferenceUtils.getAccessToken();
+    final isPresignedUrl = uri.queryParameters.containsKey('X-Amz-Algorithm');
 
-    final headers = {
-      'accept': 'application/pdf',
-      if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
-    };
+    http.Response response;
 
-    final response = await http.get(Uri.parse(url), headers: headers);
+    if (isPresignedUrl) {
+      // Pre-signed object-storage URLs are self-authenticated.
+      response = await http.get(uri, headers: {'accept': '*/*'});
+    } else {
+      final headers = {
+        'accept': 'application/pdf',
+        if (token != null && token.isNotEmpty) 'Authorization': 'Bearer $token',
+      };
+      response = await http.get(uri, headers: headers);
+
+      // Fallback for endpoints that reject auth/strict headers.
+      if (response.statusCode != 200) {
+        response = await http.get(uri, headers: {'accept': '*/*'});
+      }
+    }
 
     if (response.statusCode != 200) {
-      throw Exception('Failed to load PDF: ${response.statusCode}');
+      throw Exception('Failed to load PDF: HTTP ${response.statusCode}');
     }
 
     final dir = await getTemporaryDirectory();
-    final file = File('${dir.path}/invoice_preview.pdf');
-
-    // Remove stale cached file before writing so only one copy exists at a time
-    if (await file.exists()) await file.delete();
+    final file = File(
+      '${dir.path}/invoice_${DateTime.now().millisecondsSinceEpoch}.pdf',
+    );
 
     return file.writeAsBytes(response.bodyBytes);
   }
 
   Future<String> saveToDownloads(File file) async {
-    final dir = await _resolveDownloadsDirectory();
-
-    if (!await dir.exists()) {
-      await dir.create(recursive: true);
-    }
-
+    final dir = await _resolveDownloadDirectory();
     final newFile = File(
       '${dir.path}/invoice_${DateTime.now().millisecondsSinceEpoch}.pdf',
     );
@@ -44,43 +73,19 @@ class PdfDownloadService {
     return newFile.path;
   }
 
-  /// Returns the appropriate downloads directory for the current platform.
-  /// On Android 9 and below, requests legacy storage permission.
-  Future<Directory> _resolveDownloadsDirectory() async {
-    if (Platform.isAndroid) {
-      // Android 10+ (OS version 10, API 29+): scoped storage — no runtime
-      // permission needed. Android 9 and below (OS version < 10) require it.
-      if (_androidOsVersion() < 10) {
-        await Permission.storage.request();
-      }
+  Future<String> downloadToDownloads(String url) async {
+    final uri = Uri.parse(url);
+    final response = await http.get(uri, headers: {'accept': '*/*'});
 
-      // path_provider's getExternalStorageDirectories returns the
-      // app-specific directory, but for a user-visible Downloads folder
-      // we resolve it dynamically to avoid hardcoding.
-      final dirs = await getExternalStorageDirectories(
-        type: StorageDirectory.downloads,
-      );
-      if (dirs != null && dirs.isNotEmpty) return dirs.first;
-
-      // Fallback: app-specific external storage
-      return (await getExternalStorageDirectory()) ??
-          await getTemporaryDirectory();
+    if (response.statusCode != 200) {
+      throw Exception('Failed to download PDF: HTTP ${response.statusCode}');
     }
 
-    // iOS / other: use application documents directory
-    return getApplicationDocumentsDirectory();
-  }
-
-  // Returns the Android OS release version (e.g. 9 for Android 9, 10 for Android 10).
-  // Platform.operatingSystemVersion returns strings like "9", "9 REL", "12", etc.
-  // We extract only the leading digits to handle any suffix safely.
-  int _androidOsVersion() {
-    if (!Platform.isAndroid) return 0;
-    try {
-      final match = RegExp(r'^\d+').firstMatch(Platform.operatingSystemVersion);
-      return match != null ? int.parse(match.group(0)!) : 10;
-    } catch (_) {
-      return 10; // assume Android 10+ on parse failure
-    }
+    final dir = await _resolveDownloadDirectory();
+    final newFile = File(
+      '${dir.path}/invoice_${DateTime.now().millisecondsSinceEpoch}.pdf',
+    );
+    await newFile.writeAsBytes(response.bodyBytes);
+    return newFile.path;
   }
 }

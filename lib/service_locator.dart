@@ -2,6 +2,8 @@ import 'package:get_it/get_it.dart';
 import 'package:kfon_subscriber/core/network/dio_client.dart';
 import 'package:kfon_subscriber/features/active_package_details/data/repository/package_details_repository_imp.dart';
 import 'package:kfon_subscriber/features/active_package_details/domain/repository/package_details_repository.dart';
+import 'package:kfon_subscriber/features/auth/data/repository/tenant_repository_impl.dart';
+import 'package:kfon_subscriber/features/auth/domain/repository/tenant_repository.dart';
 import 'package:kfon_subscriber/features/change_plan/data/repository/change_plan_repository_imp.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/repository/change_plan_repository.dart';
 import 'package:kfon_subscriber/features/data_usage/data/repository/data_usage_repository_imp.dart';
@@ -67,4 +69,5 @@ void setUpServiceLocator() {
   sl.registerLazySingleton<OfflineRechargeRepository>(
     () => OfflineRechargeRepositoryImp(client: sl<DioClient>()),
   );
+  sl.registerLazySingleton<TenantRepository>(() => TenantRepositoryImpl());
 }

@@ -1,4 +1,15 @@
 {
+  "welcomeLabel": "Welcome to KFON",
+  "otpSentMessage": "We have sent you 6 digits verification code to \n {mobileNumber}",
+  "@otpSentMessage": {
+    "placeholders": {
+      "mobileNumber": {}
+    }
+  },
+  "areYouSureLogout": "Are you sure you want to logout?",
+  "willReturnToLoginScreen": "This will return you to the log in screen.",
+
+  "downloadPdf": "Download PDF",
   "stayConnectedAlways": "Stay Connected, Always",
   "experienceLightningFast": "Experience lightning-fast internet with KFON's reliable fiber network, keeping you online anytime, anywhere.",
   "bridgingDigitalDivide": "Bridging the Digital Divide",
@@ -649,5 +660,63 @@
   "partnerCompanyName": "Partner Company Name*",
   "enterPartnerCompanyName": "Enter Partner Company Name",
   "partnerContactName": "Partner Contact Name*",
-  "enterPartnerContactName": "Enter Partner Contact Name"
+  "enterPartnerContactName": "Enter Partner Contact Name",
+  "orderSummary": "Order Summary",
+
+  "packageDetails": "Package Details",
+  "volume": "Volume",
+  "referralCodeLabel": "Referral Code",
+  "referralCodeHint": "ENTER CODE (E.G. ONAM8F3A)",
+  "referralHelperText": "Have a referral code? Enter it for an additional discount.",
+  "priceBreakdown": "Price Breakdown",
+  "packageBreakdownLabel": "Package — {packageName}",
+  "@packageBreakdownLabel": {
+    "placeholders": {
+      "packageName": {
+        "type": "String"
+      }
+    }
+  },
+  "seasonDiscount": "Season Discount",
+  "seasonDiscountRule": "{ruleName} - {discountValue}% OFF via Rule Engine",
+  "@seasonDiscountRule": {
+    "placeholders": {
+      "ruleName": {
+        "type": "String"
+      },
+      "discountValue": {
+        "type": "String"
+      }
+    }
+  },
+  "gstLabel": "GST (18%)",
+  "totalPayable": "Total Payable",
+  "billingDetails": "Billing Details",
+  "paymentMode": "Payment Mode",
+  "subscriberCategory": "Subscriber Category",
+  "subPackage": "Sub-Package",
+  "rechargeDays": "Recharge Days",
+  "confirmAndPay": "Confirm & Pay {amount}",
+  "@confirmAndPay": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "discountAppliedHeader": "{ruleName} — {discountValue}% OFF Applied!",
+  "@discountAppliedHeader": {
+    "placeholders": {
+      "ruleName": {
+        "type": "String"
+      },
+      "discountValue": {
+        "type": "String"
+      }
+    }
+  },
+  "discountAppliedSubtitle": "Discount resolved via Rule Engine - auto-applied",
+  "referralCodeApplied": "Referral Code Applied Successfully!",
+  "remove": "Remove",
+  "apply": "Apply"
 }

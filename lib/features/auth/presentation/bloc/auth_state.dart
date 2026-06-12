@@ -64,6 +64,10 @@ class OtpVerified extends AuthState {
   const OtpVerified();
 }
 
+class ForgotPasswordOtpVerified extends AuthState {
+  const ForgotPasswordOtpVerified();
+}
+
 class OtpVerificationFailed extends AuthState {
   final String errorMessage;
 
@@ -90,6 +94,15 @@ class LogoutLoading extends AuthState {
   const LogoutLoading();
 }
 
+class LoadSelectedTenantSuccess extends AuthState {
+  final String tenantName;
+  final String tenantId;
+
+  const LoadSelectedTenantSuccess({required this.tenantName,required this.tenantId});
+
+  @override
+  List<Object?> get props => [tenantName,tenantId];
+}
 class LogoutSuccess extends AuthState {
   const LogoutSuccess();
 }

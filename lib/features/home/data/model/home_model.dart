@@ -1,5 +1,5 @@
+import 'package:kfon_subscriber/features/change_plan/data/models/package_new_model.dart';
 import 'package:kfon_subscriber/features/home/domain/entity/home_entity.dart';
-
 
 class ActiveAdoOnModel {
   final String subPackageId;
@@ -55,6 +55,7 @@ class PackageDetailsModel {
   final double availableVolumeGb;
   final int validity;
   final double totalVolumeGb;
+  final PackageItemModel packageInfoModel;
   final List<ActiveAdoOnModel> activeAddOns;
 
   const PackageDetailsModel({
@@ -69,6 +70,7 @@ class PackageDetailsModel {
     required this.validity,
     required this.availableVolumeGb,
     required this.totalVolumeGb,
+    required this.packageInfoModel,
     required this.activeAddOns,
   });
 
@@ -78,11 +80,14 @@ class PackageDetailsModel {
       packageName: json['packageName'] as String? ?? '',
       speedMbps: json['speedMbps'] as int? ?? 0,
       packageType: json['packageType'] as String? ?? '',
+      packageInfoModel: PackageItemModel.fromJson(
+        json['packageInfo'] as Map<String, dynamic>? ?? {},
+      ),
       daysLeft: json['daysLeft'] as int? ?? 0,
       activeUntil: json['activeUntil'] as String? ?? '',
       renewalFee: (json['renewalFee'] as num?)?.toDouble() ?? 0.0,
       totalPackageCount: json['totalPackageCount'] as int? ?? 0,
-      validity:  json['validity'] as int? ?? 0,
+      validity: json['validity'] as int? ?? 0,
       availableVolumeGb: (json['availableVolumeGb'] as num?)?.toDouble() ?? 0.0,
       totalVolumeGb: (json['totalVolumeGb'] as num?)?.toDouble() ?? 0.0,
       activeAddOns:
@@ -121,6 +126,7 @@ class PackageDetailsModel {
     validity: validity,
     totalVolumeGb: totalVolumeGb,
     activeAddOns: activeAddOns.map((e) => e.toEntity()).toList(),
+    packageInfoModel:  packageInfoModel.toEntity(),
   );
 }
 

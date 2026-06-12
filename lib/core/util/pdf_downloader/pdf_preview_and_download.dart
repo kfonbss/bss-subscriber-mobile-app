@@ -3,28 +3,27 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:flutter_pdfview/flutter_pdfview.dart';
 import 'package:flutter_svg/flutter_svg.dart';
-import 'package:kfon_subscriber/core/constant/api_urls.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
-import 'package:kfon_subscriber/core/network/dio_client.dart';
-import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/core/util/pdf_downloader/pdf_download_controller.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
-import 'package:kfon_subscriber/features/tranasactions/data/model/view_invoice_model.dart';
+import 'package:kfon_subscriber/features/invoice_list/domain/repository/invoice_repository.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 
 class PdfPreviewAndDownload extends StatefulWidget {
-  final String fileId;
+  final String pdfUrl;
   final String title;
   final bool showShareButton;
+  final String? fileId;
 
   const PdfPreviewAndDownload({
     super.key,
-    required this.fileId,
+    required this.pdfUrl,
     required this.title,
     this.showShareButton = true,
+    this.fileId,
   });
-
   @override
   State<PdfPreviewAndDownload> createState() => _PdfPreviewAndDownloadState();
 }
@@ -32,161 +31,162 @@ class PdfPreviewAndDownload extends StatefulWidget {
 class _PdfPreviewAndDownloadState extends State<PdfPreviewAndDownload> {
   final PdfDownloadController _controller = PdfDownloadController();
 
-  File? _pdfFile;
-  bool _isLoading = true;
-  bool _hasError = false;
-  String _fileUrl = '';
+  File? pdfFile;
+  bool isLoading = true;
+  String? loadError;
+  bool isDownloading = false;
 
   @override
   void initState() {
     super.initState();
-    //_loadPdf();
-    _getInvoiceFileDetails();
+    _loadPdf();
   }
 
-  void _getInvoiceFileDetails() async {
-    final response = await sl<DioClient>().get(
-      ApiUrls.invoiceFileURL(fileId: widget.fileId),
-    );
-    if (response.isSuccess) {
-      final model = ViewInvoiceModel.fromJson(
-        response.data as Map<String, dynamic>,
-      );
-      if (model.fileId.isNotEmpty) {
-        _fileUrl = model.fileId;
-        _loadPdf();
+  Future<void> _onDownloadPressed(BuildContext context) async {
+    if (isDownloading) return;
+    setState(() => isDownloading = true);
+    try {
+      if (widget.fileId != null && widget.fileId!.isNotEmpty) {
+        final result = await sl<InvoiceRepository>().getFileDownloadUrl(
+          widget.fileId!,
+        );
+        if (!mounted) return;
+        await result.fold(
+              (failure) async {
+            ScaffoldMessenger.of(context).showSnackBar(
+              SnackBar(content: Text(failure.message)),
+            );
+          },
+              (fileData) async {
+            await _controller.downloadPdfFromUrl(context, fileData.url);
+          },
+        );
+      } else if (pdfFile != null) {
+        await _controller.downloadPdf(context, pdfFile!);
       }
-    } else {
+    } catch (e) {
+      if (!mounted) return;
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(e.toString())));
+    } finally {
       if (mounted) {
-        DialogUtil().showMessage(response.failure.message, context);
+        setState(() => isDownloading = false);
       }
     }
   }
 
   Future<void> _loadPdf() async {
-    if (mounted) {
-      setState(() {
-        _isLoading = true;
-        _hasError = false;
-      });
-    }
     try {
-      final file = await _controller.loadPdf(_fileUrl);
-      if (mounted) {
-        setState(() {
-          _pdfFile = file;
-          _isLoading = false;
-        });
-      }
+      pdfFile = await _controller.loadPdf(widget.pdfUrl);
     } catch (e) {
-      print(e.toString());
+      loadError = e.toString();
+    } finally {
       if (mounted) {
-        setState(() {
-          _isLoading = false;
-          _hasError = true;
-        });
+        setState(() => isLoading = false);
       }
     }
-  }
-
-  Future<void> _downloadPdf() async {
-    final savedPath = await _controller.downloadPdf(_pdfFile!);
-    if (!mounted) return;
-    ScaffoldMessenger.of(
-      context,
-    ).showSnackBar(SnackBar(content: Text('PDF saved to $savedPath')));
   }
 
   @override
   Widget build(BuildContext context) {
     return CommonAppBar(
       title: widget.title,
-      actions:
-          widget.showShareButton
-              ? [
-                Padding(
-                  padding: const EdgeInsets.only(right: 16.0),
-                  child: CircleAvatar(
-                    backgroundColor: AppColor.kPrimaryColor,
-                    foregroundColor: Colors.white,
-                    child: IconButton(
-                      icon: SvgPicture.asset(
-                        'assets/icons/share.svg',
-                        width: 20,
-                        height: 20,
-                        colorFilter: const ColorFilter.mode(
-                          Colors.white,
-                          BlendMode.srcIn,
-                        ),
-                      ),
-                      onPressed:
-                          _pdfFile == null
-                              ? null
-                              : () => _controller.sharePdf(_pdfFile!),
+      scaffoldColor: Colors.white,
+      appbarColor: Colors.white,
+      actions: widget.showShareButton
+          ? [
+        Padding(
+          padding: const EdgeInsets.only(right: 16.0),
+          child: CircleAvatar(
+            backgroundColor: AppColor.kSecondaryColor,
+            foregroundColor: Colors.white,
+            child: IconButton(
+              icon: SvgPicture.asset(
+                'assets/icons/share.svg',
+                width: 20.w,
+                height: 20.h,
+                colorFilter: const ColorFilter.mode(
+                  AppColor.kSecondaryColor,
+                  BlendMode.srcIn,
+                ),
+              ),
+              onPressed: pdfFile == null
+                  ? null
+                  : () => _controller.sharePdf(pdfFile!),
+            ),
+          ),
+        ),
+      ]
+          : null,
+      onBackPressed: () => Navigator.of(context).pop(),
+      body: isLoading
+          ? const Center(child: CircularProgressIndicator())
+          : loadError != null
+          ? Center(
+        child: Padding(
+          padding: const EdgeInsets.all(24.0),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              const Icon(Icons.picture_as_pdf_outlined, size: 48),
+               SizedBox(height: 12.h),
+              const Text(
+                'Unable to load invoice PDF',
+                textAlign: TextAlign.center,
+              ),
+               SizedBox(height: 8.h),
+              Text(
+                loadError!,
+                textAlign: TextAlign.center,
+                style: const TextStyle(color: Colors.black54),
+              ),
+            ],
+          ),
+        ),
+      )
+          : Column(
+        crossAxisAlignment: CrossAxisAlignment.stretch,
+        children: [
+          Expanded(
+            child: Container(
+              color: Colors.white,
+              child: PDFView(
+                filePath: pdfFile!.path,
+                defaultPage: 0,
+                autoSpacing: false,
+                pageSnap: true,
+                fitPolicy: FitPolicy.WIDTH,
+              ),
+            ),
+          ),
+          ColoredBox(
+            color: Colors.white,
+            child: SafeArea(
+              top: false,
+              left: false,
+              right: false,
+              minimum: const EdgeInsets.only(bottom: 8.0),
+              child: Padding(
+                padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
+                child: ElevatedButton(
+                  onPressed: () => _onDownloadPressed(context),
+                  child: Text(
+                    isDownloading
+                        ? 'Downloading...'
+                        : context.bssSubL10n.downloadPdf,
+                    style: const TextStyle(
+                      fontSize: 16,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
                 ),
-              ]
-              : null,
-      onBackPressed: () => Navigator.of(context).pop(),
-      body:
-          _isLoading
-              ? const Center(child: CircularProgressIndicator())
-              : _hasError
-              ? Center(
-                child: Column(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    const Icon(
-                      Icons.error_outline,
-                      size: 48,
-                      color: Colors.red,
-                    ),
-                    const SizedBox(height: 12),
-                    const Text(
-                      'Failed to load PDF',
-                      style: TextStyle(
-                        fontSize: 16,
-                        fontWeight: FontWeight.w500,
-                      ),
-                    ),
-                    const SizedBox(height: 16),
-                    ElevatedButton(
-                      onPressed:
-                          _fileUrl.isEmpty ? _getInvoiceFileDetails : _loadPdf,
-                      child: const Text('Retry'),
-                    ),
-                  ],
-                ),
-              )
-              : Padding(
-                padding: const EdgeInsets.fromLTRB(16.0, 0.0, 16.0, 16.0),
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Expanded(
-                      child: ClipRRect(
-                        borderRadius: BorderRadius.circular(12),
-                        child: PDFView(filePath: _pdfFile!.path),
-                      ),
-                    ),
-
-                    const SizedBox(height: 16),
-
-                    ElevatedButton(
-                      onPressed: _downloadPdf,
-                      child: Text(
-                        'Download PDF',
-                        style: TextStyle(
-                          fontSize: 16.sp,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
-                    ),
-                    const SizedBox(height: 8),
-                  ],
-                ),
               ),
+            ),
+          ),
+        ],
+      ),
     );
   }
 }
+

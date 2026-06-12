@@ -18,11 +18,13 @@ class AuthInterceptor extends Interceptor {
   /// Cached repository — resolved lazily to avoid circular dependency
   /// (DioClient → AuthInterceptor → AuthRepository → DioClient).
   AuthRepository? _authRepository;
+
   AuthRepository get _repository => _authRepository ??= sl<AuthRepository>();
 
   static List<String> get _publicEndpoints => [
+    ApiUrls.tenantsURL,
     ApiUrls.loginURL,
-    ApiUrls.sendOTPURL,
+    ApiUrls.resendOTPURL,
     ApiUrls.sendForgotPasswordOTPURL,
     ApiUrls.verifyOTPURL,
     ApiUrls.resetForgotPasswordURL,
@@ -34,6 +36,8 @@ class AuthInterceptor extends Interceptor {
     RequestOptions options,
     RequestInterceptorHandler handler,
   ) async {
+    final tenantId = await PreferenceUtils.getTenantId();
+    options.headers['X-Tenant-ID'] = '$tenantId';
     final isPublicEndpoint = _publicEndpoints.contains(options.path);
 
     try {
@@ -56,7 +60,6 @@ class AuthInterceptor extends Interceptor {
   /// Ensures we have a valid token
   Future<void> _ensureValidToken() async {
     final isExpired = await PreferenceUtils.isTokenExpired();
-    print('Ajith:isExpired $isExpired');
 
     if (isExpired) {
       if (_isRefreshing) {
@@ -82,7 +85,6 @@ class AuthInterceptor extends Interceptor {
 
     try {
       final refreshToken = await _getValidRefreshToken();
-      print('Ajith:refreshToken $refreshToken');
       if (refreshToken == null) {
         // _handleRefreshFailure already called inside _getValidRefreshToken.
         // Complete so that any concurrent request waiting on the completer
@@ -95,7 +97,6 @@ class AuthInterceptor extends Interceptor {
 
       _refreshCompleter?.complete();
     } catch (e) {
-      print('Ajith:catch ${e.toString()}');
       await _handleRefreshFailure();
       _refreshCompleter?.completeError(e);
     } finally {
@@ -122,7 +123,6 @@ class AuthInterceptor extends Interceptor {
   /// Calls the refresh token API and saves new tokens
   Future<void> _callRefreshApi(String refreshToken) async {
     final result = await _repository.refreshToken(refreshToken);
-    print('Ajith:_callRefreshApi result $result');
     await result.fold(
       (error) => _handleRefreshFailure(),
       (authModel) => _saveNewTokens(authModel),
@@ -146,10 +146,11 @@ class AuthInterceptor extends Interceptor {
     //   AppRoutes.login,
     //   (route) => false,
     // );
+
     WidgetsBinding.instance.addPostFrameCallback((_) {
       navigatorKey.currentState?.pushNamedAndRemoveUntil(
         AppRoutes.login,
-            (route) => false,
+        (route) => false,
       );
     });
   }

@@ -254,8 +254,9 @@ class _ChangePlanViewState extends State<_ChangePlanView>
                 BlocBuilder<ChangePlanBloc, ChangePlanState>(
                   buildWhen: (prev, curr) => prev.activeTab != curr.activeTab,
                   builder: (context, state) {
-                    if (state.activeTab != PlanTab.all)
+                    if (state.activeTab != PlanTab.all) {
                       return const SizedBox.shrink();
+                    }
                     return Padding(
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       child: Row(
@@ -490,7 +491,6 @@ class _PlanTabContentState extends State<_PlanTabContent>
               key: ValueKey(package.id),
               package: package,
               isSelected: state.selectedPackageId == package.id,
-              showSelectedBorder: true,
               onTap:
                   () => context.read<ChangePlanBloc>().add(
                     SelectPackage(package.id),

@@ -2,10 +2,10 @@ import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/recharge_change_plan_redirect_entity.dart';
+import 'package:kfon_subscriber/features/change_plan/presentation/bloc/discount_state.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:webview_flutter_plus/webview_flutter_plus.dart';
 /// Result of payment from WebView
-enum PaymentResult { success, failed, cancelled }
 
 /// Simple Payment WebView page that loads a URL.
 class PaymentWebViewPage extends StatefulWidget {
@@ -93,15 +93,15 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
     await _controller.loadHtmlString(html);
   }
 
-  PaymentResult? _getPaymentResultFromUrl(String url) {
+  RechargeStatus? _getPaymentResultFromUrl(String url) {
     if (url.startsWith('about:') || url.startsWith('data:')) return null;
-    if (url.contains(_successUrlPattern)) return PaymentResult.success;
-    if (url.contains(_failureUrlPattern)) return PaymentResult.failed;
+    if (url.contains(_successUrlPattern)) return RechargeStatus.paymentSuccess;
+    if (url.contains(_failureUrlPattern)) return RechargeStatus.paymentFailed;
 
     final path = url.toLowerCase();
-    if (path.contains('success') || path.contains('complete')) return PaymentResult.success;
-    if (path.contains('fail') || path.contains('error')) return PaymentResult.failed;
-    if (path.contains('cancel')) return PaymentResult.cancelled;
+    if (path.contains('success') || path.contains('complete')) return RechargeStatus.paymentSuccess;
+    if (path.contains('fail') || path.contains('error')) return RechargeStatus.paymentFailed;
+    if (path.contains('cancel')) return RechargeStatus.paymentCancelled;
 
     return null;
   }
@@ -136,7 +136,7 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
     );
 
     if (shouldCancel == true && mounted) {
-      Navigator.of(context).pop(PaymentResult.cancelled);
+      Navigator.of(context).pop(RechargeStatus.paymentCancelled);
     }
   }
 

@@ -4,6 +4,7 @@ import 'package:intl/intl.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/pdf_downloader/pdf_preview_and_download.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/features/invoice_list/domain/repository/invoice_repository.dart';
 import 'package:kfon_subscriber/features/tranasactions/domain/repository/transaction_repository.dart';
 import 'package:kfon_subscriber/features/tranasactions/presentation/bloc/transaction_history_bloc.dart';
 import 'package:kfon_subscriber/features/tranasactions/presentation/bloc/transaction_history_event.dart';
@@ -131,16 +132,44 @@ class _TransactionHistoryViewState extends State<_TransactionHistoryView> {
                   responseMessage: txn.responseMessage,
                   onDownloadInvoice: txn.fileId.isEmpty
                       ? null
-                      : () {
-                          Navigator.of(context, rootNavigator: true).push(
-                            MaterialPageRoute(
-                              builder: (_) => PdfPreviewAndDownload(
-                                title: l10n.invoice,
-                                fileId: txn.fileId,
-                              ),
+                      : () async {
+                    Navigator.pop(context); // Dismiss the bottom sheet
+
+                    if (txn.fileId.isEmpty) {
+                      if (!context.mounted) return;
+                      ScaffoldMessenger.of(context).showSnackBar(
+                        const SnackBar(
+                          content: Text('Invoice file is not available'),
+                        ),
+                      );
+                      return;
+                    }
+
+                    final result = await sl<InvoiceRepository>().getFileViewUrl(
+                      txn.fileId,
+                    );
+
+                    if (!context.mounted) return;
+                    result.fold(
+                          (failure) {
+                        ScaffoldMessenger.of(context).showSnackBar(
+                          SnackBar(content: Text(failure.message)),
+                        );
+                      },
+                          (file) {
+                        Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => PdfPreviewAndDownload(
+                              title: context.bssSubL10n.invoice,
+                              pdfUrl: file.url,
+                              fileId: txn.fileId,
                             ),
-                          );
-                        },
+                          ),
+                        );
+                      },
+                    );
+                  },
                 );
               },
             );

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/shared/widgets/shimmer/shimmer_base.dart';
 import 'package:kfon_subscriber/shared/widgets/shimmer/shimmer_box.dart';
 
@@ -29,8 +30,8 @@ class ListShimmer extends StatelessWidget {
           children: [
             for (int i = 0; i < itemCount; i++) ...[
               ShimmerBox(
-                height: itemHeight,
-                width: itemWidth ?? double.infinity,
+                height: itemHeight.h,
+                width: itemWidth?.w ?? double.infinity,
                 borderRadius: itemBorderRadius,
               ),
               if (i < itemCount - 1) SizedBox(height: separatorHeight),

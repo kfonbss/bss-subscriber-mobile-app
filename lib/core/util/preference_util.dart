@@ -8,6 +8,8 @@ class PreferenceUtils {
   static const _keyTokenExpiryAt = 'tokenExpiryAt';
   static const _keyUserId = 'userId';
   static const _keyUserName = 'userName';
+  static const _keyTenantId = 'tenantId';
+  static const _keyTenantName = 'tenantName';
   static const _introScreenStatus = 'introScreenStatus';
 
   static Future<String?> getAccessToken() async =>
@@ -21,6 +23,19 @@ class PreferenceUtils {
     if (value == null) return true;
     return false;
   }
+
+  static Future<void> setTenant(String tenantId,String tenantName) async {
+    await Future.wait([
+      _storage.write(key: _keyTenantId, value: tenantId),
+      _storage.write(key: _keyTenantName, value: tenantName)
+    ]);
+  }
+
+  static Future<String?> getTenantId() async =>
+      await _storage.read(key: _keyTenantId);
+
+  static Future<String?> getTenantName() async =>
+      await _storage.read(key: _keyTenantName);
 
   static Future<void> setIntroScreenStatus(bool status) async =>
       await _storage.write(key: _introScreenStatus, value: status.toString());

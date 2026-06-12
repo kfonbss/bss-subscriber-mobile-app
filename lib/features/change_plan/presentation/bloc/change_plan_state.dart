@@ -9,8 +9,6 @@ enum ListPlanStatus { initial, loading, loadingMore, success, error }
 
 enum ActionStatus { idle, loading, success, error }
 
-enum PaymentStatus { idle, loading, success, failed, cancelled }
-
 const _sentinel = Object();
 
 class ChangePlanState extends Equatable {
@@ -19,7 +17,6 @@ class ChangePlanState extends Equatable {
   final PlanTab activeTab;
   final String? selectedPackageId;
   final ActionStatus actionStatus;
-  final PaymentStatus paymentStatus;
   final String? errorMessage;
   final String? successMessage;
   final String? searchQuery;
@@ -34,7 +31,6 @@ class ChangePlanState extends Equatable {
     this.listPlanStatus = ListPlanStatus.success,
     this.selectedPackageId,
     this.actionStatus = ActionStatus.idle,
-    this.paymentStatus = PaymentStatus.idle,
     this.errorMessage,
     this.successMessage,
     this.searchQuery,
@@ -47,7 +43,7 @@ class ChangePlanState extends Equatable {
   TabPlanState get activeTabState =>
       tabStates[activeTab] ?? const TabPlanState();
 
-  PackageItemEntity? get selectedPackage {
+  PackageInfoEntity? get selectedPackage {
     if (selectedPackageId == null) return null;
     for (final tabState in tabStates.values) {
       final match = tabState.packages
@@ -64,7 +60,6 @@ class ChangePlanState extends Equatable {
     PlanTab? activeTab,
     String? selectedPackageId,
     ActionStatus? actionStatus,
-    PaymentStatus? paymentStatus,
     String? errorMessage,
     String? successMessage,
     String? searchQuery,
@@ -79,7 +74,6 @@ class ChangePlanState extends Equatable {
       activeTab: activeTab ?? this.activeTab,
       selectedPackageId: selectedPackageId ?? this.selectedPackageId,
       actionStatus: actionStatus ?? this.actionStatus,
-      paymentStatus: paymentStatus ?? this.paymentStatus,
       errorMessage: errorMessage,
       successMessage: successMessage,
       searchQuery: searchQuery ?? this.searchQuery,
@@ -97,7 +91,6 @@ class ChangePlanState extends Equatable {
     activeTab,
     selectedPackageId,
     actionStatus,
-    paymentStatus,
     errorMessage,
     successMessage,
     searchQuery,
@@ -106,4 +99,5 @@ class ChangePlanState extends Equatable {
     orderId,
     paymentStatusEntity,
   ];
+
 }

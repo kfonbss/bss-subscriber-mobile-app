@@ -5,22 +5,19 @@ import 'package:kfon_subscriber/features/change_plan/domain/entity/package_new_e
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 
 class PlanTileNew extends StatelessWidget {
-  final PackageItemEntity package;
+  final PackageInfoEntity package;
   final bool isSelected;
   final VoidCallback onTap;
-  final bool showSelectedBorder;
 
   const PlanTileNew({
     super.key, // exposes key so callers can pass ValueKey(package.packageId)
     required this.package,
     required this.isSelected,
     required this.onTap,
-    required this.showSelectedBorder,
   });
 
   @override
   Widget build(BuildContext context) {
-
     return InkWell(
       onTap: onTap,
       borderRadius: BorderRadius.circular(18),
@@ -41,20 +38,20 @@ class PlanTileNew extends StatelessWidget {
             ),
             child: PackageCard(
               packageName: package.packageName,
-              tags:package.subscriberProfile!=null? [package.subscriberProfile!.name, package.subscriberProfile!.code]:[],
+              tags:[package.broadbandCategory??'', package.subscriberCategory!],
               seasonalLabel: '🌸 Onam',
-              originalPrice: package.renewalFee,
+              originalPrice: package.originalAmount,
               discountedPrice: package.renewalFee,
-              discountLabel: '₹50 OFF',
+              discountLabel: '₹${package.discountAmount} OFF',
               discountDescription: 'Onam Season Discount',
-              savingsAmount: 50.00,
+              savingsAmount: package.savedAmount,
               speedMbps: package.speedInKbps/1024,
-              validityDays: package.renewPeriod,
-              volume: 'Unlimited',
+              validityDays: package.validity,
+              volume: package.volumeType,
               isSelected: isSelected,
             ),
           ),
-          if (isSelected && showSelectedBorder)
+          if (isSelected)
             Positioned(
               right: 0,
               top: 0,

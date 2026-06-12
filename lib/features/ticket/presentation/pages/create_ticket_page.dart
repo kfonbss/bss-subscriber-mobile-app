@@ -268,7 +268,7 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
           params: SubmitTicketReq(
             subjectId: _selectedSubject!.id,
             ticketCategory: _selectedCategory!.id,
-            priority: _selectedPriorityCode!,
+            // priority: _selectedPriorityCode!,
             remarks: _descriptionController.text,
             customerType: customerTypeId,
             // ← resolved UUID
@@ -829,7 +829,9 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                             );
                           },
                         ),
-                        if (_selectedSubject != null) ...[
+                        if (_selectedSubject != null &&
+                            _selectedSubject!.name.toLowerCase() !=
+                                'others') ...[
                           const SizedBox(height: 16),
                           // Resolved In Container
                           Container(
@@ -868,68 +870,68 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                             ),
                           ),
                         ],
-                        const SizedBox(height: 24),
-
-                        // Select Priority Field
-                        // Select Priority Field
-                        Text(
-                          '${l10n.selectPriorityKey}*',
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w600,
-                            color: Color(0xFF0F1121),
-                            height: 1.3,
-                            fontFamily: 'GeneralSans',
-                          ),
-                        ),
-                        const SizedBox(height: 12),
-                        TextFormField(
-                          controller: _priorityController,
-                          readOnly: true,
-                          onTap: _showPriorityPicker,
-                          autovalidateMode: AutovalidateMode.onUserInteraction,
-                          validator:
-                              (v) => Validators.validateRequired(
-                                v,
-                                fieldName: l10n.priority,
-                              ),
-                          style: const TextStyle(
-                            fontSize: 14,
-                            fontWeight: FontWeight.w400,
-                            color: Color(0xFF0F1121),
-                            fontFamily: 'GeneralSans',
-                          ),
-                          decoration: InputDecoration(
-                            hintText: l10n.selectPriorityKey,
-                            hintStyle: const TextStyle(
-                              fontSize: 14,
-                              fontWeight: FontWeight.w400,
-                              color: Color(0xFFA5A5A5),
-                              fontFamily: 'GeneralSans',
-                            ),
-                            filled: true,
-                            fillColor: Colors.white,
-                            suffixIcon: const Icon(
-                              Icons.keyboard_arrow_down,
-                              color: Color(0xFF292D32),
-                            ),
-                            contentPadding: const EdgeInsets.symmetric(
-                              horizontal: 16,
-                              vertical: 14,
-                            ),
-                            border: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: BorderSide.none,
-                            ),
-                            errorBorder: OutlineInputBorder(
-                              borderRadius: BorderRadius.circular(12),
-                              borderSide: const BorderSide(
-                                color: Colors.red,
-                                width: 1,
-                              ),
-                            ),
-                          ),
-                        ),
+                        // const SizedBox(height: 24),
+                        //
+                        // // Select Priority Field
+                        // // Select Priority Field
+                        // Text(
+                        //   '${l10n.selectPriorityKey}*',
+                        //   style: const TextStyle(
+                        //     fontSize: 14,
+                        //     fontWeight: FontWeight.w600,
+                        //     color: Color(0xFF0F1121),
+                        //     height: 1.3,
+                        //     fontFamily: 'GeneralSans',
+                        //   ),
+                        // ),
+                        // const SizedBox(height: 12),
+                        // TextFormField(
+                        //   controller: _priorityController,
+                        //   readOnly: true,
+                        //   onTap: _showPriorityPicker,
+                        //   autovalidateMode: AutovalidateMode.onUserInteraction,
+                        //   validator:
+                        //       (v) => Validators.validateRequired(
+                        //         v,
+                        //         fieldName: l10n.priority,
+                        //       ),
+                        //   style: const TextStyle(
+                        //     fontSize: 14,
+                        //     fontWeight: FontWeight.w400,
+                        //     color: Color(0xFF0F1121),
+                        //     fontFamily: 'GeneralSans',
+                        //   ),
+                        //   decoration: InputDecoration(
+                        //     hintText: l10n.selectPriorityKey,
+                        //     hintStyle: const TextStyle(
+                        //       fontSize: 14,
+                        //       fontWeight: FontWeight.w400,
+                        //       color: Color(0xFFA5A5A5),
+                        //       fontFamily: 'GeneralSans',
+                        //     ),
+                        //     filled: true,
+                        //     fillColor: Colors.white,
+                        //     suffixIcon: const Icon(
+                        //       Icons.keyboard_arrow_down,
+                        //       color: Color(0xFF292D32),
+                        //     ),
+                        //     contentPadding: const EdgeInsets.symmetric(
+                        //       horizontal: 16,
+                        //       vertical: 14,
+                        //     ),
+                        //     border: OutlineInputBorder(
+                        //       borderRadius: BorderRadius.circular(12),
+                        //       borderSide: BorderSide.none,
+                        //     ),
+                        //     errorBorder: OutlineInputBorder(
+                        //       borderRadius: BorderRadius.circular(12),
+                        //       borderSide: const BorderSide(
+                        //         color: Colors.red,
+                        //         width: 1,
+                        //       ),
+                        //     ),
+                        //   ),
+                        // ),
                         const SizedBox(height: 24),
 
                         /*
@@ -1001,6 +1003,14 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                           initialValue: _descriptionController.text,
                           validator: (_) {
                             final v = _descriptionController.text;
+                            if (_selectedSubject != null &&
+                                _selectedSubject!.name.toLowerCase() ==
+                                    'others') {
+                              return Validators.validateRequired(
+                                v,
+                                fieldName: l10n.remarks,
+                              );
+                            }
                             if (v.trim().isEmpty) {
                               return null;
                             }

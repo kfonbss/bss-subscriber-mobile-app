@@ -1,6 +1,8 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/core/util/preference_util.dart';
+import 'package:kfon_subscriber/features/auth/data/model/verify_otp_model.dart';
 import 'package:kfon_subscriber/features/auth/domain/entity/auth_entity.dart';
+import 'package:kfon_subscriber/features/auth/domain/entity/verify_otp_entity.dart';
 import 'package:kfon_subscriber/features/auth/domain/params/login_params.dart';
 import 'package:kfon_subscriber/features/auth/domain/params/reset_password_params.dart';
 import 'package:kfon_subscriber/features/auth/domain/params/verify_otp_params.dart';
@@ -10,16 +12,18 @@ import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_state.dart'
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository authRepository;
-  String? otpRefId;
+  String? loginSessionToken;
   String? forgotPasswordUsername;
   String? forgotPasswordToken;
   AuthEntity? _authEntity;
+  String? otpRefId;
 
   AuthBloc({required this.authRepository}) : super(const AuthInitial()) {
     on<CheckAuthStatus>(_onCheckAuthStatus);
+    on<LoadSelectedTenant>(_onLoadSelectedTenant);
     on<LoginRequested>(_onLoginRequested);
     on<LogoutRequested>(_onLogoutRequested);
-    on<SendOtpRequested>(_onSendOtpRequested);
+    on<ResendOTP>(_onResendOTP);
     on<VerifyOtpRequested>(_onVerifyOtpRequested);
     on<SendForgotPasswordOtpRequested>(_onSendForgotPasswordOtpRequested);
     on<VerifyForgotPasswordOtpRequested>(_onVerifyForgotPasswordOtpRequested);
@@ -31,15 +35,20 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     Emitter<AuthState> emit,
   ) async {
     try {
-      final userProfile = await authRepository.getUserProfile();
-      userProfile.fold(
-        (failure) {
-          emit(const Unauthenticated());
-        },
-        (profileEntity) {
-          emit(const Authenticated());
-        },
-      );
+      final tenantId = await PreferenceUtils.getTenantId() ?? '';
+      if (tenantId.isEmpty) {
+        emit(const Unauthenticated());
+      } else {
+        final userProfile = await authRepository.getUserProfile();
+        userProfile.fold(
+          (failure) {
+            emit(const Unauthenticated());
+          },
+          (profileEntity) {
+            emit(const Authenticated());
+          },
+        );
+      }
     } catch (e) {
       emit(const Unauthenticated());
     }
@@ -55,6 +64,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
       final loginParams = LoginParams(
         userName: event.username,
         password: event.password,
+        tenantId: event.tenantId,
       );
 
       final result = await authRepository.login(loginParams);
@@ -64,23 +74,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(LoginFailure(errorMessage: error.toString()));
         },
         (authEntity) async {
-          otpRefId = null;
-
-          // Send OTP after successful login
-          final otpResult = await authRepository.sendOtp(
-            authEntity.mobileNumber,
-          );
-
-          otpResult.fold(
-            (otpError) {
-              emit(LoginFailure(errorMessage: otpError.toString()));
-            },
-            (otpResponse) {
-              otpRefId = otpResponse.otpRefId;
-              _authEntity = authEntity;
-              emit(LoginSuccess(user: authEntity));
-            },
-          );
+          _authEntity = authEntity;
+          emit(LoginSuccess(user: authEntity));
         },
       );
     } catch (e) {
@@ -92,7 +87,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     LogoutRequested event,
     Emitter<AuthState> emit,
   ) async {
-    emit(const LogoutLoading());
     try {
       final refreshToken = await PreferenceUtils.getRefreshToken();
       if (refreshToken != null && refreshToken.isNotEmpty) {
@@ -103,20 +97,16 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           },
           (_) async {
             await PreferenceUtils.clearAll();
-            otpRefId = null;
             _authEntity = null;
             forgotPasswordUsername = null;
-            forgotPasswordToken = null;
             emit(const LogoutSuccess());
             emit(const Unauthenticated());
           },
         );
       } else {
         await PreferenceUtils.clearAll();
-        otpRefId = null;
         _authEntity = null;
         forgotPasswordUsername = null;
-        forgotPasswordToken = null;
         emit(const LogoutSuccess());
         emit(const Unauthenticated());
       }
@@ -125,28 +115,29 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     }
   }
 
-  /// Handle login confirm send OTP request
-  Future<void> _onSendOtpRequested(
-    SendOtpRequested event,
-    Emitter<AuthState> emit,
-  ) async {
+  Future<void> _onLoadSelectedTenant(
+      LoadSelectedTenant event,
+      Emitter<AuthState> emit,
+      ) async {
+    String tenantName = await PreferenceUtils.getTenantName() ?? '';
+    String tenantId = await PreferenceUtils.getTenantId() ?? '';
+    emit(LoadSelectedTenantSuccess(tenantId: tenantId, tenantName: tenantName));
+  }
+  Future<void> _onResendOTP(ResendOTP event, Emitter<AuthState> emit) async {
     try {
-      emit(const AuthLoading());
+      final result = await authRepository.resendOTP(event.loginSessionToken);
 
-      otpRefId = null;
-      final result = await authRepository.sendOtp(event.mobileNumber);
-
-      result.fold(
-        (error) {
-          emit(OtpSendError(errorMessage: error.toString()));
+      await result.fold(
+        (error) async {
+          emit(LoginFailure(errorMessage: error.toString()));
         },
-        (otpResponse) {
-          otpRefId = otpResponse.otpRefId;
-          emit(OtpSent(mobileNumber: event.mobileNumber));
+        (authEntity) async {
+          _authEntity = authEntity;
+          emit(LoginSuccess(user: authEntity));
         },
       );
     } catch (e) {
-      emit(OtpSendError(errorMessage: e.toString()));
+      emit(LogoutFailure(errorMessage: e.toString()));
     }
   }
 
@@ -157,35 +148,37 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       emit(const AuthLoading());
 
-      if (otpRefId == null) {
-        emit(const OtpVerificationFailed(
-          errorMessage: 'OTP session expired. Please request a new OTP.',
-        ));
-        return;
-      }
-
-      final params = VerifyOtpParams(otpRefId: otpRefId!, otp: event.otp);
+      final params = VerifyOtpParams(
+        otpRefId: _authEntity!.otpRefId,
+        otp: event.otp,
+        loginSessionToken: _authEntity!.loginSessionToken,
+      );
 
       final result = await authRepository.verifyOtp(params);
+      if (result.isLeft()) {
+        final error = result.fold((l) => l, (r) => null)!;
+        emit(OtpVerificationFailed(errorMessage: error.message));
+      } else {
+        final response = result.fold((l) => null, (r) => r)!;
 
-      await result.fold(
-        (error) async {
-          emit(OtpVerificationFailed(errorMessage: error.toString()));
-        },
-        (_) async {
-          // Save token to storage after successful OTP verification
-          if (_authEntity != null) {
-            await PreferenceUtils.saveAllTokens(
-              accessToken: _authEntity!.token,
-              refreshToken: _authEntity!.refreshToken,
-              expiresIn: _authEntity!.expiresIn,
-            );
-            _authEntity = null;
-          }
-          emit(const OtpVerified());
-          otpRefId = null;
-        },
-      );
+        if (response.userRole == null || response.userRole != UserRole.sub) {
+          emit(
+            const OtpVerificationFailed(
+              errorMessage:
+                  'You do not have access to this app. Please contact support.',
+            ),
+          );
+          return;
+        }
+        await PreferenceUtils.saveAllTokens(
+          accessToken: response.token,
+          refreshToken: response.refreshToken,
+          expiresIn: response.expiresIn,
+        );
+        _authEntity = null;
+        otpRefId = null;
+        emit(const OtpVerified());
+      }
     } catch (e) {
       emit(OtpVerificationFailed(errorMessage: e.toString()));
     }
@@ -208,7 +201,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         (otpResponse) {
           forgotPasswordUsername = event.username;
           otpRefId = otpResponse.otpRefId;
-          final mobileNumber = otpResponse.mobileNumber ?? '';
+          String mobileNumber = otpResponse.mobileNumber ?? '';
           emit(OtpSent(mobileNumber: mobileNumber));
         },
       );
@@ -224,13 +217,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       emit(const AuthLoading());
 
-      if (otpRefId == null) {
-        emit(const OtpVerificationFailed(
-          errorMessage: 'OTP session expired. Please request a new OTP.',
-        ));
-        return;
-      }
-
       final params = VerifyOtpParams(otpRefId: otpRefId!, otp: event.otp);
 
       final result = await authRepository.verifyForgotPasswordOtp(params);
@@ -241,7 +227,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         },
         (verifyResponseData) {
           forgotPasswordToken = verifyResponseData['token'];
-          emit(const OtpVerified());
+          emit(const ForgotPasswordOtpVerified());
           otpRefId = null;
         },
       );
@@ -257,13 +243,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     try {
       emit(const AuthLoading());
 
-      if (forgotPasswordUsername == null || forgotPasswordToken == null) {
-        emit(const PasswordResetError(
-          errorMessage: 'Session expired. Please restart the forgot password flow.',
-        ));
-        return;
-      }
-
       final params = ResetPasswordParams(
         username: forgotPasswordUsername!,
         newPassword: event.newPassword.trim(),
@@ -278,8 +257,6 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           emit(PasswordResetError(errorMessage: error.toString()));
         },
         (_) {
-          forgotPasswordToken = null;
-          forgotPasswordUsername = null;
           emit(const PasswordResetSuccess());
         },
       );

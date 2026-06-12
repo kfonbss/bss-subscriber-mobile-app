@@ -18,9 +18,6 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
     on<SearchPackages>(_onSearchPackages);
     on<FilterBySpeed>(_onFilterBySpeed);
     on<SelectPackage>(_onSelectPackage);
-    on<ChangePlan>(_onChangePlan);
-    on<RechargeChangePlan>(_onRechargeChangePlan);
-    on<FetchRechargePaymentStatus>(_onFetchRechargePaymentStatus);
   }
 
   bool? _ottForTab(PlanTab tab) {
@@ -109,7 +106,7 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
           search: tab == PlanTab.all ? state.searchQuery : null,
           speedMbps: tab == PlanTab.all ? state.speedFilter : null,
           ott: _ottForTab(tab),
-          page: currentPage+1,
+          page: currentPage + 1,
           size: size,
         ),
       );
@@ -126,7 +123,7 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
               packageDetails.content
                   .where((p) => p.id != event.packageId)
                   .toList();
-          final existingPackage = List<PackageItemEntity>.from(
+          final existingPackage = List<PackageInfoEntity>.from(
             updatedTabStates[tab]!.packages,
           );
           existingPackage.addAll(filtered);
@@ -194,108 +191,5 @@ class ChangePlanBloc extends Bloc<ChangePlanEvent, ChangePlanState> {
 
   void _onSelectPackage(SelectPackage event, Emitter<ChangePlanState> emit) {
     emit(state.copyWith(selectedPackageId: event.packageId));
-  }
-
-  Future<void> _onChangePlan(
-    ChangePlan event,
-    Emitter<ChangePlanState> emit,
-  ) async {
-    try {
-      emit(state.copyWith(actionStatus: ActionStatus.loading));
-
-      final result = await repository.changePlan(
-        event.subscriberUuid,
-        event.params,
-      );
-
-      result.fold(
-        (failure) => emit(
-          state.copyWith(
-            actionStatus: ActionStatus.error,
-            errorMessage: failure.toString(),
-          ),
-        ),
-        (_) => emit(state.copyWith(actionStatus: ActionStatus.success)),
-      );
-    } catch (e) {
-      emit(
-        state.copyWith(
-          actionStatus: ActionStatus.error,
-          errorMessage: e.toString(),
-        ),
-      );
-    }
-  }
-
-  Future<void> _onRechargeChangePlan(
-    RechargeChangePlan event,
-    Emitter<ChangePlanState> emit,
-  ) async {
-    try {
-      emit(state.copyWith(actionStatus: ActionStatus.loading));
-
-      final result = await repository.rechargeChangePlan(event.params);
-
-      result.fold(
-        (failure) => emit(
-          state.copyWith(
-            actionStatus: ActionStatus.error,
-            errorMessage: failure.toString(),
-          ),
-        ),
-        (data) => emit(
-          state.copyWith(
-            actionStatus: ActionStatus.success,
-            redirectEntity: data.redirect,
-            orderId: data.orderId,
-          ),
-        ),
-      );
-    } catch (e) {
-      emit(
-        state.copyWith(
-          actionStatus: ActionStatus.error,
-          errorMessage: e.toString(),
-        ),
-      );
-    }
-  }
-
-  Future<void> _onFetchRechargePaymentStatus(
-    FetchRechargePaymentStatus event,
-    Emitter<ChangePlanState> emit,
-  ) async {
-    try {
-      emit(
-        state.copyWith(
-          paymentStatus: PaymentStatus.loading,
-          redirectEntity: null,
-        ),
-      );
-
-      final result = await repository.getRechargePaymentStatus(event.orderId);
-
-      result.fold(
-        (failure) => emit(
-          state.copyWith(
-            paymentStatus: PaymentStatus.failed,
-            errorMessage: failure.toString(),
-          ),
-        ),
-        (entity) => emit(
-          state.copyWith(
-            paymentStatus: PaymentStatus.success,
-            paymentStatusEntity: entity,
-          ),
-        ),
-      );
-    } catch (e) {
-      emit(
-        state.copyWith(
-          paymentStatus: PaymentStatus.failed,
-          errorMessage: e.toString(),
-        ),
-      );
-    }
   }
 }

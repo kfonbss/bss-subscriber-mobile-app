@@ -2,6 +2,7 @@
 class AppRoutes {
   AppRoutes._();
 
+  static const String tenant = '/tenant_page';
   static const String login = '/login_page';
   static const String forgotPassword = '/forgot_password';
   static const String otpVerification = '/otp_verification';

@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:kfon_subscriber/features/change_plan/domain/entity/package_new_entity.dart';
 
 class ActiveAdOnEntity extends Equatable {
   final String subPackageId;
@@ -25,6 +26,7 @@ class ActiveAdOnEntity extends Equatable {
   ];
 }
 
+
 class PackageDetailsEntity extends Equatable {
   final String packageId;
   final String packageName;
@@ -35,8 +37,9 @@ class PackageDetailsEntity extends Equatable {
   final double renewalFee;
   final int totalPackageCount;
   final double availableVolumeGb;
-  final double totalVolumeGb;
   final int validity;
+  final double totalVolumeGb;
+  final PackageInfoEntity packageInfoModel;
   final List<ActiveAdOnEntity> activeAddOns;
 
   const PackageDetailsEntity({
@@ -48,9 +51,10 @@ class PackageDetailsEntity extends Equatable {
     required this.activeUntil,
     required this.renewalFee,
     required this.totalPackageCount,
+    required this.validity,
     required this.availableVolumeGb,
     required this.totalVolumeGb,
-    required this.validity,
+    required this.packageInfoModel,
     required this.activeAddOns,
   });
 

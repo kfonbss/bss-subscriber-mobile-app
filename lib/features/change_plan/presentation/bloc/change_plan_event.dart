@@ -1,7 +1,5 @@
 import 'package:equatable/equatable.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/enums/subscriber_enums.dart';
-import 'package:kfon_subscriber/features/change_plan/domain/params/change_plan_request_params.dart';
-import 'package:kfon_subscriber/features/change_plan/domain/params/recharge_change_plan_params.dart';
 
 abstract class ChangePlanEvent extends Equatable {
   const ChangePlanEvent();
@@ -48,25 +46,6 @@ class SelectPackage extends ChangePlanEvent {
   List<Object?> get props => [packageId];
 }
 
-class ChangePlan extends ChangePlanEvent {
-  final String subscriberUuid;
-  final ChangePlanRequestParams params;
-
-  const ChangePlan({required this.subscriberUuid, required this.params});
-
-  @override
-  List<Object?> get props => [subscriberUuid, params];
-}
-
-class RechargeChangePlan extends ChangePlanEvent {
-  final RechargeChangePlanParams params;
-
-  const RechargeChangePlan({required this.params});
-
-  @override
-  List<Object?> get props => [params];
-}
-
 class SwitchTab extends ChangePlanEvent {
   final PlanTab tab;
   final String packageId;
@@ -110,13 +89,4 @@ class FilterBySpeed extends ChangePlanEvent {
 
   @override
   List<Object?> get props => [speed, packageId, subscriberUuid];
-}
-
-class FetchRechargePaymentStatus extends ChangePlanEvent {
-  final String orderId;
-
-  const FetchRechargePaymentStatus({required this.orderId});
-
-  @override
-  List<Object?> get props => [orderId];
 }

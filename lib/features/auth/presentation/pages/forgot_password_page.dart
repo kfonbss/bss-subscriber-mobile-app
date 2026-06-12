@@ -23,11 +23,8 @@ class ForgotPasswordPage extends StatefulWidget {
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _usernameController = TextEditingController();
-
-  static const _systemUiStyle = SystemUiOverlayStyle(
-    statusBarBrightness: Brightness.dark,
-    statusBarColor: AppColor.kPrimaryColor,
+  final TextEditingController _usernameController = TextEditingController(
+    text: '',
   );
 
   @override
@@ -41,7 +38,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
       return;
     }
 
-    final username = _usernameController.text.trim();
+    String username = _usernameController.text.trim();
 
     context.read<AuthBloc>().add(
       SendForgotPasswordOtpRequested(username: username),
@@ -51,7 +48,10 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion(
-      value: _systemUiStyle,
+      value: SystemUiOverlayStyle(
+        statusBarBrightness: Brightness.dark,
+        statusBarColor: AppColor.kPrimaryColor,
+      ),
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
           if (state is OtpSent) {
@@ -67,7 +67,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
             DialogUtil().showCustomSnackbar(
               context: context,
               content: state.errorMessage,
-              backgroundColor: AppColor.kFailedRed,
+              isError: true,
             );
           }
         },
@@ -89,7 +89,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                     AuthHeader(
                       heading: context.bssSubL10n.forgotPassword,
                       description: context.bssSubL10n.forgotPasswordDescription,
-                      onClicked: () {},
                     ),
                     Form(
                       key: _formKey,
@@ -108,7 +107,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                             textInputType: TextInputType.text,
                             validator: (v) => Validators.validateRequired(
                               v,
-                              fieldName: 'Username',
+                              fieldName: context.bssSubL10n.username,
                             ),
                           ),
                         ),

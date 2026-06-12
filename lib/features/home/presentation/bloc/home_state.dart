@@ -29,7 +29,7 @@ class GetDataSuccess extends HomeState {
 }
 
 class GetPlansSuccess extends HomeState {
-  final List<PackageItemEntity> packageEntities;
+  final List<PackageInfoEntity> packageEntities;
 
   const GetPlansSuccess({required this.packageEntities});
 

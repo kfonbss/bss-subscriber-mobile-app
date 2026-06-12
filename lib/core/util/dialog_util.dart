@@ -11,7 +11,7 @@ class DialogUtil {
     color: AppColor.kCompletedGreen,
   );
   static final _negativeButtonStyle = const TextStyle(color: AppColor.kFailedRed);
-  static final _logo = Image.asset('assets/images/logo.png', height: 50.0);
+  static final _logo = Image.asset('assets/images/logo_transparent.png', height: 50.0);
 
   showConfirmationAlert({
     required BuildContext context,
@@ -77,57 +77,6 @@ class DialogUtil {
     );
   }
 
-  /// Shows a progress dialog while [task] runs, then dismisses it
-  /// automatically — whether [task] completes normally or throws.
-  ///
-  /// Returns the result of [task], or rethrows its error after closing
-  /// the dialog.
-  ///
-  /// Example:
-  /// ```dart
-  /// final result = await DialogUtil().runWithProgress(
-  ///   context: context,
-  ///   label: 'Uploading…',
-  ///   task: () => myRepository.upload(data),
-  /// );
-  /// ```
-  Future<T> runWithProgress<T>({
-    required BuildContext context,
-    required String label,
-    required Future<T> Function() task,
-  }) async {
-    showDialog<void>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext dialogContext) {
-        return PopScope(
-          canPop: false,
-          child: AlertDialog(
-            contentPadding: const EdgeInsets.all(20),
-            content: Row(
-              spacing: 15,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                const CircularProgressIndicator(color: AppColor.kPrimaryColor),
-                Text(label, style: _contentStyle),
-              ],
-            ),
-            elevation: 5.0,
-            backgroundColor: Colors.white,
-          ),
-        );
-      },
-    );
-
-    try {
-      final result = await task();
-      if (context.mounted) Navigator.of(context, rootNavigator: true).pop();
-      return result;
-    } catch (e) {
-      if (context.mounted) Navigator.of(context, rootNavigator: true).pop();
-      rethrow;
-    }
-  }
   /// Convenience wrapper — delegates to [showCustomSnackbar].
   void showMessage(
     String content,
@@ -145,8 +94,23 @@ class DialogUtil {
     required BuildContext context,
     required String content,
     Color? backgroundColor,
+    bool isError = false,
   }) {
     final theme = Theme.of(context);
+    final Color accentColor =
+        backgroundColor ??
+            (isError ? AppColor.kFailedRed : AppColor.kSecondaryColor);
+    final Color themedBorderColor = (isError
+        ? AppColor.kFailedRed
+        : AppColor.kSecondaryColor)
+        .withValues(alpha: 0.45);
+    final Color themedShadowColor = (isError
+        ? AppColor.kFailedRed
+        : AppColor.kSecondaryColor)
+        .withValues(alpha: 0.16);
+    final IconData leadingIcon = isError
+        ? Icons.error_outline_rounded
+        : Icons.info_outline_rounded;
 
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
@@ -155,20 +119,59 @@ class DialogUtil {
           behavior: SnackBarBehavior.floating,
           elevation: 0,
           backgroundColor: Colors.transparent,
-
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
           content: Container(
             width: double.infinity,
-            padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
             decoration: BoxDecoration(
-              color: backgroundColor ?? AppColor.kPrimaryColor, // your maroon
+              color: Color(0xFFFFFFFF),
               borderRadius: BorderRadius.circular(12),
+              border: Border.all(
+                color: themedBorderColor,
+                width: 1.2,
+              ),
+              boxShadow: [
+                BoxShadow(
+                  color: themedShadowColor,
+                  blurRadius: 10,
+                  offset: Offset(0, 3),
+                ),
+              ],
             ),
-            child: Text(
-              content,
-              textAlign: TextAlign.center,
-              style: theme.textTheme.bodyMedium?.copyWith(
-                color: Colors.white,
-                fontWeight: FontWeight.w500,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Container(
+                      width: 60,
+                      color: accentColor,
+                      alignment: Alignment.center,
+                      child: Icon(
+                        leadingIcon,
+                        color: Colors.white,
+                        size: 30,
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        child: Text(
+                          content,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: const Color(0xFF2F3447),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
               ),
             ),
           ),

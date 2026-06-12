@@ -3,8 +3,10 @@ import 'package:kfon_subscriber/core/constant/api_urls.dart';
 import 'package:kfon_subscriber/core/error/failure.dart';
 import 'package:kfon_subscriber/core/network/dio_client.dart';
 import 'package:kfon_subscriber/core/util/preference_util.dart';
+import 'package:kfon_subscriber/features/auth/data/model/verify_otp_model.dart';
 import 'package:kfon_subscriber/features/auth/domain/entity/auth_entity.dart';
 import 'package:kfon_subscriber/features/auth/domain/entity/otp_response_entity.dart';
+import 'package:kfon_subscriber/features/auth/domain/entity/verify_otp_entity.dart';
 import 'package:kfon_subscriber/features/auth/domain/params/login_params.dart';
 import 'package:kfon_subscriber/features/auth/domain/params/reset_password_params.dart';
 import 'package:kfon_subscriber/features/auth/domain/params/verify_otp_params.dart';
@@ -32,31 +34,24 @@ class AuthRepositoryImp extends AuthRepository {
   }
 
   @override
+  Future<Either<Failure, AuthEntity>> resendOTP(String token) async {
+    final response = await _client.post(
+      ApiUrls.resendOTPURL,
+      data: {'loginSessionToken':token},
+    );
+    if (response.isSuccess) {
+      final authModel = AuthModel.fromJson(response.data);
+      return Right(authModel.toEntity());
+    } else {
+      return Left(response.failure);
+    }
+  }
+  @override
   Future<bool> isLoggedIn() async {
     final token = await PreferenceUtils.getAccessToken();
     return token != null && token.isNotEmpty;
   }
 
-  @override
-  Future<Either<Failure, OtpResponseEntity>> sendOtp(
-    String mobileNumber,
-  ) async {
-    final response = await _client.post(
-      ApiUrls.sendOTPURL,
-      data: {'mobile': mobileNumber},
-    );
-    if (response.isSuccess) {
-      final data = response.data as Map<String, dynamic>;
-      return Right(
-        OtpResponseEntity(
-          otpRefId: data['otpRefId'] as String,
-          mobileNumber: mobileNumber,
-        ),
-      );
-    } else {
-      return Left(response.failure);
-    }
-  }
 
   @override
   Future<Either<Failure, OtpResponseEntity>> sendForgotPasswordOtp(
@@ -80,13 +75,14 @@ class AuthRepositoryImp extends AuthRepository {
   }
 
   @override
-  Future<Either<Failure, void>> verifyOtp(VerifyOtpParams params) async {
+  Future<Either<Failure, VerifyOtpEntity>> verifyOtp(VerifyOtpParams params) async {
     final response = await _client.post(
       ApiUrls.verifyOTPURL,
       data: params.toMap(),
     );
     if (response.isSuccess) {
-      return const Right(null);
+      final otpVerifiedData = VerifyOtpModel.fromJson(response.data);
+      return  Right(otpVerifiedData.toEntity());
     } else {
       return Left(response.failure);
     }

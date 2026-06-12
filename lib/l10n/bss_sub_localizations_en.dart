@@ -9,6 +9,24 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   BssSubLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
+  String get welcomeLabel => 'Welcome to KFON';
+
+  @override
+  String otpSentMessage(Object mobileNumber) {
+    return 'We have sent you 6 digits verification code to \n $mobileNumber';
+  }
+
+  @override
+  String get areYouSureLogout => 'Are you sure you want to logout?';
+
+  @override
+  String get willReturnToLoginScreen =>
+      'This will return you to the log in screen.';
+
+  @override
+  String get downloadPdf => 'Download PDF';
+
+  @override
   String get stayConnectedAlways => 'Stay Connected, Always';
 
   @override
@@ -1621,4 +1639,80 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
 
   @override
   String get enterPartnerContactName => 'Enter Partner Contact Name';
+
+  @override
+  String get orderSummary => 'Order Summary';
+
+  @override
+  String get packageDetails => 'Package Details';
+
+  @override
+  String get referralCodeLabel => 'Referral Code';
+
+  @override
+  String get referralCodeHint => 'ENTER CODE (E.G. ONAM8F3A)';
+
+  @override
+  String get referralHelperText =>
+      'Have a referral code? Enter it for an additional discount.';
+
+  @override
+  String get priceBreakdown => 'Price Breakdown';
+
+  @override
+  String packageBreakdownLabel(String packageName) {
+    return 'Package — $packageName';
+  }
+
+  @override
+  String get seasonDiscount => 'Season Discount';
+
+  @override
+  String seasonDiscountRule(String ruleName, String discountValue) {
+    return '$ruleName - $discountValue% OFF via Rule Engine';
+  }
+
+  @override
+  String get gstLabel => 'GST (18%)';
+
+  @override
+  String get totalPayable => 'Total Payable';
+
+  @override
+  String get billingDetails => 'Billing Details';
+
+  @override
+  String get paymentMode => 'Payment Mode';
+
+  @override
+  String get subscriberCategory => 'Subscriber Category';
+
+  @override
+  String get subPackage => 'Sub-Package';
+
+  @override
+  String get rechargeDays => 'Recharge Days';
+
+  @override
+  String confirmAndPay(String amount) {
+    return 'Confirm & Pay $amount';
+  }
+
+  @override
+  String discountAppliedHeader(String ruleName, String discountValue) {
+    return '$ruleName — $discountValue% OFF Applied!';
+  }
+
+  @override
+  String get discountAppliedSubtitle =>
+      'Discount resolved via Rule Engine - auto-applied';
+
+  @override
+  String get referralCodeApplied => 'Referral Code Applied Successfully!';
+
+  @override
+  String get remove => 'Remove';
+
+  @override
+  String get apply => 'Apply';
 }

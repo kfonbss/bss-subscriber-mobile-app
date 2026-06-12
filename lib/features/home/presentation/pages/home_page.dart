@@ -9,10 +9,10 @@ import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/active_package_details/domain/entity/active_packages_details_entity.dart';
 import 'package:kfon_subscriber/features/active_package_details/presentation/pages/active_package_page.dart';
-import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/package_new_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/repository/change_plan_repository.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/bloc/change_plan_bloc.dart';
+import 'package:kfon_subscriber/features/change_plan/presentation/bloc/discount_bloc.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/pages/change_plan.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/pages/recharge_page.dart';
 import 'package:kfon_subscriber/features/data_usage/presentation/pages/data_usage_view.dart';
@@ -21,7 +21,6 @@ import 'package:kfon_subscriber/features/home/presentation/bloc/home_bloc.dart';
 import 'package:kfon_subscriber/features/home/presentation/bloc/home_event.dart';
 import 'package:kfon_subscriber/features/home/presentation/bloc/home_state.dart';
 import 'package:kfon_subscriber/features/home/presentation/components/home_shimmer.dart';
-import 'package:kfon_subscriber/features/top_up/presentation/pages/topup_page.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
@@ -51,7 +50,7 @@ class _HomePageState extends State<HomePage> {
 
   void _showRechargeSheet(
     BuildContext context,
-    PackageItemEntity packageEntity,
+    PackageInfoEntity packageEntity,
   ) {
     // BottomSheetHelper.show(
     //   context: context,
@@ -64,7 +63,7 @@ class _HomePageState extends State<HomePage> {
         builder:
             (_) => BlocProvider(
               create:
-                  (_) => ChangePlanBloc(repository: sl<ChangePlanRepository>()),
+                  (_) => DiscountBloc(repository: sl<ChangePlanRepository>()),
               child: RechargePage(package: packageEntity),
             ),
       ),
@@ -191,7 +190,7 @@ class _HomePageState extends State<HomePage> {
                           onRechargeTap:
                               () => _showRechargeSheet(
                                 context,
-                                PackageItemEntity(
+                                PackageInfoEntity(
                                   id: packageId,
                                   packageName: pkg!.packageName,
                                   freeValidity: 0,
@@ -202,6 +201,21 @@ class _HomePageState extends State<HomePage> {
                                   subPackageCount: 0,
                                   renewPeriod: pkg.validity,
                                   speedInKbps: pkg.speedMbps * 1024.toInt(),
+                                  createCorrespondingTermPlan: pkg.packageInfoModel.createCorrespondingTermPlan,
+                                  speedProfile: pkg.packageInfoModel.speedProfile,
+                                  status: pkg.packageInfoModel.status,
+                                  fbSpeedInKbps: pkg.packageInfoModel.fbSpeedInKbps,
+                                  editable: pkg.packageInfoModel.editable,
+                                  amount: pkg.packageInfoModel.amount,
+                                  originalAmount: pkg.packageInfoModel.originalAmount,
+                                  discountAmount: pkg.packageInfoModel.discountAmount,
+                                  savedAmount: pkg.packageInfoModel.savedAmount,
+                                  speed: pkg.packageInfoModel.speed,
+                                  validity: pkg.packageInfoModel.validity,
+                                  volumeType: pkg.packageInfoModel.volumeType,
+                                  volumeValue: pkg.packageInfoModel.volumeValue,
+                                  planTypeName: pkg.packageInfoModel.planTypeName,
+                                  packageType: pkg.packageInfoModel.packageType,
                                 ),
                               ),
                           onTransactionsTap:
@@ -278,20 +292,6 @@ class _WalletCard extends StatelessWidget {
     fontSize: 8.sp,
     fontFamily: 'GeneralSans',
     fontWeight: FontWeight.w500,
-  );
-  static final _topUpButtonStyle = ElevatedButton.styleFrom(
-    backgroundColor: _kYellow,
-    foregroundColor: AppColor.kBlackHeadingColor,
-    shape: const StadiumBorder(),
-    padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
-    minimumSize: Size.zero,
-    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-  );
-  static final _topUpTextStyle = TextStyle(
-    fontSize: 12.sp,
-    fontFamily: 'GeneralSans',
-    fontWeight: FontWeight.w600,
-    height: 1.3,
   );
 
   @override
@@ -686,7 +686,7 @@ class _QuickActionsState extends State<_QuickActions> {
 class _PlanChangeSection extends StatelessWidget {
   final String subscriberUuid;
   final String currentPackageId;
-  final List<PackageItemEntity> plans;
+  final List<PackageInfoEntity> plans;
 
   const _PlanChangeSection({
     required this.subscriberUuid,
@@ -757,7 +757,7 @@ class _PlanChangeSection extends StatelessWidget {
 // ─── Plan Card ───────────────────────────────────────────────────────────────
 
 class _PlanCard extends StatelessWidget {
-  final PackageItemEntity plan;
+  final PackageInfoEntity plan;
 
   const _PlanCard({super.key, required this.plan});
 
@@ -835,7 +835,7 @@ class _PlanCard extends StatelessWidget {
                 ),
                 _Stat(
                   label: context.bssSubL10n.fpu,
-                  value: plan.packageType!.name,
+                  value: plan.packageType.name,
                 ),
                 _Stat(
                   label: context.bssSubL10n.validity,
