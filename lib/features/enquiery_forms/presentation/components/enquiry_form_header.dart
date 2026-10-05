@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class EnquiryFormHeader extends StatelessWidget {
   final String heading;
@@ -16,7 +17,7 @@ class EnquiryFormHeader extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      height: 70,
+      height: 70.h,
       margin: EdgeInsets.only(top: 20.0, right: 20.0, left: 20.0),
       decoration: BoxDecoration(
         color: AppColor.kYellowBackground,
@@ -31,13 +32,13 @@ class EnquiryFormHeader extends StatelessWidget {
             alignment: Alignment.center,
             children: [
               SizedBox(
-                height: 48,
-                width: 48,
+                height: 48.h,
+                width: 48.w,
                 child: CircularProgressIndicator(
                   value: currentPage / pageCount,
                   strokeCap: StrokeCap.round,
                   backgroundColor: AppColor.kProgressBarBackground,
-                  valueColor: const AlwaysStoppedAnimation<Color>(
+                  valueColor: AlwaysStoppedAnimation<Color>(
                     AppColor.kPrimaryColor,
                   ),
                   strokeWidth: 6.0,

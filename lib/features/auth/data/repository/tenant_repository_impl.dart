@@ -10,7 +10,11 @@ import '../model/tenant_model.dart';
 class TenantRepositoryImpl implements TenantRepository {
   @override
   Future<Either<Failure, List<TenantEntity>>> getTenants() async {
-    final response = await sl<DioClient>().get(ApiUrls.tenantsURL);
+    final response = await sl<DioClient>().get(
+      ApiUrls.baseURL == 'https://rwbssdev.sritindia.com/api/'
+          ? ApiUrls.lDTenantsURL
+          : ApiUrls.tenantsURL,
+    );
 
     if (response.isSuccess) {
       final list = (response.data as List<dynamic>)

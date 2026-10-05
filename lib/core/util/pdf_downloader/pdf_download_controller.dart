@@ -1,9 +1,8 @@
 import 'dart:io';
-
 import 'package:flutter/material.dart';
-import 'package:kfon_subscriber/core/util/dialog_util.dart';
-import 'package:kfon_subscriber/core/util/pdf_downloader/pdf_download_service.dart';
 import 'package:share_plus/share_plus.dart';
+import 'package:kfon_subscriber/core/util/pdf_downloader/pdf_download_service.dart';
+import 'package:kfon_subscriber/core/util/dialog_util.dart';
 
 class PdfDownloadController {
   final PdfDownloadService _service = PdfDownloadService();
@@ -17,20 +16,46 @@ class PdfDownloadController {
   }
 
   Future<void> downloadPdf(BuildContext context, File file) async {
-    await _service.saveToDownloads(file);
-    DialogUtil().showCustomSnackbar(
-      // ignore: use_build_context_synchronously
-      context: context,
-      content: 'PDF saved successfully',
-    );
+    try {
+      final savedPath = await _service.saveToDownloads(file);
+      debugPrint('✅ PDF saved to: $savedPath');
+      if (context.mounted) {
+        DialogUtil().showCustomSnackbar(
+          context: context,
+          content: 'PDF saved to Downloads',
+        );
+      }
+    } catch (e) {
+      debugPrint('❌ Save error: $e');
+      if (context.mounted) {
+        DialogUtil().showCustomSnackbar(
+          context: context,
+          content: 'Failed to save PDF: ${e.toString()}',
+          isError: true,
+        );
+      }
+    }
   }
 
   Future<void> downloadPdfFromUrl(BuildContext context, String url) async {
-    await _service.downloadToDownloads(url);
-    DialogUtil().showCustomSnackbar(
-      // ignore: use_build_context_synchronously
-      context: context,
-      content: 'PDF saved successfully',
-    );
+    try {
+      final savedPath = await _service.downloadToDownloads(url);
+      debugPrint('✅ PDF saved to: $savedPath');
+      if (context.mounted) {
+        DialogUtil().showCustomSnackbar(
+          context: context,
+          content: 'PDF saved to Downloads',
+        );
+      }
+    } catch (e) {
+      debugPrint('❌ Download error: $e');
+      if (context.mounted) {
+        DialogUtil().showCustomSnackbar(
+          context: context,
+          content: 'Failed to save PDF: ${e.toString()}',
+          isError: true,
+        );
+      }
+    }
   }
 }

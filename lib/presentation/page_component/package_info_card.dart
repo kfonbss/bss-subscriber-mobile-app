@@ -3,36 +3,30 @@ import 'package:intl/intl.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/active_package_details/domain/entity/active_packages_details_entity.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 
 class PackageInfoCard extends StatelessWidget {
   final ActivePackagesDetailsEntity? entity;
   const PackageInfoCard({super.key, required this.entity});
 
-  // 0.05 × 255 = 12.75 → 13 = 0x0D
+  // Design: white, radius 16, no shadow.
   static const _cardDecoration = BoxDecoration(
     color: Colors.white,
     borderRadius: BorderRadius.all(Radius.circular(16)),
-    boxShadow: [
-      BoxShadow(
-        color: Color(0x0D000000),
-        blurRadius: 12,
-        offset: Offset(0, 4),
-      ),
-    ],
   );
 
   static const _speedRowDecoration = BoxDecoration(
-    color: AppColor.kSecondaryBackgroundColor,
-    borderRadius: BorderRadius.all(Radius.circular(16)),
+    color: AppColor.kSpeedBoxGrey,
+    borderRadius: BorderRadius.all(Radius.circular(12)),
   );
 
   static const _daysLeftDecoration = BoxDecoration(
-    color: AppColor.kDaysLeftYellow,
-    borderRadius: BorderRadius.all(Radius.circular(20)),
+    color: AppColor.kAutopayButtonColor,
+    borderRadius: BorderRadius.all(Radius.circular(50)),
   );
 
   static const _packCountDecoration = BoxDecoration(
-    color: AppColor.kSecondaryBackgroundColor,
+    color: AppColor.kSpeedBoxGrey,
     borderRadius: BorderRadius.all(Radius.circular(80)),
   );
 
@@ -41,74 +35,82 @@ class PackageInfoCard extends StatelessWidget {
     return Container(
       decoration: _cardDecoration,
       child: Padding(
-        padding: EdgeInsets.fromLTRB(8.w, 8.h, 8.w, 8.h),
+        padding: EdgeInsets.fromLTRB(8.w, 8.h, 8.w, 20.h),
         child: Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
+            // Design: 46 tall, 12 side padding.
             Container(
+              height: 46.h,
               decoration: _speedRowDecoration,
-              padding: EdgeInsets.symmetric(horizontal: 14.w, vertical: 14.h),
+              padding: EdgeInsets.symmetric(horizontal: 12.w),
               child: Row(
+                crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
                   Text(
-                    '${entity!.speedMbps} Mbps',
+                    context.bssSubL10n.mbps(entity!.speedMbps),
                     style: TextStyle(
                       fontFamily: 'GeneralSans',
                       fontSize: 22.sp,
                       fontWeight: FontWeight.w600,
+                      height: 0.92,
+                      color: AppColor.kTextPrimary,
                     ),
                   ),
+                  SizedBox(width: 4.w),
                   Text(
                     '(${entity!.packageType})',
                     style: TextStyle(
                       fontFamily: 'GeneralSans',
-                      fontSize: 11.sp,
-                      fontWeight: FontWeight.w400,
-                      color: AppColor.kTextSecondary,
+                      fontSize: 10.sp,
+                      fontWeight: FontWeight.w500,
+                      height: 1,
+                      color: AppColor.kTextPrimary80,
                     ),
                   ),
                   const Spacer(),
                   Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 14.w,
-                      vertical: 6.h,
-                    ),
+                    height: 28.h,
+                    alignment: Alignment.center,
+                    padding: EdgeInsets.symmetric(horizontal: 16.w),
                     decoration: _daysLeftDecoration,
                     child: Text(
-                      '${entity!.daysLeft} Days left',
+                      context.bssSubL10n.daysLeft('${entity!.daysLeft}'),
                       style: TextStyle(
                         fontFamily: 'GeneralSans',
                         fontSize: 12.sp,
                         fontWeight: FontWeight.w600,
-                        color: Colors.black,
+                        height: 1.30,
+                        color: AppColor.kTextSecondaryDark,
                       ),
                     ),
                   ),
                 ],
               ),
             ),
-            SizedBox(height: 16.h),
+            SizedBox(height: 20.h),
 
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 8.w),
               child: Column(
                 children: [
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.center,
                     children: [
                       Container(
                         width: 38.w,
-                        height: 38.h,
-                        decoration: const BoxDecoration(
+                        height: 38.w,
+                        decoration: BoxDecoration(
                           color: AppColor.kPrimaryColor,
                           shape: BoxShape.circle,
                         ),
-                        child: const Icon(
+                        child: Icon(
                           Icons.language_rounded,
+                          size: 20.sp,
                           color: Colors.white,
                         ),
                       ),
-                      SizedBox(width: 10.w),
+                      SizedBox(width: 12.w),
                       Expanded(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
@@ -119,42 +121,48 @@ class PackageInfoCard extends StatelessWidget {
                                 fontFamily: 'GeneralSans',
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w500,
-                                color: AppColor.kTextSecondaryDark,
-                                height: 1.30
+                                color: AppColor.kTextPrimary,
+                                height: 1.30,
                               ),
                             ),
-                            SizedBox(height: 2.h),
                             Text(
-                              'Active until ${DateFormat('MMM dd, yyyy').format(entity!.activeUntil)}',
+                              context.bssSubL10n.activeUntilDate(
+                                DateFormat(
+                                  'MMM dd, yyyy',
+                                ).format(entity!.activeUntil),
+                              ),
                               style: TextStyle(
                                 fontFamily: 'GeneralSans',
-                                fontSize: 11.sp,
-                                fontWeight: FontWeight.w400,
-                                color: AppColor.kTextSecondary,
+                                fontSize: 10.sp,
+                                fontWeight: FontWeight.w500,
+                                height: 1.60,
+                                color: AppColor.kTextPrimary80,
                               ),
                             ),
                           ],
                         ),
                       ),
                       Container(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 12.w,
-                          vertical: 5.h,
-                        ),
+                        height: 24.h,
+                        alignment: Alignment.center,
+                        padding: EdgeInsets.symmetric(horizontal: 10.w),
                         decoration: _packCountDecoration,
                         child: Text(
-                          '+ ${entity!.totalPackageCount} Pack',
+                          context.bssSubL10n.plusPackCount(
+                            '${entity!.totalPackageCount}',
+                          ),
                           style: TextStyle(
                             fontFamily: 'GeneralSans',
-                            fontSize: 11.sp,
+                            fontSize: 12.sp,
                             fontWeight: FontWeight.w500,
-                            color: AppColor.kTextSecondaryDark,
+                            height: 1.60,
+                            color: AppColor.kBlack80,
                           ),
                         ),
                       ),
                     ],
                   ),
-                  SizedBox(height: 18.h),
+                  SizedBox(height: 17.h),
                   _DataUsageBar(
                     usedGB: entity!.availableVolumeGb,
                     totalGB: entity!.totalVolumeGb,
@@ -176,15 +184,13 @@ class _DataUsageBar extends StatelessWidget {
   const _DataUsageBar({required this.usedGB, required this.totalGB});
 
   // Shared across ClipRRect and both inner BoxDecorations.
-  static const _barRadius = BorderRadius.all(Radius.circular(6));
+  static const _barRadius = BorderRadius.all(Radius.circular(30));
   static const _trackDecoration = BoxDecoration(
-    color: AppColor.kDividerGrey,
+    color: AppColor.kUsageTrackGrey,
     borderRadius: _barRadius,
   );
-  static const _fillDecoration = BoxDecoration(
-    color: AppColor.kPrimaryColor,
-    borderRadius: _barRadius,
-  );
+  static BoxDecoration get _fillDecoration =>
+      BoxDecoration(color: AppColor.kPrimaryColor, borderRadius: _barRadius);
 
   @override
   Widget build(BuildContext context) {
@@ -209,17 +215,17 @@ class _DataUsageBar extends StatelessWidget {
             ),
           ),
         ),
-        SizedBox(height: 10.h),
+        SizedBox(height: 20.h),
         Text(
-          '$availableGB GB Available / $totalGB GB',
+          context.bssSubL10n.gbAvailableOfTotal('$availableGB', '$totalGB'),
           style: TextStyle(
             fontFamily: 'GeneralSans',
             fontSize: 14.sp,
             fontWeight: FontWeight.w600,
-            color: AppColor.kTextSecondaryDark,
+            height: 1.30,
+            color: AppColor.kTextPrimary,
           ),
         ),
-        SizedBox(height: 6.h),
       ],
     );
   }

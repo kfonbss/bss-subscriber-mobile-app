@@ -13,8 +13,10 @@ import 'package:kfon_subscriber/features/auth/presentation/components/auth_heade
 import 'package:kfon_subscriber/features/auth/presentation/components/verification_success_sheet.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/common_bottom_sheet.dart';
+import 'package:kfon_subscriber/shared/widgets/login_background.dart';
 import 'package:kfon_subscriber/shared/widgets/otp_input_field.dart';
 import 'package:kfon_subscriber/shared/widgets/white_button.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class OtpVerificationPage extends StatefulWidget {
   final String mobileNumber;
@@ -37,7 +39,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   int _remainingSeconds = 30;
   Timer? _timer;
   int _otpWidgetKey = 0;
-  final DialogUtil _dialogUtil=DialogUtil();
+  final DialogUtil _dialogUtil = DialogUtil();
   @override
   void initState() {
     super.initState();
@@ -136,89 +138,95 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
           return Scaffold(
             backgroundColor: AppColor.kPrimaryColor,
             resizeToAvoidBottomInset: false,
-            body: Container(
-              height: double.infinity,
-              decoration: const BoxDecoration(
-                image: DecorationImage(
-                  image: AssetImage("assets/images/login_background.png"),
-                  fit: BoxFit.cover,
-                ),
-              ),
-              child: SingleChildScrollView(
-                child: Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: Column(
-                    crossAxisAlignment: CrossAxisAlignment.stretch,
-                    mainAxisAlignment: MainAxisAlignment.start,
-                    children: [
-                      AuthHeader(
-                        heading: context.bssSubL10n.verifyYourAccount,
-                        description: context.bssSubL10n.otpSentMessage(
-                          widget.mobileNumber,
-                        ),
+            body: Stack(
+              children: [
+                LoginBackground(),
+                Column(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  mainAxisAlignment: MainAxisAlignment.start,
+                  children: [
+                    // Header has its own 24px side padding (as in the design).
+                    AuthHeader(
+                      heading: context.bssSubL10n.verifyYourAccount,
+                      description: context.bssSubL10n.otpSentMessage(
+                        widget.mobileNumber,
                       ),
+                      descriptionHighlight: widget.mobileNumber,
+                      topSpacing: Sizer.isTablet ? null : 104.5.h,
+                    ),
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: 24.w),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.stretch,
+                        mainAxisAlignment: MainAxisAlignment.start,
+                        children: [
+                          OtpInputField(
+                            key: ValueKey(_otpWidgetKey),
+                            length: 6,
+                            onCompleted: (otp) {
+                              setState(() {
+                                _otp = otp;
+                              });
+                            },
+                            onChanged: (otp) {
+                              setState(() {
+                                _otp = otp;
+                              });
+                            },
+                          ),
 
-                      OtpInputField(
-                        key: ValueKey(_otpWidgetKey),
-                        length: 6,
-                        onCompleted: (otp) {
-                          setState(() {
-                            _otp = otp;
-                          });
-                        },
-                        onChanged: (otp) {
-                          setState(() {
-                            _otp = otp;
-                          });
-                        },
-                      ),
+                          SizedBox(height: 24.h),
 
-                      const SizedBox(height: 24),
-
-                      Text(
-                        _formatTime(_remainingSeconds),
-                        textAlign: TextAlign.center,
-                        style: const TextStyle(
-                          fontSize: 16,
-                          fontWeight: FontWeight.w500,
-                          color: Colors.white,
-                        ),
-                      ),
-
-                      const SizedBox(height: 40),
-
-                      WhiteButton(
-                        isLoading: isLoading,
-                        label: context.bssSubL10n.verifyNow,
-                        borderRadius: 10,
-                        textColor: AppColor.kPrimaryColor,
-                        onClicked: _otp.length == 6 ? _verifyOtp : null,
-                      ),
-
-                      const SizedBox(height: 24),
-
-                      if (_remainingSeconds == 0)
-                        Center(
-                          child: TextButton(
-                            onPressed: _resendOtp,
-                            child: Text(
-                              context.bssSubL10n.resendOtp,
-                              style: const TextStyle(
-                                fontSize: 14,
-                                fontWeight: FontWeight.w600,
-                                color: Colors.white,
-                                decoration: TextDecoration.underline,
-                                decorationColor: Colors.white,
-                              ),
+                          Text(
+                            _formatTime(_remainingSeconds),
+                            textAlign: TextAlign.center,
+                            style: TextStyle(
+                              fontSize: 14.sp,
+                              fontWeight: FontWeight.w500,
+                              color: Colors.white,
+                              fontFamily: 'GeneralSans',
+                              height: 1.65,
+                              letterSpacing: -0.14,
                             ),
                           ),
-                        ),
 
-                      const SizedBox(height: 40),
-                    ],
-                  ),
+                          SizedBox(height: 40.h),
+
+                          WhiteButton(
+                            isLoading: isLoading,
+                            label: context.bssSubL10n.verifyNow,
+                            borderRadius: 10,
+                            height: 52.h,
+                            textColor: AppColor.kPrimaryColor,
+                            onClicked: _otp.length == 6 ? _verifyOtp : null,
+                          ),
+
+                          SizedBox(height: 24.h),
+
+                          if (_remainingSeconds == 0)
+                            Center(
+                              child: TextButton(
+                                onPressed: _resendOtp,
+                                child: Text(
+                                  context.bssSubL10n.resendOtp,
+                                  style: const TextStyle(
+                                    fontSize: 14,
+                                    fontWeight: FontWeight.w600,
+                                    color: Colors.white,
+                                    decoration: TextDecoration.underline,
+                                    decorationColor: Colors.white,
+                                  ),
+                                ),
+                              ),
+                            ),
+
+                          SizedBox(height: 40.h),
+                        ],
+                      ),
+                    ),
+                  ],
                 ),
-              ),
+              ],
             ),
           );
         },

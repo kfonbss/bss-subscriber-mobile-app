@@ -99,9 +99,7 @@ _MovementMediaParse _parseMovementMediaList(dynamic raw) {
     } else if (e is String) {
       final s = e.trim();
       if (s.isEmpty) continue;
-      if (s.startsWith('http') ||
-          s.startsWith('/') ||
-          s.contains('://')) {
+      if (s.startsWith('http') || s.startsWith('/') || s.contains('://')) {
         urls.add(s);
       } else {
         fileIds.add(s);
@@ -148,9 +146,10 @@ class TicketMovement {
       note: json['note']?.toString(),
       status: json['status']?.toString() ?? '',
       assignedToName: json['assignedToName']?.toString(),
-      createdDate: json['createdDate'] != null
-          ? DateTime.tryParse(json['createdDate'] as String)
-          : null,
+      createdDate:
+          json['createdDate'] != null
+              ? DateTime.tryParse(json['createdDate'] as String)
+              : null,
       imageUrl: image.urls,
       videoUrl: video.urls,
       documentUrl: doc.urls,
@@ -199,6 +198,9 @@ class Ticket {
   final String? remarks;
   final List<TicketAttachment> attachments;
   final List<TicketMovement> movements;
+  final TicketGstinDetails? gstinDetails;
+  final int? rating;
+  final String? ratingComment;
 
   const Ticket({
     required this.id,
@@ -222,23 +224,29 @@ class Ticket {
     this.remarks,
     this.attachments = const [],
     this.movements = const [],
+    this.gstinDetails,
+    this.rating,
+    this.ratingComment,
   });
 
   factory Ticket.fromJson(Map<String, dynamic> json) {
     return Ticket(
       id: json['id']?.toString() ?? '',
       ticketId: json['ticketId'] as int?,
-      submitDate: json['submitDate'] != null
-          ? DateTime.tryParse(json['submitDate'] as String)
-          : null,
-      dueDate: json['dueDate'] != null
-          ? DateTime.tryParse(json['dueDate'] as String)
-          : null,
+      submitDate:
+          json['submitDate'] != null
+              ? DateTime.tryParse(json['submitDate'] as String)
+              : null,
+      dueDate:
+          json['dueDate'] != null
+              ? DateTime.tryParse(json['dueDate'] as String)
+              : null,
       status: json['status']?.toString() ?? '',
       priority: json['priority']?.toString() ?? '',
-      subject: json['subject'] != null
-          ? TicketSubject.fromJson(json['subject'] as Map<String, dynamic>)
-          : null,
+      subject:
+          json['subject'] != null
+              ? TicketSubject.fromJson(json['subject'] as Map<String, dynamic>)
+              : null,
       ticketType: json['ticketType']?.toString(),
       customerType: json['customerType']?.toString(),
       createdByUser: json['createdByUser']?.toString(),
@@ -261,6 +269,16 @@ class Ticket {
               ?.map((e) => TicketMovement.fromJson(e as Map<String, dynamic>))
               .toList() ??
           [],
+      // GST and PAN Updation tickets return their values in `requestData`.
+      gstinDetails:
+          json['requestData'] is Map<String, dynamic>
+              ? TicketGstinDetails.fromJson(
+                json['requestData'] as Map<String, dynamic>,
+              )
+              : null,
+      // TODO(rating): placeholder keys — confirm with the ticket API.
+      rating: int.tryParse(json['rating']?.toString() ?? ''),
+      ratingComment: json['ratingComment']?.toString(),
     );
   }
 
@@ -272,15 +290,16 @@ class Ticket {
       'dueDate': dueDate?.toIso8601String(),
       'status': status,
       'priority': priority,
-      'subject': subject != null
-          ? {
-              'id': subject!.id,
-              'code': subject!.code,
-              'name': subject!.name,
-              'nameInLocal': subject!.nameInLocal,
-              'isActive': subject!.isActive,
-            }
-          : null,
+      'subject':
+          subject != null
+              ? {
+                'id': subject!.id,
+                'code': subject!.code,
+                'name': subject!.name,
+                'nameInLocal': subject!.nameInLocal,
+                'isActive': subject!.isActive,
+              }
+              : null,
       'ticketType': ticketType,
       'customerType': customerType,
       'createdByUser': createdByUser,
@@ -293,6 +312,9 @@ class Ticket {
       'assignedToName': assignedToName,
       'mobileNumber': mobileNumber,
       'remarks': remarks,
+      'requestData': gstinDetails?.toJson(),
+      'rating': rating,
+      'ratingComment': ratingComment,
     };
   }
 
@@ -319,6 +341,88 @@ class Ticket {
       remarks: remarks,
       attachments: attachments.map((e) => e.toEntity()).toList(),
       movements: movements.map((e) => e.toEntity()).toList(),
+      gstinDetails: gstinDetails?.toEntity(),
+      rating: rating,
+      ratingComment: ratingComment,
     );
   }
+}
+
+/// `requestData` on GST and PAN Updation tickets.
+class TicketGstinDetails {
+  final String type;
+  final String typeName;
+  final String pan;
+  final String gstin;
+  final String serviceDescription;
+  final String sac;
+  final String taxPayerType;
+  final String legalName;
+  final String tradeName;
+  final String? gstDocFileId;
+  final String? panCopyFileId;
+
+  const TicketGstinDetails({
+    this.type = '',
+    this.typeName = '',
+    required this.pan,
+    required this.gstin,
+    required this.serviceDescription,
+    required this.sac,
+    required this.taxPayerType,
+    this.legalName = '',
+    this.tradeName = '',
+    this.gstDocFileId,
+    this.panCopyFileId,
+  });
+
+  factory TicketGstinDetails.fromJson(Map<String, dynamic> json) {
+    String str(String key) => json[key]?.toString().trim() ?? '';
+    String? id(String key) {
+      final v = str(key);
+      return v.isEmpty ? null : v;
+    }
+
+    return TicketGstinDetails(
+      type: str('type'),
+      typeName: str('typeName'),
+      pan: str('pan'),
+      gstin: str('gstin'),
+      serviceDescription: str('serviceDescription'),
+      sac: str('sac'),
+      taxPayerType: str('taxPayerType'),
+      legalName: str('legalName'),
+      tradeName: str('tradeName'),
+      gstDocFileId: id('gstDocFileId'),
+      panCopyFileId: id('panCopyFileId'),
+    );
+  }
+
+  Map<String, dynamic> toJson() => {
+    'type': type,
+    'typeName': typeName,
+    'pan': pan,
+    'gstin': gstin,
+    'serviceDescription': serviceDescription,
+    'sac': sac,
+    'taxPayerType': taxPayerType,
+    'legalName': legalName,
+    'tradeName': tradeName,
+    'gstDocFileId': gstDocFileId,
+    'panCopyFileId': panCopyFileId,
+  };
+
+  TicketGstinDetailsEntity toEntity() => TicketGstinDetailsEntity(
+    type: type,
+    typeName: typeName,
+    pan: pan,
+    gstin: gstin,
+    serviceDescription: serviceDescription,
+    sac: sac,
+    taxPayerType: taxPayerType,
+    legalName: legalName,
+    tradeName: tradeName,
+    gstDocFileId: gstDocFileId,
+    panCopyFileId: panCopyFileId,
+  );
 }

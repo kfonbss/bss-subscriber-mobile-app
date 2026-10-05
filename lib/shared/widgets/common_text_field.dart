@@ -1,6 +1,10 @@
 import 'package:flutter/material.dart';
-import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/shared/widgets/app_input_style.dart';
 
+/// Labelled single-line text field in the shared ticket input style
+/// ([AppInputStyle]): white, radius 12, light-grey border, primary border
+/// while focused.
 class CommonTextField extends StatelessWidget {
   final String label;
   final String hintText;
@@ -26,58 +30,23 @@ class CommonTextField extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Column(
-      spacing: 6,
+      spacing: 8.h,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          label,
-          style: TextStyle(
-            fontSize: 14,
-            fontWeight: FontWeight.w400,
-            color: AppColor.kTextFiledLabelColor,
-          ),
-        ),
+        Text(label, style: AppInputStyle.label),
         TextField(
           controller: textEditingController,
-          onTapOutside: (PointerDownEvent event) {
-            FocusManager.instance.primaryFocus?.unfocus();
-          },
-          obscureText: obscureText??false,
+          onTapOutside: (_) => FocusManager.instance.primaryFocus?.unfocus(),
+          contextMenuBuilder: AppInputStyle.contextMenuBuilder,
+          obscureText: obscureText ?? false,
           maxLines: 1,
           maxLength: maxLength,
           textAlignVertical: TextAlignVertical.center,
           keyboardType: textInputType ?? TextInputType.text,
-          textCapitalization:textCapitalization?? TextCapitalization.words,
-          autofocus: false,
-          style: TextStyle(
-            color: Colors.black,
-            fontSize: 20.0,
-            letterSpacing: 1.5,
-          ),
-          decoration: InputDecoration(
-            fillColor: Colors.white,
-            filled: true,
-            counterText: '',
-            hintText: hintText,
-            contentPadding: EdgeInsets.all(12),
-            hintStyle: TextStyle(
-              color: AppColor.kTextFiledHintColor,
-              fontSize: 14.0,
-              fontWeight: FontWeight.w400,
-              letterSpacing: 0.0,
-            ),
-            focusedBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: AppColor.kPrimaryColor, width: 1.5),
-              borderRadius: BorderRadius.all(Radius.circular(6.0)),
-            ),
-            enabledBorder: OutlineInputBorder(
-              borderSide: BorderSide(color: AppColor.kTextFiledBorderColor, width: 1.0),
-              borderRadius: BorderRadius.all(Radius.circular(6.0)),
-            ),
-          ),
-          onChanged: (String newText) {
-            if (onTextChanged != null) onTextChanged!(newText);
-          },
+          textCapitalization: textCapitalization ?? TextCapitalization.words,
+          style: AppInputStyle.text,
+          decoration: AppInputStyle.decoration(hint: hintText),
+          onChanged: onTextChanged,
         ),
       ],
     );

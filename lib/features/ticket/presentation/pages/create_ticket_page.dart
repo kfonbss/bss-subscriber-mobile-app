@@ -20,6 +20,7 @@ import 'package:kfon_subscriber/core/util/form_scroll_util.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/widgets/subject_picker_sheet.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/widgets/priority_picker_sheet.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/widgets/attachment_list_widget.dart';
+import 'package:kfon_subscriber/features/ticket/presentation/widgets/gst_pan_details_section.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/widgets/ticket_success_bottom_sheet.dart';
 import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 import 'package:kfon_subscriber/service_locator.dart';
@@ -28,6 +29,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/shared/widgets/shimmer/shimmer_base.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class CreateTicketPage extends StatefulWidget {
   const CreateTicketPage({super.key});
@@ -47,6 +49,7 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
   final _formKey = GlobalKey<FormState>();
   final GlobalKey<FormFieldState<String>> _remarksFormFieldKey =
       GlobalKey<FormFieldState<String>>();
+  final _gstPanSectionKey = GlobalKey<GstPanDetailsSectionState>();
   SubjectEntity? _selectedSubject;
   final List<PlatformFile> _selectedFiles = [];
   final TicketBloc _ticketBloc = TicketBloc(
@@ -85,6 +88,27 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
         isRequest(normalizedName) ||
         isRequest(normalizedLocalName) ||
         isRequest(normalizedCode);
+  }
+
+  static String _normalize(String value) =>
+      value.trim().toLowerCase().replaceAll(RegExp(r'[^a-z0-9]'), '');
+
+  /// GST/PAN inputs show only for category "Request" + subject
+  /// GST_PAN_UPDATION ("GST and PAN Updation").
+  bool get _isGstPanUpdation {
+    final category = _selectedCategory;
+    final subject = _selectedSubject;
+    if (category == null || subject == null) return false;
+
+    final isRequest = [
+      category.name,
+      category.nameInLocal,
+      category.code,
+    ].any((v) => _normalize(v).contains('request'));
+    final isGstPanSubject =
+        subject.code.trim().toUpperCase() == 'GST_PAN_UPDATION' ||
+        _normalize(subject.name) == 'gstandpanupdation';
+    return isRequest && isGstPanSubject;
   }
 
   String _categoryLabel(TicketCategoryEntity category) {
@@ -262,12 +286,20 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
       //
       final customerId = await PreferenceUtils.getUserId() ?? '';
       final customerName = await PreferenceUtils.getUserName() ?? '';
+      final mobileNumber = await PreferenceUtils.getMobileNumber() ?? '';
+      final gstinDetails =
+          _isGstPanUpdation
+              ? _gstPanSectionKey.currentState?.buildRequest()
+              : null;
 
       _ticketBloc.add(
         OnSubmitTicket(
           params: SubmitTicketReq(
             subjectId: _selectedSubject!.id,
+            subjectCode: _selectedSubject!.code,
             ticketCategory: _selectedCategory!.id,
+            mobileNumber: mobileNumber,
+            gstinDetails: gstinDetails,
             // priority: _selectedPriorityCode!,
             remarks: _descriptionController.text,
             customerType: customerTypeId,
@@ -393,12 +425,12 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF0F1121),
+                            color: AppColor.kTextSecondaryDark,
                             height: 1.3,
                             fontFamily: 'GeneralSans',
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: 12.h),
                         BlocBuilder<TicketBloc, TicketState>(
                           bloc: _ticketBloc,
                           buildWhen:
@@ -434,12 +466,12 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                                     if (showCategoryShimmer)
                                       (useCategoryDropdown
                                           ? const _CategoryDropdownSkeleton()
-                                          : const Row(
+                                          : Row(
                                             children: [
                                               Expanded(
                                                 child: _CategoryRadioSkeleton(),
                                               ),
-                                              SizedBox(width: 24),
+                                              SizedBox(width: 24.w),
                                               Expanded(
                                                 child: _CategoryRadioSkeleton(),
                                               ),
@@ -489,7 +521,7 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                                                         ),
                                                       ),
                                                     ),
-                                                    const SizedBox(height: 30),
+                                                    SizedBox(height: 30.h),
                                                     ConstrainedBox(
                                                       constraints:
                                                           const BoxConstraints(
@@ -576,7 +608,7 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                                           style: const TextStyle(
                                             fontSize: 14,
                                             fontWeight: FontWeight.w400,
-                                            color: Color(0xFF0F1121),
+                                            color: AppColor.kTextSecondaryDark,
                                             fontFamily: 'GeneralSans',
                                           ),
                                           decoration: InputDecoration(
@@ -584,14 +616,14 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                                             hintStyle: const TextStyle(
                                               fontSize: 14,
                                               fontWeight: FontWeight.w400,
-                                              color: Color(0xFFA5A5A5),
+                                              color: AppColor.kMediumGrey,
                                               fontFamily: 'GeneralSans',
                                             ),
                                             filled: true,
                                             fillColor: Colors.white,
                                             suffixIcon: const Icon(
                                               Icons.keyboard_arrow_down,
-                                              color: Color(0xFF292D32),
+                                              color: AppColor.kIconDark,
                                             ),
                                             contentPadding:
                                                 const EdgeInsets.symmetric(
@@ -646,8 +678,8 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                                                           MainAxisSize.min,
                                                       children: [
                                                         SizedBox(
-                                                          width: 20,
-                                                          height: 20,
+                                                          width: 20.w,
+                                                          height: 20.h,
                                                           child: Radio<
                                                             TicketCategoryEntity
                                                           >(
@@ -706,9 +738,7 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                                                                     .compact,
                                                           ),
                                                         ),
-                                                        const SizedBox(
-                                                          width: 10,
-                                                        ),
+                                                        SizedBox(width: 10.w),
                                                         Text(
                                                           _categoryLabel(
                                                             category,
@@ -740,7 +770,7 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                                         child: Text(
                                           fieldState.errorText!,
                                           style: const TextStyle(
-                                            color: Color(0xFFBA1A1A),
+                                            color: AppColor.kErrorRed,
                                             fontSize: 12,
                                             fontFamily: 'GeneralSans',
                                           ),
@@ -752,7 +782,7 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                             );
                           },
                         ),
-                        const SizedBox(height: 24),
+                        SizedBox(height: 24.h),
 
                         // Select Subject Field
                         Text(
@@ -760,12 +790,12 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF0F1121),
+                            color: AppColor.kTextSecondaryDark,
                             height: 1.3,
                             fontFamily: 'GeneralSans',
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: 12.h),
                         BlocBuilder<TicketBloc, TicketState>(
                           bloc: _ticketBloc,
                           buildWhen: (previous, current) {
@@ -793,7 +823,7 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                               style: const TextStyle(
                                 fontSize: 14,
                                 fontWeight: FontWeight.w400,
-                                color: Color(0xFF0F1121),
+                                color: AppColor.kTextSecondaryDark,
                                 fontFamily: 'GeneralSans',
                               ),
                               decoration: InputDecoration(
@@ -801,14 +831,14 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                                 hintStyle: const TextStyle(
                                   fontSize: 14,
                                   fontWeight: FontWeight.w400,
-                                  color: Color(0xFFA5A5A5),
+                                  color: AppColor.kMediumGrey,
                                   fontFamily: 'GeneralSans',
                                 ),
                                 filled: true,
                                 fillColor: Colors.white,
                                 suffixIcon: const Icon(
                                   Icons.keyboard_arrow_down,
-                                  color: Color(0xFF292D32),
+                                  color: AppColor.kIconDark,
                                 ),
                                 contentPadding: const EdgeInsets.symmetric(
                                   horizontal: 16,
@@ -832,10 +862,10 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                         if (_selectedSubject != null &&
                             _selectedSubject!.name.toLowerCase() !=
                                 'others') ...[
-                          const SizedBox(height: 16),
+                          SizedBox(height: 16.h),
                           // Resolved In Container
                           Container(
-                            height: 52,
+                            height: 52.h,
                             width: double.infinity,
                             decoration: BoxDecoration(
                               color: Colors.white,
@@ -857,7 +887,7 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                                   alignment: Alignment.centerLeft,
                                   child: Text(
                                     _selectedSubject?.escalationTime ?? '',
-                                    style: const TextStyle(
+                                    style: TextStyle(
                                       color: AppColor.kSecondaryColor,
                                       fontSize: 14,
                                       fontWeight: FontWeight.w500,
@@ -869,6 +899,12 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                               ),
                             ),
                           ),
+                        ],
+                        // GST and PAN Updation (Request) only. Removed from
+                        // the tree for other subjects, which also clears it.
+                        if (_isGstPanUpdation) ...[
+                          SizedBox(height: 24.h),
+                          GstPanDetailsSection(key: _gstPanSectionKey),
                         ],
                         // const SizedBox(height: 24),
                         //
@@ -932,7 +968,7 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                         //     ),
                         //   ),
                         // ),
-                        const SizedBox(height: 24),
+                        SizedBox(height: 24.h),
 
                         /*
                         // Select Subscriber Field
@@ -941,12 +977,12 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w600,
-                            color: Color(0xFF0F1121),
+                            color: AppColor.kTextSecondaryDark,
                             height: 1.3,
                             fontFamily: 'GeneralSans',
                           ),
                         ),
-                        const SizedBox(height: 12),
+                        const SizedBox(height: 12.h),
                         TextFormField(
                           controller: _subscriberController,
                           readOnly: true,
@@ -959,7 +995,7 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
-                            color: Color(0xFF0F1121),
+                            color: AppColor.kTextSecondaryDark,
                             fontFamily: 'GeneralSans',
                           ),
                           decoration: InputDecoration(
@@ -967,14 +1003,14 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                             hintStyle: const TextStyle(
                               fontSize: 14,
                               fontWeight: FontWeight.w400,
-                              color: Color(0xFFA5A5A5),
+                              color: AppColor.kMediumGrey,
                               fontFamily: 'GeneralSans',
                             ),
                             filled: true,
                             fillColor: Colors.white,
                             suffixIcon: const Icon(
                               Icons.keyboard_arrow_down,
-                              color: Color(0xFF292D32),
+                              color: AppColor.kIconDark,
                             ),
                             contentPadding: const EdgeInsets.symmetric(
                               horizontal: 16,
@@ -993,7 +1029,7 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                             ),
                           ),
                         ),
-                        const SizedBox(height: 24),
+                        const SizedBox(height: 24.h),
 */
 
                         // Remarks Field (error text below field — same pattern as attachments)
@@ -1029,12 +1065,12 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                                   style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
-                                    color: Color(0xFF0F1121),
+                                    color: AppColor.kTextSecondaryDark,
                                     height: 1.3,
                                     fontFamily: 'GeneralSans',
                                   ),
                                 ),
-                                const SizedBox(height: 8),
+                                SizedBox(height: 8.h),
                                 Container(
                                   decoration: BoxDecoration(
                                     color: Colors.white,
@@ -1042,7 +1078,7 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                                     border:
                                         fieldState.hasError
                                             ? Border.all(
-                                              color: const Color(0xFFBA1A1A),
+                                              color: AppColor.kErrorRed,
                                               width: 1,
                                             )
                                             : null,
@@ -1060,7 +1096,8 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                                     decoration: InputDecoration(
                                       hintText: l10n.remarks,
                                       hintStyle: const TextStyle(
-                                        color: Color(0xFF67697A),
+                                        color:
+                                            AppColor.kTextFiledPlaceholderColor,
                                         fontSize: 14,
                                         fontWeight: FontWeight.w400,
                                         height: 1.6,
@@ -1078,7 +1115,7 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                                       counterText: '',
                                     ),
                                     style: const TextStyle(
-                                      color: Color(0xFF262629),
+                                      color: AppColor.kNearBlack,
                                       fontSize: 14,
                                       height: 1.6,
                                       fontFamily: 'GeneralSans',
@@ -1095,7 +1132,7 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                                     child: Text(
                                       fieldState.errorText!,
                                       style: const TextStyle(
-                                        color: Color(0xFFBA1A1A),
+                                        color: AppColor.kErrorRed,
                                         fontSize: 12,
                                         fontFamily: 'GeneralSans',
                                       ),
@@ -1105,7 +1142,7 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                             );
                           },
                         ),
-                        const SizedBox(height: 24),
+                        SizedBox(height: 24.h),
 
                         // Upload Attachment Field
                         Column(
@@ -1130,7 +1167,7 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                                         child: Text(
                                           state.errorText!,
                                           style: const TextStyle(
-                                            color: Color(0xFFBA1A1A),
+                                            color: AppColor.kErrorRed,
                                             fontSize: 12,
                                             fontFamily: 'GeneralSans',
                                           ),
@@ -1141,7 +1178,7 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                               },
                             ),
                             // Attached File List
-                            const SizedBox(height: 12),
+                            SizedBox(height: 12.h),
                             BlocBuilder<TicketBloc, TicketState>(
                               bloc: _ticketBloc,
                               buildWhen: (previous, current) {
@@ -1170,20 +1207,20 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                             ),
                           ],
                         ),
-                        const SizedBox(height: 12),
+                        SizedBox(height: 12.h),
 
                         // File Format Instructions
                         Text(
                           l10n.ticketFileInstructions,
                           style: const TextStyle(
-                            color: Color(0xFF67697A),
+                            color: AppColor.kTextFiledPlaceholderColor,
                             fontSize: 12,
                             fontWeight: FontWeight.w400,
                             height: 1.67,
                             fontFamily: 'GeneralSans',
                           ),
                         ),
-                        const SizedBox(height: 20),
+                        SizedBox(height: 20.h),
                       ],
                     ),
                   ),
@@ -1205,7 +1242,7 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                       isLoading: state is TicketSubmitting,
                       label: l10n.submit,
                       borderRadius: 10,
-                      height: 52,
+                      height: 52.h,
                       onClicked: _submitTicket,
                       textStyle: const TextStyle(
                         fontSize: 14,
@@ -1234,17 +1271,17 @@ class _CategoryRadioSkeleton extends StatelessWidget {
       child: Row(
         children: [
           Container(
-            width: 20,
-            height: 20,
+            width: 20.w,
+            height: 20.h,
             decoration: const BoxDecoration(
               color: Colors.white,
               shape: BoxShape.circle,
             ),
           ),
-          const SizedBox(width: 10),
+          SizedBox(width: 10.w),
           Expanded(
             child: Container(
-              height: 16,
+              height: 16.h,
               decoration: BoxDecoration(
                 color: Colors.white,
                 borderRadius: BorderRadius.circular(8),

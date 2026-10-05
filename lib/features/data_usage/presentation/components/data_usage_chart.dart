@@ -101,7 +101,7 @@ class _DataUsageChartState extends State<_DataUsageChart> {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        const SizedBox(width: 4),
+                        SizedBox(width: 4.w),
                         const Icon(Icons.keyboard_arrow_down, size: 16),
                       ],
                     ),
@@ -113,7 +113,7 @@ class _DataUsageChartState extends State<_DataUsageChart> {
                       child: Row(
                         children: [
                           const Icon(Icons.today, size: 18),
-                          const SizedBox(width: 12),
+                          SizedBox(width: 12.w),
                           Text(context.bssSubL10n.day),
                         ],
                       ),
@@ -123,7 +123,7 @@ class _DataUsageChartState extends State<_DataUsageChart> {
                       child: Row(
                         children: [
                           const Icon(Icons.calendar_view_week, size: 18),
-                          const SizedBox(width: 12),
+                          SizedBox(width: 12.w),
                           Text(context.bssSubL10n.week),
                         ],
                       ),
@@ -133,7 +133,7 @@ class _DataUsageChartState extends State<_DataUsageChart> {
                       child: Row(
                         children: [
                           const Icon(Icons.calendar_view_month, size: 18),
-                          const SizedBox(width: 12),
+                          SizedBox(width: 12.w),
                           Text(context.bssSubL10n.month),
                         ],
                       ),
@@ -148,9 +148,9 @@ class _DataUsageChartState extends State<_DataUsageChart> {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             SizedBox(
-              height: 180,
+              height: 180.h,
               child: LineChart(
                 LineChartData(
                   minX: 1,
@@ -162,7 +162,7 @@ class _DataUsageChartState extends State<_DataUsageChart> {
                     horizontalInterval: _adjustedMaxY / 5,
                     verticalInterval: 1,
                     getDrawingHorizontalLine: (value) => const FlLine(
-                      color: Color(0x26808080), // grey @ 15% opacity
+                      color: AppColor.kGrey15, // grey @ 15% opacity
                       strokeWidth: 1,
                     ),
                     drawVerticalLine: false,

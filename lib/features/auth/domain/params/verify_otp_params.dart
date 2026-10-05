@@ -6,6 +6,6 @@ class VerifyOtpParams {
   const VerifyOtpParams({required this.otpRefId, required this.otp, this.loginSessionToken});
 
   Map<String, dynamic> toMap() {
-    return {'otpRefId': otpRefId, 'otp': otp, 'loginSessionToken': loginSessionToken};
+    return {'otpRefId': otpRefId,'otpReferenceId': otpRefId, 'otp': otp, 'loginSessionToken': loginSessionToken};
   }
 }

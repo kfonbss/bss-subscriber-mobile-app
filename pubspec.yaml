@@ -62,17 +62,20 @@ dependencies:
   url_launcher: ^6.3.0
   flutter_localization: ^0.3.3
   google_fonts: ^6.2.1
+  razorpay_flutter: ^1.4.7
+  carousel_slider: ^5.1.2
+  photo_view: ^0.15.0
 
 
 flutter_native_splash:
   android: true
   ios: true
   web: true
-  color: "#8D0247"
+  color: "#009DE2"
   image: assets/images/splash_logo.png
 
   android_12:
-    color: "#8D0247"
+    color: "#009DE2"
     image: assets/images/splash_logo_android.png
 
 

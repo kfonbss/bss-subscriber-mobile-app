@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:shimmer/shimmer.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 
 /// Base shimmer colors used across the app for consistent loading placeholders.
 class ShimmerColors {
   ShimmerColors._();
 
-  static const Color baseColor = Color(0xFFE0E0E0);
-  static const Color highlightColor = Color(0xFFF5F5F5);
+  static const Color baseColor = AppColor.kShimmerBase;
+  static const Color highlightColor = AppColor.kSecondaryBackgroundColor;
 }
 
 /// Wraps [child] with the app's standard shimmer effect.

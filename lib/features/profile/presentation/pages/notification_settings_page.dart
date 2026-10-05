@@ -3,6 +3,7 @@ import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/profile/presentation/components/common_toggle_switch.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 
 class NotificationSettingsPage extends StatefulWidget {
   const NotificationSettingsPage({super.key});
@@ -30,7 +31,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
     height: 1.3,
     letterSpacing: 0,
   );
-  static final _soundValueStyle = TextStyle(
+  static get _soundValueStyle => TextStyle(
     fontFamily: 'GeneralSans',
     color: AppColor.kPrimaryColor,
     fontSize: 12.sp,
@@ -42,11 +43,11 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
   @override
   Widget build(BuildContext context) {
     // _notificationSound may change on user action — read once per build.
-    final notificationSound = _notificationSound ?? 'Default';
+    final notificationSound = _notificationSound ?? context.bssSubL10n.notificationSoundDefault;
 
     return CommonAppBar(
       onBackPressed: () => Navigator.pop(context),
-      title: 'Notification Settings',
+      title: context.bssSubL10n.notificationSettingsTitle,
       body: SingleChildScrollView(
         padding: EdgeInsets.only(bottom: 50.h),
         child: Column(
@@ -58,30 +59,30 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   // General Section
-                  Text('General', style: _sectionHeadingStyle),
+                  Text(context.bssSubL10n.general, style: _sectionHeadingStyle),
                   SizedBox(height: 16.h),
                   _NotificationItem(
-                    title: 'Payment Reminders',
-                    description: 'Get notified about upcoming payment due dates.',
+                    title: context.bssSubL10n.paymentReminders,
+                    description: context.bssSubL10n.paymentRemindersDesc,
                     value: _paymentReminders,
                     onChanged: (v) => setState(() => _paymentReminders = v),
                   ),
                   _NotificationItem(
-                    title: 'Package Expiry Alerts',
+                    title: context.bssSubL10n.packageExpiryAlerts,
                     description:
-                        'Receive alerts when your package is about to expire.',
+                        context.bssSubL10n.packageExpiryAlertsDesc,
                     value: _packageExpiryAlerts,
                     onChanged: (v) => setState(() => _packageExpiryAlerts = v),
                   ),
                   _NotificationItem(
-                    title: 'Promotions & Offers',
-                    description: 'Stay updated on the latest deals and discounts.',
+                    title: context.bssSubL10n.promotionsAndOffers,
+                    description: context.bssSubL10n.promotionsAndOffersDesc,
                     value: _promotionsOffers,
                     onChanged: (v) => setState(() => _promotionsOffers = v),
                   ),
                   _NotificationItem(
-                    title: 'Data Exhaustion Warnings',
-                    description: 'Know when your data is nearing its limit.',
+                    title: context.bssSubL10n.dataExhaustionWarnings,
+                    description: context.bssSubL10n.dataExhaustionWarningsDesc,
                     value: _dataExhaustionWarnings,
                     onChanged: (v) =>
                         setState(() => _dataExhaustionWarnings = v),
@@ -89,13 +90,13 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                   SizedBox(height: 20.h),
 
                   // Sound & Vibration Section
-                  Text('Sound & Vibration', style: _sectionHeadingStyle),
+                  Text(context.bssSubL10n.soundAndVibration, style: _sectionHeadingStyle),
                   SizedBox(height: 16.h),
 
                   // Notification Sound — no Builder needed; notificationSound
                   // is a local variable read at the start of build().
                   _SoundVibrationTile(
-                    title: 'Notification Sound',
+                    title: context.bssSubL10n.notificationSound,
                     onTap: () {
                       // TODO: Show sound selection dialog
                     },
@@ -114,7 +115,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                   ),
 
                   _SoundVibrationTile(
-                    title: 'Vibration',
+                    title: context.bssSubL10n.vibration,
                     trailing: Padding(
                       padding: EdgeInsets.only(top: 2.h),
                       child: CommonToggleSwitch(
@@ -166,7 +167,7 @@ class _NotificationItem extends StatelessWidget {
   // 0xB3 = 179 ≈ 0.7 × 255 → Colors.black @ 70% opacity
   static final _descriptionStyle = TextStyle(
     fontFamily: 'GeneralSans',
-    color: const Color(0xB3000000),
+    color: AppColor.kBlack70,
     fontSize: 12.sp,
     fontWeight: FontWeight.w400,
     height: 1.3,

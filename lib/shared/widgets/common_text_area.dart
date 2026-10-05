@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 
 import '../../core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class CommonTextArea extends StatelessWidget {
   final String label;
@@ -31,7 +32,7 @@ class CommonTextArea extends StatelessWidget {
           ),
         ),
         SizedBox(
-          height: 150,
+          height: 150.h,
           child: TextField(
             controller: textEditingController,
             onTapOutside: (PointerDownEvent event) {

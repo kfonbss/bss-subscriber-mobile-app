@@ -1,6 +1,8 @@
 import 'package:dartz/dartz.dart';
+import 'package:kfon_subscriber/core/data/entity/file_view_url_result.dart';
 import 'package:kfon_subscriber/core/error/failure.dart';
 import 'package:kfon_subscriber/features/ticket/data/model/add_note_req.dart';
+import 'package:kfon_subscriber/features/ticket/data/model/rate_ticket_req.dart';
 import 'package:kfon_subscriber/features/ticket/data/model/submit_ticket_req.dart';
 import 'package:kfon_subscriber/features/ticket/domain/entity/add_note_respo_entity.dart';
 import 'package:kfon_subscriber/features/ticket/domain/entity/customer_type_entity.dart';
@@ -18,13 +20,15 @@ abstract class TicketRepository {
   Future<Either<Failure, List<SubjectEntity>>> getSubjects({
     required String categoryId,
   });
+  Future<Either<Failure, FileViewUrlResult>> getFileViewUrl(String fileId);
   Future<Either<Failure, List<PriorityEntity>>> getPriorities();
   Future<Either<Failure, List<VisibilityEntity>>> getVisibilityPermissions();
   Future<Either<Failure, SubmitTicketRespoEntity>> submitTicket(
-      SubmitTicketReq params,
-      );
+    SubmitTicketReq params,
+  );
   Future<Either<Failure, TicketsListResponseEntity>> getTickets(
-      GetTicketsListParams params,
-      );
+    GetTicketsListParams params,
+  );
   Future<Either<Failure, AddNoteRespoEntity>> addNote(AddNoteReq params);
+  Future<Either<Failure, Unit>> rateTicket(RateTicketReq params);
 }

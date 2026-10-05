@@ -37,14 +37,14 @@ class _FaqTileState extends State<FaqTile> {
 
   @override
   Widget build(BuildContext context) {
+    // Design: white, radius 12, no border; 6 left / 14 right / 13 vertical.
     return Container(
-      decoration: BoxDecoration(
+      decoration: const BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: AppColor.kinputFiledLightBorder, width: 1.w),
+        borderRadius: BorderRadius.all(Radius.circular(12)),
       ),
-      padding: EdgeInsets.only(left: 10,right: 14,top: 13,bottom: 13),
-      child:Row(
+      padding: EdgeInsets.only(left: 10.w, right: 14.w, top: 13.h, bottom: 13.h),
+      child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text('${widget.questionNo}. ', style: questionStyle),
@@ -55,12 +55,12 @@ class _FaqTileState extends State<FaqTile> {
               children: [
                 Text(widget.question, style: questionStyle),
                 isExpanded
-                    ?Text(widget.answer,style: answerStyle,)
-                    :SizedBox.shrink()
+                    ? Text(widget.answer, style: answerStyle)
+                    : SizedBox.shrink(),
               ],
             ),
           ),
-          SizedBox(width: 12,),
+          SizedBox(width: 12.w),
           IconButton(
             padding: EdgeInsets.zero,
             constraints: const BoxConstraints(),
@@ -74,14 +74,12 @@ class _FaqTileState extends State<FaqTile> {
             ),
             onPressed: () {
               setState(() {
-                isExpanded = isExpanded?false:true;
+                isExpanded = isExpanded ? false : true;
               });
-
             },
-          )
+          ),
         ],
-      )
-
+      ),
     );
   }
 }

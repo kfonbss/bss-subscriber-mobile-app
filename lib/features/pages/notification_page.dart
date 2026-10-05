@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class NotificationPage extends StatefulWidget {
   const NotificationPage({super.key});
@@ -97,22 +99,22 @@ class _NotificationPageState extends State<NotificationPage>
                                     CrossAxisAlignment.start,
                                     children: [
                                       Container(
-                                        width: 38,
-                                        height: 38,
+                                        width: 38.w,
+                                        height: 38.h,
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
                                           color: _gray,
                                         ),
                                         child: Center(
                                           child: Image.asset(
-                                            'assets/icons/glob.png',
-                                            height: 20,
-                                            width: 20,
+                                            AppAssets.glob,
+                                            height: 20.h,
+                                            width: 20.w,
                                             color: AppColor.kPrimaryColor,
                                           ),
                                         ),
                                       ),
-                                      SizedBox(width: 12),
+                                      SizedBox(width: 12.w),
                                       Expanded(
                                         child: Column(
                                           crossAxisAlignment:
@@ -222,7 +224,7 @@ class _NotificationPageState extends State<NotificationPage>
                                 spacing: 16,
                                 children: [
                                   Image.asset(
-                                    'assets/images/delete_image__1.png',
+                                    AppAssets.deleteImage1,
                                   ),
                                   Row(
                                     spacing: 12,
@@ -230,17 +232,17 @@ class _NotificationPageState extends State<NotificationPage>
                                     CrossAxisAlignment.start,
                                     children: [
                                       Container(
-                                        width: 38,
-                                        height: 38,
+                                        width: 38.w,
+                                        height: 38.h,
                                         decoration: BoxDecoration(
                                           shape: BoxShape.circle,
                                           color: _gray,
                                         ),
                                         child: Center(
                                           child: Image.asset(
-                                            'assets/icons/offer_promo.png',
-                                            width: 20,
-                                            height: 20,
+                                            AppAssets.offerPromo,
+                                            width: 20.w,
+                                            height: 20.h,
                                           ),
                                         ),
                                       ),
@@ -297,7 +299,7 @@ class _NotificationPageState extends State<NotificationPage>
                                               maxLines: 6,
                                               overflow: TextOverflow.ellipsis,
                                             ),
-                                            SizedBox(height: 12),
+                                            SizedBox(height: 12.h),
                                             Text(
                                               l10n.getItNow,
                                               style: TextStyle(

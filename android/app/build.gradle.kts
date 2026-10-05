@@ -6,7 +6,7 @@ plugins {
 }
 
 android {
-    namespace = "com.kfon.kfon.subscriber.kfon_subscriber"
+    namespace = "com.railtel.railwire.subscriber"
     compileSdk = flutter.compileSdkVersion
     ndkVersion = flutter.ndkVersion
 
@@ -19,7 +19,7 @@ android {
 
     defaultConfig {
         // TODO: Specify your own unique Application ID (https://developer.android.com/studio/build/application-id.html).
-        applicationId = "com.kfon.kfon.subscriber.kfon_subscriber"
+        applicationId = "com.railtel.railwire.subscriber"
         // You can update the following values to match your application needs.
         // For more information, see: https://flutter.dev/to/review-gradle-config.
         minSdk = flutter.minSdkVersion

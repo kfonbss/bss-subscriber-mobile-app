@@ -1,5 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class TabBarMaterialWidget extends StatefulWidget {
   final ValueChanged<int> onChangedTab;
@@ -14,7 +17,7 @@ class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
   int selectedIndex = 0;
 
   // ── Static styles & decorations — allocated once, shared across all rebuilds
-  static const _selectedTextStyle = TextStyle(
+  static get _selectedTextStyle => TextStyle(
     color: AppColor.kPrimaryColor,
     fontSize: 10,
     fontWeight: FontWeight.w600,
@@ -24,7 +27,7 @@ class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
     fontSize: 10,
     fontWeight: FontWeight.w600,
   );
-  static const _selectedIndicator = BoxDecoration(
+  static get _selectedIndicator => BoxDecoration(
     color: AppColor.kPrimaryColor,
     borderRadius: BorderRadius.all(Radius.circular(10)),
   );
@@ -36,7 +39,7 @@ class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
   @override
   Widget build(BuildContext context) {
     return BottomAppBar(
-      height: 70,
+      height: 70.h,
       shape: const CircularNotchedRectangle(),
       color: Colors.white,
       notchMargin: 8.0,
@@ -47,19 +50,19 @@ class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 8.0),
-            child: _buildTabItem(index: 0, icon: 'home', label: 'Home'),
+            child: _buildTabItem(index: 0, icon: AppAssets.homeTab, label: context.bssSubL10n.home),
           ),
           Padding(
             padding: const EdgeInsets.only(right: 20.0),
-            child: _buildTabItem(index: 1, icon: 'self_care', label: 'Self care'),
+            child: _buildTabItem(index: 1, icon: AppAssets.selfCareTab, label: context.bssSubL10n.selfCare),
           ),
           Padding(
             padding: const EdgeInsets.only(left: 20.0),
-            child: _buildTabItem(index: 2, icon: 'chat', label: 'FAQ'),
+            child: _buildTabItem(index: 2, icon: AppAssets.chatTab, label: context.bssSubL10n.faq),
           ),
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
-            child: _buildTabItem(index: 3, icon: 'profile', label: 'Profile'),
+            child: _buildTabItem(index: 3, icon: AppAssets.profileTab, label: context.bssSubL10n.profile),
           ),
         ],
       ),
@@ -81,7 +84,7 @@ class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
           ImageIcon(
-            AssetImage('assets/bottomNaviBarIcons/$icon.png'),
+            AssetImage(icon),
             size: 25,
             color: isSelected ? AppColor.kPrimaryColor : Colors.black,
           ),
@@ -92,8 +95,8 @@ class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
                 style: isSelected ? _selectedTextStyle : _unselectedTextStyle,
               ),
               Container(
-                height: 2,
-                width: 5,
+                height: 2.h,
+                width: 5.w,
                 decoration: isSelected ? _selectedIndicator : _unselectedIndicator,
               ),
             ],

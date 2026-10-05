@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 
 import '../../core/constant/constant_colors.dart';
 import '../../core/constant/constant_dimensions.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class CommonDropDown extends StatelessWidget {
   final List<dynamic>? items;
@@ -62,8 +63,8 @@ class CommonDropDown extends StatelessWidget {
           trailingIcon:
               items == null
                   ? SizedBox(
-                    height: 20,
-                    width: 20,
+                    height: 20.h,
+                    width: 20.w,
                     child: CircularProgressIndicator(
                       strokeWidth: 2,
                       color: AppColor.kPrimaryColor,

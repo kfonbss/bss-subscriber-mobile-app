@@ -5,6 +5,7 @@ import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/shared/widgets/common_radio_button.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
 
 class Language {
   final String name;
@@ -117,7 +118,7 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
                         prefixIcon: Padding(
                           padding: EdgeInsets.all(12.w),
                           child: SvgPicture.asset(
-                            'assets/icons/search.svg',
+                            AppAssets.search,
                             width: 24.w,
                             height: 24.w,
                             colorFilter: _searchIconColorFilter,

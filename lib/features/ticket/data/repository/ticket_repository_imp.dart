@@ -1,11 +1,15 @@
 import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart';
+import 'package:file_picker/file_picker.dart';
 import 'package:kfon_subscriber/core/constant/api_urls.dart';
+import 'package:kfon_subscriber/core/data/entity/file_view_url_result.dart';
+import 'package:kfon_subscriber/core/data/model/file_view_url_result_model.dart';
 import 'package:kfon_subscriber/core/error/failure.dart';
 import 'package:kfon_subscriber/core/network/api_response.dart';
 import 'package:kfon_subscriber/core/network/dio_client.dart';
 import 'package:kfon_subscriber/features/ticket/data/model/add_note_req.dart';
 import 'package:kfon_subscriber/features/ticket/data/model/add_note_respo.dart';
+import 'package:kfon_subscriber/features/ticket/data/model/rate_ticket_req.dart';
 import 'package:kfon_subscriber/features/ticket/data/model/customer_type_model.dart';
 import 'package:kfon_subscriber/features/ticket/data/model/priority_model.dart';
 import 'package:kfon_subscriber/features/ticket/data/model/subject.dart';
@@ -65,20 +69,48 @@ class TicketRepositoryImp extends TicketRepository {
     return ids.toList();
   }
 
+  /// Uploads one file to file storage and returns its file ID.
+  Future<Either<Failure, String>> _uploadFile(PlatformFile file) async {
+    if (file.path == null) {
+      return const Left(ServerFailure('Selected file is not available'));
+    }
+    final multipartFile = await MultipartFile.fromFile(
+      file.path!,
+      filename: file.name,
+    );
+    final APIResponse response = await sl<DioClient>().post(
+      ApiUrls.fileUploadURL,
+      data: FormData.fromMap({'file': multipartFile}),
+      options: Options(contentType: 'multipart/form-data'),
+    );
+    if (!response.isSuccess) return Left(response.failure);
+
+    final ids = _extractFileIds(response.data);
+    if (ids.isEmpty) {
+      return const Left(
+        ServerFailure('File upload succeeded but no fileId returned'),
+      );
+    }
+    return Right(ids.first);
+  }
+
   @override
   Future<Either<Failure, List<TicketCategoryEntity>>> getCategories() async {
-    APIResponse response =
-    await sl<DioClient>().get(ApiUrls.ticketCategoriesURL);
+    APIResponse response = await sl<DioClient>().get(
+      ApiUrls.ticketCategoriesURL,
+    );
     if (response.isSuccess) {
       final dataList = response.data as List<dynamic>? ?? [];
-      final categories = dataList
-          .map(
-            (e) => TicketCategoryModel.fromJson(
-          e as Map<String, dynamic>,
-        ).toEntity(),
-      )
-          .where((c) => c.isActive)
-          .toList();
+      final categories =
+          dataList
+              .map(
+                (e) =>
+                    TicketCategoryModel.fromJson(
+                      e as Map<String, dynamic>,
+                    ).toEntity(),
+              )
+              .where((c) => c.isActive)
+              .toList();
       return Right(categories);
     } else {
       return Left(response.failure);
@@ -87,18 +119,19 @@ class TicketRepositoryImp extends TicketRepository {
 
   @override
   Future<Either<Failure, List<CustomerTypeEntity>>> getCustomerTypes() async {
-    APIResponse response =
-    await sl<DioClient>().get(ApiUrls.customerTypesURL);
+    APIResponse response = await sl<DioClient>().get(ApiUrls.customerTypesURL);
     if (response.isSuccess) {
       final dataList = response.data as List<dynamic>? ?? [];
-      final customerTypes = dataList
-          .map(
-            (e) => CustomerTypeModel.fromJson(
-          e as Map<String, dynamic>,
-        ).toEntity(),
-      )
-          .where((c) => c.isActive)
-          .toList();
+      final customerTypes =
+          dataList
+              .map(
+                (e) =>
+                    CustomerTypeModel.fromJson(
+                      e as Map<String, dynamic>,
+                    ).toEntity(),
+              )
+              .where((c) => c.isActive)
+              .toList();
       return Right(customerTypes);
     } else {
       return Left(response.failure);
@@ -115,10 +148,13 @@ class TicketRepositoryImp extends TicketRepository {
     );
     if (response.isSuccess) {
       final dataList = response.data as List<dynamic>? ?? [];
-      final subjects = dataList
-          .map((e) => Subject.fromJson(e as Map<String, dynamic>).toEntity())
-          .where((s) => s.isActive) // Filter only active subjects
-          .toList();
+      final subjects =
+          dataList
+              .map(
+                (e) => Subject.fromJson(e as Map<String, dynamic>).toEntity(),
+              )
+              .where((s) => s.isActive) // Filter only active subjects
+              .toList();
       return Right(subjects);
     } else {
       return Left(response.failure);
@@ -130,10 +166,16 @@ class TicketRepositoryImp extends TicketRepository {
     APIResponse response = await sl<DioClient>().get(ApiUrls.prioritiesURL);
     if (response.isSuccess) {
       final dataList = response.data as List<dynamic>? ?? [];
-      final priorities = dataList
-          .map((e) => PriorityModel.fromJson(e as Map<String, dynamic>).toEntity())
-          .where((p) => p.isActive) // Filter only active priorities
-          .toList();
+      final priorities =
+          dataList
+              .map(
+                (e) =>
+                    PriorityModel.fromJson(
+                      e as Map<String, dynamic>,
+                    ).toEntity(),
+              )
+              .where((p) => p.isActive) // Filter only active priorities
+              .toList();
       return Right(priorities);
     } else {
       return Left(response.failure);
@@ -141,14 +183,23 @@ class TicketRepositoryImp extends TicketRepository {
   }
 
   @override
-  Future<Either<Failure, List<VisibilityEntity>>> getVisibilityPermissions() async {
-    APIResponse response = await sl<DioClient>().get(ApiUrls.visibilityPermissionURL);
+  Future<Either<Failure, List<VisibilityEntity>>>
+  getVisibilityPermissions() async {
+    APIResponse response = await sl<DioClient>().get(
+      ApiUrls.visibilityPermissionURL,
+    );
     if (response.isSuccess) {
       final dataList = response.data as List<dynamic>? ?? [];
-      final visibilities = dataList
-          .map((e) => VisibilityModel.fromJson(e as Map<String, dynamic>).toEntity())
-          .where((v) => v.isActive)
-          .toList();
+      final visibilities =
+          dataList
+              .map(
+                (e) =>
+                    VisibilityModel.fromJson(
+                      e as Map<String, dynamic>,
+                    ).toEntity(),
+              )
+              .where((v) => v.isActive)
+              .toList();
       return Right(visibilities);
     } else {
       return Left(response.failure);
@@ -157,12 +208,33 @@ class TicketRepositoryImp extends TicketRepository {
 
   @override
   Future<Either<Failure, SubmitTicketRespoEntity>> submitTicket(
-      SubmitTicketReq params,
-      ) async {
+    SubmitTicketReq params,
+  ) async {
+    // Step 0 (GST and PAN Updation only): upload the two documents first —
+    // the create request must carry their file IDs.
+    String? gstDocFileId;
+    String? panCopyFileId;
+    final gstin = params.gstinDetails;
+    if (gstin != null) {
+      Failure? uploadFailure;
+      (await _uploadFile(
+        gstin.gstDocFile,
+      )).fold((failure) => uploadFailure = failure, (id) => gstDocFileId = id);
+      if (uploadFailure != null) return Left(uploadFailure!);
+
+      (await _uploadFile(
+        gstin.panCopyFile,
+      )).fold((failure) => uploadFailure = failure, (id) => panCopyFileId = id);
+      if (uploadFailure != null) return Left(uploadFailure!);
+    }
+
     // Step 1: Create ticket
     APIResponse createResponse = await sl<DioClient>().post(
       ApiUrls.submitTicketURL,
-      data: params.toJson(),
+      data: params.toJson(
+        gstDocFileId: gstDocFileId,
+        panCopyFileId: panCopyFileId,
+      ),
     );
 
     if (!createResponse.isSuccess) {
@@ -188,9 +260,7 @@ class TicketRepositoryImp extends TicketRepository {
           final uploadResponse = await sl<DioClient>().post(
             fileUploadUrl,
             data: FormData.fromMap({'file': multipartFile}),
-            options: Options(
-              contentType: 'multipart/form-data',
-            ),
+            options: Options(contentType: 'multipart/form-data'),
           );
 
           if (!uploadResponse.isSuccess) {
@@ -204,9 +274,18 @@ class TicketRepositoryImp extends TicketRepository {
   }
 
   @override
+  Future<Either<Failure, Unit>> rateTicket(RateTicketReq params) async {
+    final APIResponse response = await sl<DioClient>().post(
+      ApiUrls.rateTicketURL(params.ticketUuid),
+      data: params.toJson(),
+    );
+    return response.isSuccess ? const Right(unit) : Left(response.failure);
+  }
+
+  @override
   Future<Either<Failure, TicketsListResponseEntity>> getTickets(
-      GetTicketsListParams params,
-      ) async {
+    GetTicketsListParams params,
+  ) async {
     APIResponse response = await sl<DioClient>().get(
       ApiUrls.submitTicketURL,
       queryParameters: params.toQueryParams(),
@@ -221,13 +300,12 @@ class TicketRepositoryImp extends TicketRepository {
   }
 
   @override
-  Future<Either<Failure, AddNoteRespoEntity>> addNote(
-      AddNoteReq params,
-      ) async {
+  Future<Either<Failure, AddNoteRespoEntity>> addNote(AddNoteReq params) async {
     var fileIds = List<String>.from(params.fileIds);
 
     if (params.files != null && params.files!.isNotEmpty) {
-      final fileUploadUrl = '${ApiUrls.submitTicketURL}/${params.ticketUuid}/upload';
+      final fileUploadUrl =
+          '${ApiUrls.submitTicketURL}/${params.ticketUuid}/upload';
 
       for (final file in params.files!) {
         if (file.path == null) {
@@ -242,9 +320,7 @@ class TicketRepositoryImp extends TicketRepository {
         final APIResponse uploadResponse = await sl<DioClient>().post(
           fileUploadUrl,
           data: FormData.fromMap({'file': multipartFile}),
-          options: Options(
-            contentType: 'multipart/form-data',
-          ),
+          options: Options(contentType: 'multipart/form-data'),
         );
 
         if (!uploadResponse.isSuccess) {
@@ -253,7 +329,9 @@ class TicketRepositoryImp extends TicketRepository {
 
         final extracted = _extractFileIds(uploadResponse.data);
         if (extracted.isEmpty) {
-          return const Left(ServerFailure('File upload succeeded but no fileId returned'));
+          return const Left(
+            ServerFailure('File upload succeeded but no fileId returned'),
+          );
         }
         fileIds.addAll(extracted);
       }
@@ -271,5 +349,33 @@ class TicketRepositoryImp extends TicketRepository {
     final model = AddNoteRespo.fromJson(data);
 
     return Right(model.toEntity());
+  }
+
+  @override
+  Future<Either<Failure, FileViewUrlResult>> getFileViewUrl(
+    String fileId,
+  ) async {
+    try {
+      final APIResponse response = await sl<DioClient>().get(
+        ApiUrls.fileViewUrlByFileId(fileId),
+      );
+
+      if (response.isSuccess) {
+        final data = response.data;
+        if (data is! Map<String, dynamic>) {
+          return Left(ServerFailure('Invalid response'));
+        }
+        final inner = data['data'] as Map<String, dynamic>? ?? data;
+        final model = FileViewUrlResultModel.fromJson(inner);
+        if (model.url.isEmpty) {
+          return Left(ServerFailure('File URL not found'));
+        }
+        return Right(model.toEntity());
+      } else {
+        return Left(response.failure);
+      }
+    } catch (e) {
+      return Left(ServerFailure(e.toString()));
+    }
   }
 }

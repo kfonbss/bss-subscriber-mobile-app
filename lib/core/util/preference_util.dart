@@ -8,6 +8,7 @@ class PreferenceUtils {
   static const _keyTokenExpiryAt = 'tokenExpiryAt';
   static const _keyUserId = 'userId';
   static const _keyUserName = 'userName';
+  static const _keyMobileNumber = 'mobileNumber';
   static const _keyTenantId = 'tenantId';
   static const _keyTenantName = 'tenantName';
   static const _introScreenStatus = 'introScreenStatus';
@@ -87,6 +88,12 @@ class PreferenceUtils {
   static Future<String?> getUserName() async =>
       await _storage.read(key: _keyUserName);
 
+  /// Logged-in subscriber's mobile number (saved at OTP verification).
+  static Future<void> setMobileNumber(String mobileNumber) async =>
+      await _storage.write(key: _keyMobileNumber, value: mobileNumber);
+  static Future<String?> getMobileNumber() async =>
+      await _storage.read(key: _keyMobileNumber);
+
   static Future<void> clearAll() async{
     await Future.wait([
       _storage.delete(key: _keyAccessToken),
@@ -94,6 +101,7 @@ class PreferenceUtils {
       _storage.delete(key: _keyTokenExpiryAt),
       _storage.delete(key: _keyUserId),
       _storage.delete(key: _keyUserName),
+      _storage.delete(key: _keyMobileNumber),
     ]);
  // await _storage.deleteAll();
 

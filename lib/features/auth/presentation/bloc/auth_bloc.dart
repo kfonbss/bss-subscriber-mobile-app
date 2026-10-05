@@ -2,7 +2,6 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/core/util/preference_util.dart';
 import 'package:kfon_subscriber/features/auth/data/model/verify_otp_model.dart';
 import 'package:kfon_subscriber/features/auth/domain/entity/auth_entity.dart';
-import 'package:kfon_subscriber/features/auth/domain/entity/verify_otp_entity.dart';
 import 'package:kfon_subscriber/features/auth/domain/params/login_params.dart';
 import 'package:kfon_subscriber/features/auth/domain/params/reset_password_params.dart';
 import 'package:kfon_subscriber/features/auth/domain/params/verify_otp_params.dart';
@@ -175,6 +174,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
           refreshToken: response.refreshToken,
           expiresIn: response.expiresIn,
         );
+        // Sent as `mobileNumber` when creating tickets.
+        await PreferenceUtils.setMobileNumber(response.mobileNumber);
         _authEntity = null;
         otpRefId = null;
         emit(const OtpVerified());

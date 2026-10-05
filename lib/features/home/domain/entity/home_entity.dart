@@ -39,7 +39,7 @@ class PackageDetailsEntity extends Equatable {
   final double availableVolumeGb;
   final int validity;
   final double totalVolumeGb;
-  final PackageInfoEntity packageInfoModel;
+  final PackageInfoEntity packageInfoEntity;
   final List<ActiveAdOnEntity> activeAddOns;
 
   const PackageDetailsEntity({
@@ -54,7 +54,7 @@ class PackageDetailsEntity extends Equatable {
     required this.validity,
     required this.availableVolumeGb,
     required this.totalVolumeGb,
-    required this.packageInfoModel,
+    required this.packageInfoEntity,
     required this.activeAddOns,
   });
 

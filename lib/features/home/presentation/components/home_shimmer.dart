@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/shared/widgets/shimmer/shimmer_base.dart';
 import 'package:kfon_subscriber/shared/widgets/shimmer/shimmer_box.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class HomeShimmer extends StatelessWidget {
   const HomeShimmer({super.key});
@@ -26,24 +27,24 @@ class HomeShimmer extends StatelessWidget {
   // List.generate(4, (_) => ...) with identical items was allocating a new
   // list and new widget objects on every build(). Hoisting to static const
   // eliminates both the list and the object allocations entirely.
-  static const _statsItem = Column(
+  static final _statsItem = Column(
     mainAxisAlignment: MainAxisAlignment.center,
     crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      ShimmerBox(width: 40, height: 10),
-      SizedBox(height: 6),
-      ShimmerBox(width: 55, height: 12),
+      ShimmerBox(width: 40.w, height: 10.h),
+      SizedBox(height: 6.h),
+      ShimmerBox(width: 55.w, height: 12.h),
     ],
   );
-  static const List<Widget> _statsItems = [
+  static final List<Widget> _statsItems = [
     _statsItem, _statsItem, _statsItem, _statsItem,
   ];
 
-  static const _planShimmerItem = Padding(
+  static final _planShimmerItem = Padding(
     padding: EdgeInsets.symmetric(horizontal: 16, vertical: 5),
-    child: ShimmerBox(width: double.infinity, height: 100),
+    child: ShimmerBox(width: double.infinity, height: 100.h),
   );
-  static const List<Widget> _planShimmerItems = [
+  static final List<Widget> _planShimmerItems = [
     _planShimmerItem, _planShimmerItem, _planShimmerItem, _planShimmerItem,
   ];
 
@@ -62,16 +63,16 @@ class HomeShimmer extends StatelessWidget {
                   Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      ShimmerBox(width: 50, height: 12),
-                      const SizedBox(height: 8),
-                      ShimmerBox(width: 160, height: 28),
-                      const SizedBox(height: 8),
-                      ShimmerBox(width: 120, height: 10),
+                      ShimmerBox(width: 50.w, height: 12.h),
+                      SizedBox(height: 8.h),
+                      ShimmerBox(width: 160.w, height: 28.h),
+                      SizedBox(height: 8.h),
+                      ShimmerBox(width: 120.w, height: 10.h),
                     ],
                   ),
                   ShimmerBox(
-                    width: 80,
-                    height: 34,
+                    width: 80.w,
+                    height: 34.h,
                     borderRadius: _radius20,
                   ),
                 ],
@@ -89,25 +90,25 @@ class HomeShimmer extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ShimmerBox(
-                          width: 44,
-                          height: 44,
+                          width: 44.w,
+                          height: 44.h,
                           borderRadius: _radius22,
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12.w),
                         Expanded(
                           child: Column(
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
-                              ShimmerBox(width: 140, height: 14),
-                              const SizedBox(height: 6),
-                              ShimmerBox(width: 100, height: 10),
+                              ShimmerBox(width: 140.w, height: 14.h),
+                              SizedBox(height: 6.h),
+                              ShimmerBox(width: 100.w, height: 10.h),
                             ],
                           ),
                         ),
-                        const SizedBox(width: 8),
+                        SizedBox(width: 8.w),
                         ShimmerBox(
-                          width: 80,
-                          height: 28,
+                          width: 80.w,
+                          height: 28.h,
                           borderRadius: _radius20,
                         ),
                       ],
@@ -117,9 +118,9 @@ class HomeShimmer extends StatelessWidget {
                   // Column widgets; no List.generate() allocation on each build.
                   Container(
                     margin: const EdgeInsets.symmetric(horizontal: 16),
-                    height: 60,
+                    height: 60.h,
                     decoration: _statsRowDecoration,
-                    child: const Row(
+                    child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                       children: _statsItems,
                     ),
@@ -132,15 +133,15 @@ class HomeShimmer extends StatelessWidget {
                         Expanded(
                           child: ShimmerBox(
                             width: double.infinity,
-                            height: 36,
+                            height: 36.h,
                             borderRadius: _radius8,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12.w),
                         Expanded(
                           child: ShimmerBox(
                             width: double.infinity,
-                            height: 36,
+                            height: 36.h,
                             borderRadius: _radius8,
                           ),
                         ),
@@ -151,7 +152,7 @@ class HomeShimmer extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             // 3 quick-action shimmer boxes — hardcoded to avoid List.generate
             // allocation; all items are identical.
             Padding(
@@ -163,7 +164,7 @@ class HomeShimmer extends StatelessWidget {
                       margin: const EdgeInsets.symmetric(horizontal: 4),
                       child: ShimmerBox(
                         width: double.infinity,
-                        height: 110,
+                        height: 110.h,
                         borderRadius: _radius16,
                       ),
                     ),
@@ -173,7 +174,7 @@ class HomeShimmer extends StatelessWidget {
                       margin: const EdgeInsets.symmetric(horizontal: 4),
                       child: ShimmerBox(
                         width: double.infinity,
-                        height: 110,
+                        height: 110.h,
                         borderRadius: _radius16,
                       ),
                     ),
@@ -183,7 +184,7 @@ class HomeShimmer extends StatelessWidget {
                       margin: const EdgeInsets.symmetric(horizontal: 4),
                       child: ShimmerBox(
                         width: double.infinity,
-                        height: 110,
+                        height: 110.h,
                         borderRadius: _radius16,
                       ),
                     ),
@@ -192,22 +193,22 @@ class HomeShimmer extends StatelessWidget {
               ),
             ),
 
-            const SizedBox(height: 24),
+            SizedBox(height: 24.h),
             Padding(
               padding: const EdgeInsets.symmetric(horizontal: 16),
               child: Row(
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
-                  ShimmerBox(width: 100, height: 16),
+                  ShimmerBox(width: 100.w, height: 16.h),
                   ShimmerBox(
-                    width: 60,
-                    height: 14,
+                    width: 60.w,
+                    height: 14.h,
                     borderRadius: _radius4,
                   ),
                 ],
               ),
             ),
-            const SizedBox(height: 12),
+            SizedBox(height: 12.h),
             // _planShimmerItems is a static const list — no List.generate()
             // allocation and no new widget objects on each build.
             ..._planShimmerItems,

@@ -6,6 +6,6 @@ class SubmitTicketRespoEntity {
   const SubmitTicketRespoEntity({
     required this.ticketId,
     required this.ticketUuid,
-    required this.status
+    required this.status,
   });
 }

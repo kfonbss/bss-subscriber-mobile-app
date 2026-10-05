@@ -1,5 +1,6 @@
 import 'package:equatable/equatable.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/discount_details_entity.dart';
+import 'package:kfon_subscriber/features/change_plan/domain/entity/payment_gateway_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/recharge_change_plan_redirect_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/recharge_payment_status_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/seasonal_discount_entity.dart';
@@ -11,11 +12,15 @@ enum RechargeStatus {
   orderSummerySuccess,
   paymentRedirectLoading,
   paymentRedirectSuccess,
+
+  /// Recharge completed without a gateway (paid from wallet).
+  walletRechargeSuccess,
   paymentSuccess,
   paymentFailed,
   paymentCancelled,
   error,
 }
+enum GatewayStatus { initial, loading, loaded, error }
 
 class DiscountState extends Equatable {
   final RechargeStatus status;
@@ -33,6 +38,8 @@ class DiscountState extends Equatable {
   final RechargeChangePlanRedirectEntity? redirectEntity;
   final String? orderId;
   final RechargePaymentStatusEntity? paymentStatusEntity;
+  final GatewayStatus gatewayStatus;
+  final List<PaymentGatewayEntity> gateways;
 
   const DiscountState({
     this.status = RechargeStatus.initial,
@@ -50,6 +57,8 @@ class DiscountState extends Equatable {
     this.redirectEntity,
     this.orderId,
     this.paymentStatusEntity,
+    this.gatewayStatus = GatewayStatus.initial,
+    this.gateways = const [],
   });
 
   DiscountState copyWith({
@@ -69,6 +78,8 @@ class DiscountState extends Equatable {
     RechargeChangePlanRedirectEntity? redirectEntity,
     String? orderId,
     RechargePaymentStatusEntity? paymentStatusEntity,
+    GatewayStatus? gatewayStatus,
+    List<PaymentGatewayEntity>? gateways,
   }) {
     return DiscountState(
       status: status ?? this.status,
@@ -88,6 +99,8 @@ class DiscountState extends Equatable {
       redirectEntity: redirectEntity ?? this.redirectEntity,
       orderId: orderId ?? this.orderId,
       paymentStatusEntity: paymentStatusEntity ?? this.paymentStatusEntity,
+      gatewayStatus: gatewayStatus ?? this.gatewayStatus,
+      gateways: gateways ?? this.gateways,
     );
   }
 
@@ -104,5 +117,7 @@ class DiscountState extends Equatable {
     amount,
     reason,
     discountDetail,
+    gatewayStatus,
+    gateways,
   ];
 }

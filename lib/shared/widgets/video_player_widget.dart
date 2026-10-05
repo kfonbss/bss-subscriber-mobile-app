@@ -3,6 +3,8 @@ import 'dart:io';
 import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:video_player/video_player.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 /// Reusable video player widget for previewing video files.
 /// Provides playback controls including play/pause, seek bar, and duration display.
@@ -82,9 +84,9 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
             const Icon(Icons.error_outline, color: AppColor.kFailedRed, size: 48),
-            const SizedBox(height: 16),
-            const Text(
-              'Error loading video',
+            SizedBox(height: 16.h),
+            Text(
+              context.bssSubL10n.errorLoadingVideo,
               style: TextStyle(
                 color: AppColor.kFailedRed,
                 fontSize: 16,
@@ -93,7 +95,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
               ),
             ),
             if (_errorMessage != null) ...[
-              const SizedBox(height: 8),
+              SizedBox(height: 8.h),
               Padding(
                 padding: const EdgeInsets.symmetric(horizontal: 20),
                 child: Text(
@@ -154,7 +156,7 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
             ],
           ),
         ),
-        const SizedBox(height: 16),
+        SizedBox(height: 16.h),
         // Video controls
         Padding(
           padding: const EdgeInsets.symmetric(horizontal: 20),

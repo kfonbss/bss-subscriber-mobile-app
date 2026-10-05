@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/core/util/pdf_downloader/pdf_preview_and_download.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/invoice_list/domain/repository/invoice_repository.dart';
@@ -14,6 +15,7 @@ import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
 import 'package:kfon_subscriber/shared/widgets/no_data_found.dart';
 import 'package:kfon_subscriber/shared/widgets/retry_widget.dart';
 import 'package:kfon_subscriber/shared/widgets/shimmer/list_shimmers.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
 
 class InvoiceListPage extends StatefulWidget {
   const InvoiceListPage({super.key});
@@ -67,16 +69,17 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
       body: BlocConsumer<InvoiceListBloc, InvoiceListState>(
         listenWhen: (previous, current) {
           if (current is InvoiceListLoaded && current.paginationError != null) {
-            final prevError = previous is InvoiceListLoaded ? previous.paginationError : null;
+            final prevError =
+                previous is InvoiceListLoaded ? previous.paginationError : null;
             return current.paginationError != prevError;
           }
           return false;
         },
         listener: (context, state) {
           if (state is InvoiceListLoaded && state.paginationError != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.paginationError!)),
-            );
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.paginationError!)));
           }
         },
         builder: (context, state) {
@@ -87,8 +90,10 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
           if (state is InvoiceListError) {
             return RetryWidget(
               errorMessage: state.message,
-              onRetry: () =>
-                  context.read<InvoiceListBloc>().add(const FetchInvoices()),
+              onRetry:
+                  () => context.read<InvoiceListBloc>().add(
+                    const FetchInvoices(),
+                  ),
             );
           }
 
@@ -99,13 +104,14 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
 
             return ListView.separated(
               controller: _scrollController,
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-              itemCount:
-              state.invoices.length + (state.isLoadingMore ? 1 : 0),
-              separatorBuilder: (context, index) => SizedBox(height: 12.h),
+              // Design: 24 gap below the toolbar; CommonAppBar's bottom
+              // margin already covers it, so no extra top padding.
+              padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 12.h),
+              itemCount: state.invoices.length + (state.isLoadingMore ? 1 : 0),
+              separatorBuilder: (context, index) => SizedBox(height: 16.h),
               itemBuilder: (context, index) {
                 if (index >= state.invoices.length) {
-                  return const Padding(
+                  return Padding(
                     padding: EdgeInsets.symmetric(vertical: 16),
                     child: Center(
                       child: CircularProgressIndicator(
@@ -120,46 +126,46 @@ class _InvoiceListPageState extends State<InvoiceListPage> {
                   invoiceNo: invoice.invoiceNo,
                   amount: invoice.amount.toStringAsFixed(2),
                   date: invoice.invoiceDate,
-                  onDownload: invoice.fileId.isEmpty
-                      ? null
-                      : () async {
-                    Navigator.pop(context); // Dismiss the bottom sheet
+                  onDownload:
+                      invoice.fileId.isEmpty
+                          ? () {
+                            if (!context.mounted) return;
+                            ScaffoldMessenger.of(context).showSnackBar(
+                              SnackBar(
+                                content: Text(
+                                  context.bssSubL10n.invoiceFileNotAvailable,
+                                ),
+                              ),
+                            );
+                            return;
+                          }
+                          : () async {
+                            final result = await sl<InvoiceRepository>()
+                                .getFileViewUrl(invoice.fileId);
 
-                    if (invoice.fileId.isEmpty) {
-                      if (!context.mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Invoice file is not available'),
-                        ),
-                      );
-                      return;
-                    }
-
-                    final result = await sl<InvoiceRepository>().getFileViewUrl(
-                      invoice.fileId,
-                    );
-
-                    if (!context.mounted) return;
-                    result.fold(
-                          (failure) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(failure.message)),
-                        );
-                      },
-                          (file) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PdfPreviewAndDownload(
-                              title: context.bssSubL10n.invoice,
-                              pdfUrl: file.url,
-                              fileId: invoice.fileId,
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
+                            if (!context.mounted) return;
+                            result.fold(
+                              (failure) {
+                                DialogUtil().showCustomSnackbar(
+                                  context: context,
+                                  content: failure.message,
+                                );
+                              },
+                              (file) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => PdfPreviewAndDownload(
+                                          title: context.bssSubL10n.invoice,
+                                          pdfUrl: file.url,
+                                          fileId: invoice.fileId,
+                                        ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
                 );
               },
             );
@@ -185,70 +191,81 @@ class _InvoiceCard extends StatelessWidget {
     this.onDownload,
   });
 
-  static const _shadowColor = Color(0x0D000000); // black @ 5% opacity
-  static const _iconBgColor = Color(0x1A8D0247); // kPrimaryColor @ 10% opacity
+  static get _iconBgColor => AppColor.kPrimary10; // kPrimaryColor @ 10% opacity
+  // Design: white, radius 12, 16 blur black @ 6%, no offset.
   static const _cardDecoration = BoxDecoration(
     color: Colors.white,
     borderRadius: BorderRadius.all(Radius.circular(12)),
-    boxShadow: [
-      BoxShadow(color: _shadowColor, blurRadius: 12, offset: Offset(0, 2)),
-    ],
+    boxShadow: [BoxShadow(color: AppColor.kCardShadow, blurRadius: 16)],
   );
-  // TextSpan base style uses 11.sp (Sizer) → static final.
-  static final _richTextBase = TextStyle(
+
+  // Design: labels 10 w500 #888888; values 12 w500.
+  static final _labelStyle = TextStyle(
     fontFamily: 'GeneralSans',
-    fontSize: 11.sp,
-    height: 1.4,
+    fontSize: 10.sp,
+    fontWeight: FontWeight.w500,
+    height: 1.30,
+    color: AppColor.kHintGrey,
+  );
+  static final _invoiceNoValueStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    fontSize: 12.sp,
+    fontWeight: FontWeight.w500,
+    height: 1.30,
     color: AppColor.kTextSecondaryDark,
   );
-  static final _downloadLabelStyle = TextStyle(
+  static final _valueStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    fontSize: 12.sp,
+    fontWeight: FontWeight.w500,
+    height: 1.60,
+    color: Colors.black,
+  );
+
+  // Getters so the primary colour follows the tenant.
+  static TextStyle get _downloadLabelStyle => TextStyle(
     fontFamily: 'GeneralSans',
     color: AppColor.kPrimaryColor,
     fontSize: 11.sp,
-    fontWeight: FontWeight.w600,
-  );
-  static final _downloadButtonStyle = OutlinedButton.styleFrom(
-    side: const BorderSide(color: AppColor.kPrimaryColor, width: 1),
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(8)),
-    ),
-    minimumSize: Size.zero,
-    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+    fontWeight: FontWeight.w500,
+    height: 1.30,
   );
 
-  // Sizer ratios are fixed after app init, so the resolved style is computed
-  // once and reused across all card rebuilds instead of calling copyWith()
-  // inside build() on every render pass.
-  static ButtonStyle? _resolvedDownloadStyle;
-  ButtonStyle get _downloadStyle => _resolvedDownloadStyle ??=
-      _downloadButtonStyle.copyWith(
-        padding: WidgetStatePropertyAll(
-          EdgeInsets.symmetric(horizontal: 14.w, vertical: 8.h),
-        ),
-      );
+  // Design: 32 tall, 1px primary border, radius 10, 10 side padding.
+  static ButtonStyle get _downloadStyle => OutlinedButton.styleFrom(
+    side: BorderSide(color: AppColor.kPrimaryColor, width: 1),
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(10)),
+    ),
+    minimumSize: Size(0, 32.h),
+    fixedSize: Size.fromHeight(32.h),
+    padding: EdgeInsets.symmetric(horizontal: 10.w),
+    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+  );
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.bssSubL10n;
 
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+      // Design: 335×96 card, content 303 wide (16 side padding), centred.
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 18.h),
       decoration: _cardDecoration,
       child: Row(
         children: [
-          // ── Document icon ──
+          // ── Document icon ── Design: 38 circle, 20 icon.
           Container(
-            width: 40.w,
-            height: 40.w,
-            decoration: const BoxDecoration(
+            width: 38.w,
+            height: 38.w,
+            decoration: BoxDecoration(
               color: _iconBgColor,
               shape: BoxShape.circle,
             ),
             alignment: Alignment.center,
             child: SvgPicture.asset(
-              'assets/icons/invoice_list.svg',
-              width: 18.w,
-              height: 18.w,
+              AppAssets.invoiceList,
+              width: 20.w,
+              height: 20.w,
             ),
           ),
 
@@ -262,27 +279,9 @@ class _InvoiceCard extends StatelessWidget {
                 // Invoice No
                 RichText(
                   text: TextSpan(
-                    style: const TextStyle(
-                      fontFamily: 'GeneralSans',
-                      height: 1.4,
-                      fontSize: 11,
-                      color: AppColor.kTextSecondaryDark,
-                    ),
                     children: [
-                      TextSpan(
-                        text: l10n.invoiceNo,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: AppColor.kTextSecondary,
-                        ),
-                      ),
-                      TextSpan(
-                        text: invoiceNo,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w500,
-                          fontSize: 14,
-                        ),
-                      ),
+                      TextSpan(text: l10n.invoiceNo, style: _labelStyle),
+                      TextSpan(text: invoiceNo, style: _invoiceNoValueStyle),
                     ],
                   ),
                 ),
@@ -292,22 +291,9 @@ class _InvoiceCard extends StatelessWidget {
                 // Amount
                 RichText(
                   text: TextSpan(
-                    style: _richTextBase,
                     children: [
-                      TextSpan(
-                        text: l10n.amountLabel,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: AppColor.kTextSecondary,
-                        ),
-                      ),
-                      TextSpan(
-                        text: '₹ $amount',
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                      TextSpan(text: l10n.amountLabel, style: _labelStyle),
+                      TextSpan(text: '₹ $amount', style: _valueStyle),
                     ],
                   ),
                 ),
@@ -317,22 +303,9 @@ class _InvoiceCard extends StatelessWidget {
                 // Date
                 RichText(
                   text: TextSpan(
-                    style: _richTextBase,
                     children: [
-                      TextSpan(
-                        text: l10n.dateLabel,
-                        style: const TextStyle(
-                          fontWeight: FontWeight.w500,
-                          color: AppColor.kTextSecondary,
-                        ),
-                      ),
-                      TextSpan(
-                        text: date,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w500,
-                        ),
-                      ),
+                      TextSpan(text: l10n.dateLabel, style: _labelStyle),
+                      TextSpan(text: date, style: _valueStyle),
                     ],
                   ),
                 ),

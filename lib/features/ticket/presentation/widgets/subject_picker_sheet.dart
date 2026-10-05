@@ -8,6 +8,8 @@ import 'package:kfon_subscriber/features/ticket/presentation/widgets/common_sear
 import 'package:kfon_subscriber/shared/widgets/common_radio_button.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/shimmer/list_shimmers.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class SubjectPickerSheet extends StatefulWidget {
   final TicketBloc ticketBloc;
@@ -50,13 +52,14 @@ class _SubjectPickerSheetState extends State<SubjectPickerSheet> {
           errorMessage = state.subjectsError;
         }
 
-        final filteredList = subjects
-            .where(
-              (subject) => subject.name.toLowerCase().contains(
-                searchQuery.toLowerCase(),
-              ),
-            )
-            .toList();
+        final filteredList =
+            subjects
+                .where(
+                  (subject) => subject.name.toLowerCase().contains(
+                    searchQuery.toLowerCase(),
+                  ),
+                )
+                .toList();
 
         return Padding(
           padding: EdgeInsets.only(
@@ -66,8 +69,7 @@ class _SubjectPickerSheetState extends State<SubjectPickerSheet> {
             width: double.infinity,
             height: sheetHeight,
             child: Container(
-              padding:
-                  const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
+              padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 20),
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.center,
                 children: [
@@ -79,10 +81,10 @@ class _SubjectPickerSheetState extends State<SubjectPickerSheet> {
                       fontSize: 18,
                       fontWeight: FontWeight.w600,
                       height: 1.4,
-                      color: Color(0xFF0F1121),
+                      color: AppColor.kTextSecondaryDark,
                     ),
                   ),
-                  const SizedBox(height: 20),
+                  SizedBox(height: 20.h),
                   if (!isLoading && errorMessage == null)
                     // Search Bar - only show when not loading or in error state
                     CommonSearchField(
@@ -91,9 +93,10 @@ class _SubjectPickerSheetState extends State<SubjectPickerSheet> {
                           searchQuery = val;
                         });
                       },
-                      hintText: 'Search Subject',
+                      hintText: context.bssSubL10n.searchSubject,
                     ),
-                  if (!isLoading && errorMessage == null) const SizedBox(height: 20),
+                  if (!isLoading && errorMessage == null)
+                    SizedBox(height: 20.h),
                   Expanded(
                     child: Builder(
                       builder: (context) {
@@ -116,30 +119,31 @@ class _SubjectPickerSheetState extends State<SubjectPickerSheet> {
                               mainAxisSize: MainAxisSize.min,
                               children: [
                                 Text(
-                                  'Error loading subjects',
+                                  context.bssSubL10n.errorLoadingSubjects,
                                   style: const TextStyle(
                                     fontSize: 14,
                                     fontWeight: FontWeight.w600,
-                                    color: Color(0xFFE53935),
+                                    color: AppColor.kUrgentRed,
                                     fontFamily: 'GeneralSans',
                                   ),
                                 ),
-                                const SizedBox(height: 8),
+                                SizedBox(height: 8.h),
                                 Text(
                                   errorMessage,
                                   textAlign: TextAlign.center,
                                   style: const TextStyle(
                                     fontSize: 12,
-                                    color: Color(0xFF67697A),
+                                    color: AppColor.kTextFiledPlaceholderColor,
                                     fontFamily: 'GeneralSans',
                                   ),
                                 ),
-                                const SizedBox(height: 16),
+                                SizedBox(height: 16.h),
                                 ElevatedButton(
                                   onPressed: () {
-                                    final master = state is TicketMasterDataState
-                                        ? state
-                                        : null;
+                                    final master =
+                                        state is TicketMasterDataState
+                                            ? state
+                                            : null;
                                     final categoryId =
                                         master?.selectedCategory?.id;
                                     if (categoryId == null) return;
@@ -148,7 +152,7 @@ class _SubjectPickerSheetState extends State<SubjectPickerSheet> {
                                       LoadSubjects(categoryId: categoryId),
                                     );
                                   },
-                                  child: const Text('Retry'),
+                                  child: Text(context.bssSubL10n.retry),
                                 ),
                               ],
                             ),
@@ -156,12 +160,12 @@ class _SubjectPickerSheetState extends State<SubjectPickerSheet> {
                         }
 
                         if (filteredList.isEmpty && searchQuery.isNotEmpty) {
-                          return const Align(
+                          return Align(
                             alignment: Alignment.topCenter,
                             child: Padding(
                               padding: EdgeInsets.symmetric(vertical: 32),
                               child: Text(
-                                'No matching items found',
+                                context.bssSubL10n.noMatchingItemsFound,
                                 style: TextStyle(color: Colors.grey),
                               ),
                             ),
@@ -169,11 +173,13 @@ class _SubjectPickerSheetState extends State<SubjectPickerSheet> {
                         }
 
                         if (subjects.isEmpty) {
-                          return const Padding(
+                          return Padding(
                             padding: EdgeInsets.all(20.0),
                             child: Align(
                               alignment: Alignment.topCenter,
-                              child: Text('No subjects available'),
+                              child: Text(
+                                context.bssSubL10n.noSubjectsAvailable,
+                              ),
                             ),
                           );
                         }
@@ -206,7 +212,7 @@ class _SubjectPickerSheetState extends State<SubjectPickerSheet> {
             style: const TextStyle(
               fontSize: 14,
               fontWeight: FontWeight.w400,
-              color: Color(0xFF0F1121),
+              color: AppColor.kTextSecondaryDark,
               fontFamily: 'GeneralSans',
             ),
           ),

@@ -4,9 +4,11 @@ import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
+import 'package:kfon_subscriber/shared/widgets/tenant_svg_color_mapper.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 import '../../../../shared/widgets/primary_button.dart' show PrimaryButton;
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
 
 class SpeedTestPage extends StatelessWidget {
   const SpeedTestPage({super.key});
@@ -16,8 +18,11 @@ class SpeedTestPage extends StatelessWidget {
     color: Colors.white,
     borderRadius: BorderRadius.all(Radius.circular(12)),
   );
-  static const _serverCardPadding =
-      EdgeInsets.only(left: 20, right: 20, top: 130);
+  static const _serverCardPadding = EdgeInsets.only(
+    left: 20,
+    right: 20,
+    top: 130,
+  );
 
   @override
   Widget build(BuildContext context) {
@@ -38,8 +43,11 @@ class SpeedTestPage extends StatelessWidget {
               SizedBox(
                 width: double.infinity,
                 height: 190.h,
-                child: SvgPicture.asset(
-                  'assets/images/speed_test_background.svg',
+                child: SvgPicture(
+                  SvgAssetLoader(
+                    AppAssets.speedTestBackground,
+                    colorMapper: TenantSvgColorMapper(),
+                  ),
                   fit: BoxFit.fill,
                 ),
               ),
@@ -61,12 +69,12 @@ class SpeedTestPage extends StatelessWidget {
                         _ServerLocItem(
                           heading: l10n.server,
                           data: 'Kfon.in',
-                          icon: 'glob.png',
+                          icon: AppAssets.glob,
                         ),
                         _ServerLocItem(
                           heading: l10n.location,
                           data: 'Ernakulam',
-                          icon: 'location.png',
+                          icon: AppAssets.location,
                         ),
                       ],
                     ),
@@ -111,7 +119,7 @@ class SpeedTestPage extends StatelessWidget {
                       RangePointer(
                         value: 80,
                         cornerStyle: CornerStyle.bothCurve,
-                        width: 0.2,
+                        width: 0.2.w,
                         color: AppColor.kPrimaryColor,
                         sizeUnit: GaugeSizeUnit.factor,
                       ),
@@ -135,9 +143,12 @@ class SpeedTestPage extends StatelessWidget {
           Column(
             children: [
               Container(
-                height: 75,
+                height: 75.h,
                 margin: const EdgeInsets.symmetric(horizontal: 20),
-                padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 25,
+                  vertical: 16,
+                ),
                 decoration: _resultsCardDecoration,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -146,17 +157,17 @@ class SpeedTestPage extends StatelessWidget {
                     _SpeedResultItem(
                       heading: l10n.uploadSpeed,
                       data: '0 MB/s',
-                      icon: 'upload.png',
+                      icon: AppAssets.upload,
                     ),
                     _SpeedResultItem(
                       heading: l10n.downloadSpeed,
                       data: '0 MB/s',
-                      icon: 'download.png',
+                      icon: AppAssets.download,
                     ),
                     _SpeedResultItem(
                       heading: l10n.ping,
                       data: '0 MB/s',
-                      icon: 'download.png',
+                      icon: AppAssets.ping,
                     ),
                   ],
                 ),
@@ -194,25 +205,6 @@ class _ServerLocItem extends StatelessWidget {
     required this.data,
     required this.icon,
   });
-
-  static const _iconBgDecoration = BoxDecoration(
-    shape: BoxShape.circle,
-    color: Color(0xFFF9F2F6),
-  );
-  static final _headingStyle = TextStyle(
-    color: AppColor.kBodyTextGrey,
-    fontSize: 12.sp,
-    fontWeight: FontWeight.w400,
-    fontFamily: 'GeneralSans',
-  );
-  static final _dataStyle = TextStyle(
-    color: AppColor.kTextSecondaryDark,
-    fontSize: 14.sp,
-    fontWeight: FontWeight.w600,
-    height: 1.30,
-    fontFamily: 'GeneralSans',
-  );
-
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -223,18 +215,35 @@ class _ServerLocItem extends StatelessWidget {
           width: 38.w,
           height: 38.h,
           padding: const EdgeInsets.all(10),
-          decoration: _iconBgDecoration,
-          child: Image.asset(
-            'assets/icons/$icon',
-            color: AppColor.kPrimaryColor,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: AppColor.kIconBackground,
+          ),
+          child: SvgPicture.asset(
+            icon,
+            colorFilter: ColorFilter.mode(
+              AppColor.kPrimaryColor,
+              BlendMode.srcIn,
+            ),
           ),
         ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: 5,
           children: [
-            Text(heading, style: _headingStyle),
-            Expanded(child: Text(data, style: _dataStyle)),
+            Text(heading, style: TextStyle(
+              color: AppColor.kBodyTextGrey,
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w400,
+              fontFamily: 'GeneralSans',
+            )),
+            Expanded(child: Text(data, style: TextStyle(
+              color: AppColor.kTextSecondaryDark,
+              fontSize: 14.sp,
+              fontWeight: FontWeight.w600,
+              height: 1.30,
+              fontFamily: 'GeneralSans',
+            ))),
           ],
         ),
       ],
@@ -261,6 +270,7 @@ class _SpeedResultItem extends StatelessWidget {
     fontWeight: FontWeight.w400,
     fontFamily: 'GeneralSans',
   );
+
   // fontSize: 16 is a literal — const-constructible TextStyle.
   static const _dataStyle = TextStyle(
     color: AppColor.kTextSecondaryDark,
@@ -276,7 +286,15 @@ class _SpeedResultItem extends StatelessWidget {
       crossAxisAlignment: CrossAxisAlignment.center,
       spacing: 10,
       children: [
-        Image.asset('assets/icons/$icon', height: 24.h, width: 24.w),
+        SvgPicture.asset(
+          icon,
+          height: 24.h,
+          width: 24.w,
+          colorFilter: ColorFilter.mode(
+            AppColor.kPrimaryColor,
+            BlendMode.srcIn,
+          ),
+        ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: 5,

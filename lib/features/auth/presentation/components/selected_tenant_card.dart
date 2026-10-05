@@ -1,6 +1,7 @@
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:flutter/material.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 
 class SelectedTenantCard extends StatelessWidget {
   final String   circleName;
@@ -15,11 +16,25 @@ class SelectedTenantCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
+      padding: EdgeInsets.all(16.w),
       decoration: BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(12),
-        border: Border.all(color: const Color(0xFFEEEEEE)),
+        borderRadius: BorderRadius.circular(16),
+        border: Border.all(color: AppColor.kLightBorderGrey),
+        boxShadow: const [
+          BoxShadow(
+            color: AppColor.kBlack10,
+            blurRadius: 6,
+            offset: Offset(0, 4),
+            spreadRadius: -4,
+          ),
+          BoxShadow(
+            color: AppColor.kBlack10,
+            blurRadius: 15,
+            offset: Offset(0, 10),
+            spreadRadius: -3,
+          ),
+        ],
       ),
       child: Row(
         children: [
@@ -29,13 +44,13 @@ class SelectedTenantCard extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  'SELECTED CIRCLE',
+                  context.bssSubL10n.selectedCircle,
                   style: TextStyle(
-                    fontSize: 10.sp,
+                    fontSize: 12.sp,
                     fontWeight: FontWeight.w600,
-                    color: Colors.black54,
+                    color: AppColor.kLabelGrey,
                     fontFamily: 'GeneralSans',
-                    letterSpacing: 0.5,
+                    height: 1.38,
                   ),
                 ),
                 SizedBox(height: 2.h),
@@ -46,6 +61,7 @@ class SelectedTenantCard extends StatelessWidget {
                     fontWeight: FontWeight.w600,
                     color: AppColor.kPrimaryColor,
                     fontFamily: 'GeneralSans',
+                    height: 1.50,
                   ),
                 ),
               ],
@@ -56,15 +72,15 @@ class SelectedTenantCard extends StatelessWidget {
           GestureDetector(
             onTap: onEdit,
             child: Container(
-              width: 36.w,
-              height: 36.h,
+              width: 40.w,
+              height: 40.w,
               decoration: BoxDecoration(
-                color: const Color(0xFFF5F5F5),
+                color: AppColor.kIconBackground,
                 shape: BoxShape.circle,
               ),
               child: Icon(
                 Icons.edit_outlined,
-                size: 16.sp,
+                size: 20.sp,
                 color: AppColor.kPrimaryColor,
               ),
             ),

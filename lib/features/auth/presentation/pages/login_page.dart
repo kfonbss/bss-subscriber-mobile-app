@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kfon_subscriber/core/constant/app_brand.dart';
 import 'package:kfon_subscriber/core/constant/app_styles.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
@@ -14,15 +15,14 @@ import 'package:kfon_subscriber/features/auth/presentation/components/auth_heade
 import 'package:kfon_subscriber/features/auth/presentation/components/login_text_field.dart';
 import 'package:kfon_subscriber/features/auth/presentation/components/selected_tenant_card.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
+import 'package:kfon_subscriber/shared/widgets/login_background.dart';
 import 'package:kfon_subscriber/shared/widgets/login_password_text_field.dart';
 import 'package:kfon_subscriber/shared/widgets/shimmer/shimmer_box.dart';
 import 'package:kfon_subscriber/shared/widgets/white_button.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
 
 class LoginPage extends StatefulWidget {
-
-  const LoginPage({
-    super.key,
-  });
+  const LoginPage({super.key});
 
   @override
   State<LoginPage> createState() => _LoginPageState();
@@ -31,10 +31,10 @@ class LoginPage extends StatefulWidget {
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
   final _usernameTextFieldController = TextEditingController(
-    text: 'Kfon.arun-monthly',
+    text: 'ld.amal',
   ); //9114676354
   final _passwordTextFieldController = TextEditingController(
-    text: 'pass123',
+    text: 'Pass@123',
   ); //pass1234
   final DialogUtil _dialogUtil = DialogUtil();
   String tenantName = '';
@@ -45,6 +45,7 @@ class _LoginPageState extends State<LoginPage> {
     super.initState();
     context.read<AuthBloc>().add(LoadSelectedTenant());
   }
+
   @override
   void dispose() {
     _usernameTextFieldController.dispose();
@@ -61,7 +62,11 @@ class _LoginPageState extends State<LoginPage> {
     String password = _passwordTextFieldController.text.trim();
 
     context.read<AuthBloc>().add(
-      LoginRequested(username: username, password: password,tenantId: tenantId),
+      LoginRequested(
+        username: username,
+        password: password,
+        tenantId: tenantId,
+      ),
     );
   }
 
@@ -69,18 +74,18 @@ class _LoginPageState extends State<LoginPage> {
     color: Colors.white,
     borderRadius: BorderRadius.all(Radius.circular(23)),
   );
-  static const _websiteMargin = EdgeInsets.only(
-    bottom: 50,
-    left: 100,
-    right: 100,
-  );
+
+  // Design: 24px side margin, 56px fields, 52px buttons.
+  static final double _sideMargin = 24.w;
+  static final double _fieldMinHeight = 56.h;
+  static final double _buttonHeight = 52.h;
 
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion(
       value: SystemUiOverlayStyle(
         statusBarBrightness: Brightness.dark,
-        statusBarColor: AppColor.kPrimaryColor,
+        statusBarColor: Colors.transparent,
       ),
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
@@ -105,195 +110,213 @@ class _LoginPageState extends State<LoginPage> {
         child: Scaffold(
           backgroundColor: AppColor.kPrimaryColor,
           resizeToAvoidBottomInset: false,
-          body: Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/login_background.png'),
-                fit: BoxFit.cover,
-              ),
-            ),
-            child: Stack(
-              children: [
-                // Center content on tablets, full width on mobile
-                Center(
-                  child: ConstrainedBox(
-                    constraints: BoxConstraints(
-                      maxWidth:
-                          Sizer.isTablet
-                              ? 600.0
-                              : double.infinity, // Wider form for tablet
-                    ),
-                    child: Column(
-                      children: [
-                        AuthHeader(
-                          heading: context.bssSubL10n.welcomeLabel,
-                          description: '',
+          body: Stack(
+            children: [
+              Positioned.fill(child: LoginBackground()),
+              Center(
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth:
+                        Sizer.isTablet
+                            ? 600.0
+                            : double.infinity, // Wider form for tablet
+                  ),
+                  child: Column(
+                    children: [
+                      AuthHeader(
+                        description: '',
+                      ),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(
+                          _sideMargin,
+                          0,
+                          _sideMargin,
+                          24.h,
                         ),
-                        Padding(
-                          padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 20.w),
-                          child: BlocBuilder<AuthBloc, AuthState>(
-                            buildWhen: (previous, current) =>
-                            current is LoadSelectedTenantSuccess,
-                            builder: (context, state) {
-                              if (state is LoadSelectedTenantSuccess) {
-                                tenantName = state.tenantName;
-                                tenantId = state.tenantId;
-                                return SelectedTenantCard(
-                                  circleName: tenantName,
-                                  onEdit: () => Navigator.pushNamed(
-                                    context,
-                                    AppRoutes.tenant,
-                                  ),
-                                );
-                              }
-                              return ShimmerBox(width: double.infinity, height: 60.h);
-                            },
-                          ),
-                        ),
-                        Form(
-                          key: _formKey,
-                          child: Container(
-                            margin: EdgeInsets.symmetric(
-                              horizontal: 20.w, // Proportional scaling
-                            ),
-                            decoration: AppStyles.boxDecorationMedium,
-                            child: Column(
-                              children: [
-                                Padding(
-                                  padding: EdgeInsets.symmetric(
-                                    horizontal: 16.w, // Proportional scaling
-                                    vertical: 11.h, // Proportional scaling
-                                  ),
-                                  child: LoginTextField(
-                                    hintText: context.bssSubL10n.enterUsername,
-                                    textEditingController:
-                                        _usernameTextFieldController,
-                                    iconName: 'user.png',
-                                    textInputType: TextInputType.name,
-                                    validator:
-                                        (v) => Validators.validateRequired(
-                                          v,
-                                          fieldName: 'Username',
-                                        ),
-                                  ),
-                                ),
-                                Divider(
-                                  color: Colors.grey.shade200,
-                                  thickness: 1,
-                                  height: 2,
-                                ),
-                                Padding(
-                                  padding: EdgeInsets.only(
-                                    left: 16.w, // Proportional scaling
-                                    top: 11.h, // Proportional scaling
-                                    bottom: 11.h, // Proportional scaling
-                                  ),
-                                  child: LoginPasswordTextField(
-                                    textEditingController:
-                                        _passwordTextFieldController,
-                                    hintText: context.bssSubL10n.enterPassword,
-                                    validator: Validators.validatePassword,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          ),
-                        ),
-
-                        Padding(
-                          padding: EdgeInsets.only(
-                            left: Sizer.isTablet ? 24.w : 7.0,
-                            right: Sizer.isTablet ? 24.w : 10.0,
-                            top: 10.h, // Proportional scaling
-                            bottom:
-                                Sizer.isTablet
-                                    ? 24.h
-                                    : 32.0, // Smaller on tablet
-                          ),
-                          child: Row(
-                            mainAxisAlignment: MainAxisAlignment.end,
-                            children: [
-                              TextButton(
-                                onPressed:
+                        child: BlocBuilder<AuthBloc, AuthState>(
+                          buildWhen:
+                              (previous, current) =>
+                                  current is LoadSelectedTenantSuccess,
+                          builder: (context, state) {
+                            if (state is LoadSelectedTenantSuccess) {
+                              tenantName = state.tenantName;
+                              tenantId = state.tenantId;
+                              return SelectedTenantCard(
+                                circleName: tenantName,
+                                onEdit:
                                     () => Navigator.pushNamed(
                                       context,
-                                      AppRoutes.forgotPassword,
+                                      AppRoutes.tenant,
                                     ),
-                                child: Text(
-                                  context.bssSubL10n.forgotPassword,
-                                  style: TextStyle(
-                                    fontSize: Sizer.isTablet ? 15.0 : 14.0,
-                                    fontWeight: FontWeight.w500,
-                                    color: Colors.white,
-                                    fontFamily: 'GeneralSans',
-                                  ),
+                              );
+                            }
+                            return ShimmerBox(
+                              width: double.infinity,
+                              height: 60.h,
+                            );
+                          },
+                        ),
+                      ),
+                      Form(
+                        key: _formKey,
+                        child: Container(
+                          margin: EdgeInsets.symmetric(horizontal: _sideMargin),
+                          decoration: AppStyles.boxDecorationMedium.copyWith(
+                            borderRadius: BorderRadius.circular(10),
+                          ),
+                          child: Column(
+                            children: [
+                              Container(
+                                constraints: BoxConstraints(
+                                  minHeight: _fieldMinHeight,
+                                ),
+                                alignment: Alignment.center,
+                                padding: EdgeInsets.symmetric(horizontal: 14.w),
+                                child: LoginTextField(
+                                  hintText: context.bssSubL10n.enterUsername,
+                                  textEditingController:
+                                      _usernameTextFieldController,
+                                  iconName: AppAssets.user,
+                                  textInputType: TextInputType.name,
+                                  validator:
+                                      (v) => Validators.validateRequired(
+                                        v,
+                                        fieldName: context.bssSubL10n.username,
+                                      ),
+                                ),
+                              ),
+                              const Divider(
+                                color: AppColor.kFieldBorder,
+                                thickness: 1,
+                                height: 1,
+                              ),
+                              Container(
+                                constraints: BoxConstraints(
+                                  minHeight: _fieldMinHeight,
+                                ),
+                                alignment: Alignment.center,
+                                // Eye IconButton's own padding gives the
+                                // 14px right inset.
+                                padding: EdgeInsets.only(left: 14.w),
+                                child: LoginPasswordTextField(
+                                  textEditingController:
+                                      _passwordTextFieldController,
+                                  hintText: context.bssSubL10n.enterPassword,
+                                  validator: Validators.validatePassword,
                                 ),
                               ),
                             ],
                           ),
                         ),
+                      ),
 
-                        Padding(
-                          padding: EdgeInsets.symmetric(
-                            horizontal: 20.w, // Proportional scaling
-                          ),
-                          child: BlocBuilder<AuthBloc, AuthState>(
-                            builder: (context, state) {
-                              return WhiteButton(
-                                isLoading: state is AuthLoading,
-                                label: context.bssSubL10n.signIn,
-                                borderRadius: 10,
-                                textColor: AppColor.kPrimaryColor,
-                                onClicked: () => _doLogin(),
-                                //Navigator.pushNamed(context, AppRoutes.mainPage),
-                              );
-                            },
-                          ),
-                        ),
-                      ],
-                    ),
-                  ),
-                ),
-                Align(
-                  alignment: Alignment.bottomCenter,
-                  child: Column(
-                    spacing: 10,
-                    mainAxisAlignment: MainAxisAlignment.end,
-                    children: [
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: 20.w),
-                        child: WhiteButton(
-                          isLoading: false,
-                          label: context.bssSubL10n.enquiryForms,
-                          borderRadius: 10,
-                          textColor: AppColor.kPrimaryColor,
-                          onClicked:
-                              () => Navigator.pushNamed(
-                                context,
-                                AppRoutes.enquiryListPage,
+                        padding: EdgeInsets.only(
+                          left: _sideMargin,
+                          right: _sideMargin,
+                          top: Sizer.isTablet ? 10.h : 19.h,
+                          bottom: Sizer.isTablet ? 24.h : 27.h,
+                        ),
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.end,
+                          children: [
+                            TextButton(
+                              onPressed:
+                                  () => Navigator.pushNamed(
+                                    context,
+                                    AppRoutes.forgotPassword,
+                                  ),
+                              // No internal padding, so the gaps above and
+                              // below match the design.
+                              style: TextButton.styleFrom(
+                                padding: EdgeInsets.zero,
+                                minimumSize: Size.zero,
+                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
                               ),
+                              child: Text(
+                                context.bssSubL10n.forgotPassword,
+                                style: TextStyle(
+                                  fontSize: Sizer.isTablet ? 15.0 : 14.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                  fontFamily: 'GeneralSans',
+                                  height: 1.30,
+                                ),
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Container(
-                        height: 30.h,
-                        margin: _websiteMargin,
-                        decoration: _websitePillDecoration,
-                        child: Center(
-                          child: Text(
-                            context.bssSubL10n.kerlaInternetWebsite,
-                            style: const TextStyle(
-                              color: AppColor.kPrimaryColor,
-                              fontSize: 12,
-                              fontWeight: FontWeight.w400,
-                            ),
-                          ),
+
+                      Padding(
+                        padding: EdgeInsets.symmetric(horizontal: _sideMargin),
+                        child: BlocBuilder<AuthBloc, AuthState>(
+                          builder: (context, state) {
+                            return WhiteButton(
+                              isLoading: state is AuthLoading,
+                              label: context.bssSubL10n.signIn,
+                              borderRadius: 10,
+                              height: _buttonHeight,
+                              textColor: AppColor.kPrimaryColor,
+                              onClicked: () => _doLogin(),
+                              //Navigator.pushNamed(context, AppRoutes.mainPage),
+                            );
+                          },
                         ),
                       ),
                     ],
                   ),
                 ),
-              ],
-            ),
+              ),
+              Align(
+                alignment: Alignment.bottomCenter,
+                child: Column(
+                  spacing: 11.h,
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Padding(
+                      padding: EdgeInsets.symmetric(horizontal: _sideMargin),
+                      child: WhiteButton(
+                        isLoading: false,
+                        label: context.bssSubL10n.enquiryForms,
+                        borderRadius: 10,
+                        height: _buttonHeight,
+                        backgroundColor: AppColor.kPrimaryColor,
+                        borderColor: Colors.white,
+                        textColor: Colors.white,
+                        onClicked:
+                            () => Navigator.pushNamed(
+                              context,
+                              AppRoutes.enquiryListPage,
+                            ),
+                      ),
+                    ),
+                    Container(
+                      height: 30.h,
+                      margin: EdgeInsets.only(bottom: 44.h),
+                      padding: EdgeInsets.symmetric(horizontal: 28.w),
+                      decoration: _websitePillDecoration,
+                      child: Row(
+                        mainAxisSize: MainAxisSize.min,
+                        children: [
+                          Text(
+                            context.bssSubL10n.kerlaInternetWebsite,
+                            style: TextStyle(
+                              color: AppColor.kPrimaryColor,
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w400,
+                              fontFamily: 'GeneralSans',
+                              height: 1.40,
+                              letterSpacing: -0.12,
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ],
           ),
         ),
       ),

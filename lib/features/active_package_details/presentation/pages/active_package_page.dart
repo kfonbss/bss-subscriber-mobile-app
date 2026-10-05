@@ -26,7 +26,8 @@ class _ActivePackagePageState extends State<ActivePackagePage> {
   static final _sectionHeadingStyle = TextStyle(
     fontFamily: 'GeneralSans',
     fontSize: 16.sp,
-    fontWeight: FontWeight.w700,
+    fontWeight: FontWeight.w600,
+    height: 1.30,
     color: AppColor.kTextSecondaryDark,
   );
 
@@ -59,7 +60,7 @@ class _ActivePackagePageState extends State<ActivePackagePage> {
         title: context.bssSubL10n.activePackageTitle,
         onBackPressed: () => Navigator.of(context).pop(),
         body: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 8.h),
+          padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 8.h),
           child: BlocBuilder<PackageDetailsBloc, PackageDetailsState>(
             bloc: _bloc,
             builder: (context, state) {
@@ -73,8 +74,9 @@ class _ActivePackagePageState extends State<ActivePackagePage> {
                         context.bssSubL10n.activeAddOns,
                         style: _sectionHeadingStyle,
                       ),
-                      SizedBox(height: 12.h),
+                      SizedBox(height: 16.h),
                       Column(
+                        spacing: 16.h,
                         children: [
                           for (final addOn in state.entity.activeAddOns)
                             _AddOnTile(
@@ -94,11 +96,11 @@ class _ActivePackagePageState extends State<ActivePackagePage> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         ShimmerBox(width: double.infinity, height: 190.h),
-                        const SizedBox(height: 60),
+                        SizedBox(height: 60.h),
                         ShimmerBox(width: double.infinity, height: 70.h),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16.h),
                         ShimmerBox(width: double.infinity, height: 70.h),
-                        const SizedBox(height: 16),
+                        SizedBox(height: 16.h),
                         ShimmerBox(width: double.infinity, height: 70.h),
                       ],
                     ),
@@ -122,60 +124,54 @@ class _AddOnTile extends StatelessWidget {
     required this.isActive,
   });
 
-  static const _shadowColor = Color(0x0A000000);   // black @ 4% opacity
-  static const _activeBadgeBg = Color(0x1A1B993C); // kCompletedGreen @ 10% opacity
-
-  // BorderRadius.circular(16) is not const; use the equivalent all() form.
+  // Design: 1px #EAEAEA border, radius 12, no shadow.
   static const _tileDecoration = BoxDecoration(
     color: Colors.white,
-    borderRadius: BorderRadius.all(Radius.circular(16)),
-    boxShadow: [
-      BoxShadow(
-        color: _shadowColor,
-        blurRadius: 10,
-        offset: Offset(0, 4),
-      ),
-    ],
+    borderRadius: BorderRadius.all(Radius.circular(12)),
+    border: Border.fromBorderSide(
+      BorderSide(color: AppColor.kinputFiledLightBorder),
+    ),
   );
   static final _titleStyle = TextStyle(
     fontFamily: 'GeneralSans',
     fontSize: 14.sp,
     fontWeight: FontWeight.w600,
+    height: 1.30,
     color: AppColor.kTextSecondaryDark,
   );
   static final _subtitleStyle = TextStyle(
     fontFamily: 'GeneralSans',
     fontSize: 12.sp,
     fontWeight: FontWeight.w400,
-    color: AppColor.kTextSecondary,
+    height: 1.60,
+    color: AppColor.kTextFiledPlaceholderColor,
   );
   static final _badgeTextStyle = TextStyle(
     fontFamily: 'GeneralSans',
     fontSize: 12.sp,
-    fontWeight: FontWeight.w600,
-    color: AppColor.kCompletedGreen,
+    fontWeight: FontWeight.w500,
+    height: 1.30,
+    color: AppColor.kActiveGreen,
   );
-  static final _badgePadding =
-      EdgeInsets.symmetric(horizontal: 14.w, vertical: 6.h);
+  static final _badgePadding = EdgeInsets.symmetric(horizontal: 12.w);
 
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 12.w, vertical: 12.h),
-      margin: EdgeInsets.only(bottom: 10.h),
+      padding: EdgeInsets.all(16.w),
       decoration: _tileDecoration,
       child: Row(
         children: [
           Container(
             width: 38.w,
             height: 38.w,
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: AppColor.kPrimaryColor,
               shape: BoxShape.circle,
             ),
             child: Icon(
               Icons.language_rounded,
-              size: 24.w,
+              size: 20.sp,
               color: Colors.white,
             ),
           ),
@@ -193,10 +189,12 @@ class _AddOnTile extends StatelessWidget {
           ),
 
           Container(
+            height: 32.h,
+            alignment: Alignment.center,
             padding: _badgePadding,
             decoration: const BoxDecoration(
-              color: _activeBadgeBg,
-              borderRadius: BorderRadius.all(Radius.circular(20)),
+              color: AppColor.kActiveGreen10,
+              borderRadius: BorderRadius.all(Radius.circular(30)),
             ),
             child: Text(
               isActive

@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:kfon_subscriber/core/constant/app_brand.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/routes/navigator_key.dart';
@@ -58,19 +59,15 @@ Future<void> main() async {
   setUpServiceLocator();
   final showIntro = await PreferenceUtils.showIntroScreen();
   final tenantId = await PreferenceUtils.getTenantId() ?? '';
-  runApp(
-    MyApp(showIntro: showIntro, tenantId: tenantId),
-  );
+  AppBrand.setTenant(tenantId);
+  runApp(MyApp(showIntro: showIntro, tenantId: tenantId));
 }
 
 class MyApp extends StatefulWidget {
   final bool showIntro;
   final String tenantId;
-  const MyApp({
-    super.key,
-    required this.showIntro,
-    required this.tenantId,
-  });
+
+  const MyApp({super.key, required this.showIntro, required this.tenantId});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -81,6 +78,7 @@ class _MyAppState extends State<MyApp> {
 
   late final ProfileBloc _profileBloc;
   late final HomeBloc _homeBloc;
+
   @override
   void initState() {
     super.initState();
@@ -140,7 +138,7 @@ class _MyAppState extends State<MyApp> {
         supportedLocales: [const Locale('en')],
         routes: {
           AppRoutes.tenant: (context) => TenantScreen(),
-          AppRoutes.login: (context)=>LoginPage(),
+          AppRoutes.login: (context) => LoginPage(),
           AppRoutes.otpVerification: (context) {
             final args =
                 ModalRoute.of(context)?.settings.arguments
@@ -185,12 +183,14 @@ class _MyAppState extends State<MyApp> {
             FlutterNativeSplash.remove();
           },
           builder: (context, state) {
+            // Flow: tenant → intro (first launch) → login. The tenant comes
+            // first because the intro uses the tenant's primary colour.
             if (state is Authenticated) {
               return MainPage();
-            } else if (widget.showIntro) {
-              return IntroScreenPage();
             } else if (widget.tenantId.isEmpty) {
               return TenantScreen();
+            } else if (widget.showIntro) {
+              return IntroScreenPage();
             } else {
               return LoginPage();
             }

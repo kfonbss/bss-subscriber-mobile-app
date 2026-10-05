@@ -20,7 +20,10 @@ import 'package:intl/intl.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:kfon_subscriber/shared/widgets/no_data_found.dart';
 import 'package:kfon_subscriber/shared/widgets/shimmer/list_shimmers.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class TicketsPage extends StatefulWidget {
   const TicketsPage({super.key});
@@ -51,12 +54,14 @@ class _TicketsPageState extends State<TicketsPage> {
       search: q.isEmpty ? null : q,
       priority: _selectedPriority,
       status: _selectedStatus,
-      createdDateFrom: _createdDateFrom == null
-          ? null
-          : DateFormat('yyyy-MM-dd').format(_createdDateFrom!),
-      createdDateTo: _createdDateTo == null
-          ? null
-          : DateFormat('yyyy-MM-dd').format(_createdDateTo!),
+      createdDateFrom:
+          _createdDateFrom == null
+              ? null
+              : DateFormat('yyyy-MM-dd').format(_createdDateFrom!),
+      createdDateTo:
+          _createdDateTo == null
+              ? null
+              : DateFormat('yyyy-MM-dd').format(_createdDateTo!),
       type: _selectedType,
     );
   }
@@ -134,9 +139,10 @@ class _TicketsPageState extends State<TicketsPage> {
     return TicketItem(
       uuid: entity.uuid,
       title: entity.subject?.name ?? '',
-      ticketId: entity.ticketId != null
-          ? 'Ticket ID #${entity.ticketId}'
-          : 'Ticket ID #--',
+      ticketId:
+          entity.ticketId != null
+              ? context.bssSubL10n.ticketIdFormat('${entity.ticketId}')
+              : context.bssSubL10n.ticketIdEmpty,
       status: _mapStatusToEnum(entity.status),
       priority: _mapPriorityToEnum(entity.priority),
       resolutionTime: entity.subjectResolve ?? '',
@@ -188,10 +194,11 @@ class _TicketsPageState extends State<TicketsPage> {
                     children: [
                       // Search Bar
                       Padding(
-                        padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+                        padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 16.h),
                         child: CommonSearchField(
                           controller: _searchController,
-                          hintText: 'Search Tickets',
+                          hintText: context.bssSubL10n.searchTickets,
+                          filterIconColor: AppColor.kPrimaryColor,
                           onChanged: (_) => _onSearchChanged(),
                           onFilterPressed: () {
                             TicketFilterBottomSheet.show(
@@ -222,121 +229,95 @@ class _TicketsPageState extends State<TicketsPage> {
 
                       // Ticket List
                       Expanded(
-                        child: state is TicketsLoading && tickets.isEmpty
-                            ? const Padding(
-                                padding: EdgeInsets.only(top: 10),
-                                child: ListShimmer(
-                                  itemCount: 8,
-                                  itemHeight: 140,
-                                ),
-                              )
-                            : RefreshIndicator(
-                                onRefresh: () async {
-                                  _ticketBloc.add(
-                                    RefreshTickets(params: _buildParams()),
-                                  );
-                                  await Future.delayed(
-                                    const Duration(milliseconds: 500),
-                                  );
-                                },
-                                child:
-                                    tickets.isEmpty && state is! TicketsLoading
-                                    ? SingleChildScrollView(
-                                        physics:
-                                            const AlwaysScrollableScrollPhysics(),
-                                        child: SizedBox(
-                                          height:
-                                              MediaQuery.of(
-                                                context,
-                                              ).size.height *
-                                              0.6,
-                                          child: Center(
-                                            child: Column(
-                                              mainAxisAlignment:
-                                                  MainAxisAlignment.center,
-                                              children: [
-                                                Image.asset(
-                                                  'assets/images/filler.png',
-                                                  width: 232,
-                                                  height: 166,
-                                                  fit: BoxFit.contain,
-                                                ),
-                                                const SizedBox(height: 16),
-                                                Text(
-                                                  l10n.noTickets,
-                                                  style: Theme.of(context)
-                                                      .textTheme
-                                                      .bodyMedium
-                                                      ?.copyWith(
-                                                        color: AppColor
-                                                            .kTextSecondaryDark,
-                                                        fontWeight:
-                                                            FontWeight.w400,
-                                                        fontSize: 14,
-                                                      ),
-                                                ),
-                                              ],
+                        child:
+                            state is TicketsLoading && tickets.isEmpty
+                                ? SingleChildScrollView(
+                                  child: const Padding(
+                                    padding: EdgeInsets.only(top: 10),
+                                    child: ListShimmer(
+                                      itemCount: 8,
+                                      itemHeight: 140,
+                                    ),
+                                  ),
+                                )
+                                : RefreshIndicator(
+                                  onRefresh: () async {
+                                    _ticketBloc.add(
+                                      RefreshTickets(params: _buildParams()),
+                                    );
+                                    await Future.delayed(
+                                      const Duration(milliseconds: 500),
+                                    );
+                                  },
+                                  child:
+                                      tickets.isEmpty &&
+                                              state is! TicketsLoading
+                                          ? NoDataFound(
+                                            errorMessage: l10n.noTickets,
+                                          )
+                                          : ListView.separated(
+                                            controller: _scrollController,
+                                            padding: const EdgeInsets.fromLTRB(
+                                              20,
+                                              0,
+                                              20,
+                                              80,
                                             ),
-                                          ),
-                                        ),
-                                      )
-                                    : ListView.separated(
-                                        controller: _scrollController,
-                                        padding: const EdgeInsets.fromLTRB(
-                                          20,
-                                          0,
-                                          20,
-                                          80,
-                                        ),
-                                        physics:
-                                            const AlwaysScrollableScrollPhysics(),
-                                        itemCount:
-                                            tickets.length +
-                                            (isLoadingMore ? 1 : 0),
-                                        separatorBuilder: (context, index) {
-                                          if (index == tickets.length - 1 &&
-                                              isLoadingMore) {
-                                            return const SizedBox.shrink();
-                                          }
-                                          return const SizedBox(height: 16);
-                                        },
-                                        itemBuilder: (context, index) {
-                                          if (index == tickets.length) {
-                                            return const Padding(
-                                              padding: EdgeInsets.all(16.0),
-                                              child: Center(
-                                                child: ListShimmer(
-                                                  itemCount: 1,
-                                                  itemHeight: 140,
-                                                ),
-                                              ),
-                                            );
-                                          }
-                                          return GestureDetector(
-                                            onTap: () async {
-                                              final result = await Navigator.push<bool>(
-                                                context,
-                                                MaterialPageRoute(
-                                                  builder: (context) =>
-                                                      TicketDetailPage(
-                                                        ticket:
-                                                            ticketEntities[index],
-                                                      ),
-                                                ),
-                                              );
-                                              if (result == true) {
-                                                _ticketBloc.add(
-                                                  RefreshTickets(params: _buildParams()),
+                                            physics:
+                                                const AlwaysScrollableScrollPhysics(),
+                                            itemCount:
+                                                tickets.length +
+                                                (isLoadingMore ? 1 : 0),
+                                            separatorBuilder: (context, index) {
+                                              if (index == tickets.length - 1 &&
+                                                  isLoadingMore) {
+                                                return const SizedBox.shrink();
+                                              }
+                                              return SizedBox(height: 12.h);
+                                            },
+                                            itemBuilder: (context, index) {
+                                              if (index == tickets.length) {
+                                                return const Padding(
+                                                  padding: EdgeInsets.all(16.0),
+                                                  child: Center(
+                                                    child: ListShimmer(
+                                                      itemCount: 1,
+                                                      itemHeight: 140,
+                                                    ),
+                                                  ),
                                                 );
                                               }
+                                              return GestureDetector(
+                                                onTap: () async {
+                                                  final result = await Navigator.push<
+                                                    bool
+                                                  >(
+                                                    context,
+                                                    MaterialPageRoute(
+                                                      builder:
+                                                          (
+                                                            context,
+                                                          ) => TicketDetailPage(
+                                                            ticket:
+                                                                ticketEntities[index],
+                                                          ),
+                                                    ),
+                                                  );
+                                                  if (result == true) {
+                                                    _ticketBloc.add(
+                                                      RefreshTickets(
+                                                        params: _buildParams(),
+                                                      ),
+                                                    );
+                                                  }
+                                                },
+                                                child: _TicketCard(
+                                                  ticket: tickets[index],
+                                                ),
+                                              );
                                             },
-                                            child: _TicketCard(
-                                              ticket: tickets[index],
-                                            ),
-                                          );
-                                        },
-                                      ),
-                              ),
+                                          ),
+                                ),
                       ),
                     ],
                   ),
@@ -359,26 +340,26 @@ class _TicketCard extends StatelessWidget {
   Color _getPriorityColor() {
     switch (ticket.priority) {
       case TicketPriority.instant:
-        return const Color(0xFFE53935); // Red
+        return AppColor.kUrgentRed; // Red
       case TicketPriority.high:
-        return const Color(0xFFFB8C00); // Orange
+        return AppColor.kPriorityHigh; // Orange
       case TicketPriority.medium:
-        return const Color(0xFFE9BE00); // Yellow/Amber
+        return AppColor.kPriorityMedium; // Yellow/Amber
       case TicketPriority.low:
-        return const Color(0xFF43A047); // Green
+        return AppColor.kPriorityLow; // Green
     }
   }
 
-  String _getPriorityText() {
+  String _getPriorityText(BuildContext context) {
     switch (ticket.priority) {
       case TicketPriority.instant:
-        return 'Instant';
+        return context.bssSubL10n.priorityInstant;
       case TicketPriority.high:
-        return 'High';
+        return context.bssSubL10n.priorityHigh;
       case TicketPriority.medium:
-        return 'Medium';
+        return context.bssSubL10n.priorityMedium;
       case TicketPriority.low:
-        return 'Low';
+        return context.bssSubL10n.priorityLow;
     }
   }
 
@@ -386,13 +367,13 @@ class _TicketCard extends StatelessWidget {
   Color _getStatusColor() {
     switch (ticket.status) {
       case TicketStatus.open:
-        return const Color(0xFF01889F); // Teal/Blue
+        return AppColor.kTicketOpenBlue; // Teal/Blue
       case TicketStatus.progress:
-        return const Color(0xFFFA872D); // Orange
+        return AppColor.kTicketProgressOrange; // Orange
       case TicketStatus.closed:
-        return const Color(0xFF1C8E52); // Green
+        return AppColor.kTicketClosedGreen; // Green
       case TicketStatus.resolved:
-        return const Color(0xFF8D0247); // Primary Color
+        return AppColor.kPrimaryColor; // Primary Color
     }
   }
 
@@ -406,25 +387,20 @@ class _TicketCard extends StatelessWidget {
       case TicketStatus.closed:
         return l10n.closed;
       case TicketStatus.resolved:
-        return 'Resolved'; // Add to l10n later
+        return l10n.statusResolved;
     }
   }
 
   @override
   Widget build(BuildContext context) {
+    // Design: white, radius 12, 16 blur black @ 6%, no offset; 15 side /
+    // 16 vertical padding.
     return Container(
-      // height: 140, // Let it be flexible
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
+      padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 16.h),
+      decoration: const BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        borderRadius: BorderRadius.all(Radius.circular(12)),
+        boxShadow: [BoxShadow(color: AppColor.kCardShadow, blurRadius: 16)],
       ),
       child: Column(
         children: [
@@ -432,27 +408,28 @@ class _TicketCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Icon
+              // Icon — Design: 38 circle, 20 icon.
               Container(
-                width: 40,
-                height: 40,
+                width: 38.w,
+                height: 38.w,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: const Color(0xFFF5F5F5),
+                  color: AppColor.kIconBackground,
                 ),
                 child: Center(
                   child: SvgPicture.asset(
-                    'assets/icons/ticket.svg',
-                    width: 20,
-                    height: 20,
-                    colorFilter: const ColorFilter.mode(
+                    AppAssets.ticket,
+                    width: 20.w,
+                    height: 20.w,
+                    colorFilter: ColorFilter.mode(
                       AppColor.kPrimaryColor,
                       BlendMode.srcIn,
                     ),
                   ),
                 ),
               ),
-              const SizedBox(width: 12),
+              // Design: text starts 69 from the card edge (15 + 38 + 16).
+              SizedBox(width: 16.w),
               // Content
               Expanded(
                 child: Column(
@@ -460,31 +437,31 @@ class _TicketCard extends StatelessWidget {
                   children: [
                     Text(
                       ticket.title,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColor.kTextSecondaryDark,
-                        fontSize: 14,
+                        fontSize: 14.sp,
                         fontWeight: FontWeight.w500,
                         fontFamily: 'GeneralSans',
                         height: 1.30,
                       ),
                     ),
-                    const SizedBox(height: 4),
+                    SizedBox(height: 3.h),
                     Text(
                       ticket.resolutionTime,
-                      style: const TextStyle(
+                      style: TextStyle(
                         color: AppColor.kTextSecondaryDark,
-                        fontSize: 11,
+                        fontSize: 11.sp,
                         fontWeight: FontWeight.w400,
                         fontFamily: 'GeneralSans',
                         height: 1.30,
                       ),
                     ),
-                    const SizedBox(height: 2),
+                    SizedBox(height: 3.h),
                     Text(
                       ticket.ticketId,
-                      style: const TextStyle(
-                        color: Color(0xFFA5A5A5),
-                        fontSize: 10,
+                      style: TextStyle(
+                        color: AppColor.kHintGrey,
+                        fontSize: 10.sp,
                         fontWeight: FontWeight.w500,
                         fontFamily: 'GeneralSans',
                         height: 1.30,
@@ -495,9 +472,10 @@ class _TicketCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: 16),
-          const Divider(height: 1, color: Color(0xFFF5F5F5)),
-          const SizedBox(height: 16),
+          // Design: 15 above the divider, 12 below.
+          SizedBox(height: 15.h),
+          Divider(height: 1, color: AppColor.kSecondaryBackgroundColor),
+          SizedBox(height: 12.h),
 
           // Bottom Section
           Row(
@@ -506,19 +484,20 @@ class _TicketCard extends StatelessWidget {
               // Priority
               Row(
                 children: [
-                  const Text(
-                    'Priority',
+                  Text(
+                    context.bssSubL10n.priority,
+                    // Design: 10 w400 #707070, 5 before the badge.
                     style: TextStyle(
-                      color: Color(0xFFA5A5A5),
-                      fontSize: 12,
+                      color: AppColor.kLabelGrey,
+                      fontSize: 10.sp,
                       fontWeight: FontWeight.w400,
                       fontFamily: 'GeneralSans',
                       height: 1.30,
                     ),
                   ),
-                  const SizedBox(width: 8),
+                  SizedBox(width: 5.w),
                   Container(
-                    height: 24,
+                    height: 24.h,
                     padding: const EdgeInsets.symmetric(
                       horizontal: 16,
                       vertical: 2,
@@ -531,7 +510,7 @@ class _TicketCard extends StatelessWidget {
                       ),
                       shadows: [
                         BoxShadow(
-                          color: const Color(0x0C000000),
+                          color: AppColor.kCardShadowDark,
                           blurRadius: 3.80,
                           offset: const Offset(0, 4),
                           spreadRadius: 0,
@@ -544,16 +523,16 @@ class _TicketCard extends StatelessWidget {
                       crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Container(
-                          width: 6,
-                          height: 6,
+                          width: 6.w,
+                          height: 6.w,
                           decoration: ShapeDecoration(
                             color: _getPriorityColor(),
                             shape: const OvalBorder(),
                           ),
                         ),
-                        const SizedBox(width: 5),
+                        SizedBox(width: 5.w),
                         Text(
-                          _getPriorityText(),
+                          _getPriorityText(context),
                           style: TextStyle(
                             color: _getPriorityColor(),
                             fontSize: 12,
@@ -569,7 +548,7 @@ class _TicketCard extends StatelessWidget {
 
               // Status
               Container(
-                height: 28,
+                height: 28.h,
                 padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: ShapeDecoration(
                   color: _getStatusColor().withOpacity(0.1),
@@ -579,7 +558,7 @@ class _TicketCard extends StatelessWidget {
                   ),
                   shadows: [
                     BoxShadow(
-                      color: const Color(0x0C000000),
+                      color: AppColor.kCardShadowDark,
                       blurRadius: 3.80,
                       offset: const Offset(0, 4),
                       spreadRadius: 0,

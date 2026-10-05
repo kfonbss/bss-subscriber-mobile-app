@@ -24,11 +24,20 @@ class LoginTextField extends StatelessWidget {
   });
 
   // Precomputed — pure compile-time values, no Sizer dependency.
+  // 20px icon + 12px gap (design).
   static const _prefixIconConstraints = BoxConstraints(
-    minWidth: 28,
-    maxWidth: 28,
-    minHeight: 18,
-    maxHeight: 18,
+    minWidth: 32,
+    maxWidth: 32,
+    minHeight: 20,
+    maxHeight: 20,
+  );
+
+  static const _textStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    height: 1,
+    color: AppColor.kTextSecondaryDark,
   );
 
   @override
@@ -47,21 +56,25 @@ class LoginTextField extends StatelessWidget {
       autofocus: false,
       cursorHeight: 18.0,
       cursorColor: Colors.black87,
-      style: Theme.of(context).textTheme.bodyLarge,
+      style: _textStyle,
       decoration: InputDecoration(
         counterText: '',
         hintText: hintText,
-        hintStyle: Theme.of(
-          context,
-        ).textTheme.bodyMedium?.copyWith(color: AppColor.kTextFiledHintColor),
+        hintStyle: const TextStyle(
+          fontFamily: 'GeneralSans',
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          height: 1.60,
+          color: AppColor.kTextFiledPlaceholderColor,
+        ),
         errorStyle: Theme.of(
           context,
         ).textTheme.bodySmall?.copyWith(color: AppColor.kFailedRed),
         contentPadding: const EdgeInsets.symmetric(vertical: 4),
         prefixIconConstraints: _prefixIconConstraints,
         prefixIcon: Padding(
-          padding: const EdgeInsets.only(right: 10.0),
-          child: Image.asset('assets/icons/$iconName'),
+          padding: const EdgeInsets.only(right: 12.0),
+          child: Image.asset(iconName,color: AppColor.kPrimaryColor,),
         ),
         suffixIcon: const SizedBox.shrink(),
         border: InputBorder.none,

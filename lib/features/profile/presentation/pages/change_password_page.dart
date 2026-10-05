@@ -7,6 +7,7 @@ import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
 import 'package:kfon_subscriber/shared/widgets/common_password_text_field.dart';
 import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
 
 class ChangePasswordPage extends StatefulWidget {
   final PasswordChangeEnum type;
@@ -19,11 +20,11 @@ class ChangePasswordPage extends StatefulWidget {
 
 class _ChangePasswordPageState extends State<ChangePasswordPage> {
   final TextEditingController currentPassTextEditingController =
-  TextEditingController();
+      TextEditingController();
   final TextEditingController newPassTextEditingController =
-  TextEditingController();
+      TextEditingController();
   final TextEditingController conformPassTextEditingController =
-  TextEditingController();
+      TextEditingController();
 
   @override
   void dispose() {
@@ -48,7 +49,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     fontFamily: 'GeneralSans',
     fontWeight: FontWeight.w600,
     fontSize: 18.sp,
-    color: Colors.black,
+    color: AppColor.kTextSecondaryDark,
     height: 1.30,
   );
   static final _buttonTextStyle = TextStyle(
@@ -57,9 +58,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
     fontWeight: FontWeight.w600,
     height: 1.3,
   );
-  static const _forgotPasswordStyle = TextStyle(
+  static final _forgotPasswordStyle = TextStyle(
     color: AppColor.kSlateGrey,
-    fontSize: 14,
+    fontSize: 14.sp,
     fontFamily: 'GeneralSans',
     fontWeight: FontWeight.w400,
     height: 1.60,
@@ -79,10 +80,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: 40,
           children: [
-            Text(
-              _getLabel(widget.type, l10n),
-              style: _titleStyle,
-            ),
+            Text(_getLabel(widget.type, l10n), style: _titleStyle),
             Column(
               spacing: 16,
               children: [
@@ -109,6 +107,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
                 PrimaryButton(
                   label: l10n.updatePassword,
                   borderRadius: 10,
+                  height: 52.h,
                   onClicked: () => _passwordChanged(l10n),
                   isLoading: false,
                   textStyle: _buttonTextStyle,
@@ -141,37 +140,48 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
       ),
       backgroundColor: Colors.white,
       builder: (BuildContext context) {
+        // Design: 438-tall sheet — image 56 from top, button 20 from the
+        // sides, text 28 from the sides, 50 below the button.
         return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 28),
+          padding: EdgeInsets.fromLTRB(20.w, 56.h, 20.w, 50.h),
           child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
+            mainAxisSize: MainAxisSize.min,
             children: [
               Image.asset(
-                'assets/images/Illustration_password.png',
+                AppAssets.illustrationPassword,
                 fit: BoxFit.cover,
-                height: 140.h,
+                height: 140.w,
                 width: 140.w,
               ),
-              const SizedBox(height: 24),
-              Text(
-                l10n.passwordUpdatedSuccessfullyTitle,
-                textAlign: TextAlign.center,
-                style: _titleStyle,
-              ),
-              const SizedBox(height: 12),
-              Text(
-                l10n.passwordUpdatedSuccessfullyDescription,
-                textAlign: TextAlign.center,
-                style: TextStyle(
-                  fontFamily: 'GeneralSans',
-                  fontSize: 12.sp,
-                  fontWeight: FontWeight.w400,
-                  color: AppColor.kMediumGrey,
+              SizedBox(height: 24.h),
+              Padding(
+                padding: EdgeInsets.symmetric(horizontal: 8.w),
+                child: Column(
+                  children: [
+                    Text(
+                      l10n.passwordUpdatedSuccessfullyTitle,
+                      textAlign: TextAlign.center,
+                      style: _titleStyle,
+                    ),
+                    SizedBox(height: 12.h),
+                    Text(
+                      l10n.passwordUpdatedSuccessfullyDescription,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'GeneralSans',
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w400,
+                        height: 1.60,
+                        color: AppColor.kTextFiledPlaceholderColor,
+                      ),
+                    ),
+                  ],
                 ),
               ),
-              const SizedBox(height: 20),
+              SizedBox(height: 20.h),
               PrimaryButton(
                 borderRadius: 10,
+                height: 52.h,
                 isLoading: false,
                 label: l10n.loginNow,
                 onClicked: () => Navigator.pop(context),

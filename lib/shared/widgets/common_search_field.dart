@@ -1,6 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class CommonSearchField extends StatelessWidget {
   final ValueChanged<String> onChanged;
@@ -36,7 +39,7 @@ class CommonSearchField extends StatelessWidget {
           fontWeight: FontWeight.w400,
         ),
         decoration: InputDecoration(
-          hintText: hintText ?? 'Select Subscriber',
+          hintText: hintText ?? context.bssSubL10n.selectSubscriber,
           hintStyle: TextStyle(
             color: AppColor.kTextSecondaryDark,
             fontWeight: FontWeight.w400,
@@ -50,9 +53,9 @@ class CommonSearchField extends StatelessWidget {
           prefixIcon: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: SvgPicture.asset(
-              'assets/images/search.svg',
-              width: 24,
-              height: 24,
+              AppAssets.searchImage,
+              width: 24.w,
+              height: 24.h,
               colorFilter: const ColorFilter.mode(
                 AppColor.kSlateGrey,
                 BlendMode.srcIn,
@@ -65,9 +68,9 @@ class CommonSearchField extends StatelessWidget {
                     onPressed: onFilterPressed,
                     padding: const EdgeInsets.symmetric(horizontal: 16),
                     icon: SvgPicture.asset(
-                      'assets/images/filter.svg',
-                      width: 24,
-                      height: 24,
+                      AppAssets.filterImage,
+                      width: 24.w,
+                      height: 24.h,
                       colorFilter: ColorFilter.mode(
                         filterIconColor ??
                             Theme.of(context).colorScheme.primary,

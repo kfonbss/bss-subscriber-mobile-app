@@ -5,6 +5,7 @@ import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
 
 enum _RestartState { initial, loading, success, failed }
 
@@ -23,18 +24,27 @@ class _RestartModemPageState extends State<RestartModemPage>
   // ── Hoisted to avoid per-frame allocations inside AnimatedBuilder ────────────
   // BorderRadius.circular(N) is not const; BorderRadius.all(Radius.circular(N)) is.
   static const _progressBarRadius = BorderRadius.all(Radius.circular(4));
-  // kPrimaryColor(0xFF8D0247) @ 15% opacity: 0.15 × 255 ≈ 38 = 0x26
-  static const _progressBgColor = Color(0x268D0247);
+  // kPrimaryColor(0xFF1095C5) @ 15% opacity: 0.15 × 255 ≈ 38 = 0x26
+  static get _progressBgColor => AppColor.kPrimary15;
   // Dialog shape — shared between success and failure dialogs.
   static const _dialogShape = RoundedRectangleBorder(
     borderRadius: BorderRadius.all(Radius.circular(20)),
   );
   // OutlinedButton.styleFrom() is not const — computed once as static final.
-  static final _cancelButtonStyle = OutlinedButton.styleFrom(
+  static get _cancelButtonStyle => OutlinedButton.styleFrom(
     padding: const EdgeInsets.symmetric(vertical: 14),
-    side: const BorderSide(color: AppColor.kPrimaryColor),
+    side: BorderSide(color: AppColor.kPrimaryColor),
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.all(Radius.circular(10)),
+    ),
+  );
+
+  // Design: 52 tall, radius 8 (theme default is 10). Getter so the
+  // theme's tenant primary background is kept.
+  static ButtonStyle get _restartButtonStyle => ElevatedButton.styleFrom(
+    padding: EdgeInsets.zero,
+    shape: const RoundedRectangleBorder(
+      borderRadius: BorderRadius.all(Radius.circular(8)),
     ),
   );
 
@@ -74,48 +84,49 @@ class _RestartModemPageState extends State<RestartModemPage>
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => Dialog(
-        backgroundColor: Colors.white,
-        shape: _dialogShape,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Image.asset('assets/images/modem_restart_success.png', height: 100.h),
-              const SizedBox(height: 24),
-              Text(
-                context.bssSubL10n.modemRestartedSuccessfully,
-                textAlign: TextAlign.center,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+      builder:
+          (ctx) => Dialog(
+            backgroundColor: Colors.white,
+            shape: _dialogShape,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset(AppAssets.modemRestartSuccess, height: 100.h),
+                  SizedBox(height: 24.h),
+                  Text(
+                    context.bssSubL10n.modemRestartedSuccessfully,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  Text(
+                    context.bssSubL10n.modemRestartedDescription,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColor.kTextSecondaryDark,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 14.sp,
+                    ),
+                  ),
+                  SizedBox(height: 32.h),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(ctx).pop();
+                        Navigator.of(context).pop();
+                      },
+                      child: Text(context.bssSubL10n.ok),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-              Text(
-                context.bssSubL10n.modemRestartedDescription,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColor.kTextSecondaryDark,
-                  fontWeight: FontWeight.w400,
-                  fontSize: 14.sp,
-                ),
-              ),
-              const SizedBox(height: 32),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(ctx).pop();
-                    Navigator.of(context).pop();
-                  },
-                  child: Text(context.bssSubL10n.ok),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
     );
   }
 
@@ -125,75 +136,76 @@ class _RestartModemPageState extends State<RestartModemPage>
     showDialog(
       context: context,
       barrierDismissible: false,
-      builder: (ctx) => Dialog(
-        backgroundColor: Colors.white,
-        shape: _dialogShape,
-        child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Image.asset('assets/images/modem_restart_fail.png', height: 100.h),
-              const SizedBox(height: 24),
-              Text(
-                context.bssSubL10n.restartFailed,
-                textAlign: TextAlign.center,
-                style: Theme.of(
-                  context,
-                ).textTheme.titleMedium?.copyWith(fontWeight: FontWeight.w600),
+      builder:
+          (ctx) => Dialog(
+            backgroundColor: Colors.white,
+            shape: _dialogShape,
+            child: Padding(
+              padding: const EdgeInsets.symmetric(horizontal: 24, vertical: 32),
+              child: Column(
+                mainAxisSize: MainAxisSize.min,
+                children: [
+                  Image.asset(AppAssets.modemRestartFail, height: 100.h),
+                  SizedBox(height: 24.h),
+                  Text(
+                    context.bssSubL10n.restartFailed,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.titleMedium?.copyWith(
+                      fontWeight: FontWeight.w600,
+                    ),
+                  ),
+                  SizedBox(height: 8.h),
+                  Text(
+                    context.bssSubL10n.restartFailedDescription,
+                    textAlign: TextAlign.center,
+                    style: Theme.of(context).textTheme.bodyMedium?.copyWith(
+                      color: AppColor.kTextSecondaryDark,
+                      fontWeight: FontWeight.w400,
+                      fontSize: 14.sp,
+                    ),
+                  ),
+                  SizedBox(height: 32.h),
+                  SizedBox(
+                    width: double.infinity,
+                    child: ElevatedButton(
+                      onPressed: () {
+                        Navigator.of(ctx).pop();
+                        _onRestartPressed();
+                      },
+                      child: Text(context.bssSubL10n.retry),
+                    ),
+                  ),
+                  SizedBox(height: 12.h),
+                  SizedBox(
+                    width: double.infinity,
+                    child: OutlinedButton(
+                      onPressed: () {
+                        Navigator.of(ctx).pop();
+                        Navigator.of(context).pop();
+                      },
+                      style: _cancelButtonStyle,
+                      child: Text(context.bssSubL10n.cancel),
+                    ),
+                  ),
+                ],
               ),
-              const SizedBox(height: 8),
-              Text(
-                context.bssSubL10n.restartFailedDescription,
-                textAlign: TextAlign.center,
-                style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-                  color: AppColor.kTextSecondaryDark,
-                  fontWeight: FontWeight.w400,
-                  fontSize: 14.sp,
-                ),
-              ),
-              const SizedBox(height: 32),
-              SizedBox(
-                width: double.infinity,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.of(ctx).pop();
-                    _onRestartPressed();
-                  },
-                  child: Text(context.bssSubL10n.retry),
-                ),
-              ),
-              const SizedBox(height: 12),
-              SizedBox(
-                width: double.infinity,
-                child: OutlinedButton(
-                  onPressed: () {
-                    Navigator.of(ctx).pop();
-                    Navigator.of(context).pop();
-                  },
-                  style: _cancelButtonStyle,
-                  child: Text(context.bssSubL10n.cancel),
-                ),
-              ),
-            ],
+            ),
           ),
-        ),
-      ),
     );
   }
 
   @override
   Widget build(BuildContext context) {
-
     return CommonAppBar(
       onBackPressed: () => Navigator.pop(context),
       title: context.bssSubL10n.restartModem,
       body: Center(
         child: Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 24),
-          child: _state == _RestartState.loading
-              ? _buildLoadingState()
-              : _buildInitialState(),
+          padding: EdgeInsets.symmetric(horizontal: 20.w),
+          child:
+              _state == _RestartState.loading
+                  ? _buildLoadingState()
+                  : _buildInitialState(),
         ),
       ),
     );
@@ -203,34 +215,52 @@ class _RestartModemPageState extends State<RestartModemPage>
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
+        // Design: content starts 60 below the toolbar; CommonAppBar's
+        // bottom margin covers ~29 of that.
+        SizedBox(height: 32.h),
+        Image.asset(AppAssets.modemRestartImage, width: 100.w, height: 100.w),
         SizedBox(height: 40.h),
-        Image.asset('assets/images/modem_restart_image.png', height: 100.h),
-        const SizedBox(height: 32),
         Text(
           context.bssSubL10n.restartYourModem,
-          style: Theme.of(
-            context,
-          ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
-        ),
-        const SizedBox(height: 12),
-        Text(
-          context.bssSubL10n.restartYourModemDescription,
-          textAlign: TextAlign.center,
-          style: Theme.of(context).textTheme.bodyMedium?.copyWith(
-            fontWeight: FontWeight.w500,
-            color: AppColor.kLabelGrey,
-            fontSize: 13,
-            height: 1.5,
+          style: TextStyle(
+            fontFamily: 'GeneralSans',
+            fontSize: 18.sp,
+            fontWeight: FontWeight.w600,
+            height: 1.30,
+            color: AppColor.kTextSecondaryDark,
           ),
         ),
-        const SizedBox(height: 40),
+        SizedBox(height: 12.h),
+        // Design: description is 299 wide inside the 335 column.
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 18.w),
+          child: Text(
+            context.bssSubL10n.restartYourModemDescription,
+            textAlign: TextAlign.center,
+            style: TextStyle(
+              fontFamily: 'GeneralSans',
+              fontSize: 13.sp,
+              fontWeight: FontWeight.w500,
+              height: 1.54,
+              color: AppColor.kDarkBlue,
+            ),
+          ),
+        ),
+        SizedBox(height: 40.h),
         SizedBox(
           width: double.infinity,
+          height: 52.h,
           child: ElevatedButton(
             onPressed: _onRestartPressed,
+            style: _restartButtonStyle,
             child: Text(
               context.bssSubL10n.restartNow,
-              style: const TextStyle(fontSize: 16, fontWeight: FontWeight.w600),
+              style: TextStyle(
+                fontFamily: 'GeneralSans',
+                fontSize: 16.sp,
+                fontWeight: FontWeight.w600,
+                color: Colors.white,
+              ),
             ),
           ),
         ),
@@ -242,16 +272,16 @@ class _RestartModemPageState extends State<RestartModemPage>
     return Column(
       mainAxisAlignment: MainAxisAlignment.start,
       children: [
-        const SizedBox(height: 40),
-        const _PillSpinner(size: 120, color: AppColor.kPrimaryColor),
-        const SizedBox(height: 32),
+        SizedBox(height: 40.h),
+        _PillSpinner(size: 120, color: AppColor.kPrimaryColor),
+        SizedBox(height: 32.h),
         Text(
           context.bssSubL10n.restartingModem,
           style: Theme.of(
             context,
           ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
         ),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         Text(
           context.bssSubL10n.restartingModemDescription,
           textAlign: TextAlign.center,
@@ -262,7 +292,7 @@ class _RestartModemPageState extends State<RestartModemPage>
             height: 1.5,
           ),
         ),
-        const SizedBox(height: 40),
+        SizedBox(height: 40.h),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
@@ -272,7 +302,7 @@ class _RestartModemPageState extends State<RestartModemPage>
                 context,
               ).textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w500),
             ),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
             AnimatedBuilder(
               animation: _progressController,
               builder: (context, child) {
@@ -284,7 +314,7 @@ class _RestartModemPageState extends State<RestartModemPage>
                     value: _progressController.value,
                     minHeight: 8,
                     backgroundColor: _progressBgColor,
-                    valueColor: const AlwaysStoppedAnimation<Color>(
+                    valueColor: AlwaysStoppedAnimation<Color>(
                       AppColor.kPrimaryColor,
                     ),
                   ),
@@ -371,9 +401,10 @@ class _PillSpinnerPainter extends CustomPainter {
       final distance = (i - activeIndex) % pillCount;
       final opacity = 1.0 - (distance / pillCount) * 0.7;
 
-      final paint = Paint()
-        ..color = color.withValues(alpha: opacity.clamp(0.3, 1.0))
-        ..style = PaintingStyle.fill;
+      final paint =
+          Paint()
+            ..color = color.withValues(alpha: opacity.clamp(0.3, 1.0))
+            ..style = PaintingStyle.fill;
 
       canvas.save();
       canvas.rotate(angle);

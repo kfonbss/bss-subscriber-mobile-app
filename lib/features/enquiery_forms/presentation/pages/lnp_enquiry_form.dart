@@ -17,6 +17,7 @@ import 'package:kfon_subscriber/shared/widgets/common_text_area.dart';
 import 'package:kfon_subscriber/shared/widgets/common_text_field.dart';
 import 'package:kfon_subscriber/shared/widgets/form_app_bar.dart';
 import 'package:kfon_subscriber/service_locator.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 enum SIPStatus { yes, no }
 
@@ -336,7 +337,7 @@ class _LNPEnquiryFormState extends State<LNPEnquiryForm> {
                                   onChanged: (SIPStatus? sv) =>
                                       _ispValueNotifier.value = sv!,
                                   child: SizedBox(
-                                    width: 150,
+                                    width: 150.w,
                                     child: Row(
                                       mainAxisAlignment:
                                       MainAxisAlignment.start,

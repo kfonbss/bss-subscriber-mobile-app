@@ -16,6 +16,7 @@ import 'package:kfon_subscriber/service_locator.dart';
 
 import '../../../../core/constant/constant_colors.dart';
 import '../../../../shared/widgets/common_text_field.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class AGNPEnquiryForm extends StatefulWidget {
   const AGNPEnquiryForm({super.key});
@@ -250,7 +251,7 @@ class _AGNPEnquiryFormState extends State<AGNPEnquiryForm> {
                                   onChanged: (SIPStatus? sv) =>
                                       _ispValueNotifier.value = sv!,
                                   child: SizedBox(
-                                    width: 150,
+                                    width: 150.w,
                                     child: Row(
                                       mainAxisAlignment:
                                       MainAxisAlignment.start,

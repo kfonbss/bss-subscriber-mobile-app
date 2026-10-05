@@ -1,37 +1,64 @@
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
+import 'package:kfon_subscriber/shared/widgets/tenant_recolored_image.dart';
 
 class RetryWidget extends StatelessWidget {
+  final Color? buttonColor;
+  final Color? textColor;
+  final String errorMessage;
+  final VoidCallback onRetry;
+
   const RetryWidget({
     super.key,
     required this.errorMessage,
     required this.onRetry,
+    this.buttonColor,
+    this.textColor,
   });
-  final String errorMessage;
-  final VoidCallback onRetry;
 
   @override
   Widget build(BuildContext context) {
     return LayoutBuilder(
       builder: (context, constraints) {
-        return Center(
-          child: Column(
-            mainAxisAlignment: MainAxisAlignment.center,
-            children: [
-              Image.asset(
-                'assets/images/filler.png',
-                height: constraints.maxHeight * 0.5,
-              ),
-              Text(errorMessage),
-              const SizedBox(height: 16),
-              SizedBox(
-                width: constraints.maxWidth - 40.h,
-                child: ElevatedButton(
-                  onPressed: onRetry,
-                  child: const Text('Retry'),
+        // Inside a scroll view / sliver the height is unbounded, so fall back
+        // to a fraction of the screen instead of an infinite image.
+        final availableHeight = constraints.hasBoundedHeight
+            ? constraints.maxHeight
+            : MediaQuery.sizeOf(context).height * 0.6;
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 50),
+          child: Center(
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                TenantRecoloredImage(
+                  AppAssets.filler,
+                  height: availableHeight * 0.5,
                 ),
-              ),
-            ],
+                Text(
+                  errorMessage,
+                  style: TextStyle(color: textColor ?? Colors.black),
+                ),
+                SizedBox(height: 16.h),
+                SizedBox(
+                  width: constraints.maxWidth - 50.h,
+                  child: ElevatedButton(
+                    onPressed: onRetry,
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: textColor ?? AppColor.kPrimaryColor,
+                      foregroundColor: textColor != null
+                          ? AppColor.kPrimaryColor
+                          : Colors.white,
+                    ),
+                    child: Text(context.bssSubL10n.retry),
+                  ),
+                ),
+              ],
+            ),
           ),
         );
       },

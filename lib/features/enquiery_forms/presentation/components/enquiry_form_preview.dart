@@ -4,6 +4,7 @@ import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/constant/constant_dimensions.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
 
 class EnquiryFormPreview extends StatelessWidget {
   final String heading;
@@ -103,7 +104,7 @@ class EnquiryFormPreview extends StatelessWidget {
                                               fit: BoxFit.cover,
                                             )
                                             : Image.asset(
-                                              'assets/images/document.png',
+                                              AppAssets.document,
                                               fit: BoxFit.cover,
                                             ),
                                       );

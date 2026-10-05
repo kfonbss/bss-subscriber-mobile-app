@@ -91,3 +91,7 @@ class RechargeChangePlan extends DiscountEvent {
   @override
   List<Object?> get props => [params];
 }
+
+class LoadPaymentGateways extends DiscountEvent {
+  const LoadPaymentGateways();
+}

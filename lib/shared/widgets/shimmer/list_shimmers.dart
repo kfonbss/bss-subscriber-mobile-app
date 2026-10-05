@@ -23,10 +23,17 @@ class ListShimmer extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // A plain Column (not a ListView) so the shimmer works in any parent:
+    // inside scroll views, slivers, list items and bottom sheets the height
+    // is unbounded, and a ListView there throws "unbounded height".
+    // The non-scrolling SingleChildScrollView clips extra rows when the
+    // parent height is bounded instead of overflowing.
     return AppShimmer(
-      child: Padding(
+      child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
         padding: padding,
-        child: ListView(
+        child: Column(
+          mainAxisSize: MainAxisSize.min,
           children: [
             for (int i = 0; i < itemCount; i++) ...[
               ShimmerBox(

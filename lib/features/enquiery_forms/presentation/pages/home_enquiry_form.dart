@@ -37,20 +37,20 @@ class _HomeEnquiryFormState extends State<HomeEnquiryForm> {
   static const int _pageCount = 4;
 
   HomeEnquiryFormParams get params => HomeEnquiryFormParams(
-    firstName: 'Ajith',
-    lastName: 'Sivan',
-    pinCode: '691574',
-    location: 'Pampuram',
-    mobileNumber: '9633200178',
-    email: 'ajith@gmail.com',
-    cusAddress: 'Sahadeva Vilasom',
-    cusCity: 'Parippally',
-    cusLocation: 'ESI juction',
-    postOffice: 'Parippally PO',
-    cusState: 'Kerala',
-    houseNo: '1234',
-    latitude: '60.123',
-    longitude: '70.123',
+    firstName: _firstNameTextFieldController.text,
+    lastName: _lastNameTextFieldController.text,
+    pinCode: _pinCodeTextFieldController.text,
+    location: _locationNameTextFieldController.text,
+    mobileNumber: _mobileNumberTextFieldController.text,
+    email: _emailTextFieldController.text,
+    cusAddress: '',
+    cusCity: '',
+    cusLocation: '',
+    postOffice: '',
+    cusState: '',
+    houseNo: '',
+    latitude: '',
+    longitude: '',
   );
 
   @override

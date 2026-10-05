@@ -64,10 +64,7 @@ class TicketsListResponseModel {
   final PageInfoModel pageInfo;
   final List<Ticket> tickets;
 
-  TicketsListResponseModel({
-    required this.pageInfo,
-    required this.tickets,
-  });
+  TicketsListResponseModel({required this.pageInfo, required this.tickets});
 
   factory TicketsListResponseModel.fromJson(Map<String, dynamic> json) {
     // json is already the 'data' object from APIResponse
@@ -75,9 +72,10 @@ class TicketsListResponseModel {
 
     return TicketsListResponseModel(
       pageInfo: PageInfoModel.fromJson(json),
-      tickets: contentList
-          .map((e) => Ticket.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      tickets:
+          contentList
+              .map((e) => Ticket.fromJson(e as Map<String, dynamic>))
+              .toList(),
     );
   }
 

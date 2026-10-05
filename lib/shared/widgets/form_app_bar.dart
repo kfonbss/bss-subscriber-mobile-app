@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/constant/constant_colors.dart';
 import '../../core/constant/constant_dimensions.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class FormAppBar extends StatelessWidget {
   final List<Widget>? actions;
@@ -10,14 +12,6 @@ class FormAppBar extends StatelessWidget {
   final bool? centerTitle;
   final Color? backgroundColor;
   final Widget body;
-  final Widget logo = SizedBox(
-    height: 45.0,
-    child: Image.asset(
-      'assets/images/logo_transparent.png',
-      fit: BoxFit.fitHeight,
-    ),
-  );
-
   FormAppBar({
     super.key,
     this.onBackPressed,
@@ -34,10 +28,16 @@ class FormAppBar extends StatelessWidget {
 
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
-        backgroundColor: AppColor.kToolbarBackground,
+        backgroundColor: AppColor.kPrimaryColor,
         toolbarHeight: AppDimensions.kDefaultToolbarHeights,
         actions: actions ?? [],
-        title: logo,
+        title: SizedBox(
+          height: 45.0.h,
+          child: Image.asset(
+            AppAssets.kLogo,
+            fit: BoxFit.fitHeight,
+          ),
+        ),
         titleSpacing: showBackButton ? 0 : 25,
         centerTitle: centerTitle ?? showBackButton ? true : false,
         automaticallyImplyLeading: showBackButton ? true : false,

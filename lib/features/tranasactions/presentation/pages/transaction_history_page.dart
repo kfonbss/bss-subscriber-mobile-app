@@ -21,9 +21,10 @@ class TransactionHistoryPage extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return BlocProvider(
-      create: (_) =>
-      TransactionHistoryBloc(repository: sl<TransactionRepository>())
-        ..add(const FetchTransactions()),
+      create:
+          (_) =>
+              TransactionHistoryBloc(repository: sl<TransactionRepository>())
+                ..add(const FetchTransactions()),
       child: const _TransactionHistoryView(),
     );
   }
@@ -33,7 +34,8 @@ class _TransactionHistoryView extends StatefulWidget {
   const _TransactionHistoryView();
 
   @override
-  State<_TransactionHistoryView> createState() => _TransactionHistoryViewState();
+  State<_TransactionHistoryView> createState() =>
+      _TransactionHistoryViewState();
 }
 
 class _TransactionHistoryViewState extends State<_TransactionHistoryView> {
@@ -80,37 +82,44 @@ class _TransactionHistoryViewState extends State<_TransactionHistoryView> {
   @override
   Widget build(BuildContext context) {
     final l10n = context.bssSubL10n;
-
     return CommonAppBar(
       title: l10n.transactions,
       onBackPressed: () => Navigator.pop(context),
       body: BlocConsumer<TransactionHistoryBloc, TransactionHistoryState>(
         listenWhen: (previous, current) {
-          if (current is TransactionHistoryLoaded && current.paginationError != null) {
-            final prevError = previous is TransactionHistoryLoaded ? previous.paginationError : null;
+          if (current is TransactionHistoryLoaded &&
+              current.paginationError != null) {
+            final prevError =
+                previous is TransactionHistoryLoaded
+                    ? previous.paginationError
+                    : null;
             return current.paginationError != prevError;
           }
           return false;
         },
         listener: (context, state) {
-          if (state is TransactionHistoryLoaded && state.paginationError != null) {
-            ScaffoldMessenger.of(context).showSnackBar(
-              SnackBar(content: Text(state.paginationError!)),
-            );
+          if (state is TransactionHistoryLoaded &&
+              state.paginationError != null) {
+            ScaffoldMessenger.of(
+              context,
+            ).showSnackBar(SnackBar(content: Text(state.paginationError!)));
           }
         },
         builder: (context, state) {
           if (state is TransactionHistoryLoading) {
             // AppShimmer is now built into ListShimmer — no outer wrapper needed.
-            return ListShimmer(itemHeight: 200.h, itemCount: 10);
+            return ListShimmer(itemHeight: 200, itemCount: 10);
           } else if (state is TransactionHistoryLoaded) {
             if (state.transactions.isEmpty) {
               return NoDataFound(errorMessage: l10n.noTransactionsFound);
             }
             return ListView.builder(
               controller: _scrollController,
-              padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
-              itemCount: state.transactions.length + (state.isLoadingMore ? 1 : 0),
+              // Design: 24 gap below the toolbar; CommonAppBar's bottom
+              // margin already covers it, so no extra top padding.
+              padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 12.h),
+              itemCount:
+                  state.transactions.length + (state.isLoadingMore ? 1 : 0),
               itemBuilder: (context, index) {
                 if (index >= state.transactions.length) {
                   return Padding(
@@ -130,46 +139,35 @@ class _TransactionHistoryViewState extends State<_TransactionHistoryView> {
                   paidBy: txn.paidBy,
                   paymentGateway: txn.paymentGateway,
                   responseMessage: txn.responseMessage,
-                  onDownloadInvoice: txn.fileId.isEmpty
-                      ? null
-                      : () async {
-                    Navigator.pop(context); // Dismiss the bottom sheet
+                  onDownloadInvoice:
+                      txn.fileId.isEmpty
+                          ? null
+                          : () async {
+                            final result = await sl<InvoiceRepository>()
+                                .getFileViewUrl(txn.fileId);
 
-                    if (txn.fileId.isEmpty) {
-                      if (!context.mounted) return;
-                      ScaffoldMessenger.of(context).showSnackBar(
-                        const SnackBar(
-                          content: Text('Invoice file is not available'),
-                        ),
-                      );
-                      return;
-                    }
-
-                    final result = await sl<InvoiceRepository>().getFileViewUrl(
-                      txn.fileId,
-                    );
-
-                    if (!context.mounted) return;
-                    result.fold(
-                          (failure) {
-                        ScaffoldMessenger.of(context).showSnackBar(
-                          SnackBar(content: Text(failure.message)),
-                        );
-                      },
-                          (file) {
-                        Navigator.push(
-                          context,
-                          MaterialPageRoute(
-                            builder: (context) => PdfPreviewAndDownload(
-                              title: context.bssSubL10n.invoice,
-                              pdfUrl: file.url,
-                              fileId: txn.fileId,
-                            ),
-                          ),
-                        );
-                      },
-                    );
-                  },
+                            if (!context.mounted) return;
+                            result.fold(
+                              (failure) {
+                                ScaffoldMessenger.of(context).showSnackBar(
+                                  SnackBar(content: Text(failure.message)),
+                                );
+                              },
+                              (file) {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder:
+                                        (context) => PdfPreviewAndDownload(
+                                          title: context.bssSubL10n.invoice,
+                                          pdfUrl: file.url,
+                                          fileId: txn.fileId,
+                                        ),
+                                  ),
+                                );
+                              },
+                            );
+                          },
                 );
               },
             );
@@ -187,9 +185,10 @@ class _TransactionHistoryViewState extends State<_TransactionHistoryView> {
                     ),
                     SizedBox(height: 16.h),
                     ElevatedButton(
-                      onPressed: () => context
-                          .read<TransactionHistoryBloc>()
-                          .add(const FetchTransactions()),
+                      onPressed:
+                          () => context.read<TransactionHistoryBloc>().add(
+                            const FetchTransactions(),
+                          ),
                       child: Text(l10n.retry),
                     ),
                   ],
@@ -237,16 +236,11 @@ class _TransactionCard extends StatelessWidget {
   static const _cardDecoration = BoxDecoration(
     color: Colors.white,
     borderRadius: BorderRadius.all(Radius.circular(12)),
-    boxShadow: [
-      BoxShadow(
-        color: Color(0x0F000000),
-        blurRadius: 16,
-      ),
-    ],
+    boxShadow: [BoxShadow(color: AppColor.kCardShadow, blurRadius: 16)],
   );
   static const _infoBgDecoration = BoxDecoration(
     color: AppColor.kSecondaryBackgroundColor,
-    borderRadius: BorderRadius.all(Radius.circular(10)),
+    borderRadius: BorderRadius.all(Radius.circular(12)),
   );
   static final _amountStyle = TextStyle(
     fontFamily: 'GeneralSans',
@@ -269,40 +263,43 @@ class _TransactionCard extends StatelessWidget {
     fontWeight: FontWeight.w500,
     height: 1.30,
   );
-  static final _downloadLabelStyle = TextStyle(
+  static TextStyle get _downloadLabelStyle => TextStyle(
     fontFamily: 'GeneralSans',
     color: AppColor.kPrimaryColor,
     fontSize: 12.sp,
-    fontWeight: FontWeight.w600,
+    fontWeight: FontWeight.w500,
+    height: 1.30,
   );
 
-  static final _downloadButtonStyle = OutlinedButton.styleFrom(
-    side: const BorderSide(color: AppColor.kPrimaryColor, width: 1),
+  // Design: 32 tall, 1px primary border, radius 10. Not cached in a static —
+  // kPrimaryColor follows the tenant.
+  ButtonStyle get _downloadStyle => OutlinedButton.styleFrom(
+    side: BorderSide(color: AppColor.kPrimaryColor, width: 1),
     shape: const RoundedRectangleBorder(
       borderRadius: BorderRadius.all(Radius.circular(10)),
     ),
+    minimumSize: Size(double.infinity, 32.h),
+    fixedSize: Size(double.infinity, 32.h),
+    padding: EdgeInsets.symmetric(horizontal: 10.w),
+    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
   );
-
-  // Sizer ratios are fixed after app init — compute the full style once.
-  static ButtonStyle? _resolvedDownloadStyle;
-  ButtonStyle get _downloadStyle => _resolvedDownloadStyle ??=
-      _downloadButtonStyle.copyWith(
-        padding: WidgetStatePropertyAll(EdgeInsets.symmetric(vertical: 12.h)),
-      );
 
   Color get _statusColor {
     switch (status.toLowerCase()) {
-      case 'success': return const Color(0xFF008F67);
-      case 'pending': return const Color(0xFFAF7700);
-      case 'failed': return AppColor.kFailedRed;
-      default: return AppColor.kTextSecondaryDark;
+      case 'success':
+        return AppColor.kTicketClosedGreen;
+      case 'pending':
+        return AppColor.kTicketProgressOrange;
+      case 'failed':
+        return AppColor.kFailedRed;
+      default:
+        return AppColor.kTextSecondaryDark;
     }
   }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.bssSubL10n;
-
     return Container(
       margin: EdgeInsets.only(bottom: 16.h),
       padding: EdgeInsets.all(16.w),
@@ -311,13 +308,20 @@ class _TransactionCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           // ── Top row: BSS No | Txn. Reference | Amount ──
+          // Design: BSS No column 109 wide, 24 gap, then Txn. Reference.
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              Expanded(child: _LabelValue(label: l10n.bssNo, value: bssNo)),
-              SizedBox(width: 8.w),
+              SizedBox(
+                width: 109.w,
+                child: _LabelValue(label: l10n.bssNo, value: bssNo),
+              ),
+              SizedBox(width: 24.w),
               Expanded(
-                child: _LabelValue(label: l10n.txnReference, value: txnReference),
+                child: _LabelValue(
+                  label: l10n.txnReference,
+                  value: txnReference,
+                ),
               ),
               Text('₹$amount', style: _amountStyle),
             ],
@@ -337,22 +341,31 @@ class _TransactionCard extends StatelessWidget {
                   children: [
                     Expanded(
                       flex: 3,
-                      child: _LabelValue(label: l10n.package, value: packageName),
-                    ),
-                    SizedBox(width: 8.w),
-                    Expanded(
-                      flex: 2,
                       child: _LabelValue(
-                        label: l10n.expireDate,
-                        value: DateTime.tryParse(expiryDate) != null
-                            ? DateFormat('dd MMM yyyy').format(DateTime.parse(expiryDate))
-                            : expiryDate,
+                        small: true,
+                        label: l10n.package,
+                        value: packageName,
                       ),
                     ),
                     SizedBox(width: 8.w),
                     Expanded(
                       flex: 2,
                       child: _LabelValue(
+                        small: true,
+                        label: l10n.expireDate,
+                        value:
+                            DateTime.tryParse(expiryDate) != null
+                                ? DateFormat(
+                                  'dd MMM yyyy',
+                                ).format(DateTime.parse(expiryDate))
+                                : expiryDate,
+                      ),
+                    ),
+                    SizedBox(width: 8.w),
+                    Expanded(
+                      flex: 2,
+                      child: _LabelValue(
+                        small: true,
                         label: l10n.status,
                         value: status,
                         valueColor: _statusColor,
@@ -369,21 +382,33 @@ class _TransactionCard extends StatelessWidget {
                     Expanded(
                       flex: 3,
                       child: _LabelValue(
+                        small: true,
                         label: l10n.paidOn,
-                        value: DateTime.tryParse(paidOn) != null
-                            ? DateFormat('yyyy-MM-dd HH:mm:ss').format(DateTime.parse(paidOn))
-                            : paidOn,
+                        value:
+                            DateTime.tryParse(paidOn) != null
+                                ? DateFormat(
+                                  'yyyy-MM-dd HH:mm:ss',
+                                ).format(DateTime.parse(paidOn))
+                                : paidOn,
                       ),
                     ),
                     SizedBox(width: 8.w),
                     Expanded(
                       flex: 2,
-                      child: _LabelValue(label: l10n.paidBy, value: paidBy),
+                      child: _LabelValue(
+                        small: true,
+                        label: l10n.paidBy,
+                        value: paidBy,
+                      ),
                     ),
                     SizedBox(width: 8.w),
                     Expanded(
                       flex: 2,
-                      child: _LabelValue(label: l10n.paymentGateway, value: paymentGateway),
+                      child: _LabelValue(
+                        small: true,
+                        label: l10n.paymentGateway,
+                        value: paymentGateway,
+                      ),
                     ),
                   ],
                 ),
@@ -397,23 +422,27 @@ class _TransactionCard extends StatelessWidget {
           RichText(
             text: TextSpan(
               children: [
-                TextSpan(text: l10n.responseMessage, style: _responseLabelStyle),
+                TextSpan(
+                  text: l10n.responseMessage,
+                  style: _responseLabelStyle,
+                ),
+                // Design: 6 gap between label and message.
+                WidgetSpan(child: SizedBox(width: 6.w)),
                 TextSpan(text: responseMessage, style: _responseValueStyle),
               ],
             ),
           ),
-
-          SizedBox(height: 12.h),
-
-          // ── Download Invoice Button ──
-          SizedBox(
-            width: double.infinity,
-            child: OutlinedButton(
-              onPressed: onDownloadInvoice,
-              style: _downloadStyle,
-              child: Text(l10n.downloadInvoice, style: _downloadLabelStyle),
+          if (onDownloadInvoice != null) ...[
+            SizedBox(height: 12.h),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: onDownloadInvoice,
+                style: _downloadStyle,
+                child: Text(l10n.downloadInvoice, style: _downloadLabelStyle),
+              ),
             ),
-          ),
+          ],
         ],
       ),
     );
@@ -426,17 +455,29 @@ class _LabelValue extends StatelessWidget {
   final String value;
   final Color? valueColor;
 
+  /// Grey-box style label (8, w400, #707070) instead of the top-row one
+  /// (10, w500, #888888) — as in the design.
+  final bool small;
+
   const _LabelValue({
     required this.label,
     required this.value,
     this.valueColor,
+    this.small = false,
   });
 
   static final _labelStyle = TextStyle(
     fontFamily: 'GeneralSans',
     fontSize: 10.sp,
     fontWeight: FontWeight.w500,
-    color: AppColor.kTextSecondary,
+    color: AppColor.kHintGrey,
+    height: 1.3,
+  );
+  static final _smallLabelStyle = TextStyle(
+    fontFamily: 'GeneralSans',
+    fontSize: 8.sp,
+    fontWeight: FontWeight.w400,
+    color: AppColor.kLabelGrey,
     height: 1.3,
   );
   static final _defaultValueStyle = TextStyle(
@@ -449,13 +490,14 @@ class _LabelValue extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final valueStyle = valueColor == null
-        ? _defaultValueStyle
-        : _defaultValueStyle.copyWith(color: valueColor);
+    final valueStyle =
+        valueColor == null
+            ? _defaultValueStyle
+            : _defaultValueStyle.copyWith(color: valueColor);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(label, style: _labelStyle),
+        Text(label, style: small ? _smallLabelStyle : _labelStyle),
         SizedBox(height: 3.h),
         Text(value.isNotEmpty ? value : '-', style: valueStyle),
       ],

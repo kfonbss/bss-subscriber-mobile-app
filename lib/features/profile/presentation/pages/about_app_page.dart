@@ -146,7 +146,7 @@ class _AppInfoItem extends StatelessWidget {
     height: 1.3,
     letterSpacing: 0,
   );
-  static final _valueStyle = TextStyle(
+  static get _valueStyle => TextStyle(
     fontFamily: 'GeneralSans',
     color: AppColor.kPrimaryColor,
     fontSize: 14.sp,

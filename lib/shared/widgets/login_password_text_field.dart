@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
 
 class LoginPasswordTextField extends StatefulWidget {
   final TextEditingController textEditingController;
@@ -37,30 +38,42 @@ class _LoginPasswordTextFieldState extends State<LoginPasswordTextField> {
       autofocus: false,
       cursorHeight: 18.0,
       cursorColor: Colors.black87,
-      style: Theme.of(context).textTheme.bodyLarge,
+      style: const TextStyle(
+        fontFamily: 'GeneralSans',
+        fontSize: 14,
+        fontWeight: FontWeight.w500,
+        height: 1,
+        color: AppColor.kTextSecondaryDark,
+      ),
       decoration: InputDecoration(
         counterText: '',
         hintText: widget.hintText,
-        hintStyle: Theme.of(
-          context,
-        ).textTheme.bodyMedium?.copyWith(color: AppColor.kTextFiledHintColor),
+        hintStyle: const TextStyle(
+          fontFamily: 'GeneralSans',
+          fontSize: 14,
+          fontWeight: FontWeight.w400,
+          height: 1.60,
+          color: AppColor.kTextFiledPlaceholderColor,
+        ),
         errorStyle: Theme.of(
           context,
         ).textTheme.bodySmall?.copyWith(color: AppColor.kFailedRed),
         contentPadding: EdgeInsets.symmetric(vertical: 4),
 
+        // 20px icon + 12px gap (design).
         prefixIconConstraints: BoxConstraints(
-          minWidth: 28,
-          maxWidth: 28,
-          minHeight: 18,
-          maxHeight: 18,
+          minWidth: 32,
+          maxWidth: 32,
+          minHeight: 20,
+          maxHeight: 20,
         ),
         prefixIcon: Padding(
-          padding: const EdgeInsets.only(right: 10.0),
-          child: Image.asset('assets/icons/lock.png'),
+          padding: const EdgeInsets.only(right: 12.0),
+          child: Image.asset(AppAssets.lock,color: AppColor.kPrimaryColor,),
         ),
 
         suffixIcon: IconButton(
+          iconSize: 20,
           icon: Icon(
             obscureText
                 ? Icons.visibility_outlined

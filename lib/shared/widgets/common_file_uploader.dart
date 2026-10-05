@@ -5,6 +5,8 @@ import 'package:flutter/material.dart';
 
 import '../../core/constant/constant_colors.dart';
 import '../../core/constant/constant_dimensions.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class CommonFileUploader extends StatefulWidget {
   final String label;
@@ -87,10 +89,10 @@ class _CommonFileUploaderState extends State<CommonFileUploader> {
                             spacing: 15,
                             children: [
                               Container(
-                                width: 32,
-                                height: 32,
+                                width: 32.w,
+                                height: 32.h,
                                 decoration: BoxDecoration(
-                                  color: Color(0xFFF4E6ED),
+                                  color: AppColor.kPinkMistBg,
                                   borderRadius: BorderRadius.circular(
                                     6.0,
                                   ), // Uniform rounded corners
@@ -139,7 +141,7 @@ class _CommonFileUploaderState extends State<CommonFileUploader> {
                                         fit: BoxFit.cover,
                                       )
                                           : Image.asset(
-                                        'assets/images/document.png',
+                                        AppAssets.document,
                                         fit: BoxFit.cover,
                                       )
                                       ,

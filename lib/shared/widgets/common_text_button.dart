@@ -11,7 +11,7 @@ class CommonTextButton extends StatelessWidget {
     return TextButton(
       onPressed: onPressed,
       style: TextButton.styleFrom(
-        foregroundColor: AppColor.kPrimaryColorTwo,
+        foregroundColor: AppColor.kPrimaryColor,
         padding: EdgeInsets.zero,
         minimumSize: Size.zero,
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,

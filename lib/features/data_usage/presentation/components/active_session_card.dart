@@ -27,7 +27,7 @@ class SessionCard extends StatelessWidget {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(l10n.sessionInformation, style: sectionStyle),
-          const SizedBox(height: 10),
+          SizedBox(height: 10.h),
           _infoRow(l10n.startTime, _dateFormat.format(s.startTime), labelStyle, valueStyle),
           _infoRow(
             l10n.endTime,
@@ -36,17 +36,17 @@ class SessionCard extends StatelessWidget {
             valueStyle,
           ),
           _infoRow(l10n.duration, s.sessionDuration, labelStyle, valueStyle),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
 
           Text(l10n.dataUsage, style: sectionStyle),
-          const SizedBox(height: 10),
+          SizedBox(height: 10.h),
           _infoRow(l10n.upload, l10n.valueInMb(s.uploadMb.toString()), labelStyle, valueStyle),
           _infoRow(l10n.download, l10n.valueInMb(s.downloadMb.toString()), labelStyle, valueStyle),
           _infoRow(l10n.total, l10n.valueInMb(s.totalMb.toString()), labelStyle, valueStyle),
-          const SizedBox(height: 16),
+          SizedBox(height: 16.h),
 
           Text(l10n.networkDetails, style: sectionStyle),
-          const SizedBox(height: 10),
+          SizedBox(height: 10.h),
           _infoRow(l10n.mac, s.networkDetails.mac, labelStyle, valueStyle),
           _infoRow(l10n.framedIp, s.networkDetails.framedIp, labelStyle, valueStyle),
           _infoRow(l10n.framedIpv6Prefix, s.networkDetails.framedIpv6Prefix, labelStyle, valueStyle),

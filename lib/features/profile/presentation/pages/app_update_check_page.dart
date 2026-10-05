@@ -5,6 +5,7 @@ import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
 import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
 
 class AppUpdateCheckPage extends StatefulWidget {
   const AppUpdateCheckPage({super.key});
@@ -29,7 +30,7 @@ class _AppUpdateCheckPageState extends State<AppUpdateCheckPage> {
   // 0xB3 = 179 ≈ 0.7 × 255 → Colors.black @ 70% opacity
   static final _infoTextStyle = TextStyle(
     fontFamily: 'GeneralSans',
-    color: const Color(0xB3000000),
+    color: AppColor.kBlack70,
     fontSize: 12.sp,
     fontWeight: FontWeight.w400,
     height: 1.6,
@@ -121,13 +122,12 @@ class _InfoCard extends StatelessWidget {
       BorderSide(color: AppColor.kinputFiledLightBorder, width: 1.w),
     ),
   );
-  // kPrimaryColor(0xFF8D0247) @ 5%: 0x0D8D0247
-  static const _iconBgDecoration = BoxDecoration(
-    color: Color(0x0D8D0247),
+  // kPrimaryColor(0xFF1095C5) @ 5%: 0x0D1095C5
+  static get _iconBgDecoration => BoxDecoration(
+    color: AppColor.kPrimary5,
     shape: BoxShape.circle,
   );
-  static const _iconColorFilter =
-      ColorFilter.mode(AppColor.kPrimaryColor, BlendMode.srcIn);
+  static get _iconColorFilter => ColorFilter.mode(AppColor.kPrimaryColor, BlendMode.srcIn);
   static final _titleStyle = TextStyle(
     fontFamily: 'GeneralSans',
     color: AppColor.kTextSecondaryDark,
@@ -139,7 +139,7 @@ class _InfoCard extends StatelessWidget {
   // 0xB3 = 179 ≈ 0.7 × 255 → Colors.black @ 70% opacity
   static final _subtitleStyle = TextStyle(
     fontFamily: 'GeneralSans',
-    color: const Color(0xB3000000),
+    color: AppColor.kBlack70,
     fontSize: 12.sp,
     fontWeight: FontWeight.w400,
     height: 1.3,
@@ -162,7 +162,7 @@ class _InfoCard extends StatelessWidget {
               decoration: _iconBgDecoration,
               child: Center(
                 child: SvgPicture.asset(
-                  'assets/icons/app_update_check.svg',
+                  AppAssets.appUpdateCheck,
                   width: _iconSize,
                   height: _iconSize,
                   colorFilter: _iconColorFilter,

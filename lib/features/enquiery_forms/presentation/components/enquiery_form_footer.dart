@@ -4,6 +4,7 @@ import 'package:kfon_subscriber/core/constant/constant_dimensions.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class EnquiryFormFooter extends StatelessWidget {
   final int pageCount;
@@ -24,7 +25,7 @@ class EnquiryFormFooter extends StatelessWidget {
   _getStep(bool isActive) {
     return Expanded(
       child: Container(
-        height: 5,
+        height: 5.h,
         margin: const EdgeInsets.symmetric(horizontal: 5),
         decoration: BoxDecoration(
           color: isActive ? AppColor.kPrimaryColor : AppColor.kBorderLightGrey,

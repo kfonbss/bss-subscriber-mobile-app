@@ -10,6 +10,7 @@ import 'package:kfon_subscriber/features/profile/presentation/pages/language_sel
 import 'package:kfon_subscriber/features/profile/presentation/pages/notification_settings_page.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
 
 class SettingsPage extends StatelessWidget {
   const SettingsPage({super.key});
@@ -33,7 +34,7 @@ class SettingsPage extends StatelessWidget {
                 children: [
                   _SettingsItem(
                     title: l10n.language,
-                    iconPath: 'assets/icons/languages.svg',
+                    iconPath: AppAssets.language,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -43,7 +44,7 @@ class SettingsPage extends StatelessWidget {
                   ),
                   _SettingsItem(
                     title: l10n.notificationsSettings,
-                    iconPath: 'assets/icons/notification_settings.svg',
+                    iconPath: AppAssets.notificationSettings,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -53,7 +54,7 @@ class SettingsPage extends StatelessWidget {
                   ),
                   _SettingsItem(
                     title: l10n.appUpdateCheck,
-                    iconPath: 'assets/icons/app_update_check.svg',
+                    iconPath: AppAssets.appUpdateCheck,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -63,7 +64,7 @@ class SettingsPage extends StatelessWidget {
                   ),
                   _SettingsItem(
                     title: l10n.aboutApp,
-                    iconPath: 'assets/icons/about_app.svg',
+                    iconPath: AppAssets.aboutApp,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -72,8 +73,8 @@ class SettingsPage extends StatelessWidget {
                     ),
                   ),
                   _SettingsItem(
-                    title: l10n.aboutKfonTitle,
-                    iconPath: 'assets/icons/about_kfon.svg',
+                    title: l10n.aboutBss,
+                    iconPath: AppAssets.aboutKfon,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
@@ -120,13 +121,12 @@ class _SettingsItem extends StatelessWidget {
       BorderSide(color: AppColor.kinputFiledLightBorder, width: 1.w),
     ),
   );
-  // kPrimaryColor(0xFF8D0247) @ 5% opacity: 0x0D8D0247
-  static const _iconBgDecoration = BoxDecoration(
-    color: Color(0x0D8D0247),
+  // kPrimaryColor(0xFF1095C5) @ 5% opacity: 0x0D1095C5
+  static get _iconBgDecoration => BoxDecoration(
+    color: AppColor.kPrimary5,
     shape: BoxShape.circle,
   );
-  static const _iconColorFilter =
-      ColorFilter.mode(AppColor.kPrimaryColor, BlendMode.srcIn);
+  static get _iconColorFilter => ColorFilter.mode(AppColor.kPrimaryColor, BlendMode.srcIn);
   static final _titleStyle = TextStyle(
     fontFamily: 'GeneralSans',
     color: AppColor.kTextSecondaryDark,

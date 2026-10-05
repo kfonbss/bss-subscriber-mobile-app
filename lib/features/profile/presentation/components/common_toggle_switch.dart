@@ -24,7 +24,7 @@ class CommonToggleSwitch extends StatelessWidget {
     color: Colors.white,
     boxShadow: [
       BoxShadow(
-        color: Color(0x1A000000),
+        color: AppColor.kBlack10,
         blurRadius: 2,
         offset: Offset(0, 1),
       ),

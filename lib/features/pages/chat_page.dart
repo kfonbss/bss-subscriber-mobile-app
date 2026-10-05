@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class ChatPage extends StatefulWidget {
   final String pageHeading;
@@ -50,8 +53,8 @@ class _ChatPageState extends State<ChatPage> {
                     name,
                     style: TextStyle(
                       color: isOwnMessage
-                          ? const Color(0xFFB3DAFF)
-                          : const Color(0xFF71727A),
+                          ? AppColor.kLightSkyBlue
+                          : AppColor.kStoneGrey,
                       fontSize: 12,
                       fontWeight: FontWeight.w700,
                     ),
@@ -115,10 +118,10 @@ class _ChatPageState extends State<ChatPage> {
                   constraints: const BoxConstraints(),
                   onPressed: () {},
                 ),
-                const SizedBox(width: 6),
+                SizedBox(width: 6.w),
                 Expanded(
                   child: Container(
-                    height: 40,
+                    height: 40.h,
                     padding: const EdgeInsets.only(
                       left: 16,
                       right: 6,
@@ -126,7 +129,7 @@ class _ChatPageState extends State<ChatPage> {
                       bottom: 8,
                     ),
                     decoration: BoxDecoration(
-                      color: const Color(0xFFF8F9FE),
+                      color: AppColor.kGhostWhite,
                       borderRadius: BorderRadius.circular(71),
                     ),
                     child: Row(
@@ -134,9 +137,9 @@ class _ChatPageState extends State<ChatPage> {
                         Expanded(
                           child: TextField(
                             controller: _messageController,
-                            decoration: const InputDecoration(
+                            decoration: InputDecoration(
                               border: InputBorder.none,
-                              hintText: 'Enter a search term',
+                              hintText: context.bssSubL10n.enterASearchTerm,
                               hintStyle: TextStyle(
                                 color: AppColor.kCharcoalDark,
                                 fontSize: 14,
@@ -152,11 +155,11 @@ class _ChatPageState extends State<ChatPage> {
                             textAlignVertical: TextAlignVertical.center,
                           ),
                         ),
-                        const SizedBox(width: 12),
+                        SizedBox(width: 12.w),
                         ClipOval(
                           child: Container(
-                            width: 32,
-                            height: 32,
+                            width: 32.w,
+                            height: 32.h,
                             decoration: BoxDecoration(
                               color: AppColor.kPrimaryColor,
                               shape: BoxShape.circle,
@@ -167,9 +170,9 @@ class _ChatPageState extends State<ChatPage> {
                                 onTap: () {},
                                 child: Center(
                                   child: SvgPicture.asset(
-                                    'assets/icons/chat_send.svg',
-                                    width: 12,
-                                    height: 12,
+                                    AppAssets.chatSend,
+                                    width: 12.w,
+                                    height: 12.h,
                                     colorFilter: const ColorFilter.mode(
                                       Colors.white,
                                       BlendMode.srcIn,

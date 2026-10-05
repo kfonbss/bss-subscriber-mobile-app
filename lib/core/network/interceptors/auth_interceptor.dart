@@ -23,6 +23,7 @@ class AuthInterceptor extends Interceptor {
 
   static List<String> get _publicEndpoints => [
     ApiUrls.tenantsURL,
+    ApiUrls.lDTenantsURL,
     ApiUrls.loginURL,
     ApiUrls.resendOTPURL,
     ApiUrls.sendForgotPasswordOTPURL,
@@ -140,13 +141,6 @@ class AuthInterceptor extends Interceptor {
   /// Handles refresh failure by clearing all tokens and redirecting to login
   Future<void> _handleRefreshFailure() async {
     await PreferenceUtils.clearAll();
-
-    // Navigate to login and clear navigation stack
-    // navigatorKey.currentState?.pushNamedAndRemoveUntil(
-    //   AppRoutes.login,
-    //   (route) => false,
-    // );
-
     WidgetsBinding.instance.addPostFrameCallback((_) {
       navigatorKey.currentState?.pushNamedAndRemoveUntil(
         AppRoutes.login,

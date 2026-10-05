@@ -27,7 +27,12 @@ class APIResponse {
 
   factory APIResponse.fromJson(Map<String, dynamic> response) {
     String error = '';
-    if (response['error'] != null) {
+    final rawError = response['error'];
+    // An empty object/string (e.g. `"error": {}`) means "no error".
+    final isEmptyError =
+        (rawError is Map && rawError.isEmpty) ||
+        (rawError is String && rawError.trim().isEmpty);
+    if (rawError != null && !isEmptyError) {
       if (response['error'] is bool) {
         error = (response['error'] as bool)
             ? (response['message']?.toString() ?? 'An error occurred')

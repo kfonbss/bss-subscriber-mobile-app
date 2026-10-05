@@ -34,6 +34,10 @@ class ApiUrls {
       '$subscriberManagementService/mobile/subscribers/$subscriberUuid/data-usage';
   // static const String listPackagesURL =
   //     '$packageManagementService/mobile/packages';
+  static String get packageTabURL =>
+      '$billingFinanceService/subscriber-services/assess-eligibility';
+  static String get seasonalPreviewPackagesURL =>
+      '$billingFinanceService/subscriber-services/list-packages';
   static const String listPackagesURL =
       '$billingFinanceService/rule-engine/packages/seasonal-preview';
   static String changePlanURL({required String subscriberUuid}) =>
@@ -91,12 +95,36 @@ class ApiUrls {
       '$billingFinanceService/rule-engine/packages/subscriber-discount';
   static const String addNoteURL = '$userRoleMapingService/mobile/note';
 
+  /// Rate a ticket (POST `{rating, comment}`).
+  /// TODO(rating): placeholder — replace with the real rating endpoint.
+  static String rateTicketURL(String ticketUuid) =>
+      '$submitTicketURL/$ticketUuid/rating';
+
   /// File Storage: Get view URL by file ID (GET)
   static String fileViewUrlByFileId(String fileId) =>
-      '$fileStorageService/files/$fileId/view-url';
+      '$fileStorageService/$fileId/view-url';
+
+  /// CRM: Upload a file, returns its file ID (POST multipart `file`).
+  /// Used for the GST/PAN documents sent with a create-ticket request.
+  static const String fileUploadURL = '$userRoleMapingService/crm/upload';
 
   /// File Storage: Get download URL by file ID (GET)
   static String fileDownloadUrlByFileId(String fileId) =>
-      '$fileStorageService/files/$fileId/download-url';
-  static String get tenantsURL => '$bssCoreDmdmService/state/fetch-all';
+      '$fileStorageService/$fileId/download-url';
+  static String get tenantsURL => '$bssCoreDmdmService/region/fetch-all';
+  static String get lDTenantsURL => '$bssCoreDmdmService/region/fetch-all';
+  static String get furtureRechargesListURL =>
+      '$billingFinanceService/mobile/future-recharges';
+  static String get paymentGateways =>
+      '$bssCoreDmdmService/gateway/fetch-all';
+
+  // UPI Autopay (mandate)
+  static const String upiMandateStatus =
+      '$billingFinanceService/upi-mandate/status';
+  static const String upiMandateQuote =
+      '$billingFinanceService/upi-mandate/quote';
+  static const String upiMandateInitiate =
+      '$billingFinanceService/upi-mandate/initiate';
+  static const String upiMandateRevoke =
+      '$billingFinanceService/upi-mandate/revoke';
 }

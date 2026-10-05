@@ -6,6 +6,9 @@ import 'package:kfon_subscriber/features/ticket/presentation/bloc/ticket_event.d
 import 'package:kfon_subscriber/features/ticket/presentation/bloc/ticket_state.dart';
 import 'package:kfon_subscriber/shared/widgets/shimmer/list_shimmers.dart';
 import 'package:kfon_subscriber/shared/widgets/common_radio_button.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class PriorityPickerSheet extends StatefulWidget {
   final String? selectedPriority;
@@ -56,18 +59,18 @@ class _PriorityPickerSheetState extends State<PriorityPickerSheet> {
             mainAxisSize: MainAxisSize.min,
             crossAxisAlignment: CrossAxisAlignment.center,
             children: [
-              const Text(
-                'Select Priority',
+              Text(
+                context.bssSubL10n.selectPriorityKey,
                 textAlign: TextAlign.center,
                 style: TextStyle(
                   fontFamily: 'GeneralSans',
                   fontSize: 18,
                   fontWeight: FontWeight.w600,
                   height: 1.4,
-                  color: Color(0xFF0F1121),
+                  color: AppColor.kTextSecondaryDark,
                 ),
               ),
-              const SizedBox(height: 30),
+              SizedBox(height: 30.h),
               if (isLoading)
                 const ListShimmer(
                   itemCount: 4,
@@ -82,38 +85,38 @@ class _PriorityPickerSheetState extends State<PriorityPickerSheet> {
                     mainAxisSize: MainAxisSize.min,
                     children: [
                       Text(
-                        'Error loading priorities',
+                        context.bssSubL10n.errorLoadingPriorities,
                         style: const TextStyle(
                           fontSize: 14,
                           fontWeight: FontWeight.w600,
-                          color: Color(0xFFE53935),
+                          color: AppColor.kUrgentRed,
                           fontFamily: 'GeneralSans',
                         ),
                       ),
-                      const SizedBox(height: 8),
+                      SizedBox(height: 8.h),
                       Text(
                         errorMessage,
                         textAlign: TextAlign.center,
                         style: const TextStyle(
                           fontSize: 12,
-                          color: Color(0xFF67697A),
+                          color: AppColor.kTextFiledPlaceholderColor,
                           fontFamily: 'GeneralSans',
                         ),
                       ),
-                      const SizedBox(height: 16),
+                      SizedBox(height: 16.h),
                       ElevatedButton(
                         onPressed: () {
                           widget.ticketBloc.add(const LoadPriorities());
                         },
-                        child: const Text('Retry'),
+                        child: Text(context.bssSubL10n.retry),
                       ),
                     ],
                   ),
                 )
               else if (priorities.isEmpty)
-                const Padding(
+                Padding(
                   padding: EdgeInsets.all(20.0),
-                  child: Text('No priorities available'),
+                  child: Text(context.bssSubL10n.noPrioritiesAvailable),
                 )
               else
                 ConstrainedBox(
@@ -132,7 +135,7 @@ class _PriorityPickerSheetState extends State<PriorityPickerSheet> {
                           style: const TextStyle(
                             fontSize: 14,
                             fontWeight: FontWeight.w400,
-                            color: Color(0xFF0F1121),
+                            color: AppColor.kTextSecondaryDark,
                             fontFamily: 'GeneralSans',
                           ),
                         ),

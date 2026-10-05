@@ -93,8 +93,16 @@ class _FaqPageState extends State<FaqPage> {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _buildSection(title: l10n.faqSectionAccount, items: _accountFaqs, titleStyle: titleStyle),
-                  _buildSection(title: l10n.faqSectionPayments, items: _paymentsFaqs, titleStyle: titleStyle),
+                  _buildSection(
+                    title: l10n.faqSectionAccount,
+                    items: _accountFaqs,
+                    titleStyle: titleStyle,
+                  ),
+                  _buildSection(
+                    title: l10n.faqSectionPayments,
+                    items: _paymentsFaqs,
+                    titleStyle: titleStyle,
+                  ),
                 ],
               ),
             ),

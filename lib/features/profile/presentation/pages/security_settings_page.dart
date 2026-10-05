@@ -3,6 +3,7 @@ import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/change_password_page.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 
 enum PasswordChangeEnum { bss, internet, ssid, wifi }
 
@@ -24,7 +25,7 @@ class SecuritySettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return CommonAppBar(
       onBackPressed: () => Navigator.pop(context),
-      title: 'Security Settings',
+      title: context.bssSubL10n.securitySettings,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(

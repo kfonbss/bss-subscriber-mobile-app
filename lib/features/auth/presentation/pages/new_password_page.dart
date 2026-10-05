@@ -11,8 +11,10 @@ import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_event.dart'
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_state.dart';
 import 'package:kfon_subscriber/features/auth/presentation/components/auth_header.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
+import 'package:kfon_subscriber/shared/widgets/login_background.dart';
 import 'package:kfon_subscriber/shared/widgets/login_password_text_field.dart';
 import 'package:kfon_subscriber/shared/widgets/white_button.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class NewPasswordPage extends StatefulWidget {
   const NewPasswordPage({super.key});
@@ -25,7 +27,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
   final _formKey = GlobalKey<FormState>();
   final TextEditingController _newPasswordController = TextEditingController();
   final TextEditingController _confirmPasswordController =
-  TextEditingController();
+      TextEditingController();
 
   @override
   void dispose() {
@@ -58,7 +60,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
           if (state is PasswordResetSuccess) {
             DialogUtil().showCustomSnackbar(
               context: context,
-              content: 'Password updated successfully',
+              content: context.bssSubL10n.passwordUpdatedSuccessfully,
             );
 
             Future.delayed(const Duration(seconds: 1), () {
@@ -66,7 +68,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
               Navigator.pushNamedAndRemoveUntil(
                 context,
                 AppRoutes.login,
-                    (route) => false,
+                (route) => false,
               );
             });
           } else if (state is PasswordResetError) {
@@ -80,86 +82,84 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
         child: Scaffold(
           backgroundColor: AppColor.kPrimaryColor,
           resizeToAvoidBottomInset: false,
-          body: Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage('assets/images/login_background.png'),
-                fit: BoxFit.cover,
-              ),
-            ),
-            child: Column(
-              children: [
-                AuthHeader(
-                  heading: 'Welcome to KFON',
-                  description: '',
-                ),
-
-                Form(
-                  key: _formKey,
-                  child: Container(
-                    margin: const EdgeInsets.symmetric(horizontal: 20),
-                    decoration: AppStyles.boxDecorationMedium,
-                    child: Column(
-                      children: [
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            left: 16.0,
-                            top: 11,
-                            bottom: 11,
+          body: Stack(
+            children: [
+              LoginBackground(),
+              Column(
+                children: [
+                  AuthHeader(
+                    description: '',
+                  ),
+                  Form(
+                    key: _formKey,
+                    child: Container(
+                      margin: EdgeInsets.symmetric(horizontal: 24.w),
+                      decoration: AppStyles.boxDecorationMedium.copyWith(
+                        borderRadius: BorderRadius.circular(10),
+                      ),
+                      child: Column(
+                        children: [
+                          Container(
+                            constraints: BoxConstraints(minHeight: 56.h),
+                            alignment: Alignment.center,
+                            // Eye IconButton's own padding gives the 14px
+                            // right inset.
+                            padding: EdgeInsets.only(left: 14.w),
+                            child: LoginPasswordTextField(
+                              textEditingController: _newPasswordController,
+                              hintText: context.bssSubL10n.enterNewPassword,
+                              validator: Validators.validatePassword,
+                            ),
                           ),
-                          child: LoginPasswordTextField(
-                            textEditingController: _newPasswordController,
-                            hintText: 'Enter New Password',
-                            validator: Validators.validatePassword,
+                          const Divider(
+                            color: AppColor.kFieldBorder,
+                            thickness: 1,
+                            height: 1,
                           ),
-                        ),
-                        Divider(
-                          color: Colors.grey.shade200,
-                          thickness: 1,
-                          height: 2,
-                        ),
-                        Padding(
-                          padding: const EdgeInsets.only(
-                            left: 16.0,
-                            top: 11,
-                            bottom: 11,
+                          Container(
+                            constraints: BoxConstraints(minHeight: 56.h),
+                            alignment: Alignment.center,
+                            padding: EdgeInsets.only(left: 14.w),
+                            child: LoginPasswordTextField(
+                              textEditingController: _confirmPasswordController,
+                              hintText: context.bssSubL10n.enterConfirmPassword,
+                              validator:
+                                  (value) => Validators.validateConfirmPassword(
+                                    value,
+                                    _newPasswordController.text,
+                                  ),
+                            ),
                           ),
-                          child: LoginPasswordTextField(
-                            textEditingController: _confirmPasswordController,
-                            hintText: 'Enter Confirm Password',
-                            validator: (value) =>
-                                Validators.validateConfirmPassword(
-                                  value,
-                                  _newPasswordController.text,
-                                ),
-                          ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ),
-                ),
 
-                const SizedBox(height: 32),
+                  SizedBox(height: 32.h),
 
-                Padding(
-                  padding: const EdgeInsets.symmetric(horizontal: 20),
-                  child: BlocBuilder<AuthBloc, AuthState>(
-                    buildWhen: (previous, current) =>
-                    (previous is AuthLoading) != (current is AuthLoading),
-                    builder: (context, state) {
-                      final isLoading = state is AuthLoading;
-                      return WhiteButton(
-                        isLoading: isLoading,
-                        label: 'Reset Password',
-                        borderRadius: 10,
-                        textColor: AppColor.kPrimaryColor,
-                        onClicked: _resetPassword,
-                      );
-                    },
+                  Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 24.w),
+                    child: BlocBuilder<AuthBloc, AuthState>(
+                      buildWhen:
+                          (previous, current) =>
+                              (previous is AuthLoading) !=
+                              (current is AuthLoading),
+                      builder: (context, state) {
+                        final isLoading = state is AuthLoading;
+                        return WhiteButton(
+                          isLoading: isLoading,
+                          label: context.bssSubL10n.resetPassword,
+                          borderRadius: 10,
+                          height: 52.h,
+                          textColor: AppColor.kPrimaryColor,
+                          onClicked: _resetPassword,
+                        );
+                      },
+                    ),
                   ),
-                ),
-              ],
-            ),
+                ],
+              ),
+            ],
           ),
         ),
       ),

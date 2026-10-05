@@ -5,6 +5,7 @@ import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/util/preference_util.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/presentation/page_component/intro_screen_layout.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
 
 class IntroScreenPage extends StatefulWidget {
   const IntroScreenPage({super.key});
@@ -32,22 +33,18 @@ class _IntroScreenPageState extends State<IntroScreenPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      backgroundColor: AppColor.kPrimaryColor,
+      backgroundColor: AppColor.kIntroBackground,
       body: Stack(
         children: [
-          SvgPicture.asset(
-            'assets/images/intro_screen_background.svg',
-            fit: BoxFit.cover,
-          ),
+          SvgPicture.asset(AppAssets.introScreenBackground, fit: BoxFit.cover),
           PageView(
             controller: _pageController,
             children: <Widget>[
               IntroScreenLayout(
                 index: 0,
-                imageName: 'intro_one.svg',
+                imageName: AppAssets.introOne,
                 heading: context.bssSubL10n.stayConnectedAlways,
-                description:
-                    context.bssSubL10n.experienceLightningFast,
+                description: context.bssSubL10n.experienceLightningFast,
                 nextButtonCallback:
                     () => _pageController.animateToPage(
                       1,
@@ -58,10 +55,9 @@ class _IntroScreenPageState extends State<IntroScreenPage> {
               ),
               IntroScreenLayout(
                 index: 1,
-                imageName: 'intro_two.svg',
+                imageName: AppAssets.introTwo,
                 heading: context.bssSubL10n.bridgingDigitalDivide,
-                description:
-                    context.bssSubL10n.kfonEmpowersCitizen,
+                description: context.bssSubL10n.bssEmpowersCitizen,
                 nextButtonCallback:
                     () => _pageController.animateToPage(
                       2,
@@ -71,13 +67,13 @@ class _IntroScreenPageState extends State<IntroScreenPage> {
               ),
               IntroScreenLayout(
                 index: 2,
-                imageName: 'intro_three.svg',
+                imageName: AppAssets.introThree,
                 heading: context.bssSubL10n.internetWorksForYou,
-                description:
-                    context.bssSubL10n.enjoyHighSpeed,
+                description: context.bssSubL10n.enjoyHighSpeed,
                 nextButtonCallback: () {
+                  // Tenant is already chosen by now, so finish at login.
                   PreferenceUtils.setIntroScreenStatus(false);
-                  Navigator.pushReplacementNamed(context, AppRoutes.tenant);
+                  Navigator.pushReplacementNamed(context, AppRoutes.login);
                 },
               ),
             ],

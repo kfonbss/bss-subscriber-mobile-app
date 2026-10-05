@@ -2,14 +2,14 @@ import 'package:equatable/equatable.dart';
 
 class RechargeChangePlanParams extends Equatable {
   final String packageId;
-  final String gateway;
+  final String? gateway;
   final double amount;
   final double expectedFinalAmount;
   final int durationDays;
   final String? seasonId;
   final bool referral;
   final bool useWallet;
-  final String advanceRecharge;
+  final bool changePlan;
 
   const RechargeChangePlanParams({
     required this.packageId,
@@ -20,7 +20,7 @@ class RechargeChangePlanParams extends Equatable {
     this.seasonId,
     required this.referral,
     required this.useWallet,
-    required this.advanceRecharge,
+    required this.changePlan,
   });
 
   Map<String, dynamic> toJson() {
@@ -33,7 +33,7 @@ class RechargeChangePlanParams extends Equatable {
       'seasonId': seasonId,
       'referral': referral,
       'useWallet': useWallet,
-      'advanceRecharge': advanceRecharge,
+      'changePlan': changePlan,
     };
   }
 
@@ -47,6 +47,6 @@ class RechargeChangePlanParams extends Equatable {
     seasonId,
     referral,
     useWallet,
-    advanceRecharge,
+    changePlan,
   ];
 }

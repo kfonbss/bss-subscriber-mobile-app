@@ -1,4 +1,5 @@
 import 'package:kfon_subscriber/features/ticket/data/model/add_note_req.dart';
+import 'package:kfon_subscriber/features/ticket/data/model/rate_ticket_req.dart';
 import 'package:kfon_subscriber/features/ticket/data/model/submit_ticket_req.dart';
 import 'package:kfon_subscriber/features/ticket/domain/entity/subject_entity.dart';
 import 'package:kfon_subscriber/features/ticket/domain/entity/ticket_category_entity.dart';
@@ -68,4 +69,9 @@ class LoadVisibilityPermissions extends TicketEvent {
 class OnAddNote extends TicketEvent {
   final AddNoteReq params;
   const OnAddNote({required this.params});
+}
+
+class OnRateTicket extends TicketEvent {
+  final RateTicketReq params;
+  const OnRateTicket({required this.params});
 }

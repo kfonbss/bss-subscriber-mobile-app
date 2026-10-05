@@ -13,7 +13,7 @@ class AboutKfonPage extends StatelessWidget {
 
     return CommonAppBar(
       onBackPressed: () => Navigator.pop(context),
-      title: l10n.aboutKfon,
+      title: l10n.aboutBss,
       body: SingleChildScrollView(
         padding: EdgeInsets.only(bottom: 50.h),
         child: Column(
@@ -24,7 +24,7 @@ class AboutKfonPage extends StatelessWidget {
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  _KfonSection(title: l10n.kfon, content: l10n.kfonDescription),
+                  _KfonSection(title: l10n.bss, content: l10n.bssDescription),
                   SizedBox(height: 20.h),
                   _KfonSection(
                     title: l10n.mission,
@@ -64,7 +64,7 @@ class _KfonSection extends StatelessWidget {
   // 0xB3 = 179 ≈ 0.7 × 255 → Colors.black @ 70% opacity
   static final _contentStyle = TextStyle(
     fontFamily: 'GeneralSans',
-    color: const Color(0xB3000000),
+    color: AppColor.kBlack70,
     fontSize: 12.sp,
     fontWeight: FontWeight.w400,
     height: 1.8,

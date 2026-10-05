@@ -94,12 +94,6 @@ abstract class BssSubLocalizations {
   /// A list of this localizations delegate's supported locales.
   static const List<Locale> supportedLocales = <Locale>[Locale('en')];
 
-  /// No description provided for @welcomeLabel.
-  ///
-  /// In en, this message translates to:
-  /// **'Welcome to KFON'**
-  String get welcomeLabel;
-
   /// No description provided for @otpSentMessage.
   ///
   /// In en, this message translates to:
@@ -124,6 +118,12 @@ abstract class BssSubLocalizations {
   /// **'Download PDF'**
   String get downloadPdf;
 
+  /// No description provided for @close.
+  ///
+  /// In en, this message translates to:
+  /// **'Close'**
+  String get close;
+
   /// No description provided for @stayConnectedAlways.
   ///
   /// In en, this message translates to:
@@ -133,7 +133,7 @@ abstract class BssSubLocalizations {
   /// No description provided for @experienceLightningFast.
   ///
   /// In en, this message translates to:
-  /// **'Experience lightning-fast internet with KFON\'s reliable fiber network, keeping you online anytime, anywhere.'**
+  /// **'Experience lightning-fast internet with BSS\'s reliable fiber network, keeping you online anytime, anywhere.'**
   String get experienceLightningFast;
 
   /// No description provided for @bridgingDigitalDivide.
@@ -142,11 +142,11 @@ abstract class BssSubLocalizations {
   /// **'Bridging the Digital Divide'**
   String get bridgingDigitalDivide;
 
-  /// No description provided for @kfonEmpowersCitizen.
+  /// No description provided for @bssEmpowersCitizen.
   ///
   /// In en, this message translates to:
-  /// **'KFON empowers every citizen with affordable internet, supporting education, business, and government services.'**
-  String get kfonEmpowersCitizen;
+  /// **'BSS empowers every citizen with affordable internet, supporting education, business, and government services.'**
+  String get bssEmpowersCitizen;
 
   /// No description provided for @internetWorksForYou.
   ///
@@ -160,11 +160,11 @@ abstract class BssSubLocalizations {
   /// **'Enjoy high-speed, secure, and cost-effective internet designed for every household and business.'**
   String get enjoyHighSpeed;
 
-  /// No description provided for @welcomeToKfon.
+  /// No description provided for @welcomeText.
   ///
   /// In en, this message translates to:
-  /// **'Welcome to KFON'**
-  String get welcomeToKfon;
+  /// **'Welcome to {name}'**
+  String welcomeText(Object name);
 
   /// No description provided for @enterUsername.
   ///
@@ -394,12 +394,6 @@ abstract class BssSubLocalizations {
   /// **'Recharge'**
   String get recharge;
 
-  /// No description provided for @volume.
-  ///
-  /// In en, this message translates to:
-  /// **'Volume'**
-  String get volume;
-
   /// No description provided for @walletBalance.
   ///
   /// In en, this message translates to:
@@ -457,7 +451,7 @@ abstract class BssSubLocalizations {
   /// No description provided for @packsActive.
   ///
   /// In en, this message translates to:
-  /// **'+{count} Pack Active'**
+  /// **'{count} Pack Active'**
   String packsActive(String count);
 
   /// No description provided for @viewUsage.
@@ -1204,23 +1198,23 @@ abstract class BssSubLocalizations {
   /// **'Contact Us'**
   String get contactUs;
 
-  /// No description provided for @aboutKfon.
+  /// No description provided for @aboutBss.
   ///
   /// In en, this message translates to:
-  /// **'About Kfon'**
-  String get aboutKfon;
+  /// **'About BSS'**
+  String get aboutBss;
 
-  /// No description provided for @kfon.
+  /// No description provided for @bss.
   ///
   /// In en, this message translates to:
-  /// **'KFON'**
-  String get kfon;
+  /// **'BSS'**
+  String get bss;
 
-  /// No description provided for @kfonDescription.
+  /// No description provided for @bssDescription.
   ///
   /// In en, this message translates to:
   /// **'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting'**
-  String get kfonDescription;
+  String get bssDescription;
 
   /// No description provided for @mission.
   ///
@@ -1419,12 +1413,6 @@ abstract class BssSubLocalizations {
   /// In en, this message translates to:
   /// **'Notifications Settings'**
   String get notificationsSettings;
-
-  /// No description provided for @aboutKfonTitle.
-  ///
-  /// In en, this message translates to:
-  /// **'About KFON'**
-  String get aboutKfonTitle;
 
   /// No description provided for @accountInformation.
   ///
@@ -2257,8 +2245,8 @@ abstract class BssSubLocalizations {
   /// No description provided for @rechargeFailedMessage.
   ///
   /// In en, this message translates to:
-  /// **'Your recharge of ₹500 could not be completed.'**
-  String get rechargeFailedMessage;
+  /// **'Your recharge of ₹{amount} could not be completed.'**
+  String rechargeFailedMessage(String amount);
 
   /// No description provided for @rechargePaymentCancelled.
   ///
@@ -2308,11 +2296,11 @@ abstract class BssSubLocalizations {
   /// **'Date : '**
   String get dateLabel;
 
-  /// No description provided for @introducingKfonApp.
+  /// No description provided for @introducingBssApp.
   ///
   /// In en, this message translates to:
-  /// **'Introducing KFON app'**
-  String get introducingKfonApp;
+  /// **'Introducing {appName}'**
+  String introducingBssApp(Object appName);
 
   /// No description provided for @getStarted.
   ///
@@ -2566,6 +2554,54 @@ abstract class BssSubLocalizations {
   /// **'KSEB Consumer No*'**
   String get ksebConsumerNo;
 
+  /// No description provided for @subscriptionType.
+  ///
+  /// In en, this message translates to:
+  /// **'Subscription Type'**
+  String get subscriptionType;
+
+  /// No description provided for @sme.
+  ///
+  /// In en, this message translates to:
+  /// **'SME'**
+  String get sme;
+
+  /// No description provided for @ews.
+  ///
+  /// In en, this message translates to:
+  /// **'EWS'**
+  String get ews;
+
+  /// No description provided for @planType.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan Type'**
+  String get planType;
+
+  /// No description provided for @searchPackage.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Package'**
+  String get searchPackage;
+
+  /// No description provided for @fup.
+  ///
+  /// In en, this message translates to:
+  /// **'FUP'**
+  String get fup;
+
+  /// No description provided for @unlimited.
+  ///
+  /// In en, this message translates to:
+  /// **'Unlimited'**
+  String get unlimited;
+
+  /// No description provided for @upgradePlan.
+  ///
+  /// In en, this message translates to:
+  /// **'Upgrade Plan'**
+  String get upgradePlan;
+
   /// No description provided for @enterKsebConsumerNo.
   ///
   /// In en, this message translates to:
@@ -2623,7 +2659,7 @@ abstract class BssSubLocalizations {
   /// No description provided for @declarationConsent.
   ///
   /// In en, this message translates to:
-  /// **'I hereby give my consent to receive calls, texts, WhatsApp and emails regarding updates, newsletters, and other important information from or on behalf of KFON at the mobile number provided above.'**
+  /// **'I hereby give my consent to receive calls, texts, WhatsApp and emails regarding updates, newsletters, and other important information from or on behalf of BSS at the mobile number provided above.'**
   String get declarationConsent;
 
   /// No description provided for @darkFibreEnquiry.
@@ -3154,6 +3190,12 @@ abstract class BssSubLocalizations {
   /// **'Package Details'**
   String get packageDetails;
 
+  /// No description provided for @volume.
+  ///
+  /// In en, this message translates to:
+  /// **'Volume'**
+  String get volume;
+
   /// No description provided for @referralCodeLabel.
   ///
   /// In en, this message translates to:
@@ -3273,6 +3315,1098 @@ abstract class BssSubLocalizations {
   /// In en, this message translates to:
   /// **'Apply'**
   String get apply;
+
+  /// No description provided for @futureRecharges.
+  ///
+  /// In en, this message translates to:
+  /// **'Future Recharges'**
+  String get futureRecharges;
+
+  /// No description provided for @wallet.
+  ///
+  /// In en, this message translates to:
+  /// **'Wallet'**
+  String get wallet;
+
+  /// No description provided for @direct.
+  ///
+  /// In en, this message translates to:
+  /// **'Direct'**
+  String get direct;
+
+  /// No description provided for @today.
+  ///
+  /// In en, this message translates to:
+  /// **'Today'**
+  String get today;
+
+  /// No description provided for @thisWeek.
+  ///
+  /// In en, this message translates to:
+  /// **'This week'**
+  String get thisWeek;
+
+  /// No description provided for @thisMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'This month'**
+  String get thisMonth;
+
+  /// No description provided for @rechargeCount.
+  ///
+  /// In en, this message translates to:
+  /// **'{count} Recharge'**
+  String rechargeCount(int count);
+
+  /// No description provided for @date.
+  ///
+  /// In en, this message translates to:
+  /// **'Date'**
+  String get date;
+
+  /// No description provided for @unableToLoadInvoicePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load invoice PDF'**
+  String get unableToLoadInvoicePdf;
+
+  /// No description provided for @downloading.
+  ///
+  /// In en, this message translates to:
+  /// **'Downloading...'**
+  String get downloading;
+
+  /// No description provided for @selectedCircle.
+  ///
+  /// In en, this message translates to:
+  /// **'SELECTED CIRCLE'**
+  String get selectedCircle;
+
+  /// No description provided for @accountVerified.
+  ///
+  /// In en, this message translates to:
+  /// **'Account Verified! 🎉'**
+  String get accountVerified;
+
+  /// No description provided for @accountVerifiedMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Congratulations! your account has been verified from our system. Please login first before enjoy our amazing experience. We hope you enjoy it!'**
+  String get accountVerifiedMessage;
+
+  /// No description provided for @startNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Start Now'**
+  String get startNow;
+
+  /// No description provided for @chooseYourCircle.
+  ///
+  /// In en, this message translates to:
+  /// **'Choose Your Circle'**
+  String get chooseYourCircle;
+
+  /// No description provided for @selectStateToContinue.
+  ///
+  /// In en, this message translates to:
+  /// **'Select your state to continue with the login'**
+  String get selectStateToContinue;
+
+  /// No description provided for @searchState.
+  ///
+  /// In en, this message translates to:
+  /// **'Search state'**
+  String get searchState;
+
+  /// No description provided for @noStatesFound.
+  ///
+  /// In en, this message translates to:
+  /// **'No states found'**
+  String get noStatesFound;
+
+  /// No description provided for @continueText.
+  ///
+  /// In en, this message translates to:
+  /// **'Continue'**
+  String get continueText;
+
+  /// No description provided for @failedToLoadTapToRetry.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load. Tap to retry'**
+  String get failedToLoadTapToRetry;
+
+  /// No description provided for @insufficientWalletBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient wallet balance. ₹{amount} will be charged online. Please select an online payment method also.'**
+  String insufficientWalletBalance(String amount);
+
+  /// No description provided for @percentOff.
+  ///
+  /// In en, this message translates to:
+  /// **'{percent}% OFF'**
+  String percentOff(String percent);
+
+  /// No description provided for @amountOff.
+  ///
+  /// In en, this message translates to:
+  /// **'₹{amount} OFF'**
+  String amountOff(String amount);
+
+  /// No description provided for @saveAmount.
+  ///
+  /// In en, this message translates to:
+  /// **'Save ₹{amount}'**
+  String saveAmount(String amount);
+
+  /// No description provided for @selectServiceType.
+  ///
+  /// In en, this message translates to:
+  /// **'Select Service Type'**
+  String get selectServiceType;
+
+  /// No description provided for @usageOfTotalGb.
+  ///
+  /// In en, this message translates to:
+  /// **'{available} GB / {total} GB'**
+  String usageOfTotalGb(String available, String total);
+
+  /// No description provided for @daysValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} Days'**
+  String daysValue(String days);
+
+  /// No description provided for @invoiceFileNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice file is not available'**
+  String get invoiceFileNotAvailable;
+
+  /// No description provided for @rechargeType.
+  ///
+  /// In en, this message translates to:
+  /// **'Recharge type'**
+  String get rechargeType;
+
+  /// No description provided for @online.
+  ///
+  /// In en, this message translates to:
+  /// **'Online'**
+  String get online;
+
+  /// No description provided for @offline.
+  ///
+  /// In en, this message translates to:
+  /// **'Offline'**
+  String get offline;
+
+  /// No description provided for @filterByDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Filter by date'**
+  String get filterByDate;
+
+  /// No description provided for @monthly.
+  ///
+  /// In en, this message translates to:
+  /// **'Monthly'**
+  String get monthly;
+
+  /// No description provided for @yearly.
+  ///
+  /// In en, this message translates to:
+  /// **'Yearly'**
+  String get yearly;
+
+  /// No description provided for @dateSelected.
+  ///
+  /// In en, this message translates to:
+  /// **'Date selected'**
+  String get dateSelected;
+
+  /// No description provided for @selected.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected'**
+  String get selected;
+
+  /// No description provided for @enterASearchTerm.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a search term'**
+  String get enterASearchTerm;
+
+  /// No description provided for @needHelp.
+  ///
+  /// In en, this message translates to:
+  /// **'Need Help?'**
+  String get needHelp;
+
+  /// No description provided for @hereToAssistAnytime.
+  ///
+  /// In en, this message translates to:
+  /// **'We’re Here to assist you Anytime.'**
+  String get hereToAssistAnytime;
+
+  /// No description provided for @callBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Call Back'**
+  String get callBack;
+
+  /// No description provided for @talkToOurAgent.
+  ///
+  /// In en, this message translates to:
+  /// **'Talk to our Agent'**
+  String get talkToOurAgent;
+
+  /// No description provided for @confirmCallBackRequest.
+  ///
+  /// In en, this message translates to:
+  /// **'Are you sure want to create call back request?'**
+  String get confirmCallBackRequest;
+
+  /// No description provided for @notificationSoundDefault.
+  ///
+  /// In en, this message translates to:
+  /// **'Default'**
+  String get notificationSoundDefault;
+
+  /// No description provided for @notificationSettingsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification Settings'**
+  String get notificationSettingsTitle;
+
+  /// No description provided for @general.
+  ///
+  /// In en, this message translates to:
+  /// **'General'**
+  String get general;
+
+  /// No description provided for @paymentReminders.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Reminders'**
+  String get paymentReminders;
+
+  /// No description provided for @paymentRemindersDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Get notified about upcoming payment due dates.'**
+  String get paymentRemindersDesc;
+
+  /// No description provided for @packageExpiryAlerts.
+  ///
+  /// In en, this message translates to:
+  /// **'Package Expiry Alerts'**
+  String get packageExpiryAlerts;
+
+  /// No description provided for @packageExpiryAlertsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive alerts when your package is about to expire.'**
+  String get packageExpiryAlertsDesc;
+
+  /// No description provided for @promotionsAndOffers.
+  ///
+  /// In en, this message translates to:
+  /// **'Promotions & Offers'**
+  String get promotionsAndOffers;
+
+  /// No description provided for @promotionsAndOffersDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Stay updated on the latest deals and discounts.'**
+  String get promotionsAndOffersDesc;
+
+  /// No description provided for @dataExhaustionWarnings.
+  ///
+  /// In en, this message translates to:
+  /// **'Data Exhaustion Warnings'**
+  String get dataExhaustionWarnings;
+
+  /// No description provided for @dataExhaustionWarningsDesc.
+  ///
+  /// In en, this message translates to:
+  /// **'Know when your data is nearing its limit.'**
+  String get dataExhaustionWarningsDesc;
+
+  /// No description provided for @soundAndVibration.
+  ///
+  /// In en, this message translates to:
+  /// **'Sound & Vibration'**
+  String get soundAndVibration;
+
+  /// No description provided for @notificationSound.
+  ///
+  /// In en, this message translates to:
+  /// **'Notification Sound'**
+  String get notificationSound;
+
+  /// No description provided for @vibration.
+  ///
+  /// In en, this message translates to:
+  /// **'Vibration'**
+  String get vibration;
+
+  /// No description provided for @labelPreviews.
+  ///
+  /// In en, this message translates to:
+  /// **'{label} Previews'**
+  String labelPreviews(String label);
+
+  /// No description provided for @errorLoadingCategories.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading categories'**
+  String get errorLoadingCategories;
+
+  /// No description provided for @noCategoriesAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No categories available'**
+  String get noCategoriesAvailable;
+
+  /// No description provided for @searchSubject.
+  ///
+  /// In en, this message translates to:
+  /// **'Search Subject'**
+  String get searchSubject;
+
+  /// No description provided for @selectDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Select date'**
+  String get selectDate;
+
+  /// No description provided for @createdDateFrom.
+  ///
+  /// In en, this message translates to:
+  /// **'Created Date From'**
+  String get createdDateFrom;
+
+  /// No description provided for @createdDateTo.
+  ///
+  /// In en, this message translates to:
+  /// **'Created Date To'**
+  String get createdDateTo;
+
+  /// No description provided for @successfullyCompletedReceiptGenerated.
+  ///
+  /// In en, this message translates to:
+  /// **'Successfully completed\nand Receipt generated'**
+  String get successfullyCompletedReceiptGenerated;
+
+  /// No description provided for @plusPackCount.
+  ///
+  /// In en, this message translates to:
+  /// **'+ {count} Pack'**
+  String plusPackCount(String count);
+
+  /// No description provided for @gbAvailableOfTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'{available} GB Available / {total} GB'**
+  String gbAvailableOfTotal(String available, String total);
+
+  /// No description provided for @preview.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview'**
+  String get preview;
+
+  /// No description provided for @documentPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Document Preview'**
+  String get documentPreview;
+
+  /// No description provided for @viewPdfDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'View PDF Document'**
+  String get viewPdfDocument;
+
+  /// No description provided for @previewNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Preview not available'**
+  String get previewNotAvailable;
+
+  /// No description provided for @selfCare.
+  ///
+  /// In en, this message translates to:
+  /// **'Self care'**
+  String get selfCare;
+
+  /// No description provided for @faq.
+  ///
+  /// In en, this message translates to:
+  /// **'FAQ'**
+  String get faq;
+
+  /// No description provided for @profile.
+  ///
+  /// In en, this message translates to:
+  /// **'Profile'**
+  String get profile;
+
+  /// No description provided for @errorLoadingVideo.
+  ///
+  /// In en, this message translates to:
+  /// **'Error loading video'**
+  String get errorLoadingVideo;
+
+  /// No description provided for @currentPackage.
+  ///
+  /// In en, this message translates to:
+  /// **'CURRENT PACKAGE'**
+  String get currentPackage;
+
+  /// No description provided for @daysValidity.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} Days Validity'**
+  String daysValidity(String days);
+
+  /// No description provided for @speedCaps.
+  ///
+  /// In en, this message translates to:
+  /// **'SPEED'**
+  String get speedCaps;
+
+  /// No description provided for @packageFee.
+  ///
+  /// In en, this message translates to:
+  /// **'Package Fee'**
+  String get packageFee;
+
+  /// No description provided for @cgstSgst.
+  ///
+  /// In en, this message translates to:
+  /// **'CGST+SGST'**
+  String get cgstSgst;
+
+  /// No description provided for @specialDiscount.
+  ///
+  /// In en, this message translates to:
+  /// **'Special Discount'**
+  String get specialDiscount;
+
+  /// No description provided for @appliedCaps.
+  ///
+  /// In en, this message translates to:
+  /// **'APPLIED'**
+  String get appliedCaps;
+
+  /// No description provided for @inclusiveOfAllTaxes.
+  ///
+  /// In en, this message translates to:
+  /// **'Inclusive of all applicable taxes'**
+  String get inclusiveOfAllTaxes;
+
+  /// No description provided for @referralCodeOptionalHint.
+  ///
+  /// In en, this message translates to:
+  /// **'ENTER REFERRAL CODE (OPTIONAL)'**
+  String get referralCodeOptionalHint;
+
+  /// No description provided for @walletCaps.
+  ///
+  /// In en, this message translates to:
+  /// **'WALLET'**
+  String get walletCaps;
+
+  /// No description provided for @myWallet.
+  ///
+  /// In en, this message translates to:
+  /// **'My Wallet'**
+  String get myWallet;
+
+  /// No description provided for @balanceLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Balance:'**
+  String get balanceLabel;
+
+  /// No description provided for @sufficient.
+  ///
+  /// In en, this message translates to:
+  /// **'Sufficient'**
+  String get sufficient;
+
+  /// No description provided for @insufficient.
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient'**
+  String get insufficient;
+
+  /// No description provided for @orPayViaGateway.
+  ///
+  /// In en, this message translates to:
+  /// **'OR PAY VIA GATEWAY'**
+  String get orPayViaGateway;
+
+  /// No description provided for @atomPayDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'All cards, UPI & Net Banking'**
+  String get atomPayDescription;
+
+  /// No description provided for @razorpayDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Cards, UPI, Wallets & Net Banking'**
+  String get razorpayDescription;
+
+  /// No description provided for @paymentSecureNote.
+  ///
+  /// In en, this message translates to:
+  /// **'Your payment is 100% secure & encrypted via 256-bit SSL standard.'**
+  String get paymentSecureNote;
+
+  /// No description provided for @termsAndConditionsTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Terms & Conditions'**
+  String get termsAndConditionsTitle;
+
+  /// No description provided for @termsAndConditionsText.
+  ///
+  /// In en, this message translates to:
+  /// **'The terms and condition shall be governed by Indian Laws. Any and all disputes, controversies and conflicts (\"Disputes\") arising out of the Program shall be settled through regular judicial process and the court of Delhi shall have exclusive jurisdiction to any matter arising hereof and RailTel / KFON liability shall be limited to the extent of registration fees charged and received from the customers.'**
+  String get termsAndConditionsText;
+
+  /// No description provided for @privacyPolicyCaps.
+  ///
+  /// In en, this message translates to:
+  /// **'PRIVACY POLICY'**
+  String get privacyPolicyCaps;
+
+  /// No description provided for @privacyPolicyText.
+  ///
+  /// In en, this message translates to:
+  /// **'Entity website considers the protection of your personal information a top priority when you use our services. All data transmitted through this portal is safeguarded through standard compliance protocols.'**
+  String get privacyPolicyText;
+
+  /// No description provided for @agreeToTerms.
+  ///
+  /// In en, this message translates to:
+  /// **'I agree to the terms and conditions'**
+  String get agreeToTerms;
+
+  /// No description provided for @proceedToPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Proceed to Pay'**
+  String get proceedToPay;
+
+  /// No description provided for @unableToStartPayment.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to start payment. Please try again or contact support.'**
+  String get unableToStartPayment;
+
+  /// No description provided for @autoPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto Pay'**
+  String get autoPay;
+
+  /// No description provided for @autopayEnrollIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Enroll in'**
+  String get autopayEnrollIn;
+
+  /// No description provided for @upiAutopay.
+  ///
+  /// In en, this message translates to:
+  /// **'UPI Autopay'**
+  String get upiAutopay;
+
+  /// No description provided for @autopayEnrollSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'to renew your plan automatically on every due date with zero manual intervention.'**
+  String get autopayEnrollSuffix;
+
+  /// No description provided for @chargeSummary.
+  ///
+  /// In en, this message translates to:
+  /// **'Charge Summary'**
+  String get chargeSummary;
+
+  /// No description provided for @renewalChargeInclGst.
+  ///
+  /// In en, this message translates to:
+  /// **'Renewal Charge (incl. GST)'**
+  String get renewalChargeInclGst;
+
+  /// No description provided for @platformChargeInclGst.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform Charge (incl. GST)'**
+  String get platformChargeInclGst;
+
+  /// No description provided for @totalRenewalCharge.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Renewal Charge'**
+  String get totalRenewalCharge;
+
+  /// No description provided for @setUpAutopay.
+  ///
+  /// In en, this message translates to:
+  /// **'Set Up Autopay'**
+  String get setUpAutopay;
+
+  /// No description provided for @enterUpiId.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter UPI ID'**
+  String get enterUpiId;
+
+  /// No description provided for @upiIdHint.
+  ///
+  /// In en, this message translates to:
+  /// **'example@upi'**
+  String get upiIdHint;
+
+  /// No description provided for @upiLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'UPI'**
+  String get upiLabel;
+
+  /// No description provided for @invalidUpiId.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid UPI ID (e.g. name@okaxis)'**
+  String get invalidUpiId;
+
+  /// No description provided for @autopayAgreePrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'I agree to the'**
+  String get autopayAgreePrefix;
+
+  /// No description provided for @autopayAgreeMiddle.
+  ///
+  /// In en, this message translates to:
+  /// **'and authorize automatic debit of'**
+  String get autopayAgreeMiddle;
+
+  /// No description provided for @autopayAgreeSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'from my UPI account.'**
+  String get autopayAgreeSuffix;
+
+  /// No description provided for @platformChargePolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Platform Charge Policy'**
+  String get platformChargePolicy;
+
+  /// No description provided for @platformChargePolicyText.
+  ///
+  /// In en, this message translates to:
+  /// **'If the renewal fee (incl. GST) is between ₹1 and ₹800, a platform charge of ₹10 plus applicable GST applies. If it exceeds ₹800, a platform charge of ₹20 plus applicable GST applies. The platform charge is non-refundable under any circumstances.'**
+  String get platformChargePolicyText;
+
+  /// No description provided for @refundCancellationPolicy.
+  ///
+  /// In en, this message translates to:
+  /// **'Refund / Cancellation Policy'**
+  String get refundCancellationPolicy;
+
+  /// No description provided for @refundCancellationPolicyText.
+  ///
+  /// In en, this message translates to:
+  /// **'If a payment fails, the amount will be reverted within 5–8 working days.'**
+  String get refundCancellationPolicyText;
+
+  /// No description provided for @contactUsPrefix.
+  ///
+  /// In en, this message translates to:
+  /// **'For any support, please call our toll-free number'**
+  String get contactUsPrefix;
+
+  /// No description provided for @tollFreeNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'1800 1039'**
+  String get tollFreeNumber;
+
+  /// No description provided for @contactUsSuffix.
+  ///
+  /// In en, this message translates to:
+  /// **'or contact your local cable operator or MSP.'**
+  String get contactUsSuffix;
+
+  /// No description provided for @process.
+  ///
+  /// In en, this message translates to:
+  /// **'Process'**
+  String get process;
+
+  /// No description provided for @autopayNotEligible.
+  ///
+  /// In en, this message translates to:
+  /// **'Autopay isn\'t available for your plan right now.'**
+  String get autopayNotEligible;
+
+  /// No description provided for @broadbandPlan.
+  ///
+  /// In en, this message translates to:
+  /// **'BROADBAND PLAN'**
+  String get broadbandPlan;
+
+  /// No description provided for @baseRate.
+  ///
+  /// In en, this message translates to:
+  /// **'Base Rate'**
+  String get baseRate;
+
+  /// No description provided for @perMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'/mo'**
+  String get perMonth;
+
+  /// No description provided for @nextAutoDebitDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Next Auto-Debit Date:'**
+  String get nextAutoDebitDate;
+
+  /// No description provided for @dueInDays.
+  ///
+  /// In en, this message translates to:
+  /// **'(Due in {days} days)'**
+  String dueInDays(String days);
+
+  /// No description provided for @dueToday.
+  ///
+  /// In en, this message translates to:
+  /// **'(Due today)'**
+  String get dueToday;
+
+  /// No description provided for @totalScheduledDebit.
+  ///
+  /// In en, this message translates to:
+  /// **'Total Scheduled Debit:'**
+  String get totalScheduledDebit;
+
+  /// No description provided for @inclGst.
+  ///
+  /// In en, this message translates to:
+  /// **'(incl. GST)'**
+  String get inclGst;
+
+  /// No description provided for @paymentInstrument.
+  ///
+  /// In en, this message translates to:
+  /// **'Payment Instrument'**
+  String get paymentInstrument;
+
+  /// No description provided for @mandateUmn.
+  ///
+  /// In en, this message translates to:
+  /// **'Mandate UMN'**
+  String get mandateUmn;
+
+  /// No description provided for @maxAutoDebitCap.
+  ///
+  /// In en, this message translates to:
+  /// **'Max Auto-Debit Cap'**
+  String get maxAutoDebitCap;
+
+  /// No description provided for @upToPerMonth.
+  ///
+  /// In en, this message translates to:
+  /// **'Up to {amount} / Monthly'**
+  String upToPerMonth(String amount);
+
+  /// No description provided for @removeFromAutoPay.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from Auto-Pay'**
+  String get removeFromAutoPay;
+
+  /// No description provided for @goBack.
+  ///
+  /// In en, this message translates to:
+  /// **'Go Back'**
+  String get goBack;
+
+  /// No description provided for @autopayPendingApproval.
+  ///
+  /// In en, this message translates to:
+  /// **'Waiting for approval in your UPI app. Approve the mandate request to activate Autopay.'**
+  String get autopayPendingApproval;
+
+  /// No description provided for @removeFromAutoPayQuestion.
+  ///
+  /// In en, this message translates to:
+  /// **'Remove from auto-pay?'**
+  String get removeFromAutoPayQuestion;
+
+  /// No description provided for @removeAutopayMessage.
+  ///
+  /// In en, this message translates to:
+  /// **'Auto-pay will be permanently removed for this plan. Your active mandate will be revoked and you will need to re-authenticate to set up auto-pay again.'**
+  String get removeAutopayMessage;
+
+  /// No description provided for @yesRemove.
+  ///
+  /// In en, this message translates to:
+  /// **'Yes, remove'**
+  String get yesRemove;
+
+  /// No description provided for @autopayRequestSent.
+  ///
+  /// In en, this message translates to:
+  /// **'Autopay request sent. Approve it in your UPI app.'**
+  String get autopayRequestSent;
+
+  /// No description provided for @autopayRemoved.
+  ///
+  /// In en, this message translates to:
+  /// **'Autopay removed.'**
+  String get autopayRemoved;
+
+  /// No description provided for @panNumberLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'PAN Number'**
+  String get panNumberLabel;
+
+  /// No description provided for @enterPanNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'ENTER PAN NUMBER'**
+  String get enterPanNumber;
+
+  /// No description provided for @gstinLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'GSTIN'**
+  String get gstinLabel;
+
+  /// No description provided for @serviceDescriptionLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Service Description'**
+  String get serviceDescriptionLabel;
+
+  /// No description provided for @enterServiceDescription.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter Service Description'**
+  String get enterServiceDescription;
+
+  /// No description provided for @sacCodeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'SAC Code'**
+  String get sacCodeLabel;
+
+  /// No description provided for @enterSacCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter SAC Code'**
+  String get enterSacCode;
+
+  /// No description provided for @taxPayerTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'TAX-PAYER Type'**
+  String get taxPayerTypeLabel;
+
+  /// No description provided for @selectTaxPayerType.
+  ///
+  /// In en, this message translates to:
+  /// **'Select TAX-PAYER Type'**
+  String get selectTaxPayerType;
+
+  /// No description provided for @legalBusinessName.
+  ///
+  /// In en, this message translates to:
+  /// **'Legal Business Name'**
+  String get legalBusinessName;
+
+  /// No description provided for @tradeName.
+  ///
+  /// In en, this message translates to:
+  /// **'Trade Name'**
+  String get tradeName;
+
+  /// No description provided for @gstinSupportingDocument.
+  ///
+  /// In en, this message translates to:
+  /// **'GSTIN Supporting Document'**
+  String get gstinSupportingDocument;
+
+  /// No description provided for @panCardCopy.
+  ///
+  /// In en, this message translates to:
+  /// **'PAN Card Copy'**
+  String get panCardCopy;
+
+  /// No description provided for @acceptedDocFormatsInfo.
+  ///
+  /// In en, this message translates to:
+  /// **'Accepted formats: PDF, JPEG, PNG, JPG. Max file size: 5MB.'**
+  String get acceptedDocFormatsInfo;
+
+  /// No description provided for @invalidPanNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid PAN number (e.g. ABCDE1234F)'**
+  String get invalidPanNumber;
+
+  /// No description provided for @invalidGstin.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid GSTIN'**
+  String get invalidGstin;
+
+  /// No description provided for @invalidSacCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Enter a valid 6-digit SAC code'**
+  String get invalidSacCode;
+
+  /// No description provided for @taxPayerRegular.
+  ///
+  /// In en, this message translates to:
+  /// **'Regular'**
+  String get taxPayerRegular;
+
+  /// No description provided for @taxPayerComposite.
+  ///
+  /// In en, this message translates to:
+  /// **'Composite'**
+  String get taxPayerComposite;
+
+  /// No description provided for @taxPayerCasual.
+  ///
+  /// In en, this message translates to:
+  /// **'Casual Taxable Person'**
+  String get taxPayerCasual;
+
+  /// No description provided for @taxPayerNonResident.
+  ///
+  /// In en, this message translates to:
+  /// **'Non-Resident Taxable Person'**
+  String get taxPayerNonResident;
+
+  /// No description provided for @taxPayerSezUnit.
+  ///
+  /// In en, this message translates to:
+  /// **'SEZ Unit'**
+  String get taxPayerSezUnit;
+
+  /// No description provided for @taxPayerSezDeveloper.
+  ///
+  /// In en, this message translates to:
+  /// **'SEZ Developer'**
+  String get taxPayerSezDeveloper;
+
+  /// No description provided for @taxPayerIsd.
+  ///
+  /// In en, this message translates to:
+  /// **'Input Service Distributor'**
+  String get taxPayerIsd;
+
+  /// No description provided for @taxPayerUnBody.
+  ///
+  /// In en, this message translates to:
+  /// **'UN Body / Embassy'**
+  String get taxPayerUnBody;
+
+  /// No description provided for @ticketTypeLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Type'**
+  String get ticketTypeLabel;
+
+  /// No description provided for @rateYourExperience.
+  ///
+  /// In en, this message translates to:
+  /// **'Rate your experience'**
+  String get rateYourExperience;
+
+  /// No description provided for @rateTicketSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How satisfied are you with how this ticket was handled?'**
+  String get rateTicketSubtitle;
+
+  /// No description provided for @ratingVeryPoor.
+  ///
+  /// In en, this message translates to:
+  /// **'Very poor'**
+  String get ratingVeryPoor;
+
+  /// No description provided for @ratingPoor.
+  ///
+  /// In en, this message translates to:
+  /// **'Poor'**
+  String get ratingPoor;
+
+  /// No description provided for @ratingAverage.
+  ///
+  /// In en, this message translates to:
+  /// **'Average'**
+  String get ratingAverage;
+
+  /// No description provided for @ratingGood.
+  ///
+  /// In en, this message translates to:
+  /// **'Good'**
+  String get ratingGood;
+
+  /// No description provided for @ratingExcellent.
+  ///
+  /// In en, this message translates to:
+  /// **'Excellent'**
+  String get ratingExcellent;
+
+  /// No description provided for @ratingCommentHint.
+  ///
+  /// In en, this message translates to:
+  /// **'Tell us more about your experience (optional)'**
+  String get ratingCommentHint;
+
+  /// No description provided for @submitRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Submit Rating'**
+  String get submitRating;
+
+  /// No description provided for @thanksForFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Thanks for your feedback!'**
+  String get thanksForFeedback;
+
+  /// No description provided for @yourRating.
+  ///
+  /// In en, this message translates to:
+  /// **'Your rating'**
+  String get yourRating;
+
+  /// No description provided for @ratingSubmitted.
+  ///
+  /// In en, this message translates to:
+  /// **'Rating submitted successfully'**
+  String get ratingSubmitted;
 }
 
 class _BssSubLocalizationsDelegate

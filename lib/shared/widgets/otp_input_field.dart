@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class OtpInputField extends StatefulWidget {
   final int length;
@@ -91,17 +93,39 @@ class _OtpInputFieldState extends State<OtpInputField> {
 
   @override
   Widget build(BuildContext context) {
+    // Design: 48×48 boxes, 8px apart, radius 12, soft 15% black shadow.
+    // 6 × 48 + 5 × 8 = 328 is wider than the 327 left by the page's 24px
+    // side padding, so shrink the boxes to fit when space is tight.
+    return LayoutBuilder(
+      builder: (context, constraints) {
+        final spacing = 8.w;
+        final fitSize =
+            (constraints.maxWidth - spacing * (widget.length - 1)) /
+            widget.length;
+        final boxSize = fitSize < 48.w ? fitSize : 48.w;
+        return _buildBoxes(boxSize, spacing);
+      },
+    );
+  }
+
+  Widget _buildBoxes(double boxSize, double spacing) {
     return Row(
-      mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+      mainAxisAlignment: MainAxisAlignment.center,
+      spacing: spacing,
       children: List.generate(
         widget.length,
         (index) => KeyboardListener(
           focusNode: _keyboardListenerFocusNodes[index],
           onKeyEvent: (event) => _onKeyEvent(event, index),
-          child: SizedBox(
-            width: 48,
-            height: 48,
-
+          child: Container(
+            width: boxSize,
+            height: boxSize,
+            decoration: BoxDecoration(
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: const [
+                BoxShadow(color: AppColor.kBlack15, blurRadius: 30),
+              ],
+            ),
             child: TextField(
               controller: _controllers[index],
               focusNode: _focusNodes[index],
@@ -109,11 +133,11 @@ class _OtpInputFieldState extends State<OtpInputField> {
               textAlignVertical: TextAlignVertical.center,
               keyboardType: TextInputType.number,
               maxLength: 1,
-              style: const TextStyle(
-                fontSize: 18,
-                fontWeight: FontWeight.w600,
-                color: Colors.black,
-                height: 1.0,
+              style: TextStyle(
+                fontSize: 18.sp,
+                fontWeight: FontWeight.w500,
+                color: AppColor.kTextSecondaryDark,
+                height: 1.60,
                 letterSpacing: 0,
                 fontFamily: 'GeneralSans',
               ),

@@ -1,17 +1,20 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
 
 class ConnectedDevicesPage extends StatelessWidget {
   const ConnectedDevicesPage({super.key});
 
   static final _titleStyle = TextStyle(
+    fontFamily: 'GeneralSans',
     color: AppColor.kTextSecondaryDark,
     fontSize: 16.sp,
     fontWeight: FontWeight.w600,
-    height: 1.40,
+    height: 1.30,
   );
 
   @override
@@ -29,7 +32,7 @@ class ConnectedDevicesPage extends StatelessWidget {
           bottom: 20,
         ),
         child: Column(
-          spacing: 18,
+          spacing: 20, // Design: 20 from section title to first card.
           children: [
             Row(
               mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -37,9 +40,9 @@ class ConnectedDevicesPage extends StatelessWidget {
               children: [
                 Text(l10n.connectedDevices, style: _titleStyle),
                 Image.asset(
-                  'assets/icons/refresh.png',
-                  width: 20,
-                  height: 20,
+                  AppAssets.refresh,
+                  width: 20.w,
+                  height: 20.w,
                   fit: BoxFit.cover,
                 ),
               ],
@@ -55,22 +58,22 @@ class ConnectedDevicesPage extends StatelessWidget {
                     _DeviceCard(
                       heading: 'Living Room TV',
                       subHeading: '2 mins ago',
-                      icon: 'tv.png',
+                      icon: AppAssets.tv,
                     ),
                     _DeviceCard(
                       heading: 'My Phone',
                       subHeading: '2 mins ago',
-                      icon: 'mobile_two.png',
+                      icon: AppAssets.mobileTwo,
                     ),
                     _DeviceCard(
                       heading: 'IQOO Neo 9 Pro',
                       subHeading: '2 mins ago',
-                      icon: 'mobile_two.png',
+                      icon: AppAssets.mobileTwo,
                     ),
                     _DeviceCard(
                       heading: 'Kfon Laptop',
                       subHeading: '2 mins ago',
-                      icon: 'laptop.png',
+                      icon: AppAssets.laptop,
                     ),
                   ],
                 ),
@@ -100,23 +103,25 @@ class _DeviceCard extends StatelessWidget {
 
   // Hoisted — ShapeDecoration was being allocated on every build() call per
   // visible card. const eliminates the heap allocation entirely.
-  static const _iconContainerDecoration = ShapeDecoration(
-    color: Color(0x0C8D0247),
+  static get _iconContainerDecoration => ShapeDecoration(
+    color: AppColor.kPrimaryTint,
     shape: RoundedRectangleBorder(
       borderRadius: BorderRadius.all(Radius.circular(40)),
     ),
   );
 
   // 0.70 × 255 = 178.5 → 179 = 0xB3
-  static const _subHeadingColor = Color(0xB3000000);
+  static const _subHeadingColor = AppColor.kBlack70;
 
   static final _headingStyle = TextStyle(
+    fontFamily: 'GeneralSans',
     color: AppColor.kTextSecondaryDark,
     fontSize: 14.sp,
     fontWeight: FontWeight.w600,
     height: 1.30,
   );
   static final _subHeadingStyle = TextStyle(
+    fontFamily: 'GeneralSans',
     color: _subHeadingColor,
     fontSize: 12.sp,
     fontWeight: FontWeight.w400,
@@ -127,24 +132,38 @@ class _DeviceCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final l10n = context.bssSubL10n;
 
+    // Design: white, radius 12, no shadow; 13 gap between cards.
     return Card(
-      margin: const EdgeInsets.only(bottom: 20),
+      margin: EdgeInsets.only(bottom: 13.h),
       color: Colors.white,
+      elevation: 0,
+      shape: const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(12)),
+      ),
       child: Padding(
-        padding: const EdgeInsets.all(15),
+        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 12.h),
         child: Row(
           crossAxisAlignment: CrossAxisAlignment.center,
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Row(
-              spacing: 16,
+              spacing: 12.w,
               children: [
+                // Design: 53 circle with a 22 icon.
                 Container(
                   width: 53.w,
-                  height: 53.h,
-                  padding: const EdgeInsets.all(14),
+                  height: 53.w,
+                  alignment: Alignment.center,
                   decoration: _iconContainerDecoration,
-                  child: Image.asset('assets/icons/$icon'),
+                  child: SvgPicture.asset(
+                    icon,
+                    width: 22.w,
+                    height: 22.w,
+                    colorFilter: ColorFilter.mode(
+                      AppColor.kPrimaryColor,
+                      BlendMode.srcIn,
+                    ),
+                  ),
                 ),
                 Column(
                   mainAxisAlignment: MainAxisAlignment.center,
@@ -157,7 +176,6 @@ class _DeviceCard extends StatelessWidget {
                 ),
               ],
             ),
-            const Icon(Icons.more_vert, color: AppColor.kMediumGrey, size: 16.0),
           ],
         ),
       ),

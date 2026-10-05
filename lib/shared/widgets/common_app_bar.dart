@@ -83,7 +83,7 @@ class CommonAppBar extends StatelessWidget {
               decoration: BoxDecoration(
                 shape: BoxShape.circle,
                 border: Border.all(
-                  color: circleColor ?? const Color(0x1A000000),
+                  color: circleColor ?? AppColor.kBlack10,
                   width: borderWidth,
                 ),
               ),
