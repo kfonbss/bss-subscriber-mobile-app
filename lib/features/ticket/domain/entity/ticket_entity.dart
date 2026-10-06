@@ -37,6 +37,10 @@ class TicketMovementEntity {
   final String? note;
   final String status;
   final String? assignedToName;
+  final String? assignedFromName;
+  final String? assignedFromDesignation;
+  final String? assignedToSeatName;
+  final String? assignedFromSeatName;
   final DateTime? createdDate;
 
   /// Legacy: direct URL strings when API returns plain strings.
@@ -54,6 +58,10 @@ class TicketMovementEntity {
     this.note,
     required this.status,
     this.assignedToName,
+    this.assignedFromName,
+    this.assignedFromDesignation,
+    this.assignedToSeatName,
+    this.assignedFromSeatName,
     this.createdDate,
     this.imageUrl = const [],
     this.videoUrl = const [],

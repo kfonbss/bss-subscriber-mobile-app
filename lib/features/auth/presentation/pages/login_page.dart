@@ -30,12 +30,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final _usernameTextFieldController = TextEditingController(
-    text: 'ld.amal',
-  ); //9114676354
-  final _passwordTextFieldController = TextEditingController(
-    text: 'Pass@123',
-  ); //pass1234
+  final _usernameTextFieldController = TextEditingController(); //9114676354
+  final _passwordTextFieldController = TextEditingController(); //pass1234
   final DialogUtil _dialogUtil = DialogUtil();
   String tenantName = '';
   String tenantId = '';
@@ -123,9 +119,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   child: Column(
                     children: [
-                      AuthHeader(
-                        description: '',
-                      ),
+                      AuthHeader(description: ''),
                       Padding(
                         padding: EdgeInsets.fromLTRB(
                           _sideMargin,

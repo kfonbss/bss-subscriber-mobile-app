@@ -114,6 +114,10 @@ class TicketMovement {
   final String? note;
   final String status;
   final String? assignedToName;
+  final String? assignedFromName;
+  final String? assignedFromDesignation;
+  final String? assignedToSeatName;
+  final String? assignedFromSeatName;
   final DateTime? createdDate;
   final List<String> imageUrl;
   final List<String> videoUrl;
@@ -127,6 +131,10 @@ class TicketMovement {
     this.note,
     required this.status,
     this.assignedToName,
+    this.assignedFromName,
+    this.assignedFromDesignation,
+    this.assignedToSeatName,
+    this.assignedFromSeatName,
     this.createdDate,
     this.imageUrl = const [],
     this.videoUrl = const [],
@@ -146,6 +154,13 @@ class TicketMovement {
       note: json['note']?.toString(),
       status: json['status']?.toString() ?? '',
       assignedToName: json['assignedToName']?.toString(),
+      assignedFromName: json['assignedFromName']?.toString(),
+
+      assignedFromDesignation: json['assignedFromDesignation']?.toString(),
+
+      assignedFromSeatName: json['assignedFromSeatName']?.toString(),
+
+      assignedToSeatName: json['assignedToSeatName']?.toString(),
       createdDate:
           json['createdDate'] != null
               ? DateTime.tryParse(json['createdDate'] as String)
@@ -165,6 +180,12 @@ class TicketMovement {
       note: note,
       status: status,
       assignedToName: assignedToName,
+      assignedFromName: assignedFromName,
+
+      assignedToSeatName: assignedToSeatName,
+      assignedFromSeatName: assignedFromSeatName,
+      assignedFromDesignation: assignedFromDesignation,
+
       createdDate: createdDate,
       imageUrl: imageUrl,
       videoUrl: videoUrl,
