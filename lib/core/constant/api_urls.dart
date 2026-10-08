@@ -27,6 +27,11 @@ class ApiUrls {
   static const darkFibreEnquiryFormURL =
       'bss-enquiry-services/api/darkfibre-enquiries/save';
   static const bplEnquiryFormURL = 'bplEnquiryFormURL';
+  static String get regionsURL => '$bssCoreDmdmService/region/fetch-all';
+  static const String customerEnquiryByMobileBase =
+      'bss-enquiry-services/api/customer-enquiries/mobile';
+  static String customerEnquiryByMobileURL(String mobileNumber) =>
+      '$customerEnquiryByMobileBase/$mobileNumber';
   static const getPostOfficesDistrictURL = 'get_post_offices.php';
   static const String homePageURL =
       '$subscriberManagementService/mobile/subscriber/home';

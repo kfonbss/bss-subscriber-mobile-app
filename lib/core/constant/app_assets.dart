@@ -104,6 +104,22 @@ class AppAssets {
   static const String paperclip = 'assets/icons/paperclip.svg';
   static const String video = 'assets/icons/video.svg';
   static const String addEnquiry = 'assets/icons/add_enquiry.svg';
+
+  // Enquiry list page
+  static const String enquiryHomeBg = 'assets/images/enquiry_home_bg.webp';
+  static const String enquiryDarkFiberBg =
+      'assets/images/enquiry_dark_fiber_bg.webp';
+  static const String enquiryCorporateBg =
+      'assets/images/enquiry_corporate_bg.webp';
+  static const String enquiryPartnerBg =
+      'assets/images/enquiry_partner_bg.webp';
+  static const String enquiryHomeIcon = 'assets/icons/enquiry_home_icon.svg';
+  static const String enquiryDarkFiberIcon =
+      'assets/icons/enquiry_dark_fiber_icon.svg';
+  static const String enquiryCorporateIcon =
+      'assets/icons/enquiry_corporate_icon.svg';
+  // Partner Enquiry reuses the corporate icon.
+  static const String enquiryPartnerIcon = enquiryCorporateIcon;
   static const String ekycTick = 'assets/icons/ekyc_tick.svg';
 
   static const String dummyAd = 'assets/images/dummy/dummy_ad.jpg';

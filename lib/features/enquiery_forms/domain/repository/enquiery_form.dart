@@ -14,4 +14,9 @@ abstract class EnquiryFormRepository{
   Future<Either> submitDarkFibreEnquiryForm( DarkFibreEnquiryFormParams params);
   Future<Either> submitBPLEnquiryForm( BplEnquiryFormParams params);
   Future<Either> downloadLetterFormat( String url);
+  Future<Either> fetchRegions();
+  Future<Either> checkMobileRegistered({
+    required String mobileNumber,
+    required String tenantId,
+  });
 }
