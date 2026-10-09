@@ -8,14 +8,14 @@ import 'package:kfon_subscriber/features/change_plan/data/repository/change_plan
 import 'package:kfon_subscriber/features/change_plan/domain/repository/change_plan_repository.dart';
 import 'package:kfon_subscriber/features/data_usage/data/repository/data_usage_repository_imp.dart';
 import 'package:kfon_subscriber/features/data_usage/domain/repository/data_usage_repository.dart';
-import 'package:kfon_subscriber/features/enquiery_forms/data/repository/enquiry_forms_imp.dart';
-import 'package:kfon_subscriber/features/enquiery_forms/domain/repository/enquiery_form.dart';
 import 'package:kfon_subscriber/features/home/data/repository/home_repository_imp.dart';
 import 'package:kfon_subscriber/features/home/domain/repository/home_repository.dart';
 import 'package:kfon_subscriber/features/invoice_list/data/repository/invoice_repository_imp.dart';
 import 'package:kfon_subscriber/features/invoice_list/domain/repository/invoice_repository.dart';
 import 'package:kfon_subscriber/features/future_recharge/data/repository/future_recharge_repository_imp.dart';
 import 'package:kfon_subscriber/features/future_recharge/domain/repository/future_recharge_repository.dart';
+import 'package:kfon_subscriber/features/notfication/data/respository/notification_repository_imp.dart';
+import 'package:kfon_subscriber/features/notfication/domain/respository/notification_repository.dart';
 import 'package:kfon_subscriber/features/profile/data/repository/profile_repository_imp.dart';
 import 'package:kfon_subscriber/features/profile/domain/repository/profile_repository.dart';
 import 'package:kfon_subscriber/features/ticket/data/repository/ticket_repository_imp.dart';
@@ -35,37 +35,25 @@ void setUpServiceLocator() {
   sl.registerSingleton<DioClient>(DioClient());
 
   // Repositories — DioClient injected via constructor, not looked up inside methods
-  sl.registerLazySingleton<AuthRepository>(
-    () => AuthRepositoryImp(client: sl<DioClient>()),
-  );
-  sl.registerLazySingleton<EnquiryFormRepository>(
-    () => EnquiryFormRepositoryImp(client: sl<DioClient>()),
-  );
-  sl.registerLazySingleton<HomeRepository>(
-    () => HomeRepositoryImp(client: sl<DioClient>()),
-  );
-  sl.registerLazySingleton<DataUsageRepository>(
-    () => DataUsageRepositoryImp(client: sl<DioClient>()),
-  );
+  sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImp());
+  sl.registerLazySingleton<HomeRepository>(() => HomeRepositoryImp());
+  sl.registerLazySingleton<DataUsageRepository>(() => DataUsageRepositoryImp());
   sl.registerLazySingleton<ChangePlanRepository>(
-    () => ChangePlanRepositoryImp(client: sl<DioClient>()),
+    () => ChangePlanRepositoryImp(),
   );
-  sl.registerLazySingleton<ProfileRepository>(
-    () => ProfileRepositoryImp(client: sl<DioClient>()),
-  );
+  sl.registerLazySingleton<ProfileRepository>(() => ProfileRepositoryImp());
   sl.registerLazySingleton<TransactionRepository>(
-    () => TransactionRepositoryImp(client: sl<DioClient>()),
+    () => TransactionRepositoryImp(),
   );
   sl.registerLazySingleton<PackageDetailsRepository>(
-    () => PackageDetailsRepositoryImp(client: sl<DioClient>()),
+    () => PackageDetailsRepositoryImp(),
   );
   sl.registerSingleton<TicketRepository>(TicketRepositoryImp());
   sl.registerSingleton<FutureRechargeRepository>(FutureRechargeRepositoryImp());
-  sl.registerLazySingleton<InvoiceRepository>(
-    () => InvoiceRepositoryImp(client: sl<DioClient>()),
-  );
+  sl.registerLazySingleton<InvoiceRepository>(() => InvoiceRepositoryImp());
   sl.registerLazySingleton<TenantRepository>(() => TenantRepositoryImpl());
-  sl.registerLazySingleton<AutopayRepository>(
-    () => AutopayRepositoryImp(client: sl<DioClient>()),
+  sl.registerLazySingleton<AutopayRepository>(() => AutopayRepositoryImp());
+  sl.registerLazySingleton<NotificationRepository>(
+    () => NotificationRepositoryImpl(),
   );
 }

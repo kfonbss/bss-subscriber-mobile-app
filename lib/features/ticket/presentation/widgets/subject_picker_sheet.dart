@@ -10,6 +10,7 @@ import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/shimmer/list_shimmers.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 
 class SubjectPickerSheet extends StatefulWidget {
   final TicketBloc ticketBloc;
@@ -138,8 +139,11 @@ class _SubjectPickerSheetState extends State<SubjectPickerSheet> {
                                   ),
                                 ),
                                 SizedBox(height: 16.h),
-                                ElevatedButton(
-                                  onPressed: () {
+                                PrimaryButton(
+                                  label: context.bssSubL10n.retry,
+                                  isLoading: false,
+                                  borderRadius: 10,
+                                  onClicked: () {
                                     final master =
                                         state is TicketMasterDataState
                                             ? state
@@ -152,7 +156,6 @@ class _SubjectPickerSheetState extends State<SubjectPickerSheet> {
                                       LoadSubjects(categoryId: categoryId),
                                     );
                                   },
-                                  child: Text(context.bssSubL10n.retry),
                                 ),
                               ],
                             ),

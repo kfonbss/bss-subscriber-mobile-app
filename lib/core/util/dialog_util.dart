@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
+import 'package:kfon_subscriber/core/util/extensions.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_event.dart';
@@ -9,6 +10,8 @@ import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_state.dart'
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/common_bottom_sheet.dart';
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
+import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
 
 class DialogUtil {
   static final _contentStyle = const TextStyle(
@@ -192,21 +195,19 @@ class DialogUtil {
     required VoidCallback onPositiveButtonClick,
     VoidCallback? onNegativeButtonClick,
   }) {
-    final negativeButton = OutlinedButton(
-      style: OutlinedButton.styleFrom(
-        side: BorderSide(color: AppColor.kPrimaryColor),
-        padding: EdgeInsets.symmetric(vertical: 14),
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(8)),
-      ),
-      onPressed: onNegativeButtonClick ?? () => Navigator.pop(context),
-      child: Text(context.bssSubL10n.no),
+    final l10n = context.bssSubL10n;
+    Widget negativeButton = SecondaryButton(
+      borderRadius: 8,
+      label: l10n.no,
+      onClicked: onNegativeButtonClick ?? () => Navigator.pop(context),
+      padding: EdgeInsets.symmetric(vertical: 14),
     );
-    final positiveButton = ElevatedButton(
-      onPressed: onPositiveButtonClick,
-      style: ElevatedButton.styleFrom(
-        padding: EdgeInsets.symmetric(vertical: 14.5),
-      ),
-      child: Text(context.bssSubL10n.yes),
+    Widget positiveButton = PrimaryButton(
+      label: l10n.yes,
+      onClicked: onPositiveButtonClick,
+      padding: EdgeInsets.symmetric(vertical: 14.5),
+      borderRadius: 8,
+      isLoading: false,
     );
 
     final contentWidget = Padding(
@@ -256,32 +257,36 @@ class DialogUtil {
     );
   }
 
-  /// Shows a common logout confirmation dialog
   void showLogoutDialog(BuildContext context) {
     showModalBottomSheet(
       context: context,
       useRootNavigator: true,
-      backgroundColor: AppColor.kMainBackgroundColor,
+      backgroundColor: context.isTablet
+          ? Colors.transparent
+          : AppColor.kMainBackgroundColor,
       isScrollControlled: true,
       shape: RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(24.w)),
+        borderRadius: context.isTablet
+            ? BorderRadius.circular(24.w)
+            : const BorderRadius.vertical(top: Radius.circular(30)),
       ),
       builder: (BuildContext context) {
         final l10n = context.bssSubL10n;
         // Calculate responsive sizes for tablet
-        final handleWidth = 42.w;
-        final handleHeight = 6.h;
-        final topPadding = 53.h;
-        final horizontalPadding = 20.w;
-        final bottomPadding = 30.h;
-        final titleWidth = 193.w;
-        final descWidth = 319.w;
-        final buttonHeight = 52.h;
-        final gapBetweenTitleDesc = 8.h;
-        final gapBeforeButtons = 40.h;
-        final gapBetweenButtons = 12.h;
-        final handleTopMargin = 19.h;
-        final maxWidth = double.infinity;
+        final handleWidth = context.isTablet ? 42.0 * 1.2 : 42.w;
+        final handleHeight = context.isTablet ? 6.0 * 1.2 : 6.h;
+        final topPadding = context.isTablet ? 53.0 * 1.2 : 53.h;
+        final horizontalPadding = context.isTablet ? 20.0 * 1.2 : 20.w;
+        // Design: 56 below Cancel incl. the 34 home indicator (SafeArea).
+        final bottomPadding = context.isTablet ? 30.0 * 1.2 : 22.h;
+        final titleWidth = context.isTablet ? 193.0 * 1.2 : 193.w;
+        final descWidth = context.isTablet ? 319.0 * 1.2 : 319.w;
+        final buttonHeight = context.isTablet ? 52.0 * 1.2 : 52.h;
+        final gapBetweenTitleDesc = context.isTablet ? 8.0 * 1.2 : 8.h;
+        final gapBeforeButtons = context.isTablet ? 40.0 * 1.2 : 40.h;
+        final gapBetweenButtons = context.isTablet ? 12.0 * 1.2 : 12.h;
+        final handleTopMargin = context.isTablet ? 19.0 * 1.2 : 19.h;
+        final maxWidth = context.isTablet ? 500.0 : double.infinity;
 
         Widget content = Stack(
           children: [
@@ -291,7 +296,7 @@ class DialogUtil {
                 right: horizontalPadding,
                 top: topPadding,
                 bottom:
-                    bottomPadding + MediaQuery.of(context).viewInsets.bottom,
+                bottomPadding + MediaQuery.of(context).viewInsets.bottom,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -304,11 +309,11 @@ class DialogUtil {
                           l10n.areYouSureLogout,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontFamily: 'GeneralSans',
-                            color: AppColor.kTextSecondaryDark,
-                            fontSize: 18.sp,
+                            fontFamily: 'General Sans',
+                            color: const Color(0xFF0F1121),
+                            fontSize: context.isTablet ? 18.0.sp * 1.2 : 18.sp,
                             fontWeight: FontWeight.w600,
-                            height: 1.2999999523162842,
+                            height: 1.2999999523162842.h,
                             letterSpacing: 0,
                           ),
                         ),
@@ -320,11 +325,11 @@ class DialogUtil {
                           l10n.willReturnToLoginScreen,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontFamily: 'GeneralSans',
-                            color: AppColor.kTextFiledPlaceholderColor,
-                            fontSize: 12.sp,
+                            fontFamily: 'General Sans',
+                            color: const Color(0xFF67697A),
+                            fontSize: context.isTablet ? 12.0.sp * 1.2 : 12.sp,
                             fontWeight: FontWeight.w600,
-                            height: 1.6,
+                            height: 1.6.h,
                             letterSpacing: 0,
                           ),
                         ),
@@ -347,7 +352,7 @@ class DialogUtil {
                                 rootNavigator: true,
                               ).pushNamedAndRemoveUntil(
                                 AppRoutes.login,
-                                (route) => false,
+                                    (route) => false,
                               );
                             } else if (state is LogoutFailure) {
                               DialogUtil().showCustomSnackbar(
@@ -360,76 +365,45 @@ class DialogUtil {
                           builder: (context, state) {
                             final isLoading = state is LogoutLoading;
 
-                            return ElevatedButton(
-                              onPressed:
-                                  isLoading
-                                      ? null
-                                      : () {
-                                        context.read<AuthBloc>().add(
-                                          const LogoutRequested(),
-                                        );
-                                      },
-                              style: ElevatedButton.styleFrom(
-                                backgroundColor: AppColor.kFailedRed,
-                                foregroundColor: Colors.white,
-                                disabledBackgroundColor: AppColor.kFailedRed
-                                    .withValues(alpha: 0.6),
-                                shape: RoundedRectangleBorder(
-                                  borderRadius: BorderRadius.circular(10.w),
-                                ),
-                                elevation: 0,
+                            return PrimaryButton(
+                              label: context.bssSubL10n.logout,
+                              isLoading: isLoading,
+                              loaderSize: 20,
+                              borderRadius: 10,
+                              backgroundColor: AppColor.kLogoutRed,
+                              onClicked: () {
+                                context.read<AuthBloc>().add(
+                                  const LogoutRequested(),
+                                );
+                              },
+                              textStyle: TextStyle(
+                                fontFamily: 'General Sans',
+                                fontSize: context.isTablet
+                                    ? 14.0.sp * 1.2
+                                    : 14.sp,
+                                fontWeight: FontWeight.w600,
+                                height: 1.2999999523162842.h,
+                                letterSpacing: 0,
                               ),
-                              child:
-                                  isLoading
-                                      ? SizedBox(
-                                        height: 20.h,
-                                        width: 20.w,
-                                        child: CircularProgressIndicator(
-                                          strokeWidth: 2,
-                                          valueColor:
-                                              AlwaysStoppedAnimation<Color>(
-                                                Colors.white,
-                                              ),
-                                        ),
-                                      )
-                                      : Text(
-                                        context.bssSubL10n.logout,
-                                        style: TextStyle(
-                                          fontFamily: 'GeneralSans',
-                                          fontSize: 14.sp,
-                                          fontWeight: FontWeight.w600,
-                                          height: 1.2999999523162842,
-                                          letterSpacing: 0,
-                                        ),
-                                      ),
                             );
                           },
                         ),
                       ),
                       SizedBox(height: gapBetweenButtons),
-                      SizedBox(
-                        width: double.infinity,
+                      // White fill, no outline, dark label — as it was.
+                      SecondaryButton(
+                        label: l10n.cancel,
+                        borderRadius: 10,
                         height: buttonHeight,
-                        child: ElevatedButton(
-                          onPressed: () => Navigator.of(context).pop(),
-                          style: ElevatedButton.styleFrom(
-                            backgroundColor: Colors.white,
-                            foregroundColor: AppColor.kBlack80,
-                            shape: RoundedRectangleBorder(
-                              borderRadius: BorderRadius.circular(10.w),
-                            ),
-                            elevation: 0,
-                          ),
-                          child: Text(
-                            l10n.cancel,
-                            style: TextStyle(
-                              fontFamily: 'GeneralSans',
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w600,
-                              height: 1.2999999523162842,
-                              letterSpacing: 0,
-                            ),
-                          ),
+                        borderColor: Colors.transparent,
+                        foregroundColor: const Color.fromRGBO(0, 0, 0, 0.8),
+                        onClicked: () => Navigator.of(context).pop(),
+                        textStyle: TextStyle(
+                          fontFamily: 'General Sans',
+                          fontSize: context.isTablet ? 14.0.sp * 1.2 : 14.sp,
+                          fontWeight: FontWeight.w600,
+                          height: 1.2999999523162842.h,
+                          letterSpacing: 0,
                         ),
                       ),
                     ],
@@ -446,7 +420,7 @@ class DialogUtil {
                   width: handleWidth,
                   height: handleHeight,
                   decoration: BoxDecoration(
-                    color: AppColor.kDividerGrey,
+                    color: const Color(0xFFE1E1E4),
                     borderRadius: BorderRadius.circular(100),
                   ),
                 ),
@@ -454,6 +428,26 @@ class DialogUtil {
             ),
           ],
         );
+
+        if (context.isTablet) {
+          return SafeArea(
+            top: false,
+            child: Align(
+              alignment: Alignment.bottomCenter,
+              child: Container(
+                constraints: BoxConstraints(
+                  maxWidth: maxWidth,
+                  maxHeight: MediaQuery.of(context).size.height * 0.6,
+                ),
+                decoration: BoxDecoration(
+                  color: AppColor.kMainBackgroundColor,
+                  borderRadius: BorderRadius.circular(24.w),
+                ),
+                child: content,
+              ),
+            ),
+          );
+        }
 
         return SafeArea(top: false, child: content);
       },

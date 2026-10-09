@@ -6,16 +6,16 @@ import 'package:kfon_subscriber/features/data_usage/data/model/data_usage_model.
 import 'package:kfon_subscriber/features/data_usage/domain/entity/data_usage_entity.dart';
 import 'package:kfon_subscriber/features/data_usage/domain/params/get_subscriber_data_usage_params.dart';
 import 'package:kfon_subscriber/features/data_usage/domain/repository/data_usage_repository.dart';
+import 'package:kfon_subscriber/service_locator.dart';
 
 class DataUsageRepositoryImp extends DataUsageRepository {
-  final DioClient _client;
 
-  DataUsageRepositoryImp({required DioClient client}) : _client = client;
+  DataUsageRepositoryImp();
 
   @override
   Future<Either<Failure, SubscriberDataUsageResponseEntity>>
   getSubscriberDataUsage(GetSubscriberDataUsageParams params) async {
-    final response = await _client.get(
+    final response = await sl<DioClient>().get(
       ApiUrls.subscriberDataUsageURL(subscriberUuid: params.subscriberUuid),
       queryParameters: params.toJson(),
     );

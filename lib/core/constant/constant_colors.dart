@@ -4,15 +4,13 @@ import 'package:kfon_subscriber/core/constant/app_brand.dart';
 
 class AppColor {
   // =================
-  static Color get kPrimaryColor =>
-      primaryFor(AppBrand.isLd ? 'LD' : null);
+  static Color get kPrimaryColor => primaryFor(AppBrand.isLd ? 'LD' : null);
 
   /// Primary colour for a given tenant code, without switching the app's
   /// current tenant (used to preview the colour on the tenant screen).
-  static Color primaryFor(String? tenantId) =>
-      AppBrand.isLdTenant(tenantId)
-          ? const Color(0xFF009DE2)
-          : const Color(0xFF8D0247);
+  static Color primaryFor(String? tenantId) => AppBrand.isLdTenant(tenantId)
+      ? const Color(0xFF026DA7)
+      : const Color(0xFF8D0247);
 
   /// Tenant screen background before any tenant is chosen.
   static const Color kTenantScreenBackground = Color(0xFF2D3142);
@@ -63,6 +61,8 @@ class AppColor {
   static const Color kDarkBlue = Color(0xFF354259);
   static const Color kIconContainerGrey = Color(0xFFF3F3FA);
   static const Color kNearBlack = Color(0xFF262629);
+  static const Color kNeutralGray90 = Color(0xFF262626);
+  static const Color kNavBarShadow = Color(0x1C000000); // black @ 11% opacity
   static const Color kRichBlack = Color(0xFF1A1A1A);
   static const Color kTicketOpenBlue = Color(0xFF01889F);
   static const Color kTicketProgressOrange = Color(0xFFFA872D);
@@ -158,7 +158,7 @@ class AppColor {
   static const Color kFieldBorder = Color(0xFFEDF1F3);
   static const Color kOffWhite = Color(0xFFF7F7F7);
   static const Color kProfileActiveGreen = Color(0xFF219653);
-  static const Color kLogoutRed = Color(0xFFFF3939);
+  static const Color kLogoutRed = Color(0xFFD42134);
   static const Color kLogoutIconBg = Color(0xFFFFF7F7);
   static const Color kGhostWhite = Color(0xFFF8F9FE);
   static const Color kAliceBlueBg = Color(0xFFF2F7FF);
@@ -198,6 +198,7 @@ class AppColor {
   static const Color kSlate700 = Color(0xFF334155);
   static const Color kSlate600 = Color(0xFF475569);
   static const Color kSlate500 = Color(0xFF64748B);
+  static const Color kSlate400 = Color(0xFF94A3B8);
   static const Color kSlate300 = Color(0xFFCBD5E1);
   static const Color kSlate100 = Color(0xFFF1F5F9);
   static const Color kSlate900Alpha35 = Color(
@@ -260,4 +261,14 @@ class AppColor {
   static const Color kRemoveIconBg = Color(0xFFFFDAD6);
   static const Color kSheetTitle = Color(0xFF2D2D2D);
   static const Color kSheetMessage = Color(0xFF5B5B5B);
+
+  // Additional UI colors
+  static const Color kSourceColor = Color(0xFF1095C5);
+  static const Color kNotificationBorder = Color(0xFFE8E8E8);
+  static const Color kNotificationDarkText = Color(0xFF222222);
+  static const Color kNotificationSubText = Color(0xFF666666);
+  static const Color kBadgeRed = Color(0xFFEF4444);
+  static const Color kTealOverlay = Color(0x3D005D5D);
+  static const Color kCheckboxBorderGrey = Color(0xFFBDBDBD);
+  static const Color kPdfRed = Color(0xFFD32F2F);
 }

@@ -13,6 +13,8 @@ import 'package:photo_view/photo_view.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
+import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
 
 
 class FilePreviewPage extends StatefulWidget {
@@ -132,33 +134,21 @@ class _FilePreviewPageState extends State<FilePreviewPage> {
               _buildCarouselIndicator(),
             Padding(
               padding: EdgeInsets.symmetric(horizontal: 20.w, vertical: 20.h),
-              child: SizedBox(
-                width: double.infinity,
+              child: SecondaryButton(
+                label: l10n.close,
+                borderRadius: 10,
                 height: 52.h,
-                child: OutlinedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: AppColor.kPrimaryColor, width: 1.w),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 16.w,
-                      vertical: 15.h,
-                    ),
-                  ),
-                  child: Text(
-                    l10n.close,
-                    textAlign: TextAlign.center,
-                    style: TextStyle(
-                      fontSize: 14.sp,
-                      fontWeight: FontWeight.w600,
-                      height: 1.3.h,
-                      color: AppColor.kPrimaryColor,
-                      fontFamily: 'General Sans',
-                    ),
-                  ),
+                backgroundColor: Colors.white,
+                borderColor: AppColor.kPrimaryColor,
+                foregroundColor: AppColor.kPrimaryColor,
+                textStyle: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w600,
+                  height: 1.3.h,
+                  color: AppColor.kPrimaryColor,
+                  fontFamily: 'General Sans',
                 ),
+                onClicked: () => Navigator.pop(context),
               ),
             ),
           ],
@@ -200,7 +190,7 @@ class _FilePreviewPageState extends State<FilePreviewPage> {
             Icon(Icons.error_outline, color: Colors.red, size: 48),
             SizedBox(height: 12.h),
             Text(
-              'Failed to load preview',
+              context.bssSubL10n.failedToLoadPreview,
               style: TextStyle(
                 color: Color(0xFF67697A),
                 fontSize: 16.sp,
@@ -225,7 +215,7 @@ class _FilePreviewPageState extends State<FilePreviewPage> {
             TextButton.icon(
               onPressed: _fetchViewUrl,
               icon: Icon(Icons.refresh, size: 18.sp),
-              label: const Text('Retry'),
+              label: Text(context.bssSubL10n.retry),
               style: TextButton.styleFrom(
                 foregroundColor: AppColor.kPrimaryColor,
               ),
@@ -381,6 +371,8 @@ class _SmartFileViewerState extends State<SmartFileViewer> {
 
   @override
   Widget build(BuildContext context) {
+    final l10n = context.bssSubL10n;
+
     if (_isLoading) {
       return Center(
         child: Padding(
@@ -398,7 +390,7 @@ class _SmartFileViewerState extends State<SmartFileViewer> {
             Icon(Icons.error_outline, color: Colors.red, size: 48),
             SizedBox(height: 12.h),
             Text(
-              _errorMessage ?? 'Failed to load preview',
+              _errorMessage ?? l10n.failedToLoadPreview,
               style: TextStyle(
                 color: Color(0xFF67697A),
                 fontSize: 13.sp,
@@ -411,7 +403,7 @@ class _SmartFileViewerState extends State<SmartFileViewer> {
             TextButton.icon(
               onPressed: _fetchViewUrl,
               icon: Icon(Icons.refresh, size: 18.sp),
-              label: const Text('Retry'),
+              label: Text(l10n.retry),
               style: TextButton.styleFrom(
                 foregroundColor: AppColor.kPrimaryColor,
               ),
@@ -421,7 +413,6 @@ class _SmartFileViewerState extends State<SmartFileViewer> {
       );
     }
 
-    final l10n = context.bssSubL10n;
     final extension = _effectiveExtension;
     final url = _effectiveUrl;
 
@@ -442,11 +433,11 @@ class _SmartFileViewerState extends State<SmartFileViewer> {
               Icon(
                 Icons.picture_as_pdf,
                 size: 64.sp,
-                color: Color(0xFFD32F2F),
+                color: AppColor.kPdfRed,
               ),
               SizedBox(height: 16.h),
               Text(
-                'Document Preview',
+                l10n.documentPreview,
                 style: TextStyle(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w600,
@@ -454,31 +445,25 @@ class _SmartFileViewerState extends State<SmartFileViewer> {
                 ),
               ),
               SizedBox(height: 16.h),
-              ElevatedButton.icon(
-                onPressed: () async {
-                  final uri = Uri.parse(url);
-                  if (await canLaunchUrl(uri)) {
-                    await launchUrl(uri, mode: LaunchMode.externalApplication);
-                  }
-                },
+              PrimaryButton(
+                label: l10n.viewPdfDocument,
+                isLoading: false,
+                borderRadius: 8,
                 icon: Icon(
                   Icons.open_in_new,
                   size: 18.sp,
                   color: Colors.white,
                 ),
-                label: const Text(
-                  'View PDF Document',
-                  style: TextStyle(
-                    color: Colors.white,
-                    fontFamily: 'General Sans',
-                  ),
+                textStyle: TextStyle(
+                  color: Colors.white,
+                  fontFamily: 'General Sans',
                 ),
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColor.kPrimaryColor,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(8),
-                  ),
-                ),
+                onClicked: () async {
+                  final uri = Uri.parse(url);
+                  if (await canLaunchUrl(uri)) {
+                    await launchUrl(uri, mode: LaunchMode.externalApplication);
+                  }
+                },
               ),
             ],
           ),

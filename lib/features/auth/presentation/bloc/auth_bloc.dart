@@ -86,6 +86,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     LogoutRequested event,
     Emitter<AuthState> emit,
   ) async {
+    emit(const LogoutLoading());
     try {
       final refreshToken = await PreferenceUtils.getRefreshToken();
       if (refreshToken != null && refreshToken.isNotEmpty) {

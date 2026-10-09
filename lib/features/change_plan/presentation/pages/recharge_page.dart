@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/painter/dashed_line_painter.dart';
@@ -22,6 +23,7 @@ import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
 import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
+import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
 import 'package:kfon_subscriber/shared/widgets/retry_widget.dart';
 import 'package:kfon_subscriber/shared/widgets/shimmer/list_shimmers.dart';
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
@@ -31,7 +33,12 @@ class RechargePage extends StatefulWidget {
   final String? referralCode;
   final bool isChangePlan;
 
-  const RechargePage({super.key,required this.isChangePlan, required this.package, this.referralCode});
+  const RechargePage({
+    super.key,
+    required this.isChangePlan,
+    required this.package,
+    this.referralCode,
+  });
 
   @override
   State<RechargePage> createState() => _RechargePageState();
@@ -46,7 +53,7 @@ class _RechargePageState extends State<RechargePage> {
   String _selectedGateway = '';
   bool _useWallet = false;
   bool _agreedToTerms = false;
-  final DialogUtil _dialogUtil=DialogUtil();
+  final DialogUtil _dialogUtil = DialogUtil();
 
   static const _backdropColor = AppColor.kBlack50;
   static const _dialogContainerDecoration = BoxDecoration(
@@ -63,6 +70,10 @@ class _RechargePageState extends State<RechargePage> {
   );
   static final _dashedPainter = DashedLinePainter(
     color: AppColor.kBlack10,
+    strokeWidth: 1,
+  );
+  static final _totalDividerPainter = DashedLinePainter(
+    color: AppColor.kTotalDivider,
     strokeWidth: 1,
   );
 
@@ -209,7 +220,9 @@ class _RechargePageState extends State<RechargePage> {
                     children: [
                       Expanded(
                         child: ListView(
-                          padding: EdgeInsets.fromLTRB(20.w, 8.h, 20.w, 16.h),
+                          // Design: content starts 24 below the toolbar;
+                          // CommonAppBar already leaves that gap.
+                          padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 16.h),
                           children: [
                             if (discount != null &&
                                 discount.appliedRules.isNotEmpty) ...[
@@ -217,12 +230,12 @@ class _RechargePageState extends State<RechargePage> {
                               SizedBox(height: 16.h),
                             ],
                             _buildCurrentPackageCard(discount),
-                            SizedBox(height: 20.h),
+                            SizedBox(height: 24.h),
                             _buildPackageDetails(
                               discount,
                               calculatedFinalAmount,
                             ),
-                            SizedBox(height: 16.h),
+                            SizedBox(height: 20.h),
                             _buildReferralCode(
                               discount,
                               state.status ==
@@ -235,11 +248,11 @@ class _RechargePageState extends State<RechargePage> {
                               discount,
                               calculatedFinalAmount,
                             ),
-                            SizedBox(height: 16.h),
+                            SizedBox(height: 20.h),
                             _buildSecureNote(),
-                            SizedBox(height: 16.h),
+                            SizedBox(height: 24.h),
                             _buildTermsAndConditions(),
-                            SizedBox(height: 12.h),
+                            SizedBox(height: 8.h),
                             _buildAgreeCheckbox(),
                           ],
                         ),
@@ -310,7 +323,7 @@ class _RechargePageState extends State<RechargePage> {
           seasonId: seasonalId,
           referral: _appliedReferralCode != null,
           useWallet: useWallet,
-          changePlan:widget.isChangePlan,
+          changePlan: widget.isChangePlan,
         ),
       ),
     );
@@ -357,7 +370,7 @@ class _RechargePageState extends State<RechargePage> {
         children: [
           Positioned(
             right: -40.w,
-            bottom: -70.h,
+            bottom: -39.5.h,
             child: Container(
               width: 176.w,
               height: 176.w,
@@ -369,7 +382,7 @@ class _RechargePageState extends State<RechargePage> {
           ),
           Positioned(
             right: 12.w,
-            top: -8.h,
+            top: 12.h,
             child: Container(
               width: 112.w,
               height: 112.w,
@@ -419,7 +432,7 @@ class _RechargePageState extends State<RechargePage> {
                               category,
                               style: _textStyle(
                                 11,
-                                FontWeight.w600,
+                                FontWeight.w700,
                                 Colors.white,
                                 height: 1.5,
                               ),
@@ -444,8 +457,9 @@ class _RechargePageState extends State<RechargePage> {
                   ),
                 ),
                 SizedBox(height: 16.h),
+                // Design: pill and speed column centred vertically.
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.end,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     _pill(
                       color: AppColor.kSlate900Alpha35,
@@ -453,8 +467,8 @@ class _RechargePageState extends State<RechargePage> {
                         color: Colors.white.withValues(alpha: 0.15),
                       ),
                       padding: EdgeInsets.symmetric(
-                        horizontal: 12.w,
-                        vertical: 4.h,
+                        horizontal: 13.w,
+                        vertical: 5.h,
                       ),
                       child: Row(
                         mainAxisSize: MainAxisSize.min,
@@ -478,31 +492,34 @@ class _RechargePageState extends State<RechargePage> {
                       ),
                     ),
                     const Spacer(),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.end,
-                      children: [
-                        Text(
-                          l10n.speedCaps,
-                          style: _textStyle(
-                            10,
-                            FontWeight.w500,
-                            Colors.white.withValues(alpha: 0.80),
-                            height: 1.5,
+                    Padding(
+                      padding: EdgeInsets.only(bottom: 3.h),
+                      child: Column(
+                        crossAxisAlignment: CrossAxisAlignment.end,
+                        children: [
+                          Text(
+                            l10n.speedCaps,
+                            style: _textStyle(
+                              10,
+                              FontWeight.w500,
+                              Colors.white.withValues(alpha: 0.80),
+                              height: 1.5,
+                            ),
                           ),
-                        ),
-                        SizedBox(height: 2.h),
-                        Text(
-                          '$speed Mbps',
-                          textAlign: TextAlign.right,
-                          style: _textStyle(
-                            12,
-                            FontWeight.w600,
-                            Colors.white,
-                            height: 1.33,
-                            letterSpacing: 0.3,
+                          SizedBox(height: 5.h),
+                          Text(
+                            '$speed Mbps',
+                            textAlign: TextAlign.right,
+                            style: _textStyle(
+                              12,
+                              FontWeight.w600,
+                              Colors.white,
+                              height: 1.33,
+                              letterSpacing: 0.3,
+                            ),
                           ),
-                        ),
-                      ],
+                        ],
+                      ),
                     ),
                   ],
                 ),
@@ -602,13 +619,13 @@ class _RechargePageState extends State<RechargePage> {
     );
 
     return _whiteCard(
-      padding: EdgeInsets.all(16.w),
+      padding: EdgeInsets.all(17.w),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Container(
             width: double.infinity,
-            padding: EdgeInsets.only(bottom: 4.h),
+            padding: EdgeInsets.only(bottom: 5.h),
             decoration: const BoxDecoration(
               border: Border(bottom: BorderSide(color: AppColor.kDividerLight)),
             ),
@@ -700,12 +717,15 @@ class _RechargePageState extends State<RechargePage> {
                 ),
               ),
             ],
-          SizedBox(height: 12.h),
-          Container(
-            padding: EdgeInsets.only(top: 12.h),
-            decoration: const BoxDecoration(
-              border: Border(top: BorderSide(color: AppColor.kTotalDivider)),
-            ),
+          SizedBox(height: 8.h),
+          // Design: dashed #DADADA divider, total row 16 below it.
+          SizedBox(
+            width: double.infinity,
+            height: 1,
+            child: CustomPaint(painter: _totalDividerPainter),
+          ),
+          Padding(
+            padding: EdgeInsets.only(top: 16.h),
             child: Row(
               children: [
                 Expanded(
@@ -721,7 +741,6 @@ class _RechargePageState extends State<RechargePage> {
                           height: 1.14,
                         ),
                       ),
-                      SizedBox(height: 2.h),
                       Text(
                         l10n.inclusiveOfAllTaxes,
                         style: _textStyle(
@@ -734,12 +753,13 @@ class _RechargePageState extends State<RechargePage> {
                     ],
                   ),
                 ),
+                // Design uses Plus Jakarta Sans ExtraBold for the total.
                 Text(
                   _currency.format(calculatedFinalAmount),
-                  style: _textStyle(
-                    20,
-                    FontWeight.w800,
-                    AppColor.kPrimaryColor,
+                  style: GoogleFonts.plusJakartaSans(
+                    fontSize: 20.sp,
+                    fontWeight: FontWeight.w800,
+                    color: AppColor.kPrimaryColor,
                     height: 1.4,
                   ),
                 ),
@@ -762,15 +782,25 @@ class _RechargePageState extends State<RechargePage> {
     Color? borderColor,
   }) {
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 4.w),
+      // Design: plain tag px 4; bordered tag px 5 / py 1 inside its border.
+      padding:
+          borderColor != null
+              ? EdgeInsets.symmetric(horizontal: 5.w, vertical: 1.h)
+              : EdgeInsets.symmetric(horizontal: 4.w),
       decoration: BoxDecoration(
         color: background,
         border: borderColor != null ? Border.all(color: borderColor) : null,
         borderRadius: BorderRadius.circular(4),
       ),
+      // Design uses Inter Semi Bold for these tags.
       child: Text(
         text,
-        style: _textStyle(10, FontWeight.w600, textColor, height: 1.6),
+        style: GoogleFonts.inter(
+          fontSize: 10.sp,
+          fontWeight: FontWeight.w600,
+          color: textColor,
+          height: 1.6,
+        ),
       ),
     );
   }
@@ -810,7 +840,7 @@ class _RechargePageState extends State<RechargePage> {
         );
 
     return _whiteCard(
-      padding: EdgeInsets.all(14.w),
+      padding: EdgeInsets.all(15.w),
       borderColor: AppColor.kSlate100,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -828,13 +858,14 @@ class _RechargePageState extends State<RechargePage> {
           Row(
             children: [
               Expanded(
+                // Design: input ~37 tall, px 15, radius 12.
                 child: Container(
-                  height: 42.h,
-                  padding: EdgeInsets.symmetric(horizontal: 14.w),
+                  height: 37.h,
+                  padding: EdgeInsets.symmetric(horizontal: 15.w),
                   alignment: Alignment.centerLeft,
                   decoration: BoxDecoration(
                     border: Border.all(color: AppColor.kTotalDivider),
-                    borderRadius: BorderRadius.circular(10),
+                    borderRadius: BorderRadius.circular(12),
                   ),
                   child: TextField(
                     controller: _referralController,
@@ -843,10 +874,10 @@ class _RechargePageState extends State<RechargePage> {
                     decoration: InputDecoration(
                       hintText: l10n.referralCodeOptionalHint,
                       hintStyle: _textStyle(
-                        11,
+                        10,
                         FontWeight.w500,
-                        AppColor.kSlate500,
-                        letterSpacing: 0.5,
+                        AppColor.kSlate400,
+                        letterSpacing: 0.3,
                       ),
                       border: InputBorder.none,
                       isDense: true,
@@ -863,51 +894,35 @@ class _RechargePageState extends State<RechargePage> {
               ),
               SizedBox(width: 8.w),
               SizedBox(
-                height: 42.h,
-                child: ElevatedButton(
-                  onPressed:
-                      isProcessing
-                          ? null
-                          : () {
-                            FocusScope.of(context).unfocus();
-                            final code = _referralController.text.trim();
-                            setState(() => _appliedReferralCode = code);
-                            _discountBloc.add(
-                              FetchTopUpDiscount(
-                                packageId: widget.package.id,
-                                seasonId: seasonalId,
-                                referral: code.isNotEmpty,
-                                referralCode: code,
-                              ),
-                            );
-                          },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColor.kPrimaryColor,
-                    foregroundColor: Colors.white,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(10),
-                    ),
-                    padding: EdgeInsets.symmetric(horizontal: 18.w),
-                    elevation: 0,
+                height: 36.h,
+                child: SecondaryButton(
+                  label: l10n.apply,
+                  borderRadius: 12,
+                  height: 36.h,
+                  isLoading: isProcessing,
+                  loaderSize: 14,
+                  backgroundColor: AppColor.kPrimary5,
+                  borderColor: AppColor.kPrimaryColor.withValues(alpha: 0.3),
+                  foregroundColor: AppColor.kPrimaryColor,
+                  textStyle: _textStyle(
+                    12,
+                    FontWeight.w700,
+                    AppColor.kPrimaryColor,
+                    height: 1.33,
                   ),
-                  child:
-                      isProcessing
-                          ? SizedBox(
-                            width: 14.w,
-                            height: 14.h,
-                            child: const CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2,
-                            ),
-                          )
-                          : Text(
-                            l10n.apply,
-                            style: _textStyle(
-                              13,
-                              FontWeight.w600,
-                              Colors.white,
-                            ),
-                          ),
+                  onClicked: () {
+                    FocusScope.of(context).unfocus();
+                    final code = _referralController.text.trim();
+                    setState(() => _appliedReferralCode = code);
+                    _discountBloc.add(
+                      FetchTopUpDiscount(
+                        packageId: widget.package.id,
+                        seasonId: seasonalId,
+                        referral: code.isNotEmpty,
+                        referralCode: code,
+                      ),
+                    );
+                  },
                 ),
               ),
             ],
@@ -984,16 +999,20 @@ class _RechargePageState extends State<RechargePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        Text(
-          l10n.selectPaymentGateway,
-          style: _textStyle(
-            16,
-            FontWeight.w600,
-            AppColor.kTextSecondaryDark,
-            height: 1.3,
+        // Design: heading inset 4 like the section labels, 12 above content.
+        Padding(
+          padding: EdgeInsets.symmetric(horizontal: 4.w),
+          child: Text(
+            l10n.selectPaymentGateway,
+            style: _textStyle(
+              16,
+              FontWeight.w600,
+              AppColor.kTextSecondaryDark,
+              height: 1.3,
+            ),
           ),
         ),
-        SizedBox(height: 16.h),
+        SizedBox(height: 12.h),
         if (walletAvailable) ...[
           _sectionLabel(l10n.walletCaps),
           SizedBox(height: 6.h),
@@ -1015,7 +1034,8 @@ class _RechargePageState extends State<RechargePage> {
         style: _textStyle(
           12,
           FontWeight.w600,
-          AppColor.kSectionLabelGrey,
+          AppColor.kTagGreyText, // #7B7B7B in the design
+
           height: 1.25,
           letterSpacing: 0.5,
         ),
@@ -1042,7 +1062,7 @@ class _RechargePageState extends State<RechargePage> {
       child: Row(
         children: [
           _radio(isSelected),
-          SizedBox(width: 12.w),
+          SizedBox(width: 13.w),
           Expanded(
             child: Column(
               crossAxisAlignment: CrossAxisAlignment.start,
@@ -1092,7 +1112,7 @@ class _RechargePageState extends State<RechargePage> {
                       ? AppColor.kSufficientBorder
                       : AppColor.kStatusFailRed.withValues(alpha: 0.2),
             ),
-            padding: EdgeInsets.symmetric(horizontal: 8.w, vertical: 2.h),
+            padding: EdgeInsets.symmetric(horizontal: 9.w, vertical: 3.h),
             child: Text(
               sufficient ? l10n.sufficient : l10n.insufficient,
               style: _textStyle(
@@ -1164,17 +1184,14 @@ class _RechargePageState extends State<RechargePage> {
             _selectedGateway = gateway.name;
             _useWallet = false;
           }),
+      // Design: radio on top, logo (24, py 4) 8 below it, name 2 below logo.
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Expanded(child: _gatewayLogo(gateway)),
-              SizedBox(width: 8.w),
-              _radio(isSelected),
-            ],
-          ),
+          _radio(isSelected),
           SizedBox(height: 12.h),
+          _gatewayLogo(gateway),
+          SizedBox(height: 6.h),
           Text(
             gateway.name,
             style: _textStyle(
@@ -1184,14 +1201,15 @@ class _RechargePageState extends State<RechargePage> {
               height: 1.3,
             ),
           ),
+          // Design uses Plus Jakarta Sans Medium 8 / line 16.5.
           if (description != null)
             Text(
               description,
-              style: _textStyle(
-                10,
-                FontWeight.w500,
-                AppColor.kSlate500,
-                height: 1.5,
+              style: GoogleFonts.plusJakartaSans(
+                fontSize: 8.sp,
+                fontWeight: FontWeight.w500,
+                color: AppColor.kSlate500,
+                height: 16.5 / 8,
               ),
             ),
         ],
@@ -1247,7 +1265,9 @@ class _RechargePageState extends State<RechargePage> {
         opacity: onTap == null ? 0.5 : 1,
         child: AnimatedContainer(
           duration: const Duration(milliseconds: 150),
-          padding: EdgeInsets.all(14.w),
+          // Design: content 16 inside the border either way (selected border
+          // is 2, unselected 1).
+          padding: EdgeInsets.all(isSelected ? 16.w : 15.w),
           decoration: BoxDecoration(
             color:
                 isSelected
@@ -1263,7 +1283,7 @@ class _RechargePageState extends State<RechargePage> {
                     ? [
                       BoxShadow(
                         color: primary.withValues(alpha: 0.08),
-                        blurRadius: 8,
+                        blurRadius: 4,
                         offset: const Offset(0, 2),
                       ),
                     ]
@@ -1362,40 +1382,42 @@ class _RechargePageState extends State<RechargePage> {
               Text(
                 l10n.termsAndConditionsTitle,
                 style: _textStyle(
-                  13,
+                  16,
                   FontWeight.w600,
                   AppColor.kTextSecondaryDark,
                   height: 1.3,
                 ),
               ),
-              SizedBox(height: 4.h),
+              SizedBox(height: 1.h),
               Text(
                 l10n.termsAndConditionsText,
                 style: _textStyle(
                   10,
                   FontWeight.w400,
                   AppColor.kSlate600,
-                  height: 1.6,
+                  height: 17.88 / 10,
                 ),
               ),
-              SizedBox(height: 8.h),
+              SizedBox(height: 20.h),
+              // Design uses Plus Jakarta Sans for the privacy block.
               Text(
                 l10n.privacyPolicyCaps,
-                style: _textStyle(
-                  11,
-                  FontWeight.w600,
-                  AppColor.kSlate800,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 10.sp,
+                  fontWeight: FontWeight.w700,
+                  color: AppColor.kSlate800,
                   height: 1.5,
+                  letterSpacing: 0.5,
                 ),
               ),
-              SizedBox(height: 2.h),
+              SizedBox(height: 1.h),
               Text(
                 l10n.privacyPolicyText,
-                style: _textStyle(
-                  10,
-                  FontWeight.w400,
-                  AppColor.kSlate600,
-                  height: 1.6,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 11.sp,
+                  fontWeight: FontWeight.w400,
+                  color: AppColor.kSlate600,
+                  height: 17.88 / 11,
                 ),
               ),
             ],
@@ -1411,7 +1433,7 @@ class _RechargePageState extends State<RechargePage> {
       onTap: () => setState(() => _agreedToTerms = !_agreedToTerms),
       borderRadius: BorderRadius.circular(6),
       child: Padding(
-        padding: EdgeInsets.symmetric(vertical: 4.h),
+        padding: EdgeInsets.fromLTRB(3.w, 3.h, 0, 3.h),
         child: Row(
           children: [
             AnimatedContainer(
@@ -1427,7 +1449,7 @@ class _RechargePageState extends State<RechargePage> {
               ),
               child:
                   _agreedToTerms
-                      ? Icon(Icons.check, size: 14.sp, color: Colors.white)
+                      ? Icon(Icons.check, size: 16.sp, color: Colors.white)
                       : null,
             ),
             SizedBox(width: 10.w),
@@ -1469,14 +1491,15 @@ class _RechargePageState extends State<RechargePage> {
           insetPadding: const EdgeInsets.symmetric(horizontal: 30),
           child: Container(
             decoration: _dialogContainerDecoration,
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 24),
+            // Design: 316 wide; content 24 from the sides, 27 from the top.
+            padding: EdgeInsets.fromLTRB(24.w, 27.h, 24.w, 25.h),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 SvgPicture.asset(
                   AppAssets.topUpSuccessfull,
-                  width: 80.w,
-                  height: 80.h,
+                  width: 100.w,
+                  height: 100.w,
                 ),
                 SizedBox(height: 26.h),
                 Text(
@@ -1525,19 +1548,18 @@ class _RechargePageState extends State<RechargePage> {
                 SizedBox(
                   width: double.infinity,
                   height: 52.h,
-                  child: ElevatedButton(
-                    onPressed: () => _backToMainPage(context),
-                    style: _dialogButtonStyle,
-                    child: Text(
-                      l10n.ok,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
-                        height: 1.3,
-                        fontFamily: 'GeneralSans',
-                      ),
+                  child: PrimaryButton(
+                    label: l10n.ok,
+                    isLoading: false,
+                    borderRadius: 10,
+                    textStyle: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                      height: 1.3,
+                      fontFamily: 'GeneralSans',
                     ),
+                    onClicked: () => _backToMainPage(context),
                   ),
                 ),
               ],
@@ -1561,14 +1583,15 @@ class _RechargePageState extends State<RechargePage> {
           insetPadding: const EdgeInsets.symmetric(horizontal: 30),
           child: Container(
             decoration: _dialogContainerDecoration,
-            padding: const EdgeInsets.symmetric(horizontal: 30, vertical: 24),
+            // Design: 316 wide; content 24 from the sides, 27 from the top.
+            padding: EdgeInsets.fromLTRB(24.w, 27.h, 24.w, 25.h),
             child: Column(
               mainAxisSize: MainAxisSize.min,
               children: [
                 SvgPicture.asset(
                   AppAssets.topUpFail,
-                  width: 80.w,
-                  height: 80.h,
+                  width: 100.w,
+                  height: 100.w,
                 ),
                 SizedBox(height: 26.h),
                 Text(
@@ -1616,19 +1639,18 @@ class _RechargePageState extends State<RechargePage> {
                 SizedBox(
                   width: double.infinity,
                   height: 52.h,
-                  child: ElevatedButton(
-                    onPressed: () => _backToMainPage(context),
-                    style: _dialogButtonStyle,
-                    child: Text(
-                      l10n.ok,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 16.sp,
-                        fontWeight: FontWeight.w600,
-                        height: 1.3,
-                        fontFamily: 'GeneralSans',
-                      ),
+                  child: PrimaryButton(
+                    label: l10n.ok,
+                    isLoading: false,
+                    borderRadius: 10,
+                    textStyle: TextStyle(
+                      color: Colors.white,
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w600,
+                      height: 1.3,
+                      fontFamily: 'GeneralSans',
                     ),
+                    onClicked: () => _backToMainPage(context),
                   ),
                 ),
               ],

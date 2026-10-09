@@ -13,6 +13,7 @@ import 'package:kfon_subscriber/shared/widgets/shimmer/shimmer_base.dart';
 import 'package:kfon_subscriber/shared/widgets/shimmer/shimmer_box.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 
 class AccountInformationPage extends StatelessWidget {
   const AccountInformationPage({super.key});
@@ -155,12 +156,14 @@ class _AccountInformationView extends StatelessWidget {
                       ),
                     ),
                     SizedBox(height: 16.h),
-                    ElevatedButton(
-                      onPressed:
+                    PrimaryButton(
+                      label: l10n.retry,
+                      isLoading: false,
+                      borderRadius: 10,
+                      onClicked:
                           () => context.read<AccountInformationBloc>().add(
                             const FetchAccountInformationRequested(),
                           ),
-                      child: Text(l10n.retry),
                     ),
                   ],
                 ),

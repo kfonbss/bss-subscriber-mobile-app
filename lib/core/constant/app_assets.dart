@@ -115,7 +115,7 @@ class AppAssets {
   static const String speedTestBackground =
       'assets/images/speed_test_background.svg';
   static const String document = 'assets/images/document.png';
-  static const String notificationWhite = 'assets/icons/notification_white.png';
+  static const String notificationWhite = 'assets/icons/notification.svg';
   static const String introScreenBackground =
       'assets/images/intro_screen_background.svg';
   static const String headphone = 'assets/bottomNaviBarIcons/headphone.png';
@@ -124,7 +124,7 @@ class AppAssets {
   static const String offerPromo = 'assets/icons/offer_promo.png';
   static const String verified = 'assets/icons/verified.png';
   static const String illustrationPassword =
-      'assets/images/Illustration_password.png';
+      'assets/images/illustration_password.png';
   static const String refresh = 'assets/icons/refresh.png';
   static const String ticket = 'assets/icons/ticket.svg';
   static const String documentSubmit = 'assets/icons/document-submit.svg';

@@ -33,7 +33,7 @@ class TenantRecoloredImage extends StatefulWidget {
   final BoxFit fit;
 
   /// Brand colour the artwork was drawn with.
-  static const Color sourceColor = Color(0xFF1095C5);
+  static final Color sourceColor = AppColor.kSourceColor;
 
   @override
   State<TenantRecoloredImage> createState() => _TenantRecoloredImageState();

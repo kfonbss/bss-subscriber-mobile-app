@@ -6,6 +6,7 @@ import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/shared/widgets/tenant_svg_color_mapper.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 
 class TicketSuccessBottomSheet extends StatelessWidget {
   final String ticketId;
@@ -160,29 +161,18 @@ class TicketSuccessBottomSheet extends StatelessWidget {
           // Return to Homepage Button
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 20),
-            child: SizedBox(
-              width: double.infinity,
+            child: PrimaryButton(
+              label: l10n.returnToHomepage,
+              isLoading: false,
+              borderRadius: 10,
               height: 52.h,
-              child: ElevatedButton(
-                onPressed: onReturnHome,
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColor.kPrimaryColor,
-                  foregroundColor: Colors.white,
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(10),
-                  ),
-                  elevation: 0,
-                ),
-                child: Text(
-                  l10n.returnToHomepage,
-                  style: const TextStyle(
-                    fontSize: 14,
-                    fontWeight: FontWeight.w600,
-                    height: 1.3,
-                    fontFamily: 'GeneralSans',
-                  ),
-                ),
+              textStyle: const TextStyle(
+                fontSize: 14,
+                fontWeight: FontWeight.w600,
+                height: 1.3,
+                fontFamily: 'GeneralSans',
               ),
+              onClicked: onReturnHome,
             ),
           ),
           const Spacer(),

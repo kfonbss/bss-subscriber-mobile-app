@@ -1,5 +1,4 @@
-﻿import 'package:kfon_subscriber/core/constant/app_styles.dart';
-import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+﻿import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entity.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:flutter/material.dart';
@@ -11,10 +10,6 @@ import 'package:kfon_subscriber/core/util/sizer.dart';
 /// `plan_tile.dart`.
 class SeasonalPlanTile extends StatelessWidget {
   /// Background for the leading icon container (light blue).
-  static const Color _kLeadingIconBackground = AppColor.kBlack70;
-
-  /// Globe / language icon tint (blue).
-  static const Color _kLeadingIconColor = AppColor.kMaterialBlue;
 
   final PackageEntity package;
   final bool isSelected;
@@ -44,7 +39,6 @@ class SeasonalPlanTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final theme = Theme.of(context);
     final l10n = context.bssSubL10n;
     final hasOffer = _hasOfferChrome(package);
     final list = package.listPrice;
@@ -58,7 +52,7 @@ class SeasonalPlanTile extends StatelessWidget {
       return '';
     }();
     final showChip = chipText.isNotEmpty;
-    final offerLabel = _offerLabel(context, package);
+    final offerLabel = _offerLabel(package);
     final saveText = _saveText(context, package);
     final seasonCaption = _seasonDiscountCaption(context, package);
 
@@ -68,8 +62,14 @@ class SeasonalPlanTile extends StatelessWidget {
         children: [
           Container(
             padding: const EdgeInsets.all(16),
-            margin: const EdgeInsets.only(right: 6, top: 6),
-            decoration: AppStyles.boxDecorationSmall.copyWith(
+            // Room for the 23px check badge (overhangs 7 right / 8 top).
+            margin: const EdgeInsets.only(right: 7, top: 8),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(12),
+              boxShadow: const [
+                BoxShadow(color: Color(0x0F000000), blurRadius: 16),
+              ],
               border: isSelected
                   ? Border.all(color: AppColor.kPrimaryColor, width: 1.w)
                   : null,
@@ -77,23 +77,24 @@ class SeasonalPlanTile extends StatelessWidget {
             child: Column(
               children: [
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
+                    // Figma: 30px #F2EFE7 circle with a primary globe.
                     Container(
-                      width: 28.w,
-                      height: 28.h,
+                      width: 30.w,
+                      height: 30.h,
                       alignment: Alignment.center,
                       decoration: BoxDecoration(
                         color: AppColor.kIconBackground,
-                        borderRadius: BorderRadius.circular(8),
+                        shape: BoxShape.circle,
                       ),
-                      child:  Icon(
+                      child: Icon(
                         Icons.language,
                         size: 16,
                         color: AppColor.kPrimaryColor,
                       ),
                     ),
-                    SizedBox(width: 12.w),
+                    SizedBox(width: 8.w),
 
                     // Plan name + API meta row (package type · plan type · subscription type)
                     Expanded(
@@ -102,8 +103,12 @@ class SeasonalPlanTile extends StatelessWidget {
                         children: [
                           Text(
                             package.packageName,
-                            style: theme.textTheme.titleSmall?.copyWith(
-                              fontWeight: FontWeight.w600,
+                            style: TextStyle(
+                              fontFamily: 'General Sans',
+                              fontSize: 16.sp,
+                              fontWeight: FontWeight.w500,
+                              height: 1.3,
+                              color: AppColor.kTextSecondaryDark,
                             ),
                             maxLines: 1,
                             overflow: TextOverflow.ellipsis,
@@ -128,7 +133,9 @@ class SeasonalPlanTile extends StatelessWidget {
                             Align(
                               alignment: Alignment.centerLeft,
                               child: ConstrainedBox(
-                                constraints: const BoxConstraints(maxWidth: 160),
+                                constraints: const BoxConstraints(
+                                  maxWidth: 160,
+                                ),
                                 child: DecoratedBox(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),
@@ -136,8 +143,8 @@ class SeasonalPlanTile extends StatelessWidget {
                                       begin: Alignment.centerLeft,
                                       end: Alignment.centerRight,
                                       colors: [
-                                        AppColor.kGoldYellow,
-                                        AppColor.kDarkOrange,
+                                        Color(0xFFFFD000),
+                                        Color(0xFFFF8C00),
                                       ],
                                     ),
                                   ),
@@ -153,7 +160,7 @@ class SeasonalPlanTile extends StatelessWidget {
                                       maxLines: 1,
                                       textAlign: TextAlign.center,
                                       textHeightBehavior:
-                                          const TextHeightBehavior(
+                                      const TextHeightBehavior(
                                         applyHeightToFirstAscent: false,
                                         applyHeightToLastDescent: false,
                                       ),
@@ -197,40 +204,40 @@ class SeasonalPlanTile extends StatelessWidget {
                         if (showStrikethrough) SizedBox(height: 4.h),
                         if (isSelected)
                           Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
+                            height: 30.h,
+                            alignment: Alignment.center,
+                            padding: EdgeInsets.symmetric(horizontal: 10.w),
                             decoration: BoxDecoration(
-                              color: AppColor.kSecondaryColor,
-                              borderRadius: BorderRadius.circular(10),
+                              color: AppColor.kPrimaryColor,
+                              borderRadius: BorderRadius.circular(8),
                             ),
                             child: Text(
                               '₹ ${package.price.toStringAsFixed(2)}',
                               maxLines: 1,
                               softWrap: false,
-                              style: theme.textTheme.titleSmall?.copyWith(
+                              style: TextStyle(
+                                fontFamily: 'General Sans',
+                                fontSize: 16.sp,
+                                fontWeight: FontWeight.w600,
+                                height: 1.3,
                                 color: Colors.white,
-                                fontWeight: FontWeight.w700,
                               ),
                             ),
                           )
                         else
                           Container(
-                            padding: const EdgeInsets.symmetric(
-                              horizontal: 12,
-                              vertical: 6,
-                            ),
-                            decoration: BoxDecoration(
-                              color: AppColor.kSecondaryBackgroundColor,
-                              borderRadius: BorderRadius.circular(10),
-                            ),
+                            height: 30.h,
+                            alignment: Alignment.centerRight,
                             child: Text(
                               '₹ ${package.price.toStringAsFixed(2)}',
                               maxLines: 1,
                               softWrap: false,
-                              style: theme.textTheme.titleSmall?.copyWith(
+                              style: TextStyle(
+                                fontFamily: 'General Sans',
+                                fontSize: 16.sp,
                                 fontWeight: FontWeight.w600,
+                                height: 1.3,
+                                color: AppColor.kTextSecondaryDark,
                               ),
                             ),
                           ),
@@ -243,85 +250,80 @@ class SeasonalPlanTile extends StatelessWidget {
                   SizedBox(
                     height: 26.h,
                     child: Container(
-                    padding: const EdgeInsets.fromLTRB(6, 5, 6, 5),
-                    decoration: BoxDecoration(
-                      color: AppColor.kPeachBg,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColor.kPeachBorder),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        if (offerLabel.isNotEmpty) ...[
-                          Container(
-                            height: 17.h,
-                            padding: const EdgeInsets.fromLTRB(
-                              6,
-                              2,
-                              6,
-                              2,
+                      padding: const EdgeInsets.fromLTRB(6, 5, 6, 5),
+                      decoration: BoxDecoration(
+                        color: const Color(0xFFFFF8EE),
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: const Color(0xFFF3C892)),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          if (offerLabel.isNotEmpty) ...[
+                            Container(
+                              height: 17.h,
+                              padding: const EdgeInsets.fromLTRB(6, 2, 6, 2),
+                              decoration: BoxDecoration(
+                                color: const Color(0xFFE8671A),
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: Text(
+                                offerLabel,
+                                style: TextStyle(
+                                  fontFamily: 'General Sans',
+                                  fontSize: 9.5.sp,
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.h,
+                                  letterSpacing: 0.3,
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
-                            decoration: BoxDecoration(
-                              color: AppColor.kBurntOrange,
-                              borderRadius: BorderRadius.circular(5),
-                            ),
+                            SizedBox(width: 8.w),
+                          ],
+                          Expanded(
                             child: Text(
-                              offerLabel,
+                              seasonCaption,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontFamily: 'General Sans',
-                                fontSize: 9.5.sp,
-                                fontWeight: FontWeight.w600,
+                                fontSize: 10.sp,
+                                fontWeight: FontWeight.w500,
                                 height: 1.h,
-                                letterSpacing: 0.3,
-                                color: Colors.white,
+                                letterSpacing: 0,
+                                color: Color(0xFF92400E),
                               ),
                             ),
                           ),
-                          SizedBox(width: 8.w),
-                        ],
-                        Expanded(
-                          child: Text(
-                            seasonCaption,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontFamily: 'General Sans',
-                              fontSize: 10.sp,
-                              fontWeight: FontWeight.w500,
-                              height: 1.h,
-                              letterSpacing: 0,
-                              color: AppColor.kAmberBrown,
+                          if (saveText.isNotEmpty) ...[
+                            SizedBox(width: 8.w),
+                            Text(
+                              saveText,
+                              maxLines: 1,
+                              style: TextStyle(
+                                fontFamily: 'General Sans',
+                                fontSize: 10.sp,
+                                fontWeight: FontWeight.w600,
+                                height: 1.h,
+                                letterSpacing: 0,
+                                color: Color(0xFF047857),
+                              ),
                             ),
-                          ),
-                        ),
-                        if (saveText.isNotEmpty) ...[
-                          SizedBox(width: 8.w),
-                          Text(
-                            saveText,
-                            maxLines: 1,
-                            style: TextStyle(
-                              fontFamily: 'General Sans',
-                              fontSize: 10.sp,
-                              fontWeight: FontWeight.w600,
-                              height: 1.h,
-                              letterSpacing: 0,
-                              color: AppColor.kDeepEmerald,
-                            ),
-                          ),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
                   ),
-                  ),
                 ],
-                SizedBox(height: 12.h),
+                SizedBox(height: 16.h),
 
                 // Plan details
                 Container(
                   padding: const EdgeInsets.all(12),
                   decoration: BoxDecoration(
-                    color: Colors.white,
-                    borderRadius: BorderRadius.circular(12),
+                    color: AppColor.kSecondaryBackgroundColor,
+                    borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
                     children: [
@@ -336,11 +338,7 @@ class SeasonalPlanTile extends StatelessWidget {
                         ),
                       ),
                       Expanded(
-                        child: _planDetail(
-                          context,
-                          l10n.volume,
-                          package.data,
-                        ),
+                        child: _planDetail(context, l10n.volume, package.data),
                       ),
                     ],
                   ),
@@ -353,17 +351,14 @@ class SeasonalPlanTile extends StatelessWidget {
               right: 0,
               top: 0,
               child: Container(
-                padding: const EdgeInsets.all(4),
+                width: 23.w,
+                height: 23.h,
+                alignment: Alignment.center,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
-                  color: Colors.white,
-                  border: Border.all(color: AppColor.kPrimaryColor, width: 1.w),
-                ),
-                child: Icon(
-                  Icons.check,
-                  size: 18,
                   color: AppColor.kPrimaryColor,
                 ),
+                child: Icon(Icons.check, size: 16, color: Colors.white),
               ),
             ),
         ],
@@ -372,22 +367,28 @@ class SeasonalPlanTile extends StatelessWidget {
   }
 
   Widget _planDetail(BuildContext context, String label, String value) {
-    final theme = Theme.of(context);
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           label,
-          style: theme.textTheme.labelSmall?.copyWith(
-            color: AppColor.kTextSecondary,
+          style: TextStyle(
+            fontFamily: 'General Sans',
+            fontSize: 10.sp,
             fontWeight: FontWeight.w400,
+            height: 1.3,
+            color: AppColor.kTextSecondary,
           ),
         ),
         SizedBox(height: 2.h),
         Text(
           value,
-          style: theme.textTheme.bodySmall?.copyWith(
+          style: TextStyle(
+            fontFamily: 'General Sans',
+            fontSize: 14.sp,
             fontWeight: FontWeight.w500,
+            height: 1.3,
+            color: AppColor.kTextSecondaryDark,
           ),
         ),
       ],
@@ -396,6 +397,7 @@ class SeasonalPlanTile extends StatelessWidget {
 
   String _metaText(PackageEntity package) {
     final parts = <String>[
+      package.packageType?.name.trim() ?? '',
       package.planType.trim(),
       package.subscriptionType?.trim() ?? '',
     ].where((v) => v.isNotEmpty).map((v) => v.toUpperCase()).toList();
@@ -403,34 +405,35 @@ class SeasonalPlanTile extends StatelessWidget {
     return parts.join(' · ');
   }
 
-  String _offerLabel(BuildContext context, PackageEntity package) {
+  String _offerLabel(PackageEntity package) {
     final list = package.listPrice;
     final price = package.price;
     if (list != null && list > 0 && price >= 0 && list > price) {
       final percent = ((list - price) / list * 100).round();
       if (percent > 0) {
-        return context.bssSubL10n.percentOff('$percent');
+        return '$percent% OFF';
       }
     }
     final amount = package.discountAmount;
     if (amount != null && amount > 0) {
       final dec = amount % 1 == 0 ? 0 : 2;
-      return context.bssSubL10n.amountOff(amount.toStringAsFixed(dec));
+      return '₹${amount.toStringAsFixed(dec)} OFF';
     }
     return '';
   }
 
   String _saveText(BuildContext context, PackageEntity package) {
+    final l10n = context.bssSubL10n;
     final amount = package.discountAmount;
     if (amount != null && amount > 0) {
       final dec = amount % 1 == 0 ? 0 : 2;
-      return context.bssSubL10n.saveAmount(amount.toStringAsFixed(dec));
+      return l10n.saveAmount(amount.toStringAsFixed(dec));
     }
     final list = package.listPrice;
     if (list != null && list > package.price) {
       final save = list - package.price;
       final dec = save % 1 == 0 ? 0 : 2;
-      return context.bssSubL10n.saveAmount(save.toStringAsFixed(dec));
+      return l10n.saveAmount(save.toStringAsFixed(dec));
     }
     return '';
   }
@@ -450,3 +453,4 @@ class SeasonalPlanTile extends StatelessWidget {
     return l10n.seasonDiscount;
   }
 }
+

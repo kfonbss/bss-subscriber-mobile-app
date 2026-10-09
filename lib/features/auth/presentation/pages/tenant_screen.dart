@@ -9,6 +9,7 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/shared/widgets/login_background.dart';
 import 'package:kfon_subscriber/shared/widgets/no_data_found.dart';
 import 'package:kfon_subscriber/shared/widgets/retry_widget.dart';
+import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
 import '../../../../service_locator.dart';
 import '../../domain/repository/tenant_repository.dart';
 import '../bloc/tenant_bloc.dart';
@@ -299,90 +300,61 @@ class _TenantScreenState extends State<TenantScreen> {
                         children: [
                           // Back
                           Expanded(
-                            child: SizedBox(
+                            child: SecondaryButton(
+                              label: context.bssSubL10n.back,
+                              borderRadius: 30,
                               height: 52.h,
-                              child: OutlinedButton.icon(
-                                onPressed: () => Navigator.pop(context),
-                                icon: const Icon(
-                                  Icons.arrow_back,
-                                  size: 18,
-                                  color: Colors.white,
-                                ),
-                                label: Text(
-                                  context.bssSubL10n.back,
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: 'GeneralSans',
-                                  ),
-                                ),
-                                style: OutlinedButton.styleFrom(
-                                  side: const BorderSide(color: Colors.white),
-                                  shape: const StadiumBorder(),
-                                ),
-                              ),
+                              backgroundColor: Colors.transparent,
+                              borderColor: Colors.white,
+                              foregroundColor: Colors.white,
+                              icon: const Icon(Icons.arrow_back, size: 18),
+                              onClicked: () => Navigator.pop(context),
                             ),
                           ),
                           SizedBox(width: 12.w),
 
                           // Continue
                           Expanded(
-                            child: SizedBox(
+                            child: SecondaryButton(
+                              label: context.bssSubL10n.continueText,
+                              borderRadius: 30,
                               height: 52.h,
-                              child: ElevatedButton.icon(
-                                onPressed:
-                                state.canContinue
-                                        ? () async {
-                                          final tenant = state.selectedTenant!;
-                                          await PreferenceUtils.setTenant(
-                                            tenant.code,
-                                            tenant.name,
-                                          );
-                                          AppBrand.setTenant(tenant.code);
-                                          final showIntro =
-                                              await PreferenceUtils.showIntroScreen();
-                                          if (!context.mounted) return;
-                                          if (showIntro) {
-                                            Navigator.pushReplacement(
-                                              context,
-                                              MaterialPageRoute(
-                                                builder:
-                                                    (_) =>
-                                                        const IntroScreenPage(),
-                                              ),
-                                            );
-                                            return;
-                                          }
-                                          Navigator.pushReplacementNamed(
-                                            context,
-                                            AppRoutes.login,
-                                            arguments: {
-                                              'tenantId': tenant.code,
-                                              'tenantName': tenant.name,
-                                            },
-                                          );
-                                        }
-                                        : null,
-                                icon: Text(
-                                  context.bssSubL10n.continueText,
-                                  style: TextStyle(
-                                    color: accent,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: 'GeneralSans',
-                                  ),
-                                ),
-                                label: Icon(
-                                  Icons.arrow_forward,
-                                  color: accent,
-                                  size: 18,
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  disabledBackgroundColor: Colors.white
-                                      .withOpacity(0.4),
-                                  shape: const StadiumBorder(),
-                                ),
-                              ),
+                              backgroundColor: Colors.white,
+                              borderColor: Colors.white,
+                              foregroundColor: accent,
+                              icon: const Icon(Icons.arrow_forward, size: 18),
+                              onClicked: state.canContinue
+                                  ? () async {
+                                    final tenant = state.selectedTenant!;
+                                    await PreferenceUtils.setTenant(
+                                      tenant.code,
+                                      tenant.name,
+                                    );
+                                    AppBrand.setTenant(tenant.code);
+                                    final showIntro =
+                                        await PreferenceUtils.showIntroScreen();
+                                    if (!context.mounted) return;
+                                    if (showIntro) {
+                                      Navigator.pushReplacement(
+                                        context,
+                                        MaterialPageRoute(
+                                          builder:
+                                              (_) =>
+                                                  const IntroScreenPage(),
+                                        ),
+                                      );
+                                      return;
+                                    }
+                                    Navigator.pushReplacementNamed(
+                                      context,
+                                      AppRoutes.login,
+                                      arguments: {
+                                        'tenantId': tenant.code,
+                                        'tenantName': tenant.name,
+                                      },
+                                    );
+                                  }
+                                  : null,
                             ),
                           ),
                         ],

@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:share_plus/share_plus.dart';
 import 'package:kfon_subscriber/core/util/pdf_downloader/pdf_download_service.dart';
 import 'package:kfon_subscriber/core/util/dialog_util.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 
 class PdfDownloadController {
   final PdfDownloadService _service = PdfDownloadService();
@@ -30,7 +31,7 @@ class PdfDownloadController {
       if (context.mounted) {
         DialogUtil().showCustomSnackbar(
           context: context,
-          content: 'Failed to save PDF: ${e.toString()}',
+          content: context.bssSubL10n.failedToSavePdf(e.toString()),
           isError: true,
         );
       }
@@ -52,7 +53,7 @@ class PdfDownloadController {
       if (context.mounted) {
         DialogUtil().showCustomSnackbar(
           context: context,
-          content: 'Failed to save PDF: ${e.toString()}',
+          content: context.bssSubL10n.failedToSavePdf(e.toString()),
           isError: true,
         );
       }

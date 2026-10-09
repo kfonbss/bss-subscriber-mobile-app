@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:kfon_subscriber/core/constant/app_brand.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/pdf_downloader/pdf_preview_and_download.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
@@ -14,6 +15,7 @@ import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
 import 'package:kfon_subscriber/shared/widgets/no_data_found.dart';
 import 'package:kfon_subscriber/shared/widgets/shimmer/list_shimmers.dart';
 import 'package:kfon_subscriber/service_locator.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 
 class TransactionHistoryPage extends StatelessWidget {
   const TransactionHistoryPage({super.key});
@@ -184,12 +186,14 @@ class _TransactionHistoryViewState extends State<_TransactionHistoryView> {
                       style: _errorStyle,
                     ),
                     SizedBox(height: 16.h),
-                    ElevatedButton(
-                      onPressed:
+                    PrimaryButton(
+                      label: l10n.retry,
+                      isLoading: false,
+                      borderRadius: 10,
+                      onClicked:
                           () => context.read<TransactionHistoryBloc>().add(
                             const FetchTransactions(),
                           ),
-                      child: Text(l10n.retry),
                     ),
                   ],
                 ),
@@ -263,26 +267,7 @@ class _TransactionCard extends StatelessWidget {
     fontWeight: FontWeight.w500,
     height: 1.30,
   );
-  static TextStyle get _downloadLabelStyle => TextStyle(
-    fontFamily: 'GeneralSans',
-    color: AppColor.kPrimaryColor,
-    fontSize: 12.sp,
-    fontWeight: FontWeight.w500,
-    height: 1.30,
-  );
 
-  // Design: 32 tall, 1px primary border, radius 10. Not cached in a static —
-  // kPrimaryColor follows the tenant.
-  ButtonStyle get _downloadStyle => OutlinedButton.styleFrom(
-    side: BorderSide(color: AppColor.kPrimaryColor, width: 1),
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(10)),
-    ),
-    minimumSize: Size(double.infinity, 32.h),
-    fixedSize: Size(double.infinity, 32.h),
-    padding: EdgeInsets.symmetric(horizontal: 10.w),
-    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-  );
 
   Color get _statusColor {
     switch (status.toLowerCase()) {
@@ -314,7 +299,7 @@ class _TransactionCard extends StatelessWidget {
             children: [
               SizedBox(
                 width: 109.w,
-                child: _LabelValue(label: l10n.bssNo, value: bssNo),
+                child: _LabelValue(label: l10n.appNo(AppBrand.appName), value: bssNo),
               ),
               SizedBox(width: 24.w),
               Expanded(

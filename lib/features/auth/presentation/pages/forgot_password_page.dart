@@ -108,6 +108,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                               (v) => Validators.validateRequired(
                                 v,
                                 fieldName: context.bssSubL10n.username,
+                                l10n: context.bssSubL10n,
                               ),
                         ),
                       ),

@@ -3,6 +3,8 @@ import 'package:kfon_subscriber/features/change_plan/seasonal_plan_api_filters.d
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
+import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
 
 class SeasonalPlanFilterSheet extends StatefulWidget {
   final String? currentSubscriptionType;
@@ -150,39 +152,25 @@ class _SeasonalPlanFilterSheetState extends State<SeasonalPlanFilterSheet> {
             Row(
               children: [
                 Expanded(
-                  child: OutlinedButton(
-                    onPressed: () => Navigator.pop(context),
-                    style: OutlinedButton.styleFrom(
-                      side: BorderSide(color: AppColor.kPrimaryColor),
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: Text(
-                      l10n.cancel,
-                      style: TextStyle(color: AppColor.kPrimaryColor),
-                    ),
+                  child: SecondaryButton(
+                    label: l10n.cancel,
+                    borderRadius: 12,
+                    backgroundColor: Colors.transparent,
+                    borderColor: AppColor.kPrimaryColor,
+                    foregroundColor: AppColor.kPrimaryColor,
+                    onClicked: () => Navigator.pop(context),
                   ),
                 ),
                 SizedBox(width: 12.w),
                 Expanded(
-                  child: ElevatedButton(
-                    onPressed: () {
+                  child: PrimaryButton(
+                    label: l10n.search,
+                    borderRadius: 12,
+                    isLoading: false,
+                    onClicked: () {
                       Navigator.pop(context);
                       widget.onApply(_subscriptionType, _packageType);
                     },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColor.kPrimaryColor,
-                      padding: const EdgeInsets.symmetric(vertical: 14),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(12),
-                      ),
-                    ),
-                    child: Text(
-                      l10n.search,
-                      style: const TextStyle(color: Colors.white),
-                    ),
                   ),
                 ),
               ],

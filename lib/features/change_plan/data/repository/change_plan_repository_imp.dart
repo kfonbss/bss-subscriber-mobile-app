@@ -26,15 +26,13 @@ import 'package:kfon_subscriber/features/change_plan/domain/repository/change_pl
 import 'package:kfon_subscriber/service_locator.dart';
 
 class ChangePlanRepositoryImp extends ChangePlanRepository {
-  final DioClient _client;
-
-  ChangePlanRepositoryImp({required DioClient client}) : _client = client;
+  ChangePlanRepositoryImp();
 
   @override
   Future<Either<Failure, PackageNewEntity>> getPackages(
     GetAllPackagesParams params,
   ) async {
-    final response = await _client.get(
+    final response = await sl<DioClient>().get(
       ApiUrls.listPackagesURL,
       queryParameters: params.toJson(),
     );
@@ -61,7 +59,7 @@ class ChangePlanRepositoryImp extends ChangePlanRepository {
   Future<Either<Failure, RechargeChangePlanResponseEntity>> rechargeChangePlan(
     RechargeChangePlanParams params,
   ) async {
-    final response = await _client.post(
+    final response = await sl<DioClient>().post(
       ApiUrls.rechargeChangePlanURL,
       data: params.toJson(),
     );
@@ -99,7 +97,7 @@ class ChangePlanRepositoryImp extends ChangePlanRepository {
   Future<Either<Failure, RechargePaymentStatusEntity>> getRechargePaymentStatus(
     String orderId,
   ) async {
-    final response = await _client.get(
+    final response = await sl<DioClient>().get(
       ApiUrls.rechargePaymentStatus(orderId: orderId),
     );
 
@@ -117,7 +115,7 @@ class ChangePlanRepositoryImp extends ChangePlanRepository {
   Future<Either<Failure, SeasonalDiscountEntity>> getSeasonalDiscount(
     String packageId,
   ) async {
-    final response = await _client.get(
+    final response = await sl<DioClient>().get(
       ApiUrls.rechargeSeasonId,
       queryParameters: {'packageId': packageId},
     );
@@ -137,7 +135,7 @@ class ChangePlanRepositoryImp extends ChangePlanRepository {
   Future<Either<Failure, List<DiscountDetailsEntity>>> getSubscriberDiscounts(
     List<SubscriberDiscountRequestParams> params,
   ) async {
-    final response = await _client.post(
+    final response = await sl<DioClient>().post(
       ApiUrls.subscriberDiscountRuleEngineURL,
       data: params.map((e) => e.toJson()).toList(),
     );

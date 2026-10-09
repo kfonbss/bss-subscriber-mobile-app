@@ -1,6 +1,7 @@
+import 'package:flutter/widgets.dart';
 import 'package:equatable/equatable.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entity.dart';
-import 'package:kfon_subscriber/features/change_plan/domain/params/change_plan_request_params.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 
 enum PackageTabType {
   addon,
@@ -39,6 +40,23 @@ extension PackageTabTypeExtension on PackageTabType {
 
       case PackageTabType.upgrade:
         return 'Upgrade';
+    }
+  }
+
+  String localizedName(BuildContext context) {
+    final l10n = context.bssSubL10n;
+    switch (this) {
+      case PackageTabType.addon:
+        return 'Addon';
+
+      case PackageTabType.standalone:
+        return 'Standalone';
+
+      case PackageTabType.changePackage:
+        return l10n.changePackage;
+
+      case PackageTabType.upgrade:
+        return l10n.upgradePlan;
     }
   }
 }

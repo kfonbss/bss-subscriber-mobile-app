@@ -11,17 +11,17 @@ import 'package:kfon_subscriber/features/auth/domain/params/login_params.dart';
 import 'package:kfon_subscriber/features/auth/domain/params/reset_password_params.dart';
 import 'package:kfon_subscriber/features/auth/domain/params/verify_otp_params.dart';
 import 'package:kfon_subscriber/features/auth/domain/repository/auth_repository.dart';
+import 'package:kfon_subscriber/service_locator.dart';
 
 import '../model/auth_model.dart';
 
 class AuthRepositoryImp extends AuthRepository {
-  final DioClient _client;
 
-  AuthRepositoryImp({required DioClient client}) : _client = client;
+  AuthRepositoryImp();
 
   @override
   Future<Either<Failure, AuthEntity>> login(LoginParams loginReq) async {
-    final response = await _client.post(
+    final response = await sl<DioClient>().post(
       ApiUrls.loginURL,
       data: loginReq.toMap(),
     );
@@ -35,7 +35,7 @@ class AuthRepositoryImp extends AuthRepository {
 
   @override
   Future<Either<Failure, AuthEntity>> resendOTP(String token) async {
-    final response = await _client.post(
+    final response = await sl<DioClient>().post(
       ApiUrls.resendOTPURL,
       data: {'loginSessionToken':token},
     );
@@ -57,7 +57,7 @@ class AuthRepositoryImp extends AuthRepository {
   Future<Either<Failure, OtpResponseEntity>> sendForgotPasswordOtp(
     String username,
   ) async {
-    final response = await _client.post(
+    final response = await sl<DioClient>().post(
       ApiUrls.sendForgotPasswordOTPURL,
       data: {'username': username},
     );
@@ -76,7 +76,7 @@ class AuthRepositoryImp extends AuthRepository {
 
   @override
   Future<Either<Failure, VerifyOtpEntity>> verifyOtp(VerifyOtpParams params) async {
-    final response = await _client.post(
+    final response = await sl<DioClient>().post(
       ApiUrls.verifyOTPURL,
       data: params.toMap(),
     );
@@ -92,7 +92,7 @@ class AuthRepositoryImp extends AuthRepository {
   Future<Either<Failure, dynamic>> verifyForgotPasswordOtp(
     VerifyOtpParams params,
   ) async {
-    final response = await _client.post(
+    final response = await sl<DioClient>().post(
       ApiUrls.verifyForgotPasswordOTPURL,
       data: params.toMap(),
     );
@@ -107,7 +107,7 @@ class AuthRepositoryImp extends AuthRepository {
   Future<Either<Failure, void>> resetForgotPassword(
     ResetPasswordParams params,
   ) async {
-    final response = await _client.post(
+    final response = await sl<DioClient>().post(
       ApiUrls.resetForgotPasswordURL,
       data: params.toMap(),
     );
@@ -120,7 +120,7 @@ class AuthRepositoryImp extends AuthRepository {
 
   @override
   Future<Either<Failure, AuthEntity>> refreshToken(String refreshToken) async {
-    final response = await _client.post(
+    final response = await sl<DioClient>().post(
       ApiUrls.refreshTokenURL,
       data: {'refreshToken': refreshToken},
     );
@@ -134,7 +134,7 @@ class AuthRepositoryImp extends AuthRepository {
 
   @override
   Future<Either<Failure, void>> logout(String refreshToken) async {
-    final response = await _client.post(
+    final response = await sl<DioClient>().post(
       ApiUrls.logoutURL,
       data: {'refreshToken': refreshToken},
     );
@@ -147,7 +147,7 @@ class AuthRepositoryImp extends AuthRepository {
 
   @override
   Future<Either<Failure, dynamic>> getUserProfile() async {
-    final response = await _client.get(ApiUrls.profileURL);
+    final response = await sl<DioClient>().get(ApiUrls.profileURL);
     if (response.isSuccess) {
       return Right(response.data);
     } else {

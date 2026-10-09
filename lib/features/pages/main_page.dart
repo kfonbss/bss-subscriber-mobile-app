@@ -12,6 +12,23 @@ import 'package:kfon_subscriber/shared/widgets/help_option_card.dart';
 import 'package:kfon_subscriber/shared/widgets/tabbar_material_widget.dart';
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
+import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
+
+/// [FloatingActionButtonLocation.centerDocked] lifted by [lift] pixels.
+class _RaisedCenterDockedLocation extends FloatingActionButtonLocation {
+  const _RaisedCenterDockedLocation(this.lift);
+
+  final double lift;
+
+  @override
+  Offset getOffset(ScaffoldPrelayoutGeometry geometry) {
+    final docked = FloatingActionButtonLocation.centerDocked.getOffset(
+      geometry,
+    );
+    return Offset(docked.dx, docked.dy - lift);
+  }
+}
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -75,17 +92,34 @@ class _MainPageState extends State<MainPage> {
       bottomNavigationBar: TabBarMaterialWidget(
         onChangedTab: (i) => _currentIndex.value = i,
       ),
-      floatingActionButton: FloatingActionButton(
-        shape: const CircleBorder(),
-        backgroundColor: AppColor.kPrimaryColor,
-        elevation: 5,
-        onPressed: () => _showHelpOptions(context),
-        child: const Padding(
-          padding: EdgeInsets.all(15.0),
-          child: Image(image: AssetImage(AppAssets.headphone)),
+      // Design: 56 circle, 24 icon, soft teal shadow (0, 7, blur 8.7).
+      floatingActionButton: DecoratedBox(
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: AppColor.kTealOverlay,
+              blurRadius: 8.721,
+              offset: Offset(0, 6.977),
+            ),
+          ],
+        ),
+        child: FloatingActionButton(
+          shape: const CircleBorder(),
+          backgroundColor: AppColor.kPrimaryColor,
+          elevation: 0,
+          focusElevation: 0,
+          hoverElevation: 0,
+          highlightElevation: 0,
+          onPressed: () => _showHelpOptions(context),
+          child: const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Image(image: AssetImage(AppAssets.headphone)),
+          ),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      // Design: FAB centre sits ~9 above the bar's top edge.
+      floatingActionButtonLocation: const _RaisedCenterDockedLocation(9),
       body: ValueListenableBuilder<int>(
         valueListenable: _currentIndex,
         builder: (_, index, __) => IndexedStack(index: index, children: _pages),
@@ -174,55 +208,36 @@ class _MainPageState extends State<MainPage> {
               ),
               SizedBox(height: 24.h),
               // Create Ticket Button (Outlined)
-              SizedBox(
-                width: double.infinity,
+              SecondaryButton(
+                label: context.bssSubL10n.createTicket,
+                borderRadius: 10,
                 height: 52.h,
-                child: OutlinedButton(
-                  onPressed: () {
-                    Navigator.pop(sheetContext);
-                    Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (_) => const CreateTicketPage(),
-                      ),
-                    );
-                  },
-                  style: OutlinedButton.styleFrom(
-                    side: BorderSide(color: AppColor.kPrimaryColor, width: 1),
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
+                backgroundColor: Colors.white,
+                borderColor: AppColor.kPrimaryColor,
+                foregroundColor: AppColor.kPrimaryColor,
+                textStyle: _buttonLabelStyle,
+                onClicked: () {
+                  Navigator.pop(sheetContext);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const CreateTicketPage(),
                     ),
-                    backgroundColor: Colors.white,
-                  ),
-                  child: Text(
-                    context.bssSubL10n.createTicket,
-                    style: _buttonLabelStyle,
-                  ),
-                ),
+                  );
+                },
               ),
               SizedBox(height: 13.h),
               // Talk to our Agent Button (Filled)
-              SizedBox(
-                width: double.infinity,
+              PrimaryButton(
+                label: context.bssSubL10n.talkToOurAgent,
+                isLoading: false,
+                borderRadius: 10,
                 height: 52.h,
-                child: ElevatedButton(
-                  onPressed: () {
-                    Navigator.pop(sheetContext);
-                    // TODO: Implement talk to agent functionality
-                  },
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: AppColor.kPrimaryColor,
-                    foregroundColor: Colors.white,
-                    shape: const RoundedRectangleBorder(
-                      borderRadius: BorderRadius.all(Radius.circular(10)),
-                    ),
-                    elevation: 0,
-                  ),
-                  child: Text(
-                    context.bssSubL10n.talkToOurAgent,
-                    style: _filledButtonLabelStyle,
-                  ),
-                ),
+                textStyle: _filledButtonLabelStyle,
+                onClicked: () {
+                  Navigator.pop(sheetContext);
+                  // TODO: Implement talk to agent functionality
+                },
               ),
             ],
           ),
@@ -262,50 +277,30 @@ class _MainPageState extends State<MainPage> {
                 children: [
                   // Cancel Button
                   Expanded(
-                    child: SizedBox(
+                    child: SecondaryButton(
+                      label: context.bssSubL10n.cancel,
+                      borderRadius: 10,
                       height: 52.h,
-                      child: OutlinedButton(
-                        onPressed: () => Navigator.pop(ctx),
-                        style: OutlinedButton.styleFrom(
-                          side: BorderSide(
-                            color: AppColor.kPrimaryColor,
-                            width: 1,
-                          ),
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                          ),
-                          backgroundColor: Colors.white,
-                        ),
-                        child: Text(
-                          context.bssSubL10n.cancel,
-                          style: _buttonLabelStyle,
-                        ),
-                      ),
+                      backgroundColor: Colors.white,
+                      borderColor: AppColor.kPrimaryColor,
+                      foregroundColor: AppColor.kPrimaryColor,
+                      textStyle: _buttonLabelStyle,
+                      onClicked: () => Navigator.pop(ctx),
                     ),
                   ),
                   SizedBox(width: 21.w),
                   // Yes Button
                   Expanded(
-                    child: SizedBox(
+                    child: PrimaryButton(
+                      label: context.bssSubL10n.yes,
+                      isLoading: false,
+                      borderRadius: 10,
                       height: 52.h,
-                      child: ElevatedButton(
-                        onPressed: () {
-                          Navigator.pop(ctx);
-                          // TODO: Implement callback request creation
-                        },
-                        style: ElevatedButton.styleFrom(
-                          backgroundColor: AppColor.kPrimaryColor,
-                          foregroundColor: Colors.white,
-                          shape: const RoundedRectangleBorder(
-                            borderRadius: BorderRadius.all(Radius.circular(10)),
-                          ),
-                          elevation: 0,
-                        ),
-                        child: Text(
-                          context.bssSubL10n.yes,
-                          style: _filledButtonLabelStyle,
-                        ),
-                      ),
+                      textStyle: _filledButtonLabelStyle,
+                      onClicked: () {
+                        Navigator.pop(ctx);
+                        // TODO: Implement callback request creation
+                      },
                     ),
                   ),
                 ],

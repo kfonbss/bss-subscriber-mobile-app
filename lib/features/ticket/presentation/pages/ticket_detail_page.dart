@@ -299,7 +299,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
         },
         child: CommonAppBar(
           onBackPressed: () => Navigator.pop(context, _hasNewNotes),
-          title: 'Ticket ID #${widget.ticket.ticketId}',
+          title: context.bssSubL10n.ticketIdTitle('${widget.ticket.ticketId}'),
           body: SafeArea(
             child: ListView(
               padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 20.h),
@@ -341,7 +341,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                       // Title
                       Expanded(
                         child: Text(
-                          widget.ticket.subject?.name ?? 'No Subject',
+                          widget.ticket.subject?.name ?? context.bssSubL10n.noSubject,
                           style: TextStyle(
                             color: AppColor.kTextSecondaryDark,
                             fontSize: 14.sp,
@@ -663,7 +663,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                                         builder:
                                             (context) => FilePreviewPage(
                                               files: files,
-                                              title: '$label Previews',
+                                              title: context.bssSubL10n.labelPreviews(label),
                                               fileName: label,
                                               fileExtension: '',
                                             ),

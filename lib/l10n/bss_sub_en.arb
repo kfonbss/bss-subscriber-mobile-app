@@ -11,9 +11,19 @@
   "downloadPdf": "Download PDF",
   "close": "Close",
   "stayConnectedAlways": "Stay Connected, Always",
-  "experienceLightningFast": "Experience lightning-fast internet with BSS's reliable fiber network, keeping you online anytime, anywhere.",
+  "experienceLightningFast": "Experience lightning-fast internet with {appName}'s reliable fiber network, keeping you online anytime, anywhere.",
+  "@experienceLightningFast": {
+    "placeholders": {
+      "appName": { "type": "String" }
+    }
+  },
   "bridgingDigitalDivide": "Bridging the Digital Divide",
-  "bssEmpowersCitizen": "BSS empowers every citizen with affordable internet, supporting education, business, and government services.",
+  "appEmpowersCitizen": "{appName} empowers every citizen with affordable internet, supporting education, business, and government services.",
+  "@appEmpowersCitizen": {
+    "placeholders": {
+      "appName": { "type": "String" }
+    }
+  },
   "internetWorksForYou": "Internet That Works for You",
   "enjoyHighSpeed": "Enjoy high-speed, secure, and cost-effective internet designed for every household and business.",
   "welcomeText": "Welcome to {name}",
@@ -188,14 +198,29 @@
   "transactionDetailsTitle": "Transaction Details",
   "orderTime": "Order Time",
   "orderAmount": "Order Amount",
-  "bssReference": "BSS Reference",
-  "bssStatus": "BSS Status",
+  "appReference": "{appName} Reference",
+  "@appReference": {
+    "placeholders": {
+      "appName": { "type": "String" }
+    }
+  },
+  "appStatus": "{appName} Status",
+  "@appStatus": {
+    "placeholders": {
+      "appName": { "type": "String" }
+    }
+  },
   "txnReference": "Txn. Reference",
   "responseMessage": "Response Message   ",
   "paymentGateway": "Payment Gateway",
   "closeButton": "Close",
   "noTransactionsFound": "No transactions found",
-  "bssNo": "BSS No",
+  "appNo": "{appName} No",
+  "@appNo": {
+    "placeholders": {
+      "appName": { "type": "String" }
+    }
+  },
   "package": "Package",
   "expireDate": "Expire Date",
   "status": "Status",
@@ -234,7 +259,14 @@
   "chatWithUs": "Chat with Us",
   "chatwithAI": "Chat with AI",
 
-  "aboutApp": "About App",
+  "aboutBrand": "About {brandName}",
+  "@aboutBrand": {
+    "placeholders": {
+      "brandName": {}
+    }
+  },
+  "notifications": "Notifications",
+  "youDontHaveAnyNotificationsYet": "You don't have any notifications yet.",
   "appInformation": "App Information",
   "appVersion": "App Version",
   "copyright": "Copyright",
@@ -244,9 +276,8 @@
   "support": "Support",
   "contactUs": "Contact Us",
 
-  "aboutBss": "About BSS",
-  "bss": "BSS",
-  "bssDescription": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting",
+  "aboutApp": "About App",
+  "appDescription": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting",
   "mission": "Mission",
   "missionDescription": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting",
   "achievements": "Achievements",
@@ -271,7 +302,12 @@
 
 
   "securitySettings": "Security Settings",
-  "changeBssPortalPassword": "Change BSS Portal Password",
+  "changeAppPortalPassword": "Change {appName} Portal Password",
+  "@changeAppPortalPassword": {
+    "placeholders": {
+      "appName": { "type": "String" }
+    }
+  },
   "changeInternetPassword": "Change Internet Password",
   "changeSsidPassword": "Change SSID Password",
   "changeWifiPassword": "Change WiFi Password",
@@ -286,7 +322,7 @@
   "passwordUpdatedSuccessfullyTitle": "Password Updated\n Successfully 🎉",
   "passwordUpdatedSuccessfullyDescription": "Your password has been changed. You'll be redirected to Security Settings.",
   "loginNow": "Login Now",
-
+  "changePassword": "Change Password",
   "language": "Language",
   "searchLanguage": "Search language",
   "languageChoice": "Language Choice",
@@ -515,7 +551,12 @@
   "invoiceNo": "Invoice No : ",
   "amountLabel": "Amount : ",
   "dateLabel": "Date : ",
-  "introducingBssApp": "Introducing {appName}",
+  "introducingApp": "Introducing {appName}",
+  "@introducingApp": {
+    "placeholders": {
+      "appName": { "type": "String" }
+    }
+  },
   "getStarted": "Get Started",
 
   "back": "Back",
@@ -578,7 +619,12 @@
   "enterPincode": "Enter Pincode",
   "referralCode": "Referral Code",
   "enterReferralCode": "Enter Referral Code",
-  "declarationConsent": "I hereby give my consent to receive calls, texts, WhatsApp and emails regarding updates, newsletters, and other important information from or on behalf of BSS at the mobile number provided above.",
+  "declarationConsent": "I hereby give my consent to receive calls, texts, WhatsApp and emails regarding updates, newsletters, and other important information from or on behalf of {appName} at the mobile number provided above.",
+  "@declarationConsent": {
+    "placeholders": {
+      "appName": { "type": "String" }
+    }
+  },
 
 
   "darkFibreEnquiry": "Dark Fibre Enquiry",
@@ -1007,5 +1053,49 @@
   "submitRating": "Submit Rating",
   "thanksForFeedback": "Thanks for your feedback!",
   "yourRating": "Your rating",
-  "ratingSubmitted": "Rating submitted successfully"
+  "ratingSubmitted": "Rating submitted successfully",
+  "fieldIsRequired": "{fieldName} is required",
+  "@fieldIsRequired": {
+    "placeholders": {
+      "fieldName": { "type": "String" }
+    }
+  },
+  "pleaseEnterMobileNumber": "Please enter mobile number",
+  "pleaseEnterValidMobileNumber": "Please enter valid 10-digit mobile number",
+  "pleaseEnterPassword": "Please enter password",
+  "passwordMinLength": "Password must be at least 6 characters",
+  "pleaseEnterEmailAddress": "Please enter email address",
+  "pleaseEnterValidEmailAddress": "Please enter a valid email address",
+  "pleaseConfirmPassword": "Please confirm your password",
+  "noInternetConnection": "No internet connection",
+  "cacheErrorOccurred": "Cache error occurred",
+  "requestTimedOut": "Request timed out",
+  "anUnexpectedErrorOccurred": "An unexpected error occurred",
+  "connectionTimeoutPleaseTryAgain": "Connection timeout, please try again.",
+  "sendTimeoutPleaseCheckInternet": "Send timeout, please check your internet.",
+  "receiveTimeoutPleaseTryAgain": "Receive timeout, please try again.",
+  "requestWasCancelled": "Request was cancelled.",
+  "unknownErrorOccurred": "Unknown error occurred",
+  "noResponseFromServer": "No response from server",
+  "anErrorOccurred": "An error occurred.",
+  "downloadSuccessful": "Download successful",
+  "downloadFailedWithStatus": "Download failed with status {status}",
+  "@downloadFailedWithStatus": {
+    "placeholders": {
+      "status": { "type": "String" }
+    }
+  },
+  "failedToSavePdf": "Failed to save PDF: {error}",
+  "@failedToSavePdf": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "failedToLoadPreview": "Failed to load preview",
+  "noAccessContactSupport": "You do not have access to this app. Please contact support.",
+  "invalidResponse": "Invalid response",
+  "fileUrlNotFound": "File URL not found",
+  "customerTypeCouldNotBeResolved": "Customer type could not be resolved. Please try again.",
+  "selectedFileNotAvailable": "Selected file is not available",
+  "fileUploadSucceededNoId": "File upload succeeded but no fileId returned"
 }

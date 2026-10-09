@@ -278,7 +278,7 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
 
       if (customerTypeId == null) {
         _dialogUtil.showMessage(
-          'Customer type could not be resolved. Please try again.',
+          context.bssSubL10n.customerTypeCouldNotBeResolved,
           context,
         );
         return;
@@ -322,39 +322,21 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
   }
 
   void _showSuccessBottomSheet(String ticketId) {
-    showModalBottomSheet(
+    showAppModalBottomSheet(
       context: context,
-      isScrollControlled: true,
       isDismissible: false,
       enableDrag: false,
       backgroundColor: Colors.transparent,
       builder:
-          (context) => Stack(
-            children: [
-              // Semi-transparent overlay
-              Positioned.fill(
-                child: GestureDetector(
-                  onTap: () {}, // Prevent dismissal on tap
-                  child: Container(color: Colors.black.withValues(alpha: 0.5)),
-                ),
-              ),
-              // Bottom sheet content
-              Positioned(
-                bottom: 0,
-                left: 0,
-                right: 0,
-                child: TicketSuccessBottomSheet(
-                  ticketId: ticketId,
-                  onReturnHome: () {
-                    Navigator.pop(context); // Close bottom sheet
-                    Navigator.pop(
-                      context,
-                      true,
-                    ); // Return to previous page with result
-                  },
-                ),
-              ),
-            ],
+          (context) => TicketSuccessBottomSheet(
+            ticketId: ticketId,
+            onReturnHome: () {
+              Navigator.pop(context); // Close bottom sheet
+              Navigator.pop(
+                context,
+                true,
+              ); // Return to previous page with result
+            },
           ),
     );
   }

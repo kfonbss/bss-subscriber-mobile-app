@@ -12,6 +12,7 @@ import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 
 class PdfPreviewAndDownload extends StatefulWidget {
   final String pdfUrl;
@@ -178,17 +179,17 @@ class _PdfPreviewAndDownloadState extends State<PdfPreviewAndDownload> {
                       minimum: const EdgeInsets.only(bottom: 8.0),
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
-                        child: ElevatedButton(
-                          onPressed: () => _onDownloadPressed(context),
-                          child: Text(
-                            isDownloading
-                                ? context.bssSubL10n.downloading
-                                : context.bssSubL10n.downloadPdf,
-                            style: const TextStyle(
-                              fontSize: 16,
-                              fontWeight: FontWeight.w600,
-                            ),
+                        child: PrimaryButton(
+                          label: isDownloading
+                              ? context.bssSubL10n.downloading
+                              : context.bssSubL10n.downloadPdf,
+                          isLoading: isDownloading,
+                          borderRadius: 10,
+                          textStyle: const TextStyle(
+                            fontSize: 16,
+                            fontWeight: FontWeight.w600,
                           ),
+                          onClicked: () => _onDownloadPressed(context),
                         ),
                       ),
                     ),

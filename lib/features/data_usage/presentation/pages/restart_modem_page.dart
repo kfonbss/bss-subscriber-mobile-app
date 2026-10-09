@@ -6,6 +6,8 @@ import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
+import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
 
 enum _RestartState { initial, loading, success, failed }
 
@@ -30,23 +32,7 @@ class _RestartModemPageState extends State<RestartModemPage>
   static const _dialogShape = RoundedRectangleBorder(
     borderRadius: BorderRadius.all(Radius.circular(20)),
   );
-  // OutlinedButton.styleFrom() is not const — computed once as static final.
-  static get _cancelButtonStyle => OutlinedButton.styleFrom(
-    padding: const EdgeInsets.symmetric(vertical: 14),
-    side: BorderSide(color: AppColor.kPrimaryColor),
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(10)),
-    ),
-  );
 
-  // Design: 52 tall, radius 8 (theme default is 10). Getter so the
-  // theme's tenant primary background is kept.
-  static ButtonStyle get _restartButtonStyle => ElevatedButton.styleFrom(
-    padding: EdgeInsets.zero,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(8)),
-    ),
-  );
 
   @override
   void initState() {
@@ -115,12 +101,14 @@ class _RestartModemPageState extends State<RestartModemPage>
                   SizedBox(height: 32.h),
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
+                    child: PrimaryButton(
+                      label: context.bssSubL10n.ok,
+                      isLoading: false,
+                      borderRadius: 10,
+                      onClicked: () {
                         Navigator.of(ctx).pop();
                         Navigator.of(context).pop();
                       },
-                      child: Text(context.bssSubL10n.ok),
                     ),
                   ),
                 ],
@@ -167,24 +155,26 @@ class _RestartModemPageState extends State<RestartModemPage>
                   SizedBox(height: 32.h),
                   SizedBox(
                     width: double.infinity,
-                    child: ElevatedButton(
-                      onPressed: () {
+                    child: PrimaryButton(
+                      label: context.bssSubL10n.retry,
+                      isLoading: false,
+                      borderRadius: 10,
+                      onClicked: () {
                         Navigator.of(ctx).pop();
                         _onRestartPressed();
                       },
-                      child: Text(context.bssSubL10n.retry),
                     ),
                   ),
                   SizedBox(height: 12.h),
                   SizedBox(
                     width: double.infinity,
-                    child: OutlinedButton(
-                      onPressed: () {
+                    child: SecondaryButton(
+                      label: context.bssSubL10n.cancel,
+                      borderRadius: 10,
+                      onClicked: () {
                         Navigator.of(ctx).pop();
                         Navigator.of(context).pop();
                       },
-                      style: _cancelButtonStyle,
-                      child: Text(context.bssSubL10n.cancel),
                     ),
                   ),
                 ],
@@ -250,18 +240,18 @@ class _RestartModemPageState extends State<RestartModemPage>
         SizedBox(
           width: double.infinity,
           height: 52.h,
-          child: ElevatedButton(
-            onPressed: _onRestartPressed,
-            style: _restartButtonStyle,
-            child: Text(
-              context.bssSubL10n.restartNow,
-              style: TextStyle(
-                fontFamily: 'GeneralSans',
-                fontSize: 16.sp,
-                fontWeight: FontWeight.w600,
-                color: Colors.white,
-              ),
+          child: PrimaryButton(
+            label: context.bssSubL10n.restartNow,
+            isLoading: false,
+            borderRadius: 8,
+            height: 52.h,
+            textStyle: TextStyle(
+              fontFamily: 'GeneralSans',
+              fontSize: 16.sp,
+              fontWeight: FontWeight.w600,
+              color: Colors.white,
             ),
+            onClicked: _onRestartPressed,
           ),
         ),
       ],

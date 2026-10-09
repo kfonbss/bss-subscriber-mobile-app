@@ -7,28 +7,48 @@ Future<T?> showAppModalBottomSheet<T>({
   required WidgetBuilder builder,
   bool isScrollControlled = true,
   bool useSafeAreaScroll = true,
-  bool isDismissible= true, // 👈 prevents closing on outside tap
-  bool enableDrag= true,
+  bool isDismissible = true,
+  bool enableDrag = true,
+  bool useRootNavigator = false,
+  // Per-sheet overrides; every sheet that leaves them out keeps the defaults.
+  Color? backgroundColor,
+  Color? dragHandleColor,
+  Size? dragHandleSize,
+  EdgeInsetsGeometry? dragHandlePadding,
+  double? topRadius,
 }) {
   return showModalBottomSheet<T>(
     context: context,
     isDismissible: isDismissible,
     enableDrag: enableDrag,
     isScrollControlled: isScrollControlled,
-    backgroundColor: AppColor.kMainBackgroundColor,
+    useRootNavigator: useRootNavigator,
+    useSafeArea: true,
+    backgroundColor: backgroundColor ?? AppColor.kMainBackgroundColor,
+    shape: topRadius == null
+        ? null
+        : RoundedRectangleBorder(
+      borderRadius: BorderRadius.vertical(
+        top: Radius.circular(topRadius),
+      ),
+    ),
     builder: (ctx) {
-      final content =ClipRRect(
-        borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
+      final content = ClipRRect(
+        borderRadius: BorderRadius.vertical(
+          top: Radius.circular(topRadius ?? 24),
+        ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
             Padding(
-              padding: EdgeInsets.only(top: 16, bottom: 16),
+              padding:
+              dragHandlePadding ??
+                  EdgeInsets.only(top: 16.h, bottom: 16.h),
               child: Container(
-                width: 50.w,
-                height: 4.5.h,
+                width: dragHandleSize?.width ?? 50.w,
+                height: dragHandleSize?.height ?? 4.h,
                 decoration: BoxDecoration(
-                  color: AppColor.kDragHandleGrey,
+                  color: dragHandleColor ?? AppColor.kDragHandleGrey,
                   borderRadius: BorderRadius.circular(999),
                 ),
               ),

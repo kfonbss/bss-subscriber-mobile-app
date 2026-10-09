@@ -5,6 +5,7 @@ import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/future_recharge/presentation/components/month_and_year_filter_sheet.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/common_bottom_sheet.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 
 class FutureRechargeFilterSheet extends StatefulWidget {
   final RechargeTypeFilter selectedType;
@@ -326,17 +327,17 @@ class _FutureRechargeFilterSheetState extends State<FutureRechargeFilterSheet> {
                   ),
                 ],
               ),
-              ElevatedButton(
-                style: ElevatedButton.styleFrom(
-                  backgroundColor: AppColor.kPrimaryColor,
-                  foregroundColor: Colors.white,
-                  elevation: 0,
-                  minimumSize: Size(120.w, 48.h),
-                  shape: RoundedRectangleBorder(
-                    borderRadius: BorderRadius.circular(12),
-                  ),
+              PrimaryButton(
+                label: context.bssSubL10n.apply,
+                isLoading: false,
+                borderRadius: 12,
+                height: 48.h,
+                textStyle: TextStyle(
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w600,
+                  fontFamily: 'GeneralSans',
                 ),
-                onPressed: () {
+                onClicked: () {
                   Navigator.pop(context);
                   widget.onApply(
                     type: _selectedType,
@@ -344,14 +345,6 @@ class _FutureRechargeFilterSheetState extends State<FutureRechargeFilterSheet> {
                     year: _dateTab == FilterType.year ? _selectedYear : null,
                   );
                 },
-                child: Text(
-                  context.bssSubL10n.apply,
-                  style: TextStyle(
-                    fontSize: 14.sp,
-                    fontWeight: FontWeight.w600,
-                    fontFamily: 'GeneralSans',
-                  ),
-                ),
               ),
             ],
           ),
