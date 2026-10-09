@@ -2336,4 +2336,34 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
 
   @override
   String get ratingSubmitted => 'Rating submitted successfully';
+
+  @override
+  String get txnStatusSuccess => 'Success';
+
+  @override
+  String get txnStatusFailed => 'Failed';
+
+  @override
+  String get txnStatusPending => 'Pending';
+
+  @override
+  String get txnStatusInitiated => 'Initiated';
+
+  @override
+  String get txnStatusCancelled => 'Cancelled';
+
+  @override
+  String get txnStatusRefunded => 'Refunded';
+
+  @override
+  String get dateRange => 'Date range';
+
+  @override
+  String get allTransactions => 'All Transactions';
+
+  @override
+  String get last30Days => 'Last 30 days';
+
+  @override
+  String get customDate => 'Custom date';
 }

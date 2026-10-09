@@ -1007,5 +1007,15 @@
   "submitRating": "Submit Rating",
   "thanksForFeedback": "Thanks for your feedback!",
   "yourRating": "Your rating",
-  "ratingSubmitted": "Rating submitted successfully"
+  "ratingSubmitted": "Rating submitted successfully",
+  "txnStatusSuccess": "Success",
+  "txnStatusFailed": "Failed",
+  "txnStatusPending": "Pending",
+  "txnStatusInitiated": "Initiated",
+  "txnStatusCancelled": "Cancelled",
+  "txnStatusRefunded": "Refunded",
+  "dateRange": "Date range",
+  "allTransactions": "All Transactions",
+  "last30Days": "Last 30 days",
+  "customDate": "Custom date"
 }
