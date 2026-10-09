@@ -1094,17 +1094,17 @@ class _TransactionCard extends StatelessWidget {
               ],
             ),
           ),
-          if (onDownloadInvoice != null) ...[
-            SizedBox(height: 12.h),
-            SizedBox(
-              width: double.infinity,
-              child: OutlinedButton(
-                onPressed: onDownloadInvoice,
-                style: _downloadStyle,
-                child: Text(l10n.downloadInvoice, style: _downloadLabelStyle),
-              ),
-            ),
-          ],
+          // if (onDownloadInvoice != null) ...[
+          //   SizedBox(height: 12.h),
+          //   SizedBox(
+          //     width: double.infinity,
+          //     child: OutlinedButton(
+          //       onPressed: onDownloadInvoice,
+          //       style: _downloadStyle,
+          //       child: Text(l10n.downloadInvoice, style: _downloadLabelStyle),
+          //     ),
+          //   ),
+          // ],
         ],
       ),
     );

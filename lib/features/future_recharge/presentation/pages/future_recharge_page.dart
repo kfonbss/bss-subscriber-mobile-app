@@ -8,6 +8,7 @@ import 'package:kfon_subscriber/features/future_recharge/presentation/bloc/futur
 import 'package:kfon_subscriber/features/future_recharge/presentation/bloc/future_recharge_state.dart';
 import 'package:kfon_subscriber/features/future_recharge/presentation/components/future_recharge_filter_sheet.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
+import 'package:kfon_subscriber/shared/widgets/common_tab_bar.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 import 'package:kfon_subscriber/core/util/dialog_util.dart';
@@ -419,21 +420,10 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
 
                           // ── Period tabs ──────────────────
                           if (!hasFilter)
-                            Container(
-                              height: 48.h,
-                              padding: EdgeInsets.all(4.w),
-                              decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.04),
-                                border: Border.all(color: Colors.white),
-                                borderRadius: BorderRadius.circular(12),
-                              ),
-                              child: Row(
-                                children: [
-                                  _buildTab(l10n.today, 0, periodIndex),
-                                  _buildTab(l10n.thisWeek, 1, periodIndex),
-                                  _buildTab(l10n.thisMonth, 2, periodIndex),
-                                ],
-                              ),
+                            CommonTabBar(
+                              tabs: [l10n.today, l10n.thisWeek, l10n.thisMonth],
+                              selectedIndex: periodIndex,
+                              onChanged: _onTabChanged,
                             ),
                           SizedBox(height: 16.h),
                         ],
@@ -572,46 +562,6 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
             ),
           ),
         ],
-      ),
-    );
-  }
-
-  // ── Period tab ────────────────────────────────────────────────────────────
-  Widget _buildTab(String label, int index, int selectedIndex) {
-    final selected = selectedIndex == index;
-    return Expanded(
-      child: GestureDetector(
-        onTap: () => _onTabChanged(index),
-        child: Container(
-          height: 40.h,
-          decoration: BoxDecoration(
-            color: selected ? Colors.white : Colors.transparent,
-            borderRadius: BorderRadius.circular(10),
-            boxShadow:
-                selected
-                    ? [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.05),
-                        blurRadius: 4,
-                        offset: const Offset(0, 2),
-                      ),
-                    ]
-                    : null,
-          ),
-          child: Center(
-            child: Text(
-              label,
-              style: TextStyle(
-                color:
-                    selected
-                        ? AppColor.kNearBlack
-                        : AppColor.kTabBarUnselectedText,
-                fontSize: 13.sp,
-                fontWeight: FontWeight.w500,
-              ),
-            ),
-          ),
-        ),
       ),
     );
   }

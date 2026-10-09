@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:kfon_subscriber/core/constant/app_brand.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/features/ticket/domain/entity/ticket_entity.dart'; // Import TicketEntity
@@ -101,30 +102,6 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
     return DateFormat('EEE, dd-MM-yyyy  hh:mm a').format(dateTime);
   }
 
-  /// API may send `""` for names; `name ?? fallback` keeps empty string, so avatars show "?".
-  String _senderDisplayName(String? name, String fallback) {
-    final t = name?.trim();
-    if (t == null || t.isEmpty) return fallback;
-    return t;
-  }
-
-  /// The API often returns movements newest-first. The opening note exists both as
-  /// [TicketEntity.remarks] and as a movement with the same text/time as [submitDate].
-  /// Skip that movement when we already render the remarks card — do not rely on
-  /// `movements.first` matching remarks (newest-first breaks that check).
-  bool _isDuplicateOfInitialRemarks({
-    required TicketMovementEntity movement,
-    required bool showingRemarksCard,
-  }) {
-    if (!showingRemarksCard) return false;
-    final remarks = widget.ticket.remarks?.trim();
-    final note = movement.note?.trim();
-    if (remarks == null || remarks.isEmpty || note != remarks) return false;
-    final submit = widget.ticket.submitDate;
-    final created = movement.createdDate;
-    if (submit == null || created == null) return note == remarks;
-    return created.difference(submit).inSeconds.abs() <= 120;
-  }
 
   List<TicketAttachmentEntity> _attachmentsFromPlatformFiles(
     List<PlatformFile> files,
@@ -153,88 +130,34 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
     }
     return out;
   }
-
-  /// Root `attachments` lists every file on the ticket; movements scope files per note.
-  /// Exclude fileIds that belong to other (non–initial-remarks) movements from the top card.
-  Set<String> _fileIdsClaimedByNonInitialMovements({
-    required bool showingRemarksCard,
-  }) {
-    final ids = <String>{};
-    if (!showingRemarksCard) return ids;
-    for (final movement in _movements) {
-      if (_isDuplicateOfInitialRemarks(
-        movement: movement,
-        showingRemarksCard: showingRemarksCard,
-      )) {
-        continue;
-      }
-      ids.addAll(movement.imageFileIds);
-      ids.addAll(movement.videoFileIds);
-      ids.addAll(movement.documentFileIds);
-    }
-    return ids;
+  List<TicketMovementEntity> _sortedMovements() {
+    final indexed = _movements.asMap().entries.toList()
+      ..sort((a, b) {
+        final left = a.value.createdDate;
+        final right = b.value.createdDate;
+        if (left != null && right != null) {
+          final byDate = left.compareTo(right);
+          if (byDate != 0) return byDate;
+        } else if (left == null && right != null) {
+          return 1;
+        } else if (left != null && right == null) {
+          return -1;
+        }
+        return a.key.compareTo(b.key);
+      });
+    return indexed.map((entry) => entry.value).toList();
   }
-
-  List<TicketAttachmentEntity> _attachmentsForRemarksCard({
-    required bool showingRemarksCard,
-  }) {
-    if (!showingRemarksCard) return [];
-    final claimed = _fileIdsClaimedByNonInitialMovements(
-      showingRemarksCard: showingRemarksCard,
-    );
-    if (claimed.isEmpty) {
-      return widget.ticket.attachments;
-    }
-    return widget.ticket.attachments.where((a) {
-      final fid = a.fileId;
-      if (fid == null || fid.isEmpty) return true;
-      return !claimed.contains(fid);
-    }).toList();
-  }
-
   @override
   Widget build(BuildContext context) {
-    // Construct messages from TicketEntity
-    // 1. Main ticket remarks (as the first message)
-    // 2. Movements (as subsequent messages)
-
     final List<TicketMessage> messages = [];
-
-    // Add initial ticket as a message if remarks exist
-    final bool showingRemarksCard =
-        widget.ticket.remarks != null && widget.ticket.remarks!.isNotEmpty;
-    if (showingRemarksCard) {
-      messages.add(
-        TicketMessage(
-          number: '01',
-          senderName: _senderDisplayName(widget.ticket.partnerName, 'You'),
-          senderRole: widget.ticket.customerType ?? 'Partner',
-          dateTime: _formatDateTime(widget.ticket.submitDate),
-          message: widget.ticket.remarks!,
-          attachments: _attachmentsForRemarksCard(
-            showingRemarksCard: showingRemarksCard,
-          ),
-          status: widget.ticket.status,
-          isMe: true,
-        ),
-      );
-    }
-
-    // Add movements; skip any row that duplicates the remarks card (see [_isDuplicateOfInitialRemarks])
-    final movements = _movements;
+    final movements = _sortedMovements();
     for (int i = 0; i < movements.length; i++) {
       final movement = movements[i];
-      if (_isDuplicateOfInitialRemarks(
-        movement: movement,
-        showingRemarksCard: showingRemarksCard,
-      )) {
-        continue;
-      }
       final number = (messages.length + 1).toString().padLeft(2, '0');
 
       // If assignedToName matches the user who created the ticket, it's the partner
-      final bool isMe = movement.assignedToName == widget.ticket.createdByUser;
-
+      final bool isMe =
+          movement.assignedFromName == widget.ticket.createdByUser;
       final List<TicketAttachmentEntity> movementAttachments = [];
       for (final fid in movement.imageFileIds) {
         movementAttachments.add(
@@ -315,11 +238,11 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
       messages.add(
         TicketMessage(
           number: number,
-          senderName:
-              isMe
-                  ? _senderDisplayName(widget.ticket.partnerName, 'You')
-                  : _senderDisplayName(movement.assignedToName, 'Support'),
-          senderRole: isMe ? (widget.ticket.customerType ?? 'Partner') : 'KFON',
+          senderName: movement.assignedFromName ?? 'Support',
+          senderRole:
+              movement.assignedFromDesignation ??
+              movement.assignedFromSeatName ??
+              AppBrand.appName,
           dateTime: _formatDateTime(movement.createdDate),
           message: movement.note ?? '',
           attachments: movementAttachments,

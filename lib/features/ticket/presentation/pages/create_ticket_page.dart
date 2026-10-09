@@ -1268,27 +1268,12 @@ class _CategoryRadioSkeleton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return AppShimmer(
-      child: Row(
-        children: [
-          Container(
-            width: 20.w,
-            height: 20.h,
-            decoration: const BoxDecoration(
-              color: Colors.white,
-              shape: BoxShape.circle,
-            ),
-          ),
-          SizedBox(width: 10.w),
-          Expanded(
-            child: Container(
-              height: 16.h,
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(8),
-              ),
-            ),
-          ),
-        ],
+      child: Container(
+        height: 50.h,
+        decoration: BoxDecoration(
+          color: Colors.white,
+          borderRadius: BorderRadius.circular(8),
+        ),
       ),
     );
   }
