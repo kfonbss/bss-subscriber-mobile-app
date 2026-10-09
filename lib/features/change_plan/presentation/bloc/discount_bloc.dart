@@ -15,12 +15,11 @@ class DiscountBloc extends Bloc<DiscountEvent, DiscountState> {
     on<RechargeChangePlan>(_onRechargeChangePlan);
     on<FetchRechargePaymentStatus>(_onFetchRechargePaymentStatus);
     on<LoadPaymentGateways>(_onLoadPaymentGateways);
-
   }
   Future<void> _onLoadPaymentGateways(
-      LoadPaymentGateways event,
-      Emitter<DiscountState> emit,
-      ) async {
+    LoadPaymentGateways event,
+    Emitter<DiscountState> emit,
+  ) async {
     // Skip if already loading or loaded (guards against duplicate triggers)
     if (state.gatewayStatus == GatewayStatus.loading ||
         state.gatewayStatus == GatewayStatus.loaded) {
@@ -31,8 +30,8 @@ class DiscountBloc extends Bloc<DiscountEvent, DiscountState> {
     try {
       final result = await repository.getPaymentGateways();
       result.fold(
-            (failure) => emit(state.copyWith(gatewayStatus: GatewayStatus.error)),
-            (gateways) => emit(
+        (failure) => emit(state.copyWith(gatewayStatus: GatewayStatus.error)),
+        (gateways) => emit(
           state.copyWith(
             gatewayStatus: GatewayStatus.loaded,
             gateways: gateways,
@@ -43,6 +42,7 @@ class DiscountBloc extends Bloc<DiscountEvent, DiscountState> {
       emit(state.copyWith(gatewayStatus: GatewayStatus.error));
     }
   }
+
   Future<void> _onGetSeasonalDiscount(
     GetSeasonalId event,
     Emitter<DiscountState> emit,
@@ -91,7 +91,7 @@ class DiscountBloc extends Bloc<DiscountEvent, DiscountState> {
           subscriberId: userId,
           packageId: event.packageId,
           seasonId: event.seasonId ?? '',
-          paymentMode:null,
+          paymentMode: null,
           referral: event.referral,
           referralCode: event.referralCode,
         ),

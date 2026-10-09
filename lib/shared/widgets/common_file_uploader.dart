@@ -27,7 +27,6 @@ class CommonFileUploader extends StatefulWidget {
 class _CommonFileUploaderState extends State<CommonFileUploader> {
   final ValueNotifier<int> _fileListCountNotifier = ValueNotifier<int>(0);
 
-
   @override
   void dispose() {
     _fileListCountNotifier.dispose();
@@ -38,7 +37,7 @@ class _CommonFileUploaderState extends State<CommonFileUploader> {
     FilePickerResult? result = await FilePicker.platform.pickFiles(
       allowMultiple: true,
       type: FileType.custom,
-      allowedExtensions: ['jpg', 'jpeg', 'pdf', 'png', 'doc','docx'],
+      allowedExtensions: ['jpg', 'jpeg', 'pdf', 'png', 'doc', 'docx'],
     );
     if (result != null) {
       for (var file in result.files) {
@@ -127,29 +126,38 @@ class _CommonFileUploaderState extends State<CommonFileUploader> {
                               itemCount: widget.selectedFiles.length,
                               itemBuilder: (BuildContext context, int index) {
                                 return Padding(
-                                  padding: const EdgeInsets.only(top: 5.0,bottom: 5.0,left: 5.0),
+                                  padding: const EdgeInsets.only(
+                                    top: 5.0,
+                                    bottom: 5.0,
+                                    left: 5.0,
+                                  ),
                                   child: Stack(
                                     children: [
                                       widget.selectedFiles[index].extension ==
-                                          'jpg' ||
-                                          widget.selectedFiles[index].extension ==
-                                              'jpeg' ||
-                                          widget.selectedFiles[index].extension ==
-                                              'png'
+                                                  'jpg' ||
+                                              widget
+                                                      .selectedFiles[index]
+                                                      .extension ==
+                                                  'jpeg' ||
+                                              widget
+                                                      .selectedFiles[index]
+                                                      .extension ==
+                                                  'png'
                                           ? Image.file(
-                                        File(widget.selectedFiles[index].path!),
-                                        fit: BoxFit.cover,
-                                      )
+                                            File(
+                                              widget.selectedFiles[index].path!,
+                                            ),
+                                            fit: BoxFit.cover,
+                                          )
                                           : Image.asset(
-                                        AppAssets.document,
-                                        fit: BoxFit.cover,
-                                      )
-                                      ,
+                                            AppAssets.document,
+                                            fit: BoxFit.cover,
+                                          ),
                                       Positioned(
                                         left: 0,
                                         bottom: 0,
-                                        top:0,
-                                        right:0,
+                                        top: 0,
+                                        right: 0,
                                         child: IconButton(
                                           padding: EdgeInsets.zero,
                                           constraints: BoxConstraints(),
@@ -157,7 +165,9 @@ class _CommonFileUploaderState extends State<CommonFileUploader> {
                                           iconSize: 20.0,
                                           color: AppColor.kFailedRed,
                                           onPressed: () {
-                                            widget.selectedFiles.removeAt(index);
+                                            widget.selectedFiles.removeAt(
+                                              index,
+                                            );
                                             _fileListCountNotifier.value =
                                                 widget.selectedFiles.length;
                                           },

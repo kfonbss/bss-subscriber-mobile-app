@@ -231,19 +231,27 @@ class _ServerLocItem extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           spacing: 5,
           children: [
-            Text(heading, style: TextStyle(
-              color: AppColor.kBodyTextGrey,
-              fontSize: 12.sp,
-              fontWeight: FontWeight.w400,
-              fontFamily: 'GeneralSans',
-            )),
-            Expanded(child: Text(data, style: TextStyle(
-              color: AppColor.kTextSecondaryDark,
-              fontSize: 14.sp,
-              fontWeight: FontWeight.w600,
-              height: 1.30,
-              fontFamily: 'GeneralSans',
-            ))),
+            Text(
+              heading,
+              style: TextStyle(
+                color: AppColor.kBodyTextGrey,
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w400,
+                fontFamily: 'GeneralSans',
+              ),
+            ),
+            Expanded(
+              child: Text(
+                data,
+                style: TextStyle(
+                  color: AppColor.kTextSecondaryDark,
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w600,
+                  height: 1.30,
+                  fontFamily: 'GeneralSans',
+                ),
+              ),
+            ),
           ],
         ),
       ],

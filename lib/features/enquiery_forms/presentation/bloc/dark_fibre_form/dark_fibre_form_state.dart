@@ -22,5 +22,5 @@ class DarkFibreFormMessage extends DarkFibreFormState {
   final String message;
   final Color color;
 
-  DarkFibreFormMessage({required this.message,required this.color});
+  DarkFibreFormMessage({required this.message, required this.color});
 }

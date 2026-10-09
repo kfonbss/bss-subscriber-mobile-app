@@ -92,9 +92,10 @@ class _SpeedFilterSheetState extends State<SpeedFilterSheet> {
             onChanged: (value) => setState(() => _selectedSpeed = value),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              children: _speedOptions
-                  .map((speed) => _buildSpeedTile(speed, theme, l10n))
-                  .toList(),
+              children:
+                  _speedOptions
+                      .map((speed) => _buildSpeedTile(speed, theme, l10n))
+                      .toList(),
             ),
           ),
           SizedBox(height: 20.h),

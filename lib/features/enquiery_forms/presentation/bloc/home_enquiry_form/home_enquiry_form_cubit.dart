@@ -1,5 +1,4 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kfon_subscriber/core/util/extensions.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/data/model/home_enquiry_form_params.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/domain/repository/enquiery_form.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/presentation/bloc/home_enquiry_form/home_enquiry_form_state.dart';
@@ -8,10 +7,16 @@ class HomeEnquiryFormCubit extends Cubit<HomeEnquiryFormState> {
   HomeEnquiryFormCubit({required this.repository}) : super(ShowNameForm());
   final EnquiryFormRepository repository;
 
-  Future<void> submitForm({required HomeEnquiryFormParams params}) async {
+  Future<void> submitForm({
+    required HomeEnquiryFormParams params,
+    String? tenantId,
+  }) async {
     try {
       emit(HomeFormSubmissionLoading());
-      final result = await repository.submitHomeEnquiryForm(params);
+      final result = await repository.submitHomeEnquiryForm(
+        params,
+        tenantId: tenantId,
+      );
       result.fold(
         (error) {
           emit(HomeFormSubmissionError(errorMessage: error));
@@ -54,8 +59,6 @@ class HomeEnquiryFormCubit extends Cubit<HomeEnquiryFormState> {
     if (params.mobileNumber.trim().length != 10 ||
         int.tryParse(params.mobileNumber.trim()) == null) {
       emit(HomeFormValidationError(errorMessage: 'Enter Valid Mobile Number'));
-    } else if (!params.email.isValidEmail) {
-      emit(HomeFormValidationError(errorMessage: 'Enter Valid Email'));
     } else {
       emit(ShowPreview());
     }

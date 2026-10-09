@@ -7,13 +7,11 @@ class GetPostOfficesDistrictError extends LnpEnquiryFormState {
   GetPostOfficesDistrictError({required this.errorMessage});
 }
 
-
 class ShowCompanyInformationForm extends LnpEnquiryFormState {}
 
 class ShowPersonalInformationForm extends LnpEnquiryFormState {}
 
 class ShowPreview extends LnpEnquiryFormState {}
-
 
 class SubmitLnpFormLoading extends LnpEnquiryFormState {}
 
@@ -28,6 +26,3 @@ class LnpFormValidationError extends LnpEnquiryFormState {
   final String errorMessage;
   LnpFormValidationError({required this.errorMessage});
 }
-
-
-

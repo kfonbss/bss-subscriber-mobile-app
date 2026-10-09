@@ -25,7 +25,6 @@ class FormAppBar extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-
       resizeToAvoidBottomInset: false,
       appBar: AppBar(
         backgroundColor: AppColor.kPrimaryColor,
@@ -33,10 +32,7 @@ class FormAppBar extends StatelessWidget {
         actions: actions ?? [],
         title: SizedBox(
           height: 45.0.h,
-          child: Image.asset(
-            AppAssets.kLogo,
-            fit: BoxFit.fitHeight,
-          ),
+          child: Image.asset(AppAssets.kLogo, fit: BoxFit.fitHeight),
         ),
         titleSpacing: showBackButton ? 0 : 25,
         centerTitle: centerTitle ?? showBackButton ? true : false,
@@ -55,7 +51,7 @@ class FormAppBar extends StatelessWidget {
                 )
                 : null,
       ),
-      backgroundColor:backgroundColor?? Colors.white,
+      backgroundColor: backgroundColor ?? Colors.white,
       body: body,
     );
   }

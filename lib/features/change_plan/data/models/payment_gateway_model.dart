@@ -12,20 +12,20 @@ class PaymentGatewayModel extends PaymentGatewayEntity {
 
   factory PaymentGatewayModel.fromJson(Map<String, dynamic> json) =>
       PaymentGatewayModel(
-        id:       json['id']       as String? ?? '',
-        masterId: json['masterId'] as int?    ?? 0,
-        code:     json['code']     as String? ?? '',
-        icon:     json['icon']     as String? ?? '',
-        name:     json['name']     as String? ?? '',
-        isActive: json['isActive'] as bool?   ?? true,
+        id: json['id'] as String? ?? '',
+        masterId: json['masterId'] as int? ?? 0,
+        code: json['code'] as String? ?? '',
+        icon: json['icon'] as String? ?? '',
+        name: json['name'] as String? ?? '',
+        isActive: json['isActive'] as bool? ?? true,
       );
 
   PaymentGatewayEntity toEntity() => PaymentGatewayEntity(
-    id:       id,
+    id: id,
     masterId: masterId,
-    code:     code,
-    name:     name,
-    icon:     icon,
+    code: code,
+    name: name,
+    icon: icon,
     isActive: isActive,
   );
 }

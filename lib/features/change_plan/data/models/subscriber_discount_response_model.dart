@@ -1,4 +1,3 @@
-
 import 'package:kfon_subscriber/features/change_plan/domain/entity/discount_details_entity.dart';
 
 class SubscriberDiscountResponseModel {
@@ -9,11 +8,14 @@ class SubscriberDiscountResponseModel {
   factory SubscriberDiscountResponseModel.fromDynamic(dynamic raw) {
     if (raw is List) {
       return SubscriberDiscountResponseModel(
-        discounts: raw
-            .map(
-              (e) => SubscriberDiscountModel.fromJson(e as Map<String, dynamic>),
-            )
-            .toList(),
+        discounts:
+            raw
+                .map(
+                  (e) => SubscriberDiscountModel.fromJson(
+                    e as Map<String, dynamic>,
+                  ),
+                )
+                .toList(),
       );
     }
     if (raw is Map<String, dynamic>) {
@@ -26,11 +28,13 @@ class SubscriberDiscountResponseModel {
     final data = json['data'];
     final list = data is List ? data : const [];
     return SubscriberDiscountResponseModel(
-      discounts: list
-          .map(
-            (e) => SubscriberDiscountModel.fromJson(e as Map<String, dynamic>),
-          )
-          .toList(),
+      discounts:
+          list
+              .map(
+                (e) =>
+                    SubscriberDiscountModel.fromJson(e as Map<String, dynamic>),
+              )
+              .toList(),
     );
   }
 
@@ -97,9 +101,10 @@ class SubscriberDiscountModel {
       gstAmount: (json['gstAmount'] as num?)?.toDouble() ?? 0,
       baseAmount: (json['baseAmount'] as num?)?.toDouble() ?? 0,
       finalAmount: (json['finalAmount'] as num?)?.toDouble() ?? 0,
-      appliedRules: rules
-          .map((e) => AppliedRuleModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      appliedRules:
+          rules
+              .map((e) => AppliedRuleModel.fromJson(e as Map<String, dynamic>))
+              .toList(),
       speed: json['speed'] as String?,
       validity: json['validity'] as int?,
       volume: json['volume'] as String?,

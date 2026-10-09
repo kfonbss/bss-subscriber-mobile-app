@@ -25,10 +25,10 @@ class PreferenceUtils {
     return false;
   }
 
-  static Future<void> setTenant(String tenantId,String tenantName) async {
+  static Future<void> setTenant(String tenantId, String tenantName) async {
     await Future.wait([
       _storage.write(key: _keyTenantId, value: tenantId),
-      _storage.write(key: _keyTenantName, value: tenantName)
+      _storage.write(key: _keyTenantName, value: tenantName),
     ]);
   }
 
@@ -40,7 +40,6 @@ class PreferenceUtils {
 
   static Future<void> setIntroScreenStatus(bool status) async =>
       await _storage.write(key: _introScreenStatus, value: status.toString());
-
 
   /// Returns the expiry timestamp in milliseconds since epoch
   static Future<int?> getTokenExpiryAt() async {
@@ -76,10 +75,13 @@ class PreferenceUtils {
     ]);
   }
 
-  static Future<void> setUserDetails({required String userId,required String userName}) async {
+  static Future<void> setUserDetails({
+    required String userId,
+    required String userName,
+  }) async {
     await Future.wait([
       _storage.write(key: _keyUserId, value: userId),
-      _storage.write(key: _keyUserName, value: userName)
+      _storage.write(key: _keyUserName, value: userName),
     ]);
   }
 
@@ -94,7 +96,7 @@ class PreferenceUtils {
   static Future<String?> getMobileNumber() async =>
       await _storage.read(key: _keyMobileNumber);
 
-  static Future<void> clearAll() async{
+  static Future<void> clearAll() async {
     await Future.wait([
       _storage.delete(key: _keyAccessToken),
       _storage.delete(key: _keyRefreshToken),
@@ -103,7 +105,6 @@ class PreferenceUtils {
       _storage.delete(key: _keyUserName),
       _storage.delete(key: _keyMobileNumber),
     ]);
- // await _storage.deleteAll();
-
-}
+    // await _storage.deleteAll();
+  }
 }

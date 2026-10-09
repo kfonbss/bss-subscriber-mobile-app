@@ -4,7 +4,7 @@ import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 
 class SelectedTenantCard extends StatelessWidget {
-  final String   circleName;
+  final String circleName;
   final VoidCallback onEdit;
 
   const SelectedTenantCard({

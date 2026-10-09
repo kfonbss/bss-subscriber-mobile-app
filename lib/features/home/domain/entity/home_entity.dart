@@ -26,7 +26,6 @@ class ActiveAdOnEntity extends Equatable {
   ];
 }
 
-
 class PackageDetailsEntity extends Equatable {
   final String packageId;
   final String packageName;

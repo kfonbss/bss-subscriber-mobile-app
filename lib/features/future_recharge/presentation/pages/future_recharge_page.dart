@@ -29,18 +29,28 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
   static const int _pageSize = 15;
 
   final TextEditingController _searchController = TextEditingController();
-  final ScrollController      _scrollController = ScrollController();
-  final FutureRechargeBloc          _rechargeBloc     = FutureRechargeBloc(
+  final ScrollController _scrollController = ScrollController();
+  final FutureRechargeBloc _rechargeBloc = FutureRechargeBloc(
     rechargeRepository: sl<FutureRechargeRepository>(),
   );
   final DialogUtil _dialogUtil = DialogUtil();
 
-  String?        _lastSearchQuery;
+  String? _lastSearchQuery;
   FutureRechargeState? _previousState;
 
   static const _monthNames = [
-    'Jan', 'Feb', 'Mar', 'Apr', 'May', 'Jun',
-    'Jul', 'Aug', 'Sep', 'Oct', 'Nov', 'Dec',
+    'Jan',
+    'Feb',
+    'Mar',
+    'Apr',
+    'May',
+    'Jun',
+    'Jul',
+    'Aug',
+    'Sep',
+    'Oct',
+    'Nov',
+    'Dec',
   ];
 
   // ── Lifecycle ─────────────────────────────────────────────────────────────
@@ -49,7 +59,7 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
     super.initState();
     _rechargeBloc.add(
       LoadRecharges(
-        params:           const GetFutureRechargesListParams(period: 'TODAY'),
+        params: const GetFutureRechargesListParams(period: 'TODAY'),
         isFutureRecharge: true,
       ),
     );
@@ -84,21 +94,24 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
     _lastSearchQuery = q;
     Future.delayed(const Duration(milliseconds: 500), () {
       if (!mounted || _searchController.text.trim() != q) return;
-      final loaded = _rechargeBloc.state is RechargeLoaded
-          ? _rechargeBloc.state as RechargeLoaded
-          : null;
-      _rechargeBloc.add(LoadRecharges(
-        params: GetFutureRechargesListParams(
-          period:       _periodFromIndex(loaded?.periodIndex ?? 0),
-          page:         0,
-          size:         _pageSize,
-          search:       q.isEmpty ? null : q,
-          rechargeType: loaded?.rechargeType  ?? RechargeTypeFilter.all,
-          month:        loaded?.selectedMonth?.month,
-          year:         loaded?.selectedMonth?.year ?? loaded?.selectedYear,
+      final loaded =
+          _rechargeBloc.state is RechargeLoaded
+              ? _rechargeBloc.state as RechargeLoaded
+              : null;
+      _rechargeBloc.add(
+        LoadRecharges(
+          params: GetFutureRechargesListParams(
+            period: _periodFromIndex(loaded?.periodIndex ?? 0),
+            page: 0,
+            size: _pageSize,
+            search: q.isEmpty ? null : q,
+            rechargeType: loaded?.rechargeType ?? RechargeTypeFilter.all,
+            month: loaded?.selectedMonth?.month,
+            year: loaded?.selectedMonth?.year ?? loaded?.selectedYear,
+          ),
+          isFutureRecharge: true,
         ),
-        isFutureRecharge: true,
-      ));
+      );
     });
   }
 
@@ -112,16 +125,18 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
     final loaded = state is RechargeLoaded ? state : null;
     FutureRechargeFilterSheet.show(
       context,
-      selectedType:  loaded?.rechargeType  ?? RechargeTypeFilter.all,
+      selectedType: loaded?.rechargeType ?? RechargeTypeFilter.all,
       selectedMonth: loaded?.selectedMonth,
-      selectedYear:  loaded?.selectedYear,
+      selectedYear: loaded?.selectedYear,
       onApply: ({required type, month, year}) {
-        _rechargeBloc.add(ApplyRechargeFilter(
-          rechargeType:    type,
-          selectedMonth:   month,
-          selectedYear:    year,
-          isFutureRecharge: true,
-        ));
+        _rechargeBloc.add(
+          ApplyRechargeFilter(
+            rechargeType: type,
+            selectedMonth: month,
+            selectedYear: year,
+            isFutureRecharge: true,
+          ),
+        );
       },
       onClear: () {
         _rechargeBloc.add(const ClearRechargeFilter(isFutureRecharge: true));
@@ -132,21 +147,25 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
   // ── Helpers ───────────────────────────────────────────────────────────────
   static String _periodFromIndex(int index) {
     switch (index) {
-      case 0:  return 'TODAY';
-      case 1:  return 'THIS_WEEK';
-      case 2:  return 'THIS_MONTH';
-      default: return 'TODAY';
+      case 0:
+        return 'TODAY';
+      case 1:
+        return 'THIS_WEEK';
+      case 2:
+        return 'THIS_MONTH';
+      default:
+        return 'TODAY';
     }
   }
 
   bool _hasActiveFilter(FutureRechargeState state) {
     if (state is! RechargeLoaded) return false;
-    return state.rechargeType  != RechargeTypeFilter.all ||
+    return state.rechargeType != RechargeTypeFilter.all ||
         state.selectedMonth != null ||
-        state.selectedYear  != null;
+        state.selectedYear != null;
   }
 
-  String _formatDate(DateTime date)     => DateFormat('dd MMM yyyy').format(date);
+  String _formatDate(DateTime date) => DateFormat('dd MMM yyyy').format(date);
   String _formatCurrency(double amount) => '₹${amount.toStringAsFixed(0)}';
 
   // ── Build ──────────────────────────────────────────────────────────────────
@@ -173,57 +192,57 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
         bloc: _rechargeBloc,
         builder: (context, state) {
           // ── Extract data from state ──────────────────
-          int                       total         = 0;
-          int                       wallet        = 0;
-          int                       direct        = 0;
-          List<FutureRechargeGroupEntity> groups        = [];
-          bool                      isLoadingMore = false;
-          int                       totalElements = 0;
-          RechargeTypeFilter        rechargeType  = RechargeTypeFilter.all;
-          DateTime?                 selectedMonth;
-          int?                      selectedYear;
-          int                       periodIndex   = 0;
+          int total = 0;
+          int wallet = 0;
+          int direct = 0;
+          List<FutureRechargeGroupEntity> groups = [];
+          bool isLoadingMore = false;
+          int totalElements = 0;
+          RechargeTypeFilter rechargeType = RechargeTypeFilter.all;
+          DateTime? selectedMonth;
+          int? selectedYear;
+          int periodIndex = 0;
 
           if (state is RechargeLoaded) {
-            total         = state.data.summary.total;
-            wallet        = state.data.summary.wallet;
-            direct        = state.data.summary.direct;
-            groups        = state.data.groups;
+            total = state.data.summary.total;
+            wallet = state.data.summary.wallet;
+            direct = state.data.summary.direct;
+            groups = state.data.groups;
             isLoadingMore = state.isLoadingMore;
             totalElements = state.data.pageInfo.totalElements;
-            rechargeType  = state.rechargeType;
+            rechargeType = state.rechargeType;
             selectedMonth = state.selectedMonth;
-            selectedYear  = state.selectedYear;
-            periodIndex   = state.periodIndex;
+            selectedYear = state.selectedYear;
+            periodIndex = state.periodIndex;
           } else if (state is RechargeLoading) {
             // 👇 read periodIndex immediately so tab highlights at once
             periodIndex = state.periodIndex;
             if (state.previousData != null) {
-              total         = state.previousData!.summary.total;
-              wallet        = state.previousData!.summary.wallet;
-              direct        = state.previousData!.summary.direct;
-              groups        = state.previousData!.groups;
+              total = state.previousData!.summary.total;
+              wallet = state.previousData!.summary.wallet;
+              direct = state.previousData!.summary.direct;
+              groups = state.previousData!.groups;
               totalElements = state.previousData!.pageInfo.totalElements;
             }
           } else if (state is RechargeRefreshing) {
             final data = state.currentData;
-            total         = data.summary.total;
-            wallet        = data.summary.wallet;
-            direct        = data.summary.direct;
-            groups        = data.groups;
+            total = data.summary.total;
+            wallet = data.summary.wallet;
+            direct = data.summary.direct;
+            groups = data.groups;
             totalElements = data.pageInfo.totalElements;
           } else if (state is RechargeError && state.previousData != null) {
-            total         = state.previousData!.summary.total;
-            wallet        = state.previousData!.summary.wallet;
-            direct        = state.previousData!.summary.direct;
-            groups        = state.previousData!.groups;
+            total = state.previousData!.summary.total;
+            wallet = state.previousData!.summary.wallet;
+            direct = state.previousData!.summary.direct;
+            groups = state.previousData!.groups;
             totalElements = state.previousData!.pageInfo.totalElements;
           }
 
           final hasFilter = _hasActiveFilter(state);
 
           // 👇 shimmer conditions
-          final isInitialLoading  =
+          final isInitialLoading =
               state is RechargeLoading && state.previousData == null;
           final isTabChangeLoading =
               state is RechargeLoading && state.isTabChange;
@@ -237,37 +256,42 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
               Stack(
                 children: [
                   InkWell(
-                    onTap:        () => _showFilter(state),
+                    onTap: () => _showFilter(state),
                     borderRadius: BorderRadius.circular(20),
                     child: Container(
-                      width:  40.w,
+                      width: 40.w,
                       height: 40.h,
                       decoration: BoxDecoration(
                         shape: BoxShape.circle,
-                        color: hasFilter
-                            ? AppColor.kSecondaryColor.withValues(alpha: 0.1)
-                            : Colors.transparent,
+                        color:
+                            hasFilter
+                                ? AppColor.kSecondaryColor.withValues(
+                                  alpha: 0.1,
+                                )
+                                : Colors.transparent,
                         border: Border.all(
-                          color: hasFilter
-                              ? AppColor.kSecondaryColor
-                              : AppColor.kShimmerBase,
+                          color:
+                              hasFilter
+                                  ? AppColor.kSecondaryColor
+                                  : AppColor.kShimmerBase,
                         ),
                       ),
                       child: Icon(
                         Icons.tune_rounded,
-                        size:  20.sp,
-                        color: hasFilter
-                            ? AppColor.kSecondaryColor
-                            : AppColor.kTextSecondary,
+                        size: 20.sp,
+                        color:
+                            hasFilter
+                                ? AppColor.kSecondaryColor
+                                : AppColor.kTextSecondary,
                       ),
                     ),
                   ),
                   if (hasFilter)
                     Positioned(
-                      top:   2.h,
+                      top: 2.h,
                       right: 2.w,
                       child: Container(
-                        width:  8.w,
+                        width: 8.w,
                         height: 8.h,
                         decoration: BoxDecoration(
                           shape: BoxShape.circle,
@@ -282,25 +306,29 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
             body: RefreshIndicator(
               onRefresh: () async {
                 final loaded = state is RechargeLoaded ? state : null;
-                _rechargeBloc.add(RefreshRecharges(
-                  params: GetFutureRechargesListParams(
-                    period:       _periodFromIndex(loaded?.periodIndex ?? 0),
-                    page:         0,
-                    size:         _pageSize,
-                    search:       _searchController.text.trim().isEmpty
-                        ? null
-                        : _searchController.text.trim(),
-                    rechargeType: loaded?.rechargeType ?? RechargeTypeFilter.all,
-                    month:        loaded?.selectedMonth?.month,
-                    year:         loaded?.selectedMonth?.year ?? loaded?.selectedYear,
+                _rechargeBloc.add(
+                  RefreshRecharges(
+                    params: GetFutureRechargesListParams(
+                      period: _periodFromIndex(loaded?.periodIndex ?? 0),
+                      page: 0,
+                      size: _pageSize,
+                      search:
+                          _searchController.text.trim().isEmpty
+                              ? null
+                              : _searchController.text.trim(),
+                      rechargeType:
+                          loaded?.rechargeType ?? RechargeTypeFilter.all,
+                      month: loaded?.selectedMonth?.month,
+                      year: loaded?.selectedMonth?.year ?? loaded?.selectedYear,
+                    ),
+                    isFutureRecharge: true,
                   ),
-                  isFutureRecharge: true,
-                ));
+                );
                 await Future.delayed(const Duration(milliseconds: 500));
               },
               child: CustomScrollView(
                 controller: _scrollController,
-                physics:    const AlwaysScrollableScrollPhysics(),
+                physics: const AlwaysScrollableScrollPhysics(),
                 slivers: [
                   SliverToBoxAdapter(
                     child: Padding(
@@ -310,7 +338,7 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
                         children: [
                           // ── Summary cards ────────────────
                           Container(
-                            height:  122.h,
+                            height: 122.h,
                             padding: EdgeInsets.all(16.w),
                             decoration: const ShapeDecoration(
                               color: Colors.white,
@@ -347,9 +375,9 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
                           // ── Active filter chips ──────────
                           if (hasFilter) ...[
                             _buildActiveFilterChips(
-                              rechargeType:  rechargeType,
+                              rechargeType: rechargeType,
                               selectedMonth: selectedMonth,
-                              selectedYear:  selectedYear,
+                              selectedYear: selectedYear,
                             ),
                             SizedBox(height: 12.h),
                           ],
@@ -368,21 +396,21 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
                             child: TextField(
                               controller: _searchController,
                               decoration: InputDecoration(
-                                border:   InputBorder.none,
+                                border: InputBorder.none,
                                 hintText: l10n.search,
                                 hintStyle: TextStyle(
-                                  color:      AppColor.kTextSecondaryLight,
-                                  fontSize:   14.sp,
+                                  color: AppColor.kTextSecondaryLight,
+                                  fontSize: 14.sp,
                                   fontWeight: FontWeight.w400,
                                 ),
                                 prefixIcon: const Icon(
                                   Icons.search,
                                   color: AppColor.kTextSecondaryLight,
-                                  size:  24,
+                                  size: 24,
                                 ),
                                 contentPadding: EdgeInsets.symmetric(
                                   horizontal: 14.w,
-                                  vertical:   16.h,
+                                  vertical: 16.h,
                                 ),
                               ),
                             ),
@@ -392,17 +420,17 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
                           // ── Period tabs ──────────────────
                           if (!hasFilter)
                             Container(
-                              height:  48.h,
+                              height: 48.h,
                               padding: EdgeInsets.all(4.w),
                               decoration: BoxDecoration(
-                                color:        Colors.black.withOpacity(0.04),
-                                border:       Border.all(color: Colors.white),
+                                color: Colors.black.withOpacity(0.04),
+                                border: Border.all(color: Colors.white),
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: Row(
                                 children: [
-                                  _buildTab(l10n.today,     0, periodIndex),
-                                  _buildTab(l10n.thisWeek,  1, periodIndex),
+                                  _buildTab(l10n.today, 0, periodIndex),
+                                  _buildTab(l10n.thisWeek, 1, periodIndex),
                                   _buildTab(l10n.thisMonth, 2, periodIndex),
                                 ],
                               ),
@@ -424,23 +452,28 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
                   else if (groups.isNotEmpty)
                     SliverPadding(
                       padding: EdgeInsets.only(
-                        left:   20.w,
-                        right:  20.w,
+                        left: 20.w,
+                        right: 20.w,
                         bottom: 100.h,
                       ),
-                      sliver: periodIndex == 1 && !hasFilter
-                          ? _buildGroupedSliver(
-                        groups,
-                        isLoadingMore: isLoadingMore,
-                      )
-                          : _buildFlatSliver(
-                        groups,
-                        isLoadingMore: isLoadingMore,
-                        totalElements: totalElements,
-                      ),
+                      sliver:
+                          periodIndex == 1 && !hasFilter
+                              ? _buildGroupedSliver(
+                                groups,
+                                isLoadingMore: isLoadingMore,
+                              )
+                              : _buildFlatSliver(
+                                groups,
+                                isLoadingMore: isLoadingMore,
+                                totalElements: totalElements,
+                              ),
                     )
                   else if (!showShimmer)
-                      SliverToBoxAdapter(child: NoDataFound(errorMessage: context.bssSubL10n.noDataFound)),
+                    SliverToBoxAdapter(
+                      child: NoDataFound(
+                        errorMessage: context.bssSubL10n.noDataFound,
+                      ),
+                    ),
                 ],
               ),
             ),
@@ -453,57 +486,65 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
   // ── Active filter chips ───────────────────────────────────────────────────
   Widget _buildActiveFilterChips({
     required RechargeTypeFilter rechargeType,
-    required DateTime?          selectedMonth,
-    required int?               selectedYear,
+    required DateTime? selectedMonth,
+    required int? selectedYear,
   }) {
     return Wrap(
-      spacing:    8.w,
+      spacing: 8.w,
       runSpacing: 6.h,
       children: [
         if (rechargeType != RechargeTypeFilter.all)
           _filterChip(
-            label: rechargeType == RechargeTypeFilter.online
-                ? context.bssSubL10n.online
-                : context.bssSubL10n.offline,
-            onRemove: () => _rechargeBloc.add(ApplyRechargeFilter(
-              rechargeType:    RechargeTypeFilter.all,
-              selectedMonth:   selectedMonth,
-              selectedYear:    selectedYear,
-              isFutureRecharge: true,
-            )),
+            label:
+                rechargeType == RechargeTypeFilter.online
+                    ? context.bssSubL10n.online
+                    : context.bssSubL10n.offline,
+            onRemove:
+                () => _rechargeBloc.add(
+                  ApplyRechargeFilter(
+                    rechargeType: RechargeTypeFilter.all,
+                    selectedMonth: selectedMonth,
+                    selectedYear: selectedYear,
+                    isFutureRecharge: true,
+                  ),
+                ),
           ),
         if (selectedMonth != null)
           _filterChip(
-            label: '${_monthNames[selectedMonth.month - 1]} ${selectedMonth.year}',
-            onRemove: () => _rechargeBloc.add(ApplyRechargeFilter(
-              rechargeType:    rechargeType,
-              selectedMonth:   null,
-              selectedYear:    null,
-              isFutureRecharge: true,
-            )),
+            label:
+                '${_monthNames[selectedMonth.month - 1]} ${selectedMonth.year}',
+            onRemove:
+                () => _rechargeBloc.add(
+                  ApplyRechargeFilter(
+                    rechargeType: rechargeType,
+                    selectedMonth: null,
+                    selectedYear: null,
+                    isFutureRecharge: true,
+                  ),
+                ),
           ),
         if (selectedYear != null)
           _filterChip(
             label: '$selectedYear',
-            onRemove: () => _rechargeBloc.add(ApplyRechargeFilter(
-              rechargeType:    rechargeType,
-              selectedMonth:   null,
-              selectedYear:    null,
-              isFutureRecharge: true,
-            )),
+            onRemove:
+                () => _rechargeBloc.add(
+                  ApplyRechargeFilter(
+                    rechargeType: rechargeType,
+                    selectedMonth: null,
+                    selectedYear: null,
+                    isFutureRecharge: true,
+                  ),
+                ),
           ),
       ],
     );
   }
 
-  Widget _filterChip({
-    required String       label,
-    required VoidCallback onRemove,
-  }) {
+  Widget _filterChip({required String label, required VoidCallback onRemove}) {
     return Container(
       padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
       decoration: BoxDecoration(
-        color:        AppColor.kSecondaryColor.withValues(alpha: 0.1),
+        color: AppColor.kSecondaryColor.withValues(alpha: 0.1),
         borderRadius: BorderRadius.circular(20),
         border: Border.all(
           color: AppColor.kSecondaryColor.withValues(alpha: 0.3),
@@ -515,9 +556,9 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
           Text(
             label,
             style: TextStyle(
-              fontSize:   12.sp,
+              fontSize: 12.sp,
               fontWeight: FontWeight.w500,
-              color:      AppColor.kSecondaryColor,
+              color: AppColor.kSecondaryColor,
               fontFamily: 'GeneralSans',
             ),
           ),
@@ -526,7 +567,7 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
             onTap: onRemove,
             child: Icon(
               Icons.close,
-              size:  14.sp,
+              size: 14.sp,
               color: AppColor.kSecondaryColor,
             ),
           ),
@@ -544,26 +585,28 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
         child: Container(
           height: 40.h,
           decoration: BoxDecoration(
-            color:        selected ? Colors.white : Colors.transparent,
+            color: selected ? Colors.white : Colors.transparent,
             borderRadius: BorderRadius.circular(10),
-            boxShadow: selected
-                ? [
-              BoxShadow(
-                color:      Colors.black.withOpacity(0.05),
-                blurRadius: 4,
-                offset:     const Offset(0, 2),
-              ),
-            ]
-                : null,
+            boxShadow:
+                selected
+                    ? [
+                      BoxShadow(
+                        color: Colors.black.withOpacity(0.05),
+                        blurRadius: 4,
+                        offset: const Offset(0, 2),
+                      ),
+                    ]
+                    : null,
           ),
           child: Center(
             child: Text(
               label,
               style: TextStyle(
-                color: selected
-                    ? AppColor.kNearBlack
-                    : AppColor.kTabBarUnselectedText,
-                fontSize:   13.sp,
+                color:
+                    selected
+                        ? AppColor.kNearBlack
+                        : AppColor.kTabBarUnselectedText,
+                fontSize: 13.sp,
                 fontWeight: FontWeight.w500,
               ),
             ),
@@ -577,8 +620,8 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
   Widget _buildSummaryCard(Color color, String label, int data) {
     return Expanded(
       child: Container(
-        height:       90.h,
-        padding:      EdgeInsets.all(16.w),
+        height: 90.h,
+        padding: EdgeInsets.all(16.w),
         clipBehavior: Clip.antiAlias,
         decoration: ShapeDecoration(
           color: color,
@@ -587,15 +630,15 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
           ),
         ),
         child: Column(
-          mainAxisSize:       MainAxisSize.min,
-          mainAxisAlignment:  MainAxisAlignment.center,
+          mainAxisSize: MainAxisSize.min,
+          mainAxisAlignment: MainAxisAlignment.center,
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             Text(
               '$data',
               style: TextStyle(
-                color:      Colors.white,
-                fontSize:   20.sp,
+                color: Colors.white,
+                fontSize: 20.sp,
                 fontWeight: FontWeight.w600,
               ),
             ),
@@ -604,8 +647,8 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
               child: Text(
                 label,
                 style: TextStyle(
-                  color:      Colors.white,
-                  fontSize:   14.sp,
+                  color: Colors.white,
+                  fontSize: 14.sp,
                   fontWeight: FontWeight.w500,
                 ),
               ),
@@ -618,125 +661,119 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
 
   // ── Grouped sliver ────────────────────────────────────────────────────────
   Widget _buildGroupedSliver(
-      List<FutureRechargeGroupEntity> groups, {
-        required bool isLoadingMore,
-      }) {
+    List<FutureRechargeGroupEntity> groups, {
+    required bool isLoadingMore,
+  }) {
     return SliverList(
-      delegate: SliverChildBuilderDelegate(
-            (context, groupIndex) {
-          if (groupIndex == groups.length) {
-            return Padding(
-              padding: EdgeInsets.symmetric(vertical: 12.h),
-              child: Center(
-                child: SizedBox(
-                  width:  20.w,
-                  height: 20.h,
-                  child: const CircularProgressIndicator(strokeWidth: 2),
-                ),
+      delegate: SliverChildBuilderDelegate((context, groupIndex) {
+        if (groupIndex == groups.length) {
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: 12.h),
+            child: Center(
+              child: SizedBox(
+                width: 20.w,
+                height: 20.h,
+                child: const CircularProgressIndicator(strokeWidth: 2),
               ),
-            );
-          }
-          final group = groups[groupIndex];
-          final l10n  = context.bssSubL10n;
-          return Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Padding(
-                padding: EdgeInsets.only(bottom: 16.h),
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Text(
-                      _formatDate(group.date),
-                      style: TextStyle(
-                        color:      AppColor.kTextSecondaryDark,
-                        fontSize:   16.sp,
-                        fontWeight: FontWeight.w500,
-                        height:     1.30,
-                      ),
-                    ),
-                    Text(
-                      l10n.rechargeCount(group.count),
-                      style: TextStyle(
-                        color:      AppColor.kTextSecondaryDark,
-                        fontSize:   16.sp,
-                        fontWeight: FontWeight.w500,
-                        height:     1.30,
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              ...group.recharges.map((r) => _buildRechargeCard(r)),
-              if (groupIndex < groups.length - 1) SizedBox(height: 24.h),
-            ],
+            ),
           );
-        },
-        childCount: groups.length + (isLoadingMore ? 1 : 0),
-      ),
+        }
+        final group = groups[groupIndex];
+        final l10n = context.bssSubL10n;
+        return Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          children: [
+            Padding(
+              padding: EdgeInsets.only(bottom: 16.h),
+              child: Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Text(
+                    _formatDate(group.date),
+                    style: TextStyle(
+                      color: AppColor.kTextSecondaryDark,
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w500,
+                      height: 1.30,
+                    ),
+                  ),
+                  Text(
+                    l10n.rechargeCount(group.count),
+                    style: TextStyle(
+                      color: AppColor.kTextSecondaryDark,
+                      fontSize: 16.sp,
+                      fontWeight: FontWeight.w500,
+                      height: 1.30,
+                    ),
+                  ),
+                ],
+              ),
+            ),
+            ...group.recharges.map((r) => _buildRechargeCard(r)),
+            if (groupIndex < groups.length - 1) SizedBox(height: 24.h),
+          ],
+        );
+      }, childCount: groups.length + (isLoadingMore ? 1 : 0)),
     );
   }
 
   // ── Flat sliver ───────────────────────────────────────────────────────────
   Widget _buildFlatSliver(
-      List<FutureRechargeGroupEntity> groups, {
-        required bool isLoadingMore,
-        required int  totalElements,
-      }) {
+    List<FutureRechargeGroupEntity> groups, {
+    required bool isLoadingMore,
+    required int totalElements,
+  }) {
     if (groups.isEmpty) {
       return const SliverToBoxAdapter(child: SizedBox.shrink());
     }
 
     final allRecharges = groups.expand((g) => g.recharges).toList();
-    final loadedCount  = groups.fold<int>(0, (s, g) => s + g.count);
+    final loadedCount = groups.fold<int>(0, (s, g) => s + g.count);
     final displayCount = totalElements > 0 ? totalElements : loadedCount;
 
     return SliverList(
-      delegate: SliverChildBuilderDelegate(
-            (context, index) {
-          if (index == 0) {
-            final l10n = context.bssSubL10n;
-            return Padding(
-              padding: EdgeInsets.only(bottom: 16.h),
-              child: Align(
-                alignment: Alignment.centerRight,
-                child: Text(
-                  l10n.rechargeCount(displayCount),
-                  style: TextStyle(
-                    color:      AppColor.kTextSecondaryDark,
-                    fontSize:   16.sp,
-                    fontWeight: FontWeight.w500,
-                    height:     1.30,
-                  ),
+      delegate: SliverChildBuilderDelegate((context, index) {
+        if (index == 0) {
+          final l10n = context.bssSubL10n;
+          return Padding(
+            padding: EdgeInsets.only(bottom: 16.h),
+            child: Align(
+              alignment: Alignment.centerRight,
+              child: Text(
+                l10n.rechargeCount(displayCount),
+                style: TextStyle(
+                  color: AppColor.kTextSecondaryDark,
+                  fontSize: 16.sp,
+                  fontWeight: FontWeight.w500,
+                  height: 1.30,
                 ),
               ),
-            );
-          }
-          if (isLoadingMore && index == allRecharges.length + 1) {
-            return Padding(
-              padding: EdgeInsets.symmetric(vertical: 12.h),
-              child: Center(
-                child: SizedBox(
-                  width:  20.w,
-                  height: 20.h,
-                  child: const CircularProgressIndicator(strokeWidth: 2),
-                ),
+            ),
+          );
+        }
+        if (isLoadingMore && index == allRecharges.length + 1) {
+          return Padding(
+            padding: EdgeInsets.symmetric(vertical: 12.h),
+            child: Center(
+              child: SizedBox(
+                width: 20.w,
+                height: 20.h,
+                child: const CircularProgressIndicator(strokeWidth: 2),
               ),
-            );
-          }
-          return _buildRechargeCard(allRecharges[index - 1]);
-        },
-        childCount: allRecharges.length + 1 + (isLoadingMore ? 1 : 0),
-      ),
+            ),
+          );
+        }
+        return _buildRechargeCard(allRecharges[index - 1]);
+      }, childCount: allRecharges.length + 1 + (isLoadingMore ? 1 : 0)),
     );
   }
 
   // ── Recharge card ─────────────────────────────────────────────────────────
   Widget _buildRechargeCard(FutureRechargeItemEntity recharge) {
     final rechargeTypeColor =
-    recharge.rechargeMode.toLowerCase() == 'online'
-        ? AppColor.kTealAccent
-        : AppColor.kCoralRed;
+        recharge.rechargeMode.toLowerCase() == 'online'
+            ? AppColor.kTealAccent
+            : AppColor.kCoralRed;
 
     return Builder(
       builder: (context) {
@@ -744,13 +781,13 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
         return Container(
           margin: EdgeInsets.only(bottom: 12.h),
           decoration: BoxDecoration(
-            color:        Colors.white,
+            color: Colors.white,
             borderRadius: BorderRadius.circular(12),
             boxShadow: [
               BoxShadow(
-                color:      Colors.black.withOpacity(0.06),
+                color: Colors.black.withOpacity(0.06),
                 blurRadius: 16,
-                offset:     const Offset(0, 0),
+                offset: const Offset(0, 0),
               ),
             ],
           ),
@@ -760,7 +797,7 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
               children: [
                 // ── Top row ────────────────────────────
                 Row(
-                  mainAxisAlignment:  MainAxisAlignment.spaceBetween,
+                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     Row(
@@ -768,7 +805,7 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
                       children: [
                         ClipOval(
                           child: Container(
-                            width:  40.w,
+                            width: 40.w,
                             height: 40.h,
                             decoration: const BoxDecoration(
                               color: AppColor.kSecondaryBackgroundColor,
@@ -776,7 +813,7 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
                             child: const Icon(
                               Icons.person,
                               color: AppColor.kHintGrey,
-                              size:  24,
+                              size: 24,
                             ),
                           ),
                         ),
@@ -787,19 +824,19 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
                             Text(
                               recharge.subscriberName,
                               style: TextStyle(
-                                color:      AppColor.kTextSecondaryDark,
-                                fontSize:   14.sp,
+                                color: AppColor.kTextSecondaryDark,
+                                fontSize: 14.sp,
                                 fontWeight: FontWeight.w500,
-                                height:     1.30,
+                                height: 1.30,
                               ),
                             ),
                             Text(
                               recharge.username,
                               style: TextStyle(
-                                color:      AppColor.kHintGrey,
-                                fontSize:   10.sp,
+                                color: AppColor.kHintGrey,
+                                fontSize: 10.sp,
                                 fontWeight: FontWeight.w500,
-                                height:     1.30,
+                                height: 1.30,
                               ),
                             ),
                           ],
@@ -810,23 +847,23 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
                       crossAxisAlignment: CrossAxisAlignment.end,
                       children: [
                         Container(
-                          height:  20.h,
+                          height: 20.h,
                           padding: const EdgeInsets.symmetric(
                             horizontal: 8,
-                            vertical:   4,
+                            vertical: 4,
                           ),
                           decoration: BoxDecoration(
-                            color:        rechargeTypeColor,
+                            color: rechargeTypeColor,
                             borderRadius: BorderRadius.circular(24.5),
                           ),
                           child: Center(
                             child: Text(
                               recharge.rechargeMode,
                               style: TextStyle(
-                                color:      Colors.white,
-                                fontSize:   10.sp,
+                                color: Colors.white,
+                                fontSize: 10.sp,
                                 fontWeight: FontWeight.w500,
-                                height:     1.30,
+                                height: 1.30,
                               ),
                             ),
                           ),
@@ -836,10 +873,10 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
                           recharge.planName,
                           textAlign: TextAlign.right,
                           style: TextStyle(
-                            color:      AppColor.kTextSecondaryDark,
-                            fontSize:   12.sp,
+                            color: AppColor.kTextSecondaryDark,
+                            fontSize: 12.sp,
                             fontWeight: FontWeight.w500,
-                            height:     1.30,
+                            height: 1.30,
                           ),
                           maxLines: 1,
                           overflow: TextOverflow.ellipsis,
@@ -892,20 +929,20 @@ class _FutureRechargePageState extends State<FutureRechargePage> {
         Text(
           heading,
           style: TextStyle(
-            color:      AppColor.kTextSecondary,
-            fontSize:   8.sp,
+            color: AppColor.kTextSecondary,
+            fontSize: 8.sp,
             fontWeight: FontWeight.w400,
-            height:     1.30,
+            height: 1.30,
           ),
         ),
         SizedBox(height: 2.h),
         Text(
           data,
           style: TextStyle(
-            color:      AppColor.kTextSecondaryDark,
-            fontSize:   12.sp,
+            color: AppColor.kTextSecondaryDark,
+            fontSize: 12.sp,
             fontWeight: FontWeight.w500,
-            height:     1.30,
+            height: 1.30,
           ),
         ),
       ],

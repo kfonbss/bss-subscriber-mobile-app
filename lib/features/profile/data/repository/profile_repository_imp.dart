@@ -25,7 +25,8 @@ class ProfileRepositoryImp extends ProfileRepository {
   }
 
   @override
-  Future<Either<Failure, AccountInformationEntity>> getAccountInformation() async {
+  Future<Either<Failure, AccountInformationEntity>>
+  getAccountInformation() async {
     final response = await _client.get(ApiUrls.accountInformationURL);
     if (response.isSuccess) {
       final accountInfo = AccountInformationModel.fromJson(response.data);

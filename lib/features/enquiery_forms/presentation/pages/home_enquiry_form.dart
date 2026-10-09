@@ -7,6 +7,9 @@ import 'package:kfon_subscriber/features/enquiery_forms/data/model/region_model.
 import 'package:kfon_subscriber/features/enquiery_forms/domain/repository/enquiery_form.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/presentation/bloc/circle/circle_cubit.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/presentation/bloc/circle/circle_state.dart';
+import 'package:kfon_subscriber/features/enquiery_forms/presentation/bloc/enquiry_otp/enquiry_otp_cubit.dart';
+import 'package:kfon_subscriber/features/enquiery_forms/presentation/bloc/enquiry_otp/enquiry_otp_state.dart';
+import 'package:kfon_subscriber/features/enquiery_forms/presentation/components/enquiry_otp_sheet.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/presentation/bloc/home_enquiry_form/home_enquiry_form_cubit.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/presentation/bloc/mobile_check/mobile_check_cubit.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/presentation/bloc/mobile_check/mobile_check_state.dart';
@@ -19,6 +22,7 @@ import 'package:kfon_subscriber/shared/widgets/form_app_bar.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 
 import '../../../../core/constant/constant_colors.dart';
+import '../../../../shared/widgets/app_input_style.dart';
 import '../../../../shared/widgets/common_text_field.dart';
 import '../../../../core/constant/constant_dimensions.dart';
 import '../../../../shared/widgets/primary_button.dart';
@@ -47,6 +51,13 @@ class _HomeEnquiryFormState extends State<HomeEnquiryForm> {
   /// Last 10-digit number already checked, so it isn't re-checked on rebuilds.
   String? _lastCheckedMobile;
 
+  final EnquiryOtpCubit _otpCubit = EnquiryOtpCubit(
+    repository: sl<EnquiryFormRepository>(),
+  );
+
+  /// True from Submit tap until the OTP flow ends; blocks duplicate taps.
+  bool _isOtpFlowRunning = false;
+
   final HomeEnquiryFormCubit _homeFormCubit = HomeEnquiryFormCubit(
     repository: sl<EnquiryFormRepository>(),
   );
@@ -55,7 +66,6 @@ class _HomeEnquiryFormState extends State<HomeEnquiryForm> {
   final _pinCodeTextFieldController = TextEditingController();
   final _locationNameTextFieldController = TextEditingController();
   final _mobileNumberTextFieldController = TextEditingController();
-  final _emailTextFieldController = TextEditingController();
 
   final DialogUtil _dialogUtil = DialogUtil();
 
@@ -79,10 +89,10 @@ class _HomeEnquiryFormState extends State<HomeEnquiryForm> {
     pinCode: _pinCodeTextFieldController.text,
     location: _locationNameTextFieldController.text,
     mobileNumber: _mobileNumberTextFieldController.text,
-    email: _emailTextFieldController.text,
-    cusAddress: '',
+    email: '',
+    cusAddress: _locationNameTextFieldController.text,
     cusCity: '',
-    cusLocation: '',
+    cusLocation: _locationNameTextFieldController.text,
     postOffice: '',
     cusState: '',
     houseNo: '',
@@ -97,10 +107,10 @@ class _HomeEnquiryFormState extends State<HomeEnquiryForm> {
     _pinCodeTextFieldController.dispose();
     _locationNameTextFieldController.dispose();
     _mobileNumberTextFieldController.dispose();
-    _emailTextFieldController.dispose();
     _circleCubit.close();
     _mobileCheckCubit.close();
     _homeFormCubit.close();
+    _otpCubit.close();
     super.dispose();
   }
 
@@ -186,8 +196,10 @@ class _HomeEnquiryFormState extends State<HomeEnquiryForm> {
   }
 
   /// Single-page submit: runs the existing cubit validators (stopping at the
-  /// first failure, which the listener shows as a dialog) and then submits.
+  /// first failure, which the listener shows as a dialog), then sends an OTP
+  /// to the mobile number. The enquiry is saved only after the OTP is verified.
   Future<void> _onSubmit() async {
+    if (_isOtpFlowRunning) return;
     final validators = [
       _homeFormCubit.validateNameForm,
       _homeFormCubit.validateContactForm,
@@ -197,7 +209,45 @@ class _HomeEnquiryFormState extends State<HomeEnquiryForm> {
       await validate(params: params);
       if (_homeFormCubit.state is HomeFormValidationError) return;
     }
-    await _homeFormCubit.submitForm(params: params);
+
+    if (!mounted) return;
+    // The OTP/save APIs are tenant-scoped by the selected circle.
+    final tenantId = _selectedRegion?.code;
+    if (tenantId == null || tenantId.isEmpty) {
+      _dialogUtil.showMessage('Select Circle', context);
+      return;
+    }
+
+    setState(() => _isOtpFlowRunning = true);
+    final mobile = _mobileNumberTextFieldController.text.trim();
+    try {
+      final sent = await _otpCubit.sendOtp(
+        mobileNumber: mobile,
+        tenantId: tenantId,
+      );
+      if (!mounted) return;
+      if (!sent) {
+        final state = _otpCubit.state;
+        _dialogUtil.showMessage(
+          state is EnquiryOtpSendError
+              ? state.errorMessage
+              : 'Unable to send OTP. Please try again.',
+          context,
+        );
+        return;
+      }
+
+      final verified = await showEnquiryOtpSheet(
+        context: context,
+        cubit: _otpCubit,
+        mobileNumber: mobile,
+        tenantId: tenantId,
+      );
+      if (!mounted || verified != true) return;
+      await _homeFormCubit.submitForm(params: params, tenantId: tenantId);
+    } finally {
+      if (mounted) setState(() => _isOtpFlowRunning = false);
+    }
   }
 
   @override
@@ -264,25 +314,6 @@ class _HomeEnquiryFormState extends State<HomeEnquiryForm> {
                       ),
                     ),
                     const SizedBox(height: 4),
-                    CommonTextField(
-                      label: 'Full Name*',
-                      hintText: 'Enter Full Name',
-                      textEditingController: _fullNameTextFieldController,
-                    ),
-                    CommonTextField(
-                      label: 'Mobile Number*',
-                      hintText: 'Enter Mobile Number',
-                      textEditingController: _mobileNumberTextFieldController,
-                      onTextChanged: _onMobileChanged,
-                      maxLength: 10,
-                      textInputType: TextInputType.number,
-                    ),
-                    // Required by the existing validation; not part of the .md spec.
-                    CommonTextField(
-                      label: l10n.emailId,
-                      hintText: l10n.enterEmailId,
-                      textEditingController: _emailTextFieldController,
-                    ),
                     BlocConsumer<CircleCubit, CircleState>(
                       bloc: _circleCubit,
                       listener: (context, state) {
@@ -356,6 +387,19 @@ class _HomeEnquiryFormState extends State<HomeEnquiryForm> {
                       },
                     ),
                     CommonTextField(
+                      label: 'Full Name*',
+                      hintText: 'Enter Full Name',
+                      textEditingController: _fullNameTextFieldController,
+                    ),
+                    CommonTextField(
+                      label: 'Mobile Number*',
+                      hintText: 'Enter Mobile Number',
+                      textEditingController: _mobileNumberTextFieldController,
+                      onTextChanged: _onMobileChanged,
+                      maxLength: 10,
+                      textInputType: TextInputType.number,
+                    ),
+                    CommonTextField(
                       label: 'PIN Code*',
                       hintText: 'Enter PIN Code',
                       textEditingController: _pinCodeTextFieldController,
@@ -364,37 +408,50 @@ class _HomeEnquiryFormState extends State<HomeEnquiryForm> {
                     ),
                     Column(
                       spacing: 8,
-                      crossAxisAlignment: CrossAxisAlignment.stretch,
+                      crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        CommonTextField(
-                          label: 'Installation address *',
-                          hintText: 'Enter Installation address',
-                          textEditingController:
-                              _locationNameTextFieldController,
+                        Text(
+                          'Installation address *',
+                          style: AppInputStyle.label,
                         ),
-                        // UI only: map selection is not implemented yet.
-                        Align(
-                          alignment: Alignment.centerRight,
-                          child: Row(
-                            mainAxisSize: MainAxisSize.min,
-                            spacing: 6,
-                            children: [
-                              Icon(
-                                Icons.gps_fixed,
-                                size: 18.sp,
-                                color: AppColor.kPrimaryColor,
+                        TextField(
+                          controller: _locationNameTextFieldController,
+                          onTapOutside:
+                              (_) =>
+                                  FocusManager.instance.primaryFocus?.unfocus(),
+                          contextMenuBuilder: AppInputStyle.contextMenuBuilder,
+                          maxLines: 1,
+                          textAlignVertical: TextAlignVertical.center,
+                          keyboardType: TextInputType.text,
+                          textCapitalization: TextCapitalization.words,
+                          style: AppInputStyle.text,
+                          decoration: AppInputStyle.decoration(
+                            hint: 'Enter Installation Address',
+                            // UI only: map selection is not implemented yet.
+                            suffixIcon: Padding(
+                              padding: const EdgeInsets.only(right: 16),
+                              child: Row(
+                                mainAxisSize: MainAxisSize.min,
+                                spacing: 6,
+                                children: [
+                                  Text(
+                                    'Select Map',
+                                    style: TextStyle(
+                                      fontSize: 14.sp,
+                                      fontWeight: FontWeight.w600,
+                                      color: AppColor.kPrimaryColor,
+                                      height: 1.3,
+                                      fontFamily: 'GeneralSans',
+                                    ),
+                                  ),
+                                  Icon(
+                                    Icons.gps_fixed,
+                                    size: 18.sp,
+                                    color: AppColor.kPrimaryColor,
+                                  ),
+                                ],
                               ),
-                              Text(
-                                'Select on the Map',
-                                style: TextStyle(
-                                  fontSize: 14.sp,
-                                  fontWeight: FontWeight.w600,
-                                  color: AppColor.kPrimaryColor,
-                                  height: 1.3,
-                                  fontFamily: 'GeneralSans',
-                                ),
-                              ),
-                            ],
+                            ),
                           ),
                         ),
                       ],
@@ -429,7 +486,9 @@ class _HomeEnquiryFormState extends State<HomeEnquiryForm> {
                                   label: 'Submit',
                                   onClicked: _onSubmit,
                                   isLoading:
-                                      buttonState is HomeFormSubmissionLoading,
+                                      buttonState
+                                          is HomeFormSubmissionLoading ||
+                                      _isOtpFlowRunning,
                                   borderRadius: 28,
                                   height: 52,
                                   icon: const Icon(

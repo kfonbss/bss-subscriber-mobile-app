@@ -7,19 +7,25 @@ class ApiUrls {
   static const String packageManagementService =
       'bss-package-management-services/api';
 
-  static const String userRoleMapingService = 'bss-user-role-mapping-services/api';
+  static const String userRoleMapingService =
+      'bss-user-role-mapping-services/api';
   static const String coreExternalService = 'bss-core-external-services/api';
-  static const String fileStorageService = 'bss-file-storage-services/api/files';
-  static const String billingFinanceService = 'bss-billing-finance-services/api';
+  static const String fileStorageService =
+      'bss-file-storage-services/api/files';
+  static const String billingFinanceService =
+      'bss-billing-finance-services/api';
 
-  static String bssCoreDmdmService =
-      'bss-core-dmdm-service/api';
+  static String bssCoreDmdmService = 'bss-core-dmdm-service/api';
   static const setNewPasswordURL =
       'bss-user-role-mapping-services/api/auth/forgot-password';
   static const lnpEnquiryFormURL =
       'bss-enquiry-services/api/partner-enquiry/save';
   static const subscriptionEnquiryFormURL =
       'bss-enquiry-services/api/customer-enquiries/save';
+
+  /// Home enquiry mobile OTP (public endpoints).
+  static const String enquiryOtpSendURL = '$coreExternalService/otp/send';
+  static const String enquiryOtpVerifyURL = '$coreExternalService/otp/verify';
   static const agnpEnquiryFormURL =
       'bss-enquiry-services/api/agnp-enquiries/save';
   static const govAndCorpEnquiryFormURL =
@@ -60,8 +66,10 @@ class ApiUrls {
   static const String walletTopupURL =
       '$billingFinanceService/mobile/payment/top-up';
   static String get loginURL => '$userRoleMapingService/mobile/login';
-  static String get resendOTPURL => '$userRoleMapingService/mobile/login/resend-otp';
-  static String get verifyOTPURL => '$userRoleMapingService/mobile/login/verify-otp';
+  static String get resendOTPURL =>
+      '$userRoleMapingService/mobile/login/resend-otp';
+  static String get verifyOTPURL =>
+      '$userRoleMapingService/mobile/login/verify-otp';
   static const String sendForgotPasswordOTPURL =
       '$userRoleMapingService/mobile/forgot-password/send-otp';
   static const String verifyForgotPasswordOTPURL =
@@ -91,7 +99,8 @@ class ApiUrls {
   static String subscriberDetailsURL({required String subscriberUuid}) =>
       '$subscriberManagementService/mobile/subscribers/$subscriberUuid/details';
   static const String subjectURL = '$userRoleMapingService/mobile/issue-types';
-  static const String prioritiesURL = '$userRoleMapingService/mobile/priorities';
+  static const String prioritiesURL =
+      '$userRoleMapingService/mobile/priorities';
   static const String visibilityPermissionURL =
       '$userRoleMapingService/crm/visibility-permission';
   static const String submitTicketURL = '$userRoleMapingService/mobile/tickets';
@@ -120,8 +129,7 @@ class ApiUrls {
   static String get lDTenantsURL => '$bssCoreDmdmService/region/fetch-all';
   static String get furtureRechargesListURL =>
       '$billingFinanceService/mobile/future-recharges';
-  static String get paymentGateways =>
-      '$bssCoreDmdmService/gateway/fetch-all';
+  static String get paymentGateways => '$bssCoreDmdmService/gateway/fetch-all';
 
   // UPI Autopay (mandate)
   static const String upiMandateStatus =

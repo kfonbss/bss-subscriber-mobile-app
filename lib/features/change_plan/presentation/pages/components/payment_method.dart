@@ -100,10 +100,7 @@ class _PaymentMethodSheetState extends State<PaymentMethodSheet> {
                 (g) => PaymentMethod(name: g.name, logo: g.icon),
               ),
               if (widget.offlinePaymentAvailable)
-                const PaymentMethod(
-                  name: 'Wallet',
-                  logo: AppAssets.hdfcLogo,
-                ),
+                const PaymentMethod(name: 'Wallet', logo: AppAssets.hdfcLogo),
             ];
 
             return Column(
@@ -181,8 +178,10 @@ class _PaymentMethodSheetState extends State<PaymentMethodSheet> {
                       _selected.isEmpty) {
                     DialogUtil().showOKWithAction(
                       onConfirmation: () => Navigator.of(context).pop(),
-                      content:
-                          context.bssSubL10n.insufficientWalletBalance((widget.finalAmount - widget.walletBalance).toStringAsFixed(2)),
+                      content: context.bssSubL10n.insufficientWalletBalance(
+                        (widget.finalAmount - widget.walletBalance)
+                            .toStringAsFixed(2),
+                      ),
                       context: context,
                     );
                   } else {
@@ -227,10 +226,8 @@ class _PaymentOption extends StatelessWidget {
       borderRadius: BorderRadius.all(Radius.circular(6)),
     ),
   );
-  static get _selectedRadioDecoration => BoxDecoration(
-    shape: BoxShape.circle,
-    color: AppColor.kPrimaryColor,
-  );
+  static get _selectedRadioDecoration =>
+      BoxDecoration(shape: BoxShape.circle, color: AppColor.kPrimaryColor);
 
   // Border.fromBorderSide has a const constructor; Border.all does not.
   static const _unselectedRadioDecoration = BoxDecoration(
@@ -285,15 +282,14 @@ class _PaymentOption extends StatelessWidget {
                   width: 36.w,
                   height: 36.h,
                   fit: BoxFit.contain,
-                  errorBuilder: (_, __, ___) =>
-                      Image.asset(
+                  errorBuilder:
+                      (_, __, ___) => Image.asset(
                         'assets/images/${method.name.toLowerCase()}.png',
                         width: 38.w,
                         height: 38.h,
                         fit: BoxFit.contain,
                       ),
-                  loadingBuilder:
-                      (_, child, progress) {
+                  loadingBuilder: (_, child, progress) {
                     if (progress == null) {
                       return child;
                     }
@@ -301,11 +297,7 @@ class _PaymentOption extends StatelessWidget {
                       width: 36.w,
                       height: 36.h,
                       child: const Center(
-                        child:
-                        CircularProgressIndicator(
-                          strokeWidth:
-                          2,
-                        ),
+                        child: CircularProgressIndicator(strokeWidth: 2),
                       ),
                     );
                   },

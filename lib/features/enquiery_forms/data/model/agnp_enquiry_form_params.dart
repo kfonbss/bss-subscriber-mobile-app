@@ -30,7 +30,7 @@ class AGNPEnquiryFormParams {
     required this.longitude,
     required this.pinCode,
     required this.postOffice,
-    required this.district
+    required this.district,
   });
   Map<String, dynamic> toMap() {
     return {
@@ -48,18 +48,20 @@ class AGNPEnquiryFormParams {
       'agnpPincode': pinCode,
       'agnpPostoffice': postOffice,
       'agnpDistrict': district,
-      'isActive': true
+      'isActive': true,
     };
   }
+
   Map<String, dynamic> geoGraphicInfoToMap() {
     return {
-     'Latitude': latitude,
+      'Latitude': latitude,
       'Longitude': longitude,
       'Pin Code': pinCode,
       'Post Office': postOffice,
       'District': district,
     };
   }
+
   Map<String, dynamic> companyInfoToMap() {
     return {
       'Name': name,
@@ -70,7 +72,7 @@ class AGNPEnquiryFormParams {
       'Landline Number': landlineNumber,
       'Email': email,
       'Address': address,
-      'Location': location
+      'Location': location,
     };
   }
 }

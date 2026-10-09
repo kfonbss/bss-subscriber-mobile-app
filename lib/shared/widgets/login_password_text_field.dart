@@ -69,7 +69,7 @@ class _LoginPasswordTextFieldState extends State<LoginPasswordTextField> {
         ),
         prefixIcon: Padding(
           padding: const EdgeInsets.only(right: 12.0),
-          child: Image.asset(AppAssets.lock,color: AppColor.kPrimaryColor,),
+          child: Image.asset(AppAssets.lock, color: AppColor.kPrimaryColor),
         ),
 
         suffixIcon: IconButton(

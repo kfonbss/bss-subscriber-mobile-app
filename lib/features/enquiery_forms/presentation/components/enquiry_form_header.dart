@@ -49,7 +49,7 @@ class EnquiryFormHeader extends StatelessWidget {
                 style: TextStyle(
                   fontSize: 12,
                   fontWeight: FontWeight.w700,
-                  color:AppColor.kPrimaryColor,
+                  color: AppColor.kPrimaryColor,
                 ),
               ),
             ],

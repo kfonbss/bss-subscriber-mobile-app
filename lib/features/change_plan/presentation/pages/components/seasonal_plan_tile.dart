@@ -1,4 +1,4 @@
-﻿import 'package:kfon_subscriber/core/constant/app_styles.dart';
+import 'package:kfon_subscriber/core/constant/app_styles.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entity.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
@@ -70,9 +70,10 @@ class SeasonalPlanTile extends StatelessWidget {
             padding: const EdgeInsets.all(16),
             margin: const EdgeInsets.only(right: 6, top: 6),
             decoration: AppStyles.boxDecorationSmall.copyWith(
-              border: isSelected
-                  ? Border.all(color: AppColor.kPrimaryColor, width: 1.w)
-                  : null,
+              border:
+                  isSelected
+                      ? Border.all(color: AppColor.kPrimaryColor, width: 1.w)
+                      : null,
             ),
             child: Column(
               children: [
@@ -87,7 +88,7 @@ class SeasonalPlanTile extends StatelessWidget {
                         color: AppColor.kIconBackground,
                         borderRadius: BorderRadius.circular(8),
                       ),
-                      child:  Icon(
+                      child: Icon(
                         Icons.language,
                         size: 16,
                         color: AppColor.kPrimaryColor,
@@ -128,7 +129,9 @@ class SeasonalPlanTile extends StatelessWidget {
                             Align(
                               alignment: Alignment.centerLeft,
                               child: ConstrainedBox(
-                                constraints: const BoxConstraints(maxWidth: 160),
+                                constraints: const BoxConstraints(
+                                  maxWidth: 160,
+                                ),
                                 child: DecoratedBox(
                                   decoration: BoxDecoration(
                                     borderRadius: BorderRadius.circular(20),
@@ -154,9 +157,9 @@ class SeasonalPlanTile extends StatelessWidget {
                                       textAlign: TextAlign.center,
                                       textHeightBehavior:
                                           const TextHeightBehavior(
-                                        applyHeightToFirstAscent: false,
-                                        applyHeightToLastDescent: false,
-                                      ),
+                                            applyHeightToFirstAscent: false,
+                                            applyHeightToLastDescent: false,
+                                          ),
                                       overflow: TextOverflow.ellipsis,
                                       style: GoogleFonts.dmSans(
                                         fontSize: 9.5.sp,
@@ -243,75 +246,70 @@ class SeasonalPlanTile extends StatelessWidget {
                   SizedBox(
                     height: 26.h,
                     child: Container(
-                    padding: const EdgeInsets.fromLTRB(6, 5, 6, 5),
-                    decoration: BoxDecoration(
-                      color: AppColor.kPeachBg,
-                      borderRadius: BorderRadius.circular(8),
-                      border: Border.all(color: AppColor.kPeachBorder),
-                    ),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      children: [
-                        if (offerLabel.isNotEmpty) ...[
-                          Container(
-                            height: 17.h,
-                            padding: const EdgeInsets.fromLTRB(
-                              6,
-                              2,
-                              6,
-                              2,
+                      padding: const EdgeInsets.fromLTRB(6, 5, 6, 5),
+                      decoration: BoxDecoration(
+                        color: AppColor.kPeachBg,
+                        borderRadius: BorderRadius.circular(8),
+                        border: Border.all(color: AppColor.kPeachBorder),
+                      ),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          if (offerLabel.isNotEmpty) ...[
+                            Container(
+                              height: 17.h,
+                              padding: const EdgeInsets.fromLTRB(6, 2, 6, 2),
+                              decoration: BoxDecoration(
+                                color: AppColor.kBurntOrange,
+                                borderRadius: BorderRadius.circular(5),
+                              ),
+                              child: Text(
+                                offerLabel,
+                                style: TextStyle(
+                                  fontFamily: 'General Sans',
+                                  fontSize: 9.5.sp,
+                                  fontWeight: FontWeight.w600,
+                                  height: 1.h,
+                                  letterSpacing: 0.3,
+                                  color: Colors.white,
+                                ),
+                              ),
                             ),
-                            decoration: BoxDecoration(
-                              color: AppColor.kBurntOrange,
-                              borderRadius: BorderRadius.circular(5),
-                            ),
+                            SizedBox(width: 8.w),
+                          ],
+                          Expanded(
                             child: Text(
-                              offerLabel,
+                              seasonCaption,
+                              maxLines: 1,
+                              overflow: TextOverflow.ellipsis,
                               style: TextStyle(
                                 fontFamily: 'General Sans',
-                                fontSize: 9.5.sp,
-                                fontWeight: FontWeight.w600,
+                                fontSize: 10.sp,
+                                fontWeight: FontWeight.w500,
                                 height: 1.h,
-                                letterSpacing: 0.3,
-                                color: Colors.white,
+                                letterSpacing: 0,
+                                color: AppColor.kAmberBrown,
                               ),
                             ),
                           ),
-                          SizedBox(width: 8.w),
-                        ],
-                        Expanded(
-                          child: Text(
-                            seasonCaption,
-                            maxLines: 1,
-                            overflow: TextOverflow.ellipsis,
-                            style: TextStyle(
-                              fontFamily: 'General Sans',
-                              fontSize: 10.sp,
-                              fontWeight: FontWeight.w500,
-                              height: 1.h,
-                              letterSpacing: 0,
-                              color: AppColor.kAmberBrown,
+                          if (saveText.isNotEmpty) ...[
+                            SizedBox(width: 8.w),
+                            Text(
+                              saveText,
+                              maxLines: 1,
+                              style: TextStyle(
+                                fontFamily: 'General Sans',
+                                fontSize: 10.sp,
+                                fontWeight: FontWeight.w600,
+                                height: 1.h,
+                                letterSpacing: 0,
+                                color: AppColor.kDeepEmerald,
+                              ),
                             ),
-                          ),
-                        ),
-                        if (saveText.isNotEmpty) ...[
-                          SizedBox(width: 8.w),
-                          Text(
-                            saveText,
-                            maxLines: 1,
-                            style: TextStyle(
-                              fontFamily: 'General Sans',
-                              fontSize: 10.sp,
-                              fontWeight: FontWeight.w600,
-                              height: 1.h,
-                              letterSpacing: 0,
-                              color: AppColor.kDeepEmerald,
-                            ),
-                          ),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
-                  ),
                   ),
                 ],
                 SizedBox(height: 12.h),
@@ -336,11 +334,7 @@ class SeasonalPlanTile extends StatelessWidget {
                         ),
                       ),
                       Expanded(
-                        child: _planDetail(
-                          context,
-                          l10n.volume,
-                          package.data,
-                        ),
+                        child: _planDetail(context, l10n.volume, package.data),
                       ),
                     ],
                   ),
@@ -395,10 +389,11 @@ class SeasonalPlanTile extends StatelessWidget {
   }
 
   String _metaText(PackageEntity package) {
-    final parts = <String>[
-      package.planType.trim(),
-      package.subscriptionType?.trim() ?? '',
-    ].where((v) => v.isNotEmpty).map((v) => v.toUpperCase()).toList();
+    final parts =
+        <String>[
+          package.planType.trim(),
+          package.subscriptionType?.trim() ?? '',
+        ].where((v) => v.isNotEmpty).map((v) => v.toUpperCase()).toList();
 
     return parts.join(' · ');
   }

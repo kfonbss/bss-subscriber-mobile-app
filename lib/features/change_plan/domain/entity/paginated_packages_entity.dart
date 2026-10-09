@@ -1,4 +1,3 @@
-
 import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entity.dart';
 
 class PaginatedPackagesEntity {

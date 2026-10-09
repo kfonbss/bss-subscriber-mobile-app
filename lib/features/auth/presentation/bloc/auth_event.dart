@@ -16,7 +16,11 @@ class LoginRequested extends AuthEvent {
   final String password;
   final String tenantId;
 
-  const LoginRequested({required this.username, required this.password, required this.tenantId});
+  const LoginRequested({
+    required this.username,
+    required this.password,
+    required this.tenantId,
+  });
 
   @override
   List<Object?> get props => [username, password];
@@ -25,9 +29,11 @@ class LoginRequested extends AuthEvent {
 class LoadSelectedTenant extends AuthEvent {
   const LoadSelectedTenant();
 }
+
 class LogoutRequested extends AuthEvent {
   const LogoutRequested();
 }
+
 class ResendOTP extends AuthEvent {
   final String loginSessionToken;
 
@@ -36,6 +42,7 @@ class ResendOTP extends AuthEvent {
   @override
   List<Object?> get props => [loginSessionToken];
 }
+
 /// Event: User requests to send OTP for forgot password
 class SendForgotPasswordOtpRequested extends AuthEvent {
   final String username;

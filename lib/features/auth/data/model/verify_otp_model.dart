@@ -14,7 +14,6 @@ class VerifyOtpModel {
   final List<dynamic> roleNames;
   final int expiresIn;
 
-
   const VerifyOtpModel({
     required this.userId,
     required this.username,
@@ -26,7 +25,6 @@ class VerifyOtpModel {
     required this.refreshToken,
     required this.roleNames,
     required this.expiresIn,
-
   });
 
   factory VerifyOtpModel.fromJson(Map<String, dynamic> json) => VerifyOtpModel(
@@ -71,7 +69,6 @@ class VerifyOtpModel {
       userRole: _resolveAllowedRole(roleNames),
     );
   }
-
 
   /// Resolves the first role from [roleNames] that maps to an allowed
   /// [UserRole] (LNP / AGNP), comparing case-insensitively. Returns `null`

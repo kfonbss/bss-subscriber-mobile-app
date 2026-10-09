@@ -43,7 +43,8 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
   @override
   Widget build(BuildContext context) {
     // _notificationSound may change on user action — read once per build.
-    final notificationSound = _notificationSound ?? context.bssSubL10n.notificationSoundDefault;
+    final notificationSound =
+        _notificationSound ?? context.bssSubL10n.notificationSoundDefault;
 
     return CommonAppBar(
       onBackPressed: () => Navigator.pop(context),
@@ -69,8 +70,7 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                   ),
                   _NotificationItem(
                     title: context.bssSubL10n.packageExpiryAlerts,
-                    description:
-                        context.bssSubL10n.packageExpiryAlertsDesc,
+                    description: context.bssSubL10n.packageExpiryAlertsDesc,
                     value: _packageExpiryAlerts,
                     onChanged: (v) => setState(() => _packageExpiryAlerts = v),
                   ),
@@ -84,13 +84,16 @@ class _NotificationSettingsPageState extends State<NotificationSettingsPage> {
                     title: context.bssSubL10n.dataExhaustionWarnings,
                     description: context.bssSubL10n.dataExhaustionWarningsDesc,
                     value: _dataExhaustionWarnings,
-                    onChanged: (v) =>
-                        setState(() => _dataExhaustionWarnings = v),
+                    onChanged:
+                        (v) => setState(() => _dataExhaustionWarnings = v),
                   ),
                   SizedBox(height: 20.h),
 
                   // Sound & Vibration Section
-                  Text(context.bssSubL10n.soundAndVibration, style: _sectionHeadingStyle),
+                  Text(
+                    context.bssSubL10n.soundAndVibration,
+                    style: _sectionHeadingStyle,
+                  ),
                   SizedBox(height: 16.h),
 
                   // Notification Sound — no Builder needed; notificationSound

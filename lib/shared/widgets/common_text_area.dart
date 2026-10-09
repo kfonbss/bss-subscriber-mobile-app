@@ -9,7 +9,7 @@ class CommonTextArea extends StatelessWidget {
   final TextEditingController textEditingController;
   final TextCapitalization? textCapitalization;
 
-  const  CommonTextArea({
+  const CommonTextArea({
     super.key,
     required this.label,
     required this.hintText,
@@ -43,7 +43,7 @@ class CommonTextArea extends StatelessWidget {
             textAlignVertical: TextAlignVertical.top,
             keyboardType: TextInputType.multiline,
             textAlign: TextAlign.start,
-            textCapitalization:textCapitalization?? TextCapitalization.words,
+            textCapitalization: textCapitalization ?? TextCapitalization.words,
             autofocus: false,
             style: TextStyle(
               color: Colors.black,
@@ -63,7 +63,10 @@ class CommonTextArea extends StatelessWidget {
                 letterSpacing: 0.0,
               ),
               focusedBorder: OutlineInputBorder(
-                borderSide: BorderSide(color: AppColor.kPrimaryColor, width: 1.5),
+                borderSide: BorderSide(
+                  color: AppColor.kPrimaryColor,
+                  width: 1.5,
+                ),
                 borderRadius: BorderRadius.all(Radius.circular(6.0)),
               ),
               enabledBorder: OutlineInputBorder(

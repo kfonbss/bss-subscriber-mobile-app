@@ -1,4 +1,3 @@
-
 class BplEnquiryFormParams {
   final String rationCardHolderName;
   final String rationCardHolderMob;
@@ -50,7 +49,7 @@ class BplEnquiryFormParams {
       'Pin Code': pinCode,
       'Post Office': postOffice,
       'District': district,
-      'Referral Code': referralCode
+      'Referral Code': referralCode,
     };
   }
 }

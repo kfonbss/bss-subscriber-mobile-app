@@ -37,7 +37,7 @@ class AuthRepositoryImp extends AuthRepository {
   Future<Either<Failure, AuthEntity>> resendOTP(String token) async {
     final response = await _client.post(
       ApiUrls.resendOTPURL,
-      data: {'loginSessionToken':token},
+      data: {'loginSessionToken': token},
     );
     if (response.isSuccess) {
       final authModel = AuthModel.fromJson(response.data);
@@ -46,12 +46,12 @@ class AuthRepositoryImp extends AuthRepository {
       return Left(response.failure);
     }
   }
+
   @override
   Future<bool> isLoggedIn() async {
     final token = await PreferenceUtils.getAccessToken();
     return token != null && token.isNotEmpty;
   }
-
 
   @override
   Future<Either<Failure, OtpResponseEntity>> sendForgotPasswordOtp(
@@ -75,14 +75,16 @@ class AuthRepositoryImp extends AuthRepository {
   }
 
   @override
-  Future<Either<Failure, VerifyOtpEntity>> verifyOtp(VerifyOtpParams params) async {
+  Future<Either<Failure, VerifyOtpEntity>> verifyOtp(
+    VerifyOtpParams params,
+  ) async {
     final response = await _client.post(
       ApiUrls.verifyOTPURL,
       data: params.toMap(),
     );
     if (response.isSuccess) {
       final otpVerifiedData = VerifyOtpModel.fromJson(response.data);
-      return  Right(otpVerifiedData.toEntity());
+      return Right(otpVerifiedData.toEntity());
     } else {
       return Left(response.failure);
     }

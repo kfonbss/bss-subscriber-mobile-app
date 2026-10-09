@@ -115,7 +115,7 @@ class PdfDownloadService {
     }
 
     // iOS / fallback
-    final dir  = await getApplicationDocumentsDirectory();
+    final dir = await getApplicationDocumentsDirectory();
     final file = File('${dir.path}/$fileName');
     await file.writeAsBytes(bytes);
     return file.path;

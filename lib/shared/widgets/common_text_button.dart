@@ -4,7 +4,11 @@ import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 class CommonTextButton extends StatelessWidget {
   final String label;
   final VoidCallback onPressed;
-  const CommonTextButton({super.key,required this.label,required this.onPressed});
+  const CommonTextButton({
+    super.key,
+    required this.label,
+    required this.onPressed,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -17,7 +21,7 @@ class CommonTextButton extends StatelessWidget {
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
         textStyle: const TextStyle(fontSize: 15), // Text style
       ),
-      child: Text(label,),
+      child: Text(label),
     );
   }
 }

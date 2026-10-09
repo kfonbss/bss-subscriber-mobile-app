@@ -4,7 +4,9 @@ import 'package:kfon_subscriber/features/change_plan/domain/entity/package_new_e
 extension PackageEntityX on PackageEntity {
   PackageInfoEntity toPackageInfoEntity() {
     final original = listPrice ?? price;
-    final saved = discountAmount ?? (original - price).clamp(0, double.infinity).toDouble();
+    final saved =
+        discountAmount ??
+        (original - price).clamp(0, double.infinity).toDouble();
 
     return PackageInfoEntity(
       id: packageId,

@@ -30,6 +30,10 @@ class AuthInterceptor extends Interceptor {
     ApiUrls.verifyOTPURL,
     ApiUrls.resetForgotPasswordURL,
     ApiUrls.refreshTokenURL,
+    // Home enquiry: OTP send/verify, then save (the form is used before login).
+    ApiUrls.enquiryOtpSendURL,
+    ApiUrls.enquiryOtpVerifyURL,
+    ApiUrls.subscriptionEnquiryFormURL,
   ];
 
   @override

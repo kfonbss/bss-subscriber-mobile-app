@@ -34,10 +34,7 @@ class AboutAppPage extends StatelessWidget {
                   _buildSection(
                     title: l10n.appInformation,
                     children: [
-                      _AppInfoItem(
-                        title: l10n.appVersion,
-                        value: 'v10.2.2',
-                      ),
+                      _AppInfoItem(title: l10n.appVersion, value: 'v10.2.2'),
                       _AppInfoItem(
                         title: l10n.copyright,
                         value: '@2025kfon.in',

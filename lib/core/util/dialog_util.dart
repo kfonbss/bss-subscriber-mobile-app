@@ -21,10 +21,7 @@ class DialogUtil {
   static final _negativeButtonStyle = const TextStyle(
     color: AppColor.kFailedRed,
   );
-  static final _logo = Image.asset(
-    AppAssets.logoTransparent,
-    height: 50.0.h,
-  );
+  static final _logo = Image.asset(AppAssets.logoTransparent, height: 50.0.h);
 
   showConfirmationAlert({
     required BuildContext context,

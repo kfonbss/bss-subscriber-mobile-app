@@ -28,11 +28,7 @@ class _NotificationPageState extends State<NotificationPage>
       actions: [
         Padding(
           padding: EdgeInsets.only(right: 20),
-          child: Icon(
-            Icons.settings_outlined,
-            color: Colors.black,
-            size: 24,
-          ),
+          child: Icon(Icons.settings_outlined, color: Colors.black, size: 24),
         ),
       ],
       body: Padding(
@@ -96,7 +92,7 @@ class _NotificationPageState extends State<NotificationPage>
                                 children: [
                                   Row(
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Container(
                                         width: 38.w,
@@ -118,29 +114,31 @@ class _NotificationPageState extends State<NotificationPage>
                                       Expanded(
                                         child: Column(
                                           crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                              CrossAxisAlignment.start,
                                           spacing: 4,
                                           children: [
                                             Row(
                                               mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .spaceBetween,
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Expanded(
                                                   child: Text(
                                                     l10n.accountVerification,
                                                     style: TextStyle(
                                                       fontWeight:
-                                                      FontWeight.w600,
+                                                          FontWeight.w600,
                                                       fontSize: 14,
                                                       height: 1.3,
-                                                      color: AppColor.kTextSecondaryDark,
+                                                      color:
+                                                          AppColor
+                                                              .kTextSecondaryDark,
                                                     ),
                                                     maxLines: 1,
                                                     overflow:
-                                                    TextOverflow.ellipsis,
+                                                        TextOverflow.ellipsis,
                                                   ),
                                                 ),
                                                 Text(
@@ -223,13 +221,11 @@ class _NotificationPageState extends State<NotificationPage>
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 spacing: 16,
                                 children: [
-                                  Image.asset(
-                                    AppAssets.deleteImage1,
-                                  ),
+                                  Image.asset(AppAssets.deleteImage1),
                                   Row(
                                     spacing: 12,
                                     crossAxisAlignment:
-                                    CrossAxisAlignment.start,
+                                        CrossAxisAlignment.start,
                                     children: [
                                       Container(
                                         width: 38.w,
@@ -249,29 +245,32 @@ class _NotificationPageState extends State<NotificationPage>
                                       Expanded(
                                         child: Column(
                                           crossAxisAlignment:
-                                          CrossAxisAlignment.start,
+                                              CrossAxisAlignment.start,
                                           spacing: 4,
                                           children: [
                                             Row(
                                               mainAxisAlignment:
-                                              MainAxisAlignment
-                                                  .spaceBetween,
+                                                  MainAxisAlignment
+                                                      .spaceBetween,
                                               crossAxisAlignment:
-                                              CrossAxisAlignment.start,
+                                                  CrossAxisAlignment.start,
                                               children: [
                                                 Expanded(
                                                   child: Text(
                                                     l10n.bestDealTitle,
                                                     style: TextStyle(
                                                       fontFamily: 'GeneralSans',
-                                                      fontWeight: FontWeight.w600,
+                                                      fontWeight:
+                                                          FontWeight.w600,
                                                       fontSize: 14,
                                                       height: 1.3,
-                                                      color: AppColor.kTextSecondaryDark,
+                                                      color:
+                                                          AppColor
+                                                              .kTextSecondaryDark,
                                                     ),
                                                     maxLines: 1,
                                                     overflow:
-                                                    TextOverflow.ellipsis,
+                                                        TextOverflow.ellipsis,
                                                   ),
                                                 ),
                                                 const Text(

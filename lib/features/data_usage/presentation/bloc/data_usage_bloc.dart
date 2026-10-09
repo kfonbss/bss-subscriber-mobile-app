@@ -3,12 +3,10 @@ import 'package:kfon_subscriber/features/data_usage/domain/repository/data_usage
 import 'package:kfon_subscriber/features/data_usage/presentation/bloc/data_usage_event.dart';
 import 'package:kfon_subscriber/features/data_usage/presentation/bloc/data_usage_state.dart';
 
-class DataUsageBloc
-    extends Bloc<DataUsageEvent, DataUsageState> {
+class DataUsageBloc extends Bloc<DataUsageEvent, DataUsageState> {
   final DataUsageRepository repository;
 
-  DataUsageBloc({required this.repository})
-    : super(DataUsageState.initial()) {
+  DataUsageBloc({required this.repository}) : super(DataUsageState.initial()) {
     on<LoadSubscriberDataUsage>(_onLoadSubscriberDataUsage);
   }
 
@@ -21,7 +19,10 @@ class DataUsageBloc
       final result = await repository.getSubscriberDataUsage(event.params);
       result.fold(
         (failure) => emit(
-          state.copyWith(status: DataUsageStatus.error, error: failure.toString()),
+          state.copyWith(
+            status: DataUsageStatus.error,
+            error: failure.toString(),
+          ),
         ),
         (dataUsage) => emit(
           state.copyWith(status: DataUsageStatus.loaded, data: dataUsage),

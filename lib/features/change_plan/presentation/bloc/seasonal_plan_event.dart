@@ -2,12 +2,7 @@ import 'package:equatable/equatable.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/params/change_plan_request_params.dart';
 
-enum PackageTabType {
-  addon,
-  standalone,
-  changePackage,
-  upgrade,
-}
+enum PackageTabType { addon, standalone, changePackage, upgrade }
 
 extension PackageTabTypeExtension on PackageTabType {
   String get apiValue {
@@ -64,10 +59,7 @@ class LoadPackageTab extends SeasonalPlanEvent {
   });
 
   @override
-  List<Object?> get props => [
-    subscriberId,
-    currentPackageId,
-  ];
+  List<Object?> get props => [subscriberId, currentPackageId];
 }
 
 class SelectPackageTab extends SeasonalPlanEvent {
@@ -82,11 +74,7 @@ class SelectPackageTab extends SeasonalPlanEvent {
   });
 
   @override
-  List<Object?> get props => [
-    tab,
-    subscriberId,
-    packageId,
-  ];
+  List<Object?> get props => [tab, subscriberId, packageId];
 }
 
 class SelectTargetKind extends SeasonalPlanEvent {
@@ -101,11 +89,7 @@ class SelectTargetKind extends SeasonalPlanEvent {
   });
 
   @override
-  List<Object?> get props => [
-    targetKind,
-    subscriberId,
-    packageId,
-  ];
+  List<Object?> get props => [targetKind, subscriberId, packageId];
 }
 
 // ============================================================
@@ -126,12 +110,7 @@ class LoadSeasonalPackages extends SeasonalPlanEvent {
   });
 
   @override
-  List<Object?> get props => [
-    currentPackageId,
-    subscriberId,
-    reset,
-    search,
-  ];
+  List<Object?> get props => [currentPackageId, subscriberId, reset, search];
 }
 
 class LoadMoreSeasonalPackages extends SeasonalPlanEvent {
@@ -144,10 +123,7 @@ class LoadMoreSeasonalPackages extends SeasonalPlanEvent {
   });
 
   @override
-  List<Object?> get props => [
-    currentPackageId,
-    subscriberId,
-  ];
+  List<Object?> get props => [currentPackageId, subscriberId];
 }
 
 class SearchSeasonalPackages extends SeasonalPlanEvent {
@@ -162,11 +138,7 @@ class SearchSeasonalPackages extends SeasonalPlanEvent {
   });
 
   @override
-  List<Object?> get props => [
-    query,
-    currentPackageId,
-    subscriberId,
-  ];
+  List<Object?> get props => [query, currentPackageId, subscriberId];
 }
 
 class ApplySeasonalPlanFilters extends SeasonalPlanEvent {
@@ -216,9 +188,5 @@ class FetchSeasonalDiscount extends SeasonalPlanEvent {
   });
 
   @override
-  List<Object?> get props => [
-    subscriberUuid,
-    packageId,
-    seasonId,
-  ];
+  List<Object?> get props => [subscriberUuid, packageId, seasonId];
 }

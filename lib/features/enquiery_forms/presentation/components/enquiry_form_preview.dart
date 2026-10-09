@@ -92,21 +92,28 @@ class EnquiryFormPreview extends StatelessWidget {
                                       int index,
                                     ) {
                                       return Padding(
-                                        padding: const EdgeInsets.symmetric(horizontal: 2.5),
-                                        child: item.value[index].extension ==
-                                                    'jpg' ||
-                                                item.value[index].extension ==
-                                                    'jpeg' ||
-                                                item.value[index].extension ==
-                                                    'png'
-                                            ? Image.file(
-                                              File(item.value[index].path!),
-                                              fit: BoxFit.cover,
-                                            )
-                                            : Image.asset(
-                                              AppAssets.document,
-                                              fit: BoxFit.cover,
-                                            ),
+                                        padding: const EdgeInsets.symmetric(
+                                          horizontal: 2.5,
+                                        ),
+                                        child:
+                                            item.value[index].extension ==
+                                                        'jpg' ||
+                                                    item
+                                                            .value[index]
+                                                            .extension ==
+                                                        'jpeg' ||
+                                                    item
+                                                            .value[index]
+                                                            .extension ==
+                                                        'png'
+                                                ? Image.file(
+                                                  File(item.value[index].path!),
+                                                  fit: BoxFit.cover,
+                                                )
+                                                : Image.asset(
+                                                  AppAssets.document,
+                                                  fit: BoxFit.cover,
+                                                ),
                                       );
                                     },
                                   ),

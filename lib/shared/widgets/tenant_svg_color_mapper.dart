@@ -50,8 +50,11 @@ class TenantSvgColorMapper extends ColorMapper {
     }
     final tint = _brandTints[rgb];
     if (tint != null) {
-      return Color.lerp(_primary, const Color(0xFFFFFFFF), tint)!
-          .withAlpha(alpha);
+      return Color.lerp(
+        _primary,
+        const Color(0xFFFFFFFF),
+        tint,
+      )!.withAlpha(alpha);
     }
     return color;
   }

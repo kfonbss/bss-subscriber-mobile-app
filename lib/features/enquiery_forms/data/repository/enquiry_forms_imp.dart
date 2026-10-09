@@ -4,6 +4,7 @@ import 'package:dartz/dartz.dart';
 import 'package:dio/dio.dart' show Options;
 import 'package:kfon_subscriber/core/constant/api_urls.dart';
 import 'package:kfon_subscriber/core/constant/mis_constant.dart';
+import 'package:kfon_subscriber/core/network/api_response.dart';
 import 'package:kfon_subscriber/core/network/dio_client.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/data/model/agnp_enquiry_form_params.dart';
 import 'package:kfon_subscriber/features/enquiery_forms/data/model/bpl_enquiry_form_params.dart';
@@ -21,16 +22,72 @@ class EnquiryFormRepositoryImp extends EnquiryFormRepository {
   EnquiryFormRepositoryImp({required DioClient client}) : _client = client;
 
   @override
-  Future<Either> submitHomeEnquiryForm(HomeEnquiryFormParams params) async {
+  Future<Either> submitHomeEnquiryForm(
+    HomeEnquiryFormParams params, {
+    String? tenantId,
+  }) async {
     final response = await _client.post(
       ApiUrls.subscriptionEnquiryFormURL,
       data: params.toMap(),
+      options: tenantId == null ? null : _tenantOptions(tenantId),
     );
     if (response.error.isEmpty) {
       return Right(response.data);
     } else {
-      return Left(response.message);
+      return Left(_errorText(response));
     }
+  }
+
+  Options _tenantOptions(String tenantId) => Options(
+    headers: {
+      'accept': 'application/json',
+      'x-language': 'en',
+      'X-Tenant-ID': tenantId,
+    },
+  );
+
+  /// API message when present, else the transport/error text.
+  String _errorText(APIResponse response) =>
+      response.message.trim().isNotEmpty ? response.message : response.error;
+
+  @override
+  Future<Either> sendEnquiryOtp({
+    required String mobileNumber,
+    required String tenantId,
+  }) async {
+    final response = await _client.post(
+      ApiUrls.enquiryOtpSendURL,
+      data: {'mobile': mobileNumber},
+      options: _tenantOptions(tenantId),
+    );
+    if (response.isSuccess) {
+      final data = response.data;
+      final otpRefId = data is Map ? data['otpRefId']?.toString() : null;
+      if (otpRefId == null || otpRefId.isEmpty) {
+        return const Left('Unable to send OTP. Please try again.');
+      }
+      return Right(otpRefId);
+    }
+    return Left(_errorText(response));
+  }
+
+  @override
+  Future<Either> verifyEnquiryOtp({
+    required String otpRefId,
+    required String otp,
+    required String tenantId,
+  }) async {
+    final response = await _client.post(
+      ApiUrls.enquiryOtpVerifyURL,
+      data: {'otpReferenceId': otpRefId, 'otp': otp},
+      options: _tenantOptions(tenantId),
+    );
+    if (response.isSuccess) {
+      final data = response.data;
+      if (data is Map && data['verified'] == true) return const Right(true);
+      return const Left('Invalid or expired OTP. Please try again.');
+    }
+    return Left(_errorText(response));
   }
 
   @override

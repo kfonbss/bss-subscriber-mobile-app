@@ -294,10 +294,7 @@ class _ProfileListItem extends StatelessWidget {
 
     return Container(
       margin: EdgeInsets.only(bottom: 17.h),
-      padding: EdgeInsets.symmetric(
-        horizontal: 16.w,
-        vertical: 16.h,
-      ),
+      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
       height: 70.h,
       decoration: decoration,
       child: Row(
@@ -311,12 +308,14 @@ class _ProfileListItem extends StatelessWidget {
               Container(
                 width: 38.w,
                 height: 38.h,
-                padding:  EdgeInsets.all(9),
-                decoration:
-                     BoxDecoration(
-                      shape: BoxShape.circle,
-                      color:isLogout ? AppColor.kLogoutIconBg:AppColor.kIconBackground,
-                    ),
+                padding: EdgeInsets.all(9),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color:
+                      isLogout
+                          ? AppColor.kLogoutIconBg
+                          : AppColor.kIconBackground,
+                ),
                 child: Center(
                   child: SvgPicture.asset(
                     image,
@@ -328,13 +327,19 @@ class _ProfileListItem extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 12.w),
-              Text(label, style: TextStyle(
-                fontFamily: 'GeneralSans',
-                fontWeight: FontWeight.w600,
-                fontSize: 14.sp,
-                height: 1.3,
-                color: isLogout ?AppColor.kLogoutRed:AppColor.kTextSecondaryDark,
-              ) ),
+              Text(
+                label,
+                style: TextStyle(
+                  fontFamily: 'GeneralSans',
+                  fontWeight: FontWeight.w600,
+                  fontSize: 14.sp,
+                  height: 1.3,
+                  color:
+                      isLogout
+                          ? AppColor.kLogoutRed
+                          : AppColor.kTextSecondaryDark,
+                ),
+              ),
             ],
           ),
           Icon(

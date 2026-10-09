@@ -7,13 +7,11 @@ class GetPostOfficesDistrictError extends BplEnquiryFormState {
   GetPostOfficesDistrictError({required this.errorMessage});
 }
 
-
 class ShowAddressInformationForm extends BplEnquiryFormState {}
 
 class ShowPersonalInformationForm extends BplEnquiryFormState {}
 
 class ShowPreview extends BplEnquiryFormState {}
-
 
 class SubmitBplFormLoading extends BplEnquiryFormState {}
 
@@ -28,6 +26,3 @@ class BplFormValidationError extends BplEnquiryFormState {
   final String errorMessage;
   BplFormValidationError({required this.errorMessage});
 }
-
-
-

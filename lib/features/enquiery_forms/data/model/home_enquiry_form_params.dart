@@ -28,12 +28,11 @@ class HomeEnquiryFormParams {
     required this.latitude,
     required this.longitude,
     required this.mobileNumber,
-    required this.email
+    required this.email,
   });
   Map<String, dynamic> toMap() {
     return {
-      "firstName":firstName,
-      "lastName": lastName,
+      "firstName": '$firstName $lastName'.trim(),
       "cusMobile": mobileNumber,
       "cusEmail": email,
       "cusAddress": cusAddress,
@@ -43,9 +42,11 @@ class HomeEnquiryFormParams {
       "cusLocation": cusLocation,
       "cusPincode": pinCode,
       "postOffice": postOffice,
+      "district": "",
+      "districtId": "",
       "location": location,
-      "latitude": latitude,
-      "longitude": longitude
+      "latitude": double.tryParse(latitude),
+      "longitude": double.tryParse(longitude),
     };
   }
 
@@ -56,7 +57,7 @@ class HomeEnquiryFormParams {
       'Pin Code': pinCode,
       'Location': location,
       'Mobile Number': mobileNumber,
-      'Email': email
+      'Email': email,
     };
   }
 }

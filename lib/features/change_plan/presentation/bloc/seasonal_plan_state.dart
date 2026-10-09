@@ -5,20 +5,9 @@ import 'package:kfon_subscriber/features/change_plan/domain/entity/subscriber_di
 
 import 'seasonal_plan_event.dart';
 
-enum SeasonalPlanStatus {
-  initial,
-  loading,
-  loadingMore,
-  success,
-  error,
-}
+enum SeasonalPlanStatus { initial, loading, loadingMore, success, error }
 
-enum SeasonalActionStatus {
-  idle,
-  loading,
-  success,
-  error,
-}
+enum SeasonalActionStatus { idle, loading, success, error }
 
 const _sentinel = Object();
 
@@ -117,6 +106,7 @@ class SeasonalPlanState extends Equatable {
         return tab.upgrade?.serviceTypes ?? const [];
     }
   }
+
   EligibilityEntity? get selectedEligibility {
     final tab = packageTab;
     final selected = selectedTab;
@@ -160,7 +150,7 @@ class SeasonalPlanState extends Equatable {
     SeasonalPlanStatus? status,
     List<PackageEntity>? packages,
     Object? errorMessage = _sentinel,
-    PackageEntity? selectedPackage ,
+    PackageEntity? selectedPackage,
     String? searchQuery,
     Object? subscriptionTypeFilter = _sentinel,
     Object? packageTypeFilter = _sentinel,
@@ -179,50 +169,55 @@ class SeasonalPlanState extends Equatable {
       status: status ?? this.status,
       packages: packages ?? this.packages,
 
-      errorMessage: identical(errorMessage, _sentinel)
-          ? this.errorMessage
-          : errorMessage as String?,
+      errorMessage:
+          identical(errorMessage, _sentinel)
+              ? this.errorMessage
+              : errorMessage as String?,
 
       selectedPackage: selectedPackage ?? this.selectedPackage,
 
       searchQuery: searchQuery ?? this.searchQuery,
 
       subscriptionTypeFilter:
-      identical(subscriptionTypeFilter, _sentinel)
-          ? this.subscriptionTypeFilter
-          : subscriptionTypeFilter as String?,
+          identical(subscriptionTypeFilter, _sentinel)
+              ? this.subscriptionTypeFilter
+              : subscriptionTypeFilter as String?,
 
-      packageTypeFilter: identical(packageTypeFilter, _sentinel)
-          ? this.packageTypeFilter
-          : packageTypeFilter as String?,
+      packageTypeFilter:
+          identical(packageTypeFilter, _sentinel)
+              ? this.packageTypeFilter
+              : packageTypeFilter as String?,
 
       currentPage: currentPage ?? this.currentPage,
       totalPages: totalPages ?? this.totalPages,
       hasMore: hasMore ?? this.hasMore,
 
-      packageTab: identical(packageTab, _sentinel)
-          ? this.packageTab
-          : packageTab as PackageTabEntity?,
+      packageTab:
+          identical(packageTab, _sentinel)
+              ? this.packageTab
+              : packageTab as PackageTabEntity?,
 
-      selectedTab: identical(selectedTab, _sentinel)
-          ? this.selectedTab
-          : selectedTab as PackageTabType?,
+      selectedTab:
+          identical(selectedTab, _sentinel)
+              ? this.selectedTab
+              : selectedTab as PackageTabType?,
 
-      selectedTargetKind: identical(selectedTargetKind, _sentinel)
-          ? this.selectedTargetKind
-          : selectedTargetKind as String?,
+      selectedTargetKind:
+          identical(selectedTargetKind, _sentinel)
+              ? this.selectedTargetKind
+              : selectedTargetKind as String?,
 
-      isDiscountLoading:
-      isDiscountLoading ?? this.isDiscountLoading,
+      isDiscountLoading: isDiscountLoading ?? this.isDiscountLoading,
 
-      discountDetail: identical(discountDetail, _sentinel)
-          ? this.discountDetail
-          : discountDetail as SubscriberDiscountEntity?,
+      discountDetail:
+          identical(discountDetail, _sentinel)
+              ? this.discountDetail
+              : discountDetail as SubscriberDiscountEntity?,
 
       discountErrorMessage:
-      identical(discountErrorMessage, _sentinel)
-          ? this.discountErrorMessage
-          : discountErrorMessage as String?,
+          identical(discountErrorMessage, _sentinel)
+              ? this.discountErrorMessage
+              : discountErrorMessage as String?,
 
       actionStatus: actionStatus ?? this.actionStatus,
     );

@@ -4,8 +4,7 @@ import 'package:kfon_subscriber/core/constant/app_brand.dart';
 
 class AppColor {
   // =================
-  static Color get kPrimaryColor =>
-      primaryFor(AppBrand.isLd ? 'LD' : null);
+  static Color get kPrimaryColor => primaryFor(AppBrand.isLd ? 'LD' : null);
 
   /// Primary colour for a given tenant code, without switching the app's
   /// current tenant (used to preview the colour on the tenant screen).

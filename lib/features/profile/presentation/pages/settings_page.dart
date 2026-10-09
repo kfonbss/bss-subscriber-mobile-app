@@ -1,4 +1,3 @@
-
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
@@ -35,52 +34,58 @@ class SettingsPage extends StatelessWidget {
                   _SettingsItem(
                     title: l10n.language,
                     iconPath: AppAssets.language,
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const LanguageSelectionPage(),
-                      ),
-                    ),
+                    onTap:
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const LanguageSelectionPage(),
+                          ),
+                        ),
                   ),
                   _SettingsItem(
                     title: l10n.notificationsSettings,
                     iconPath: AppAssets.notificationSettings,
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const NotificationSettingsPage(),
-                      ),
-                    ),
+                    onTap:
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder:
+                                (context) => const NotificationSettingsPage(),
+                          ),
+                        ),
                   ),
                   _SettingsItem(
                     title: l10n.appUpdateCheck,
                     iconPath: AppAssets.appUpdateCheck,
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const AppUpdateCheckPage(),
-                      ),
-                    ),
+                    onTap:
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AppUpdateCheckPage(),
+                          ),
+                        ),
                   ),
                   _SettingsItem(
                     title: l10n.aboutApp,
                     iconPath: AppAssets.aboutApp,
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const AboutAppPage(),
-                      ),
-                    ),
+                    onTap:
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AboutAppPage(),
+                          ),
+                        ),
                   ),
                   _SettingsItem(
                     title: l10n.aboutBss,
                     iconPath: AppAssets.aboutKfon,
-                    onTap: () => Navigator.push(
-                      context,
-                      MaterialPageRoute(
-                        builder: (context) => const AboutKfonPage(),
-                      ),
-                    ),
+                    onTap:
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute(
+                            builder: (context) => const AboutKfonPage(),
+                          ),
+                        ),
                   ),
                 ],
               ),
@@ -108,12 +113,11 @@ class _SettingsItem extends StatelessWidget {
 
   // Sizer ratios and Sizer.isTablet are fixed after MaterialApp.builder —
   // computed once as static final, eliminating the inner Builder entirely.
-  static final double _containerSize =
-      Sizer.isTablet ? 32.0 * 1.2 : 32.w;
-  static final double _iconSize =
-      Sizer.isTablet ? 18.0 * 1.2 : 18.w;
-  static final BorderRadius _itemRadius =
-      BorderRadius.all(Radius.circular(12.w));
+  static final double _containerSize = Sizer.isTablet ? 32.0 * 1.2 : 32.w;
+  static final double _iconSize = Sizer.isTablet ? 18.0 * 1.2 : 18.w;
+  static final BorderRadius _itemRadius = BorderRadius.all(
+    Radius.circular(12.w),
+  );
   static final BoxDecoration _itemDecoration = BoxDecoration(
     color: Colors.white,
     borderRadius: _itemRadius,
@@ -122,11 +126,10 @@ class _SettingsItem extends StatelessWidget {
     ),
   );
   // kPrimaryColor(0xFF1095C5) @ 5% opacity: 0x0D1095C5
-  static get _iconBgDecoration => BoxDecoration(
-    color: AppColor.kPrimary5,
-    shape: BoxShape.circle,
-  );
-  static get _iconColorFilter => ColorFilter.mode(AppColor.kPrimaryColor, BlendMode.srcIn);
+  static get _iconBgDecoration =>
+      BoxDecoration(color: AppColor.kPrimary5, shape: BoxShape.circle);
+  static get _iconColorFilter =>
+      ColorFilter.mode(AppColor.kPrimaryColor, BlendMode.srcIn);
   static final _titleStyle = TextStyle(
     fontFamily: 'GeneralSans',
     color: AppColor.kTextSecondaryDark,

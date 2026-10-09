@@ -25,9 +25,10 @@ class RetryWidget extends StatelessWidget {
       builder: (context, constraints) {
         // Inside a scroll view / sliver the height is unbounded, so fall back
         // to a fraction of the screen instead of an infinite image.
-        final availableHeight = constraints.hasBoundedHeight
-            ? constraints.maxHeight
-            : MediaQuery.sizeOf(context).height * 0.6;
+        final availableHeight =
+            constraints.hasBoundedHeight
+                ? constraints.maxHeight
+                : MediaQuery.sizeOf(context).height * 0.6;
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 50),
           child: Center(
@@ -50,9 +51,10 @@ class RetryWidget extends StatelessWidget {
                     onPressed: onRetry,
                     style: ElevatedButton.styleFrom(
                       backgroundColor: textColor ?? AppColor.kPrimaryColor,
-                      foregroundColor: textColor != null
-                          ? AppColor.kPrimaryColor
-                          : Colors.white,
+                      foregroundColor:
+                          textColor != null
+                              ? AppColor.kPrimaryColor
+                              : Colors.white,
                     ),
                     child: Text(context.bssSubL10n.retry),
                   ),

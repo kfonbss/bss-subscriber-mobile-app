@@ -9,12 +9,12 @@ class SeasonalDiscountEntity extends Equatable {
   final double? discountedRenewalFee;
 
   const SeasonalDiscountEntity({
-     this.seasonId,
-     this.seasonName,
-     this.seasonTypeName,
-     this.discountValue,
-     this.discountType,
-     this.discountedRenewalFee
+    this.seasonId,
+    this.seasonName,
+    this.seasonTypeName,
+    this.discountValue,
+    this.discountType,
+    this.discountedRenewalFee,
   });
 
   @override
@@ -24,6 +24,6 @@ class SeasonalDiscountEntity extends Equatable {
     seasonTypeName,
     discountValue,
     discountType,
-    discountedRenewalFee
+    discountedRenewalFee,
   ];
 }

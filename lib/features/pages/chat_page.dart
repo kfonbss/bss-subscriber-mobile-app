@@ -50,15 +50,16 @@ class _ChatPageState extends State<ChatPage> {
             name.isEmpty
                 ? Container(width: 0)
                 : Text(
-                    name,
-                    style: TextStyle(
-                      color: isOwnMessage
-                          ? AppColor.kLightSkyBlue
-                          : AppColor.kStoneGrey,
-                      fontSize: 12,
-                      fontWeight: FontWeight.w700,
-                    ),
+                  name,
+                  style: TextStyle(
+                    color:
+                        isOwnMessage
+                            ? AppColor.kLightSkyBlue
+                            : AppColor.kStoneGrey,
+                    fontSize: 12,
+                    fontWeight: FontWeight.w700,
                   ),
+                ),
             Text(
               message,
               style: TextStyle(

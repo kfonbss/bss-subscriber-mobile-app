@@ -21,7 +21,3 @@ class HomeFormValidationError extends HomeEnquiryFormState {
   final String errorMessage;
   HomeFormValidationError({required this.errorMessage});
 }
-
-
-
-

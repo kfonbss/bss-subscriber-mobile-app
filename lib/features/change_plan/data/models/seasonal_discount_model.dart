@@ -9,22 +9,23 @@ class SeasonalDiscountModel {
   final double? discountedRenewalFee;
 
   const SeasonalDiscountModel({
-     this.seasonId,
-     this.seasonName,
-     this.seasonTypeName,
-     this.discountValue,
-     this.discountType,
-     this.discountedRenewalFee
+    this.seasonId,
+    this.seasonName,
+    this.seasonTypeName,
+    this.discountValue,
+    this.discountType,
+    this.discountedRenewalFee,
   });
 
   factory SeasonalDiscountModel.fromJson(Map<String, dynamic> json) {
     return SeasonalDiscountModel(
       seasonId: json['seasonId']?.toString() ?? '',
       seasonName: json['seasonName']?.toString() ?? '',
-      seasonTypeName: json['seasonTypeName']?.toString() ??'',
+      seasonTypeName: json['seasonTypeName']?.toString() ?? '',
       discountValue: json['discountValue'] as int? ?? 0,
-      discountType: json['discountType']?.toString() ??'',
-      discountedRenewalFee: (json['discountedRenewalFee'] as num?)?.toDouble() ?? 0.0,
+      discountType: json['discountType']?.toString() ?? '',
+      discountedRenewalFee:
+          (json['discountedRenewalFee'] as num?)?.toDouble() ?? 0.0,
     );
   }
 
@@ -35,7 +36,7 @@ class SeasonalDiscountModel {
       seasonTypeName: seasonTypeName,
       discountValue: discountValue,
       discountType: discountType,
-      discountedRenewalFee: discountedRenewalFee
+      discountedRenewalFee: discountedRenewalFee,
     );
   }
 }

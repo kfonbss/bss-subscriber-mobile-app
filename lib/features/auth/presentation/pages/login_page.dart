@@ -18,6 +18,7 @@ import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/login_background.dart';
 import 'package:kfon_subscriber/shared/widgets/login_password_text_field.dart';
 import 'package:kfon_subscriber/shared/widgets/shimmer/shimmer_box.dart';
+import 'package:kfon_subscriber/shared/widgets/simple_webview_page.dart';
 import 'package:kfon_subscriber/shared/widgets/white_button.dart';
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
 
@@ -123,9 +124,7 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   child: Column(
                     children: [
-                      AuthHeader(
-                        description: '',
-                      ),
+                      AuthHeader(description: ''),
                       Padding(
                         padding: EdgeInsets.fromLTRB(
                           _sideMargin,
@@ -284,10 +283,22 @@ class _LoginPageState extends State<LoginPage> {
                         backgroundColor: AppColor.kPrimaryColor,
                         borderColor: Colors.white,
                         textColor: Colors.white,
+                        // TEMP: opens the web enquiry page. Restore the block
+                        // below to go back to the in-app enquiry list.
+                        // onClicked:
+                        //     () => Navigator.pushNamed(
+                        //       context,
+                        //       AppRoutes.enquiryListPage,
+                        //     ),
                         onClicked:
-                            () => Navigator.pushNamed(
-                              context,
-                              AppRoutes.enquiryListPage,
+                            () => Navigator.of(context).push(
+                              MaterialPageRoute<void>(
+                                builder:
+                                    (_) => const SimpleWebViewPage(
+                                      url:
+                                          'https://rwbssqa.sritindia.com/enquiry/home',
+                                    ),
+                              ),
                             ),
                       ),
                     ),

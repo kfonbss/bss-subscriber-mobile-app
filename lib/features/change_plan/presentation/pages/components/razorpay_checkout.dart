@@ -51,9 +51,7 @@ class RazorpayCheckout {
         finish(RechargeStatus.paymentSuccess);
       })
       ..on(Razorpay.EVENT_PAYMENT_ERROR, (PaymentFailureResponse response) {
-        debugPrint(
-          '💳 Razorpay error ${response.code}: ${response.message}',
-        );
+        debugPrint('💳 Razorpay error ${response.code}: ${response.message}');
         finish(
           response.code == Razorpay.PAYMENT_CANCELLED
               ? RechargeStatus.paymentCancelled

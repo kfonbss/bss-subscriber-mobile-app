@@ -28,5 +28,4 @@ class FutureRechargeRepositoryImp extends FutureRechargeRepository {
       return Left(response.failure);
     }
   }
-
 }

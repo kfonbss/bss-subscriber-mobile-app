@@ -1,4 +1,3 @@
-
 import 'package:kfon_subscriber/features/change_plan/domain/entity/package_tab_entity.dart';
 
 class PackageTabModel extends PackageTabEntity {
@@ -19,18 +18,22 @@ class PackageTabModel extends PackageTabEntity {
       packageId: json['packageId'] as String?,
       effectiveStatus: json['effectiveStatus'] as String?,
       reason: json['reason'] as String?,
-      changePackage: json['changePackage'] != null
-          ? EligibilityModel.fromJson(json['changePackage'], true)
-          : null,
-      upgrade: json['upgrade'] != null
-          ? EligibilityModel.fromJson(json['upgrade'], false)
-          : null,
-      standalone: json['standalone'] != null
-          ? EligibilityModel.fromJson(json['standalone'], false)
-          : null,
-      addon: json['addon'] != null
-          ? EligibilityModel.fromJson(json['addon'], false)
-          : null,
+      changePackage:
+          json['changePackage'] != null
+              ? EligibilityModel.fromJson(json['changePackage'], true)
+              : null,
+      upgrade:
+          json['upgrade'] != null
+              ? EligibilityModel.fromJson(json['upgrade'], false)
+              : null,
+      standalone:
+          json['standalone'] != null
+              ? EligibilityModel.fromJson(json['standalone'], false)
+              : null,
+      addon:
+          json['addon'] != null
+              ? EligibilityModel.fromJson(json['addon'], false)
+              : null,
     );
   }
 
@@ -41,15 +44,14 @@ class PackageTabModel extends PackageTabEntity {
       'effectiveStatus': effectiveStatus,
       'reason': reason,
       'addon': addon != null ? (addon as EligibilityModel).toJson() : null,
-      'standalone': standalone != null
-          ? (standalone as EligibilityModel).toJson()
-          : null,
-      'changePackage': changePackage != null
-          ? (changePackage as EligibilityModel).toJson()
-          : null,
-      'upgrade': upgrade != null
-          ? (upgrade as EligibilityModel).toJson()
-          : null,
+      'standalone':
+          standalone != null ? (standalone as EligibilityModel).toJson() : null,
+      'changePackage':
+          changePackage != null
+              ? (changePackage as EligibilityModel).toJson()
+              : null,
+      'upgrade':
+          upgrade != null ? (upgrade as EligibilityModel).toJson() : null,
     };
   }
 
@@ -66,26 +68,24 @@ class PackageTabModel extends PackageTabEntity {
     );
   }
 }
+
 class EligibilityModel extends EligibilityEntity {
-  const EligibilityModel({
-    super.eligible,
-    super.serviceTypes,
-    super.reason,
-  });
+  const EligibilityModel({super.eligible, super.serviceTypes, super.reason});
 
   factory EligibilityModel.fromJson(
-      Map<String, dynamic> json,
-      bool isChangePackage,
-      ) {
+    Map<String, dynamic> json,
+    bool isChangePackage,
+  ) {
     final isEligible = json['eligible'] as bool? ?? false;
 
     return EligibilityModel(
       eligible: isEligible,
-      serviceTypes: json['serviceTypes'] != null
-          ? List<String>.from(json['serviceTypes'])
-          : isChangePackage && isEligible
-          ? ['INTERNET_ONLY', 'BUNDLE']
-          : null,
+      serviceTypes:
+          json['serviceTypes'] != null
+              ? List<String>.from(json['serviceTypes'])
+              : isChangePackage && isEligible
+              ? ['INTERNET_ONLY', 'BUNDLE']
+              : null,
       reason: json['reason'] as String?,
     );
   }

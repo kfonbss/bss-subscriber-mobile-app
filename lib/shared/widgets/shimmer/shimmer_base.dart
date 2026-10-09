@@ -13,10 +13,7 @@ class ShimmerColors {
 /// Wraps [child] with the app's standard shimmer effect.
 /// Use with placeholder widgets (e.g. [ShimmerBox]) that have a solid color.
 class AppShimmer extends StatelessWidget {
-  const AppShimmer({
-    super.key,
-    required this.child,
-  });
+  const AppShimmer({super.key, required this.child});
 
   final Widget child;
 

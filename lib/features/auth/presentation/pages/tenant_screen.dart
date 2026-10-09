@@ -62,15 +62,15 @@ class _TenantScreenState extends State<TenantScreen> {
           return TweenAnimationBuilder<Color?>(
             tween: ColorTween(
               end:
-              selectedCode == null
-                  ? _unselectedColor
-                  : AppColor.primaryFor(selectedCode),
+                  selectedCode == null
+                      ? _unselectedColor
+                      : AppColor.primaryFor(selectedCode),
             ),
             duration: _colorAnimationDuration,
             curve: Curves.easeInOutCubic,
             builder:
                 (context, color, _) =>
-                _buildScreen(context, color ?? _unselectedColor),
+                    _buildScreen(context, color ?? _unselectedColor),
           );
         },
       ),
@@ -172,7 +172,7 @@ class _TenantScreenState extends State<TenantScreen> {
                               return RetryWidget(
                                 textColor: Colors.white,
                                 errorMessage:
-                                state.errorMessage ??
+                                    state.errorMessage ??
                                     context.bssSubL10n.somethingWentWrong,
                                 onRetry: () => _bloc.add(const LoadTenants()),
                               );
@@ -200,11 +200,11 @@ class _TenantScreenState extends State<TenantScreen> {
                                 itemCount: state.filteredTenants.length,
                                 separatorBuilder:
                                     (_, __) => Divider(
-                                  height: 1.h,
-                                  color: AppColor.kLightBorderGrey,
-                                  indent: 16.w,
-                                  endIndent: 16.w,
-                                ),
+                                      height: 1.h,
+                                      color: AppColor.kLightBorderGrey,
+                                      indent: 16.w,
+                                      endIndent: 16.w,
+                                    ),
                                 itemBuilder: (_, i) {
                                   final tenant = state.filteredTenants[i];
                                   final isSelected =
@@ -213,17 +213,17 @@ class _TenantScreenState extends State<TenantScreen> {
                                   return InkWell(
                                     onTap:
                                         () => _bloc.add(
-                                      SelectTenant(tenant: tenant),
-                                    ),
+                                          SelectTenant(tenant: tenant),
+                                        ),
                                     borderRadius: BorderRadius.vertical(
                                       top:
-                                      i == 0
-                                          ? Radius.circular(12)
-                                          : Radius.zero,
+                                          i == 0
+                                              ? Radius.circular(12)
+                                              : Radius.zero,
                                       bottom:
-                                      i == state.filteredTenants.length - 1
-                                          ? Radius.circular(12)
-                                          : Radius.zero,
+                                          i == state.filteredTenants.length - 1
+                                              ? Radius.circular(12)
+                                              : Radius.zero,
                                     ),
                                     child: Container(
                                       padding: EdgeInsets.symmetric(
@@ -232,22 +232,22 @@ class _TenantScreenState extends State<TenantScreen> {
                                       ),
                                       decoration: BoxDecoration(
                                         color:
-                                        isSelected
-                                            ? Colors.white
-                                            : Colors.transparent,
+                                            isSelected
+                                                ? Colors.white
+                                                : Colors.transparent,
                                         borderRadius: BorderRadius.vertical(
                                           top:
-                                          i == 0
-                                              ? Radius.circular(12)
-                                              : Radius.zero,
+                                              i == 0
+                                                  ? Radius.circular(12)
+                                                  : Radius.zero,
                                           bottom:
-                                          i ==
-                                              state
-                                                  .filteredTenants
-                                                  .length -
-                                                  1
-                                              ? Radius.circular(12)
-                                              : Radius.zero,
+                                              i ==
+                                                      state
+                                                              .filteredTenants
+                                                              .length -
+                                                          1
+                                                  ? Radius.circular(12)
+                                                  : Radius.zero,
                                         ),
                                       ),
                                       child: Row(
@@ -258,13 +258,13 @@ class _TenantScreenState extends State<TenantScreen> {
                                               style: TextStyle(
                                                 fontSize: 15.sp,
                                                 fontWeight:
-                                                isSelected
-                                                    ? FontWeight.w600
-                                                    : FontWeight.w400,
+                                                    isSelected
+                                                        ? FontWeight.w600
+                                                        : FontWeight.w400,
                                                 color:
-                                                isSelected
-                                                    ? accent
-                                                    : Colors.black87,
+                                                    isSelected
+                                                        ? accent
+                                                        : Colors.black87,
                                                 fontFamily: 'GeneralSans',
                                               ),
                                             ),
@@ -331,7 +331,7 @@ class _TenantScreenState extends State<TenantScreen> {
                               height: 52.h,
                               child: ElevatedButton.icon(
                                 onPressed:
-                                state.canContinue
+                                    state.canContinue
                                         ? () async {
                                           final tenant = state.selectedTenant!;
                                           await PreferenceUtils.setTenant(

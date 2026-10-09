@@ -99,7 +99,7 @@ class RechargeChangePlanRedirectModel {
       actionUrl: rawActionUrl == null ? null : rawActionUrl.toString(),
       method: redirect['method']?.toString() ?? '',
       params: paramsMap.map(
-            (key, value) => MapEntry(key, value?.toString() ?? ''),
+        (key, value) => MapEntry(key, value?.toString() ?? ''),
       ),
       orderId: orderId,
     );

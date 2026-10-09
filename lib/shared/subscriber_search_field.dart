@@ -65,21 +65,22 @@ class SubscriberSearchField extends StatelessWidget {
               ),
             ),
           ),
-          suffixIcon: onFilterPressed != null
-              ? IconButton(
-                  onPressed: onFilterPressed,
-                  padding: EdgeInsets.symmetric(horizontal: 14.w),
-                  icon: SvgPicture.asset(
-                    AppAssets.filter,
-                    width: 24.h,
-                    height: 24.w,
-                    colorFilter: ColorFilter.mode(
-                      filterIconColor ?? AppColor.kSecondaryColor,
-                      BlendMode.srcIn,
+          suffixIcon:
+              onFilterPressed != null
+                  ? IconButton(
+                    onPressed: onFilterPressed,
+                    padding: EdgeInsets.symmetric(horizontal: 14.w),
+                    icon: SvgPicture.asset(
+                      AppAssets.filter,
+                      width: 24.h,
+                      height: 24.w,
+                      colorFilter: ColorFilter.mode(
+                        filterIconColor ?? AppColor.kSecondaryColor,
+                        BlendMode.srcIn,
+                      ),
                     ),
-                  ),
-                )
-              : null,
+                  )
+                  : null,
           border: InputBorder.none,
           contentPadding: EdgeInsets.symmetric(vertical: 16.h),
         ),

@@ -77,7 +77,6 @@ class ChangePlanRepositoryImp extends ChangePlanRepository {
     }
   }
 
-
   @override
   Future<Either<Failure, PackageTabEntity>> getPackageTabs({
     required String subscriberId,
@@ -151,7 +150,6 @@ class ChangePlanRepositoryImp extends ChangePlanRepository {
     }
   }
 
-
   @override
   Future<Either<Failure, PaginatedPackagesEntity>> getSeasonalPackages({
     required int page,
@@ -197,18 +195,19 @@ class ChangePlanRepositoryImp extends ChangePlanRepository {
     final dynamic raw = response.data;
     final Map<String, dynamic> map = raw is Map<String, dynamic> ? raw : {};
     final dynamic nestedData = map['data'];
-    final Map<String, dynamic> payload = nestedData is Map<String, dynamic>
-        ? nestedData
-        : map;
+    final Map<String, dynamic> payload =
+        nestedData is Map<String, dynamic> ? nestedData : map;
     final List<dynamic> content = payload['content'] as List<dynamic>? ?? [];
 
-    final packages = content
-        .map(
-          (json) => SeasonalPackageModel.fromJson(
-        json as Map<String, dynamic>,
-      ).toEntity(),
-    )
-        .toList();
+    final packages =
+        content
+            .map(
+              (json) =>
+                  SeasonalPackageModel.fromJson(
+                    json as Map<String, dynamic>,
+                  ).toEntity(),
+            )
+            .toList();
 
     final totalPages = (payload['totalPages'] as num?)?.toInt() ?? 0;
     final totalElements = (payload['totalElements'] as num?)?.toInt() ?? 0;
@@ -229,17 +228,22 @@ class ChangePlanRepositoryImp extends ChangePlanRepository {
   }
 
   @override
-  Future<Either<Failure, List<PaymentGatewayEntity>>> getPaymentGateways() async {
+  Future<Either<Failure, List<PaymentGatewayEntity>>>
+  getPaymentGateways() async {
     try {
       final APIResponse response = await sl<DioClient>().get(
         ApiUrls.paymentGateways,
       );
 
       if (response.isSuccess) {
-        final list = (response.data as List<dynamic>)
-            .map((e) => PaymentGatewayModel.fromJson(e as Map<String, dynamic>))
-            .map((m) => m.toEntity())
-            .toList();
+        final list =
+            (response.data as List<dynamic>)
+                .map(
+                  (e) =>
+                      PaymentGatewayModel.fromJson(e as Map<String, dynamic>),
+                )
+                .map((m) => m.toEntity())
+                .toList();
         return Right(list);
       }
       return Left(response.failure);

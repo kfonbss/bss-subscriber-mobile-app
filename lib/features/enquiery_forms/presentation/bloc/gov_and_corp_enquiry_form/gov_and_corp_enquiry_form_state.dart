@@ -19,7 +19,3 @@ class GovAndCorpFormValidationError extends GovAndCorpEnquiryFormState {
   final String errorMessage;
   GovAndCorpFormValidationError({required this.errorMessage});
 }
-
-
-
-

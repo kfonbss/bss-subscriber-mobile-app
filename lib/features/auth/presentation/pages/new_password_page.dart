@@ -87,9 +87,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
               LoginBackground(),
               Column(
                 children: [
-                  AuthHeader(
-                    description: '',
-                  ),
+                  AuthHeader(description: ''),
                   Form(
                     key: _formKey,
                     child: Container(

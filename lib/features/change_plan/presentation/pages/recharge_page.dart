@@ -31,7 +31,12 @@ class RechargePage extends StatefulWidget {
   final String? referralCode;
   final bool isChangePlan;
 
-  const RechargePage({super.key,required this.isChangePlan, required this.package, this.referralCode});
+  const RechargePage({
+    super.key,
+    required this.isChangePlan,
+    required this.package,
+    this.referralCode,
+  });
 
   @override
   State<RechargePage> createState() => _RechargePageState();
@@ -46,7 +51,7 @@ class _RechargePageState extends State<RechargePage> {
   String _selectedGateway = '';
   bool _useWallet = false;
   bool _agreedToTerms = false;
-  final DialogUtil _dialogUtil=DialogUtil();
+  final DialogUtil _dialogUtil = DialogUtil();
 
   static const _backdropColor = AppColor.kBlack50;
   static const _dialogContainerDecoration = BoxDecoration(
@@ -310,7 +315,7 @@ class _RechargePageState extends State<RechargePage> {
           seasonId: seasonalId,
           referral: _appliedReferralCode != null,
           useWallet: useWallet,
-          changePlan:widget.isChangePlan,
+          changePlan: widget.isChangePlan,
         ),
       ),
     );

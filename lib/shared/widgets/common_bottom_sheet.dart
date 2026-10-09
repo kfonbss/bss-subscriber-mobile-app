@@ -7,8 +7,8 @@ Future<T?> showAppModalBottomSheet<T>({
   required WidgetBuilder builder,
   bool isScrollControlled = true,
   bool useSafeAreaScroll = true,
-  bool isDismissible= true, // 👈 prevents closing on outside tap
-  bool enableDrag= true,
+  bool isDismissible = true, // 👈 prevents closing on outside tap
+  bool enableDrag = true,
 }) {
   return showModalBottomSheet<T>(
     context: context,
@@ -17,7 +17,7 @@ Future<T?> showAppModalBottomSheet<T>({
     isScrollControlled: isScrollControlled,
     backgroundColor: AppColor.kMainBackgroundColor,
     builder: (ctx) {
-      final content =ClipRRect(
+      final content = ClipRRect(
         borderRadius: const BorderRadius.vertical(top: Radius.circular(24)),
         child: Column(
           mainAxisSize: MainAxisSize.min,
@@ -41,9 +41,8 @@ Future<T?> showAppModalBottomSheet<T>({
 
       return SafeArea(
         top: false,
-        child: useSafeAreaScroll
-            ? SingleChildScrollView(child: content)
-            : content,
+        child:
+            useSafeAreaScroll ? SingleChildScrollView(child: content) : content,
       );
     },
   );

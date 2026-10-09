@@ -13,7 +13,6 @@ class VerifyOtpEntity extends Equatable {
   final int expiresIn;
   final UserRole? userRole;
 
-
   const VerifyOtpEntity({
     required this.userId,
     required this.username,
@@ -25,7 +24,6 @@ class VerifyOtpEntity extends Equatable {
     required this.refreshToken,
     required this.expiresIn,
     required this.userRole,
-
   });
 
   bool get hasAllowedRole => userRole != null;
@@ -43,5 +41,4 @@ class VerifyOtpEntity extends Equatable {
     expiresIn,
     userRole,
   ];
-
 }

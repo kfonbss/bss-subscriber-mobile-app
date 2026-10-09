@@ -9,12 +9,13 @@ class Validators {
     }
     return null;
   }
+
   /// Generic max length validator (character count matches [String.length] as sent to APIs)
   static String? validateMaxLength(
-      String? value,
-      int maxLength, {
-        String fieldName = 'This field',
-      }) {
+    String? value,
+    int maxLength, {
+    String fieldName = 'This field',
+  }) {
     if (value == null || value.isEmpty) {
       return null;
     }
@@ -25,6 +26,7 @@ class Validators {
 
     return null;
   }
+
   /// Validates mobile number (10 digits)
   static String? validateMobileNumber(String? value) {
     if (value == null || value.trim().isEmpty) {
@@ -108,5 +110,4 @@ class Validators {
 
     return null;
   }
-
 }

@@ -14,10 +14,10 @@ class SecuritySettingsPage extends StatelessWidget {
 
   static String _getLabel(PasswordChangeEnum type) {
     return switch (type) {
-      PasswordChangeEnum.bss      => 'Change BSS Portal Password',
+      PasswordChangeEnum.bss => 'Change BSS Portal Password',
       PasswordChangeEnum.internet => 'Change Internet Password',
-      PasswordChangeEnum.ssid     => 'Change SSID Password',
-      PasswordChangeEnum.wifi     => 'Change WiFi Password',
+      PasswordChangeEnum.ssid => 'Change SSID Password',
+      PasswordChangeEnum.wifi => 'Change WiFi Password',
     };
   }
 
@@ -29,19 +29,21 @@ class SecuritySettingsPage extends StatelessWidget {
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
-          children: types
-              .map(
-                (type) => _SecurityItem(
-                  label: _getLabel(type),
-                  onTap: () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (_) => ChangePasswordPage(type: type),
+          children:
+              types
+                  .map(
+                    (type) => _SecurityItem(
+                      label: _getLabel(type),
+                      onTap:
+                          () => Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (_) => ChangePasswordPage(type: type),
+                            ),
+                          ),
                     ),
-                  ),
-                ),
-              )
-              .toList(),
+                  )
+                  .toList(),
         ),
       ),
     );
@@ -64,8 +66,10 @@ class _SecurityItem extends StatelessWidget {
       BorderSide(color: AppColor.kinputFiledLightBorder, width: 1),
     ),
   );
-  static const _contentPadding =
-      EdgeInsets.symmetric(horizontal: 16, vertical: 16);
+  static const _contentPadding = EdgeInsets.symmetric(
+    horizontal: 16,
+    vertical: 16,
+  );
   // fontSize: 14.sp uses Sizer — static final, computed once.
   static final _labelStyle = TextStyle(
     fontFamily: 'GeneralSans',

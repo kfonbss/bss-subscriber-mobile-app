@@ -60,7 +60,7 @@ class EnquiryFormFooter extends StatelessWidget {
             child: Row(
               children: List.generate(
                 pageCount,
-                    (index) => _getStep(currentPage == (index + 1)),
+                (index) => _getStep(currentPage == (index + 1)),
               ),
             ),
           ),
@@ -77,16 +77,18 @@ class EnquiryFormFooter extends StatelessWidget {
                     color: AppColor.kPrimaryColor,
                     size: AppDimensions.kButtonIconSize,
                   ),
-                  onClicked: currentPage == 1
-                      ? () => Navigator.of(context).pop()
-                      : secondaryButtonCallback,
+                  onClicked:
+                      currentPage == 1
+                          ? () => Navigator.of(context).pop()
+                          : secondaryButtonCallback,
                 ),
               ),
               Expanded(
                 child: PrimaryButton(
-                  label: currentPage == pageCount
-                      ? l10n.submit
-                      : l10n.saveAndContinue,
+                  label:
+                      currentPage == pageCount
+                          ? l10n.submit
+                          : l10n.saveAndContinue,
                   onClicked: primaryButtonCallback,
                   isLoading: showLoading,
                   icon: Icon(

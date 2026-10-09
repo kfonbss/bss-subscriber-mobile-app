@@ -17,8 +17,10 @@ class PackageEntity extends Equatable {
   final String? seasonName;
   final PackageTypeEntity? packageType;
   final String? subscriptionType;
+
   /// When provided by the API (e.g. MRP / list price), shown crossed out above [price].
   final double? listPrice;
+
   /// Optional seasonal/promotional discount amount from the API (e.g. seasonal preview).
   final double? discountAmount;
 

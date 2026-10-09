@@ -3,7 +3,6 @@ import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/extensions.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 
-
 /// Standard vertical spacing between the app bar and the body content.
 const double kAppBarToContentSpacing = 0.0;
 
@@ -49,9 +48,8 @@ class CommonAppBar extends StatelessWidget {
     final containerSize = context.isTablet ? 36.0 * 1.2 : 30.0.w;
     final iconSize = context.isTablet ? 20.0 * 1.2 : 15.w;
     final borderWidth = context.isTablet ? 1.0 * 1.2 : 1.w;
-    final leadingWidth = onBackPressed != null
-        ? (leftPadding + containerSize + 8.w)
-        : 0.0;
+    final leadingWidth =
+        onBackPressed != null ? (leftPadding + containerSize + 8.w) : 0.0;
     final topBottomMargin = 16.0;
 
     return Scaffold(
@@ -64,44 +62,45 @@ class CommonAppBar extends StatelessWidget {
         elevation: 0,
         scrolledUnderElevation: 0,
         toolbarHeight:
-        56.0 +
+            56.0 +
             (topBottomMargin * 2), // Default 56 + top margin + bottom margin
         leadingWidth: leadingWidth,
-        leading: onBackPressed != null
-            ? Padding(
-          padding: EdgeInsets.only(
-            left: leftPadding,
-            top: topBottomMargin,
-            bottom: topBottomMargin,
-          ),
-          child: InkWell(
-            onTap: onBackPressed,
-            borderRadius: BorderRadius.circular(containerSize / 2),
-            child: Container(
-              width: containerSize,
-              height: containerSize,
-              decoration: BoxDecoration(
-                shape: BoxShape.circle,
-                border: Border.all(
-                  color: circleColor ?? AppColor.kBlack10,
-                  width: borderWidth,
-                ),
-              ),
-              child: Center(
-                child: SizedBox(
-                  width: iconSize,
-                  height: iconSize,
-                  child:Icon(
-                    Icons.arrow_back,
-                    size:iconSize ,
-                    color:titleColor ?? Colors.black ,
-                  )
-                ),
-              ),
-            ),
-          ),
-        )
-            : null,
+        leading:
+            onBackPressed != null
+                ? Padding(
+                  padding: EdgeInsets.only(
+                    left: leftPadding,
+                    top: topBottomMargin,
+                    bottom: topBottomMargin,
+                  ),
+                  child: InkWell(
+                    onTap: onBackPressed,
+                    borderRadius: BorderRadius.circular(containerSize / 2),
+                    child: Container(
+                      width: containerSize,
+                      height: containerSize,
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        border: Border.all(
+                          color: circleColor ?? AppColor.kBlack10,
+                          width: borderWidth,
+                        ),
+                      ),
+                      child: Center(
+                        child: SizedBox(
+                          width: iconSize,
+                          height: iconSize,
+                          child: Icon(
+                            Icons.arrow_back,
+                            size: iconSize,
+                            color: titleColor ?? Colors.black,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ),
+                )
+                : null,
         title: Padding(
           padding: EdgeInsets.symmetric(vertical: topBottomMargin),
           child: Text(
@@ -109,23 +108,23 @@ class CommonAppBar extends StatelessWidget {
             style: TextStyle(
               fontFamily: 'GeneralSans',
               fontWeight: FontWeight.w600,
-              fontSize: titleFontSize??14.sp,
+              fontSize: titleFontSize ?? 14.sp,
               color: titleColor ?? AppColor.kTextSecondaryDark,
               height: 1.3,
               letterSpacing: 0,
             ),
           ),
         ),
-        centerTitle:centerTitle?? true,
+        centerTitle: centerTitle ?? true,
         actions:
-        actions
-            ?.map(
-              (action) => Padding(
-            padding: EdgeInsets.symmetric(vertical: topBottomMargin),
-            child: action,
-          ),
-        )
-            .toList() ??
+            actions
+                ?.map(
+                  (action) => Padding(
+                    padding: EdgeInsets.symmetric(vertical: topBottomMargin),
+                    child: action,
+                  ),
+                )
+                .toList() ??
             [],
       ),
       body: Padding(
@@ -136,4 +135,3 @@ class CommonAppBar extends StatelessWidget {
     );
   }
 }
-

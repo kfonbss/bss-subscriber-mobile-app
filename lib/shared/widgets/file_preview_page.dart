@@ -14,7 +14,6 @@ import 'package:url_launcher/url_launcher.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 
-
 class FilePreviewPage extends StatefulWidget {
   const FilePreviewPage({
     super.key,
@@ -69,13 +68,13 @@ class _FilePreviewPageState extends State<FilePreviewPage> {
     if (!mounted) return;
 
     result.fold(
-          (failure) {
+      (failure) {
         setState(() {
           _isLoading = false;
           _errorMessage = failure.message;
         });
       },
-          (fileViewUrlResult) {
+      (fileViewUrlResult) {
         setState(() {
           _isLoading = false;
           _resolvedUrl = fileViewUrlResult.url;
@@ -121,9 +120,10 @@ class _FilePreviewPageState extends State<FilePreviewPage> {
                   ),
                   child: ClipRRect(
                     borderRadius: BorderRadius.circular(12),
-                    child: widget.files != null && widget.files!.isNotEmpty
-                        ? _buildCarouselContent(context)
-                        : _buildContent(context),
+                    child:
+                        widget.files != null && widget.files!.isNotEmpty
+                            ? _buildCarouselContent(context)
+                            : _buildContent(context),
                   ),
                 ),
               ),
@@ -252,8 +252,7 @@ class _FilePreviewPageState extends State<FilePreviewPage> {
             if (type == 'VIDEO') ext = 'mp4';
             if (type == 'PDF' || type == 'DOCUMENT') ext = 'pdf';
 
-            final hasLocalPath =
-                attachment.filePath.isNotEmpty;
+            final hasLocalPath = attachment.filePath.isNotEmpty;
             return SmartFileViewer(
               fileId: attachment.fileId,
               url: attachment.fileUrl.isNotEmpty ? attachment.fileUrl : null,
@@ -272,9 +271,10 @@ class _FilePreviewPageState extends State<FilePreviewPage> {
             height: constraints.maxHeight, // Match parent height dynamically
             viewportFraction: 1.0,
             enableInfiniteScroll: false,
-            scrollPhysics: _isZoomed
-                ? const NeverScrollableScrollPhysics() // Lock swipe when zoomed
-                : const AlwaysScrollableScrollPhysics(),
+            scrollPhysics:
+                _isZoomed
+                    ? const NeverScrollableScrollPhysics() // Lock swipe when zoomed
+                    : const AlwaysScrollableScrollPhysics(),
             onPageChanged: (index, reason) {
               setState(() {
                 _currentCarouselIndex = index;
@@ -291,19 +291,20 @@ class _FilePreviewPageState extends State<FilePreviewPage> {
       padding: EdgeInsets.only(top: 16.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.center,
-        children: widget.files!.asMap().entries.map((entry) {
-          return Container(
-            width: 8.w,
-            height: 8.h,
-            margin: EdgeInsets.symmetric(vertical: 8.h, horizontal: 4.w),
-            decoration: BoxDecoration(
-              shape: BoxShape.circle,
-              color: AppColor.kPrimaryColor.withOpacity(
-                _currentCarouselIndex == entry.key ? 0.9 : 0.4,
-              ),
-            ),
-          );
-        }).toList(),
+        children:
+            widget.files!.asMap().entries.map((entry) {
+              return Container(
+                width: 8.w,
+                height: 8.h,
+                margin: EdgeInsets.symmetric(vertical: 8.h, horizontal: 4.w),
+                decoration: BoxDecoration(
+                  shape: BoxShape.circle,
+                  color: AppColor.kPrimaryColor.withOpacity(
+                    _currentCarouselIndex == entry.key ? 0.9 : 0.4,
+                  ),
+                ),
+              );
+            }).toList(),
       ),
     );
   }
@@ -355,13 +356,13 @@ class _SmartFileViewerState extends State<SmartFileViewer> {
     if (!mounted) return;
 
     result.fold(
-          (failure) {
+      (failure) {
         setState(() {
           _isLoading = false;
           _errorMessage = failure.message;
         });
       },
-          (fileViewUrlResult) {
+      (fileViewUrlResult) {
         setState(() {
           _isLoading = false;
           _resolvedUrl = fileViewUrlResult.url;
@@ -439,11 +440,7 @@ class _SmartFileViewerState extends State<SmartFileViewer> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              Icon(
-                Icons.picture_as_pdf,
-                size: 64.sp,
-                color: Color(0xFFD32F2F),
-              ),
+              Icon(Icons.picture_as_pdf, size: 64.sp, color: Color(0xFFD32F2F)),
               SizedBox(height: 16.h),
               Text(
                 'Document Preview',
@@ -461,11 +458,7 @@ class _SmartFileViewerState extends State<SmartFileViewer> {
                     await launchUrl(uri, mode: LaunchMode.externalApplication);
                   }
                 },
-                icon: Icon(
-                  Icons.open_in_new,
-                  size: 18.sp,
-                  color: Colors.white,
-                ),
+                icon: Icon(Icons.open_in_new, size: 18.sp, color: Colors.white),
                 label: const Text(
                   'View PDF Document',
                   style: TextStyle(
@@ -495,13 +488,16 @@ class _SmartFileViewerState extends State<SmartFileViewer> {
             final isZoomed = state != PhotoViewScaleState.initial;
             widget.onZoomStateChanged?.call(isZoomed);
           },
-          loadingBuilder: (context, event) => Center(
-            child: CircularProgressIndicator(
-              value: event == null || event.expectedTotalBytes == null
-                  ? null
-                  : event.cumulativeBytesLoaded / event.expectedTotalBytes!,
-            ),
-          ),
+          loadingBuilder:
+              (context, event) => Center(
+                child: CircularProgressIndicator(
+                  value:
+                      event == null || event.expectedTotalBytes == null
+                          ? null
+                          : event.cumulativeBytesLoaded /
+                              event.expectedTotalBytes!,
+                ),
+              ),
           errorBuilder: (context, error, stackTrace) {
             return Center(
               child: Icon(Icons.broken_image, size: 48.sp, color: Colors.grey),

@@ -37,14 +37,23 @@ class DarkFibreFormCubit extends Cubit<DarkFibreFormState> {
       final result = await repository.downloadLetterFormat(url);
       result.fold(
         (error) {
-          emit(DarkFibreFormMessage(message: error, color: AppColor.kFailedRed));
+          emit(
+            DarkFibreFormMessage(message: error, color: AppColor.kFailedRed),
+          );
         },
         (data) {
-          emit(DarkFibreFormMessage(message: 'Success', color: AppColor.kSuccessGreen));
+          emit(
+            DarkFibreFormMessage(
+              message: 'Success',
+              color: AppColor.kSuccessGreen,
+            ),
+          );
         },
       );
     } catch (e) {
-      emit(DarkFibreFormMessage(message: e.toString(), color: AppColor.kFailedRed));
+      emit(
+        DarkFibreFormMessage(message: e.toString(), color: AppColor.kFailedRed),
+      );
     }
   }
 

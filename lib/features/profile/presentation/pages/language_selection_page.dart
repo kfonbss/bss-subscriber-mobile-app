@@ -59,8 +59,10 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
     height: 1.6,
     letterSpacing: 0,
   );
-  static const _searchIconColorFilter =
-      ColorFilter.mode(AppColor.kSlateGrey, BlendMode.srcIn);
+  static const _searchIconColorFilter = ColorFilter.mode(
+    AppColor.kSlateGrey,
+    BlendMode.srcIn,
+  );
   static final _sectionHeadingStyle = TextStyle(
     fontFamily: 'GeneralSans',
     color: AppColor.kTextSecondaryDark,
@@ -109,8 +111,8 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
                     decoration: _searchDecoration,
                     child: TextField(
                       controller: _searchController,
-                      onChanged: (value) =>
-                          setState(() => _searchQuery = value),
+                      onChanged:
+                          (value) => setState(() => _searchQuery = value),
                       style: _searchTextStyle,
                       decoration: InputDecoration(
                         hintText: l10n.searchLanguage,
@@ -141,8 +143,9 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
                     (language) => _LanguageItem(
                       language: language,
                       isSelected: _selectedLanguage == language.name,
-                      onTap: () =>
-                          setState(() => _selectedLanguage = language.name),
+                      onTap:
+                          () =>
+                              setState(() => _selectedLanguage = language.name),
                     ),
                   ),
                 ],
@@ -227,9 +230,7 @@ class _LanguageItem extends StatelessWidget {
                   ),
                 ),
                 SizedBox(width: 12.w),
-                Expanded(
-                  child: Text(language.name, style: _languageNameStyle),
-                ),
+                Expanded(child: Text(language.name, style: _languageNameStyle)),
                 SizedBox(width: 12.w),
                 CommonRadioButton(isSelected: isSelected, size: 20.w),
               ],

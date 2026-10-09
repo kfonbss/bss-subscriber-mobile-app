@@ -20,6 +20,7 @@ enum RechargeStatus {
   paymentCancelled,
   error,
 }
+
 enum GatewayStatus { initial, loading, loaded, error }
 
 class DiscountState extends Equatable {

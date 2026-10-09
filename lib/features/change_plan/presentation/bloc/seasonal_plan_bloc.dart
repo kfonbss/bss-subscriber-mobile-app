@@ -46,12 +46,8 @@ class SeasonalPlanBloc extends Bloc<SeasonalPlanEvent, SeasonalPlanState> {
     LoadPackageTab event,
     Emitter<SeasonalPlanState> emit,
   ) async {
-
     emit(
-      state.copyWith(
-        status: SeasonalPlanStatus.loading,
-        errorMessage: null,
-      ),
+      state.copyWith(status: SeasonalPlanStatus.loading, errorMessage: null),
     );
     final result = await repository.getPackageTabs(
       subscriberId: event.subscriberId,

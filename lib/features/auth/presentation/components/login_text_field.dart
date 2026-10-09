@@ -74,7 +74,7 @@ class LoginTextField extends StatelessWidget {
         prefixIconConstraints: _prefixIconConstraints,
         prefixIcon: Padding(
           padding: const EdgeInsets.only(right: 12.0),
-          child: Image.asset(iconName,color: AppColor.kPrimaryColor,),
+          child: Image.asset(iconName, color: AppColor.kPrimaryColor),
         ),
         suffixIcon: const SizedBox.shrink(),
         border: InputBorder.none,

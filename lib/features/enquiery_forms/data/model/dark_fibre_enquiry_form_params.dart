@@ -37,15 +37,23 @@ class DarkFibreEnquiryFormParams {
 
   Future<FormData> toFormData() async {
     final imageUtil = ImageUtil();
-    final internetServiceLicenseCopy = await imageUtil.convertImageToBase64(internetServiceLicenseFiles.first);
-    final supportExperienceCertificate = await imageUtil.convertImageToBase64(experienceCertificateFiles.first);
-    final coveringLetterCopy = await imageUtil.convertImageToBase64(coveringLetterFiles.first);
-    final routeFormCopy = await imageUtil.convertImageToBase64(routeLeaseFiles.first);
+    final internetServiceLicenseCopy = await imageUtil.convertImageToBase64(
+      internetServiceLicenseFiles.first,
+    );
+    final supportExperienceCertificate = await imageUtil.convertImageToBase64(
+      experienceCertificateFiles.first,
+    );
+    final coveringLetterCopy = await imageUtil.convertImageToBase64(
+      coveringLetterFiles.first,
+    );
+    final routeFormCopy = await imageUtil.convertImageToBase64(
+      routeLeaseFiles.first,
+    );
     // MultipartFile internetServiceLicenseCopy=await MultipartFile.fromFile(internetServiceLicenseFiles.first.path!,filename: internetServiceLicenseFiles.first.path!.split('/').last);
     // MultipartFile supportExperienceCertificate=await MultipartFile.fromFile(experienceCertificateFiles.first.path!,filename: experienceCertificateFiles.first.path!.split('/').last);
     // MultipartFile coveringLetterCopy=await MultipartFile.fromFile(coveringLetterFiles.first.path!,filename: coveringLetterFiles.first.path!.split('/').last);
     // MultipartFile routeFormCopy=await MultipartFile.fromFile(routeLeaseFiles.first.path!,filename: routeLeaseFiles.first.path!.split('/').last);
-       return FormData.fromMap({
+    return FormData.fromMap({
       'firmName': firmName,
       'address': address,
       'firmContactNo': firmContactNumber,
@@ -63,7 +71,6 @@ class DarkFibreEnquiryFormParams {
     });
   }
 
-
   Map<String, dynamic> getCompanyInfoPreview() {
     return {
       'Firm Name': firmName,
@@ -73,18 +80,22 @@ class DarkFibreEnquiryFormParams {
       'Contact Person Name': contactPersonName,
       'Contact Person Phone Number': contactPersonPhone,
       'Contact Person Email': contactPersonEmail,
-      'Purpose Of Leasing': leasingPurpose
+      'Purpose Of Leasing': leasingPurpose,
     };
   }
 
   Map<String, dynamic> getDocumentInfoPreview() {
     return {
-      'Internet Service License': internetServiceLicenseFiles.map((file) => file).toList(),
-      'Area/Circle where Telecom service is provided': telecomServiceProvidedArea,
-      'Certificate in support of Experience': experienceCertificateFiles.map((file) => file).toList(),
+      'Internet Service License':
+          internetServiceLicenseFiles.map((file) => file).toList(),
+      'Area/Circle where Telecom service is provided':
+          telecomServiceProvidedArea,
+      'Certificate in support of Experience':
+          experienceCertificateFiles.map((file) => file).toList(),
       'For and on behalf Lease Company M/S': behalfLeaseCompany,
       'Covering Letter': coveringLetterFiles.map((file) => file).toList(),
-      'Details Of the RouteLease copy': routeLeaseFiles.map((file) => file).toList(),
+      'Details Of the RouteLease copy':
+          routeLeaseFiles.map((file) => file).toList(),
     };
   }
 }

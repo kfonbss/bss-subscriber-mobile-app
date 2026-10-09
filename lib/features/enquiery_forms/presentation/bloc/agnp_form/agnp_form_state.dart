@@ -1,6 +1,5 @@
 abstract class AGNPFormState {}
 
-
 class GetPostOfficesDistrictLoading extends AGNPFormState {}
 
 class GetPostOfficesDistrictError extends AGNPFormState {
@@ -27,5 +26,3 @@ class SubscriptionFormValidationError extends AGNPFormState {
   final String errorMessage;
   SubscriptionFormValidationError({required this.errorMessage});
 }
-
-

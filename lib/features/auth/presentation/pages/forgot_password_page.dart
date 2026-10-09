@@ -84,8 +84,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 children: [
                   AuthHeader(
                     heading: context.bssSubL10n.forgotPassword,
-                    description:
-                        context.bssSubL10n.forgotPasswordDescription,
+                    description: context.bssSubL10n.forgotPasswordDescription,
                     topSpacing: Sizer.isTablet ? null : 104.5.h,
                   ),
                   Form(

@@ -32,12 +32,14 @@ class FutureRechargeItemModel {
       planName: json['planName']?.toString() ?? '',
       amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
       speed: json['speed']?.toString() ?? '',
-      expiryDate: json['expiry'] != null
-          ? DateTime.parse(json['expiry'] as String)
-          : DateTime.now(),
-      orderTime: json['orderTime'] != null
-          ? DateTime.parse(json['orderTime'] as String)
-          : DateTime.now(),
+      expiryDate:
+          json['expiry'] != null
+              ? DateTime.parse(json['expiry'] as String)
+              : DateTime.now(),
+      orderTime:
+          json['orderTime'] != null
+              ? DateTime.parse(json['orderTime'] as String)
+              : DateTime.now(),
     );
   }
 

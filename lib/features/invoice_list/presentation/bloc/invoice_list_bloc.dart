@@ -59,10 +59,12 @@ class InvoiceListBloc extends Bloc<InvoiceListEvent, InvoiceListState> {
       );
 
       result.fold(
-        (failure) => emit(currentState.copyWith(
-          isLoadingMore: false,
-          paginationError: failure.toString(),
-        )),
+        (failure) => emit(
+          currentState.copyWith(
+            isLoadingMore: false,
+            paginationError: failure.toString(),
+          ),
+        ),
         (page) => emit(
           InvoiceListLoaded(
             invoices: [...currentState.invoices, ...page.invoices],
@@ -73,10 +75,12 @@ class InvoiceListBloc extends Bloc<InvoiceListEvent, InvoiceListState> {
         ),
       );
     } catch (e) {
-      emit(currentState.copyWith(
-        isLoadingMore: false,
-        paginationError: e.toString(),
-      ));
+      emit(
+        currentState.copyWith(
+          isLoadingMore: false,
+          paginationError: e.toString(),
+        ),
+      );
     }
   }
 }

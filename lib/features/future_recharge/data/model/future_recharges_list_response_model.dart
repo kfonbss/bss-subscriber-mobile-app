@@ -97,9 +97,14 @@ class FutureRechargesListResponseModel {
 
     return FutureRechargesListResponseModel(
       summary: FutureRechargeSummaryModel.fromJson(summaryJson),
-      groups: groupsJson
-          .map((e) => FutureRechargeGroupModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      groups:
+          groupsJson
+              .map(
+                (e) => FutureRechargeGroupModel.fromJson(
+                  e as Map<String, dynamic>,
+                ),
+              )
+              .toList(),
       pageInfo: FutureRechargePageInfoModel.fromJson(pageJson),
     );
   }

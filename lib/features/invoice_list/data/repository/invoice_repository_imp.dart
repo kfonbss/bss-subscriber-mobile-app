@@ -31,14 +31,13 @@ class InvoiceRepositoryImp extends InvoiceRepository {
       return Left(response.failure);
     }
   }
+
   @override
   Future<Either<Failure, FileViewUrlResult>> getFileViewUrl(
-      String fileId,
-      ) async {
+    String fileId,
+  ) async {
     try {
-      final response = await _client.get(
-        ApiUrls.fileViewUrlByFileId(fileId),
-      );
+      final response = await _client.get(ApiUrls.fileViewUrlByFileId(fileId));
 
       if (response.isSuccess) {
         final data = response.data;
@@ -58,10 +57,11 @@ class InvoiceRepositoryImp extends InvoiceRepository {
       return Left(ServerFailure(e.toString()));
     }
   }
+
   @override
   Future<Either<Failure, FileViewUrlResult>> getFileDownloadUrl(
-      String fileId,
-      ) async {
+    String fileId,
+  ) async {
     try {
       final response = await _client.get(
         ApiUrls.fileDownloadUrlByFileId(fileId),

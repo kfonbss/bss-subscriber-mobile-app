@@ -98,11 +98,15 @@ class LoadSelectedTenantSuccess extends AuthState {
   final String tenantName;
   final String tenantId;
 
-  const LoadSelectedTenantSuccess({required this.tenantName,required this.tenantId});
+  const LoadSelectedTenantSuccess({
+    required this.tenantName,
+    required this.tenantId,
+  });
 
   @override
-  List<Object?> get props => [tenantName,tenantId];
+  List<Object?> get props => [tenantName, tenantId];
 }
+
 class LogoutSuccess extends AuthState {
   const LogoutSuccess();
 }

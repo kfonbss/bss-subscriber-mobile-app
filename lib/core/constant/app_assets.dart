@@ -83,9 +83,8 @@ class AppAssets {
   static const String myEarnings = 'assets/icons/my_earnings.png';
   static const String ticketStar = 'assets/icons/ticket_star.png';
 
-  static const String kLogo ='assets/images/railwire_white.png';
-  static const String introRoundLogo =
-      'assets/images/intro_round_logo.png';
+  static const String kLogo = 'assets/images/railwire_white.png';
+  static const String introRoundLogo = 'assets/images/intro_round_logo.png';
   static const String logoTransparent = 'assets/images/logo_transparent.png';
 
   static const String homeBackground = 'assets/images/home_background.svg';

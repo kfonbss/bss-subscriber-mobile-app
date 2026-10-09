@@ -115,13 +115,14 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   }
 
   Future<void> _onLoadSelectedTenant(
-      LoadSelectedTenant event,
-      Emitter<AuthState> emit,
-      ) async {
+    LoadSelectedTenant event,
+    Emitter<AuthState> emit,
+  ) async {
     String tenantName = await PreferenceUtils.getTenantName() ?? '';
     String tenantId = await PreferenceUtils.getTenantId() ?? '';
     emit(LoadSelectedTenantSuccess(tenantId: tenantId, tenantName: tenantName));
   }
+
   Future<void> _onResendOTP(ResendOTP event, Emitter<AuthState> emit) async {
     try {
       final result = await authRepository.resendOTP(event.loginSessionToken);

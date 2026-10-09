@@ -1,9 +1,9 @@
 import 'package:equatable/equatable.dart';
 import 'package:kfon_subscriber/features/data_usage/domain/entity/data_usage_entity.dart';
 
-
 /// Status for data usage sub-feature
 enum DataUsageStatus { initial, loading, loaded, error }
+
 /// Sub-state for data usage feature
 class DataUsageState extends Equatable {
   final DataUsageStatus status;
@@ -33,4 +33,3 @@ class DataUsageState extends Equatable {
   @override
   List<Object?> get props => [status, data, error];
 }
-

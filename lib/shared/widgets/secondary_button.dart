@@ -32,31 +32,33 @@ class SecondaryButton extends StatelessWidget {
   Widget build(BuildContext context) {
     return FilledButton.icon(
       onPressed: isLoading ? null : onClicked,
-      icon: isLoading || icon == null
-          ? null
-          : SizedBox(
-        height: AppDimensions.kButtonIconSize,
-        width: AppDimensions.kButtonIconSize,
-        child: icon,
-      ),
-      label: isLoading
-          ? SizedBox(
-        height: loaderSize ?? 20,
-        width: loaderSize ?? 20,
-        child: CircularProgressIndicator(
-          color: AppColor.kPrimaryColor,
-          strokeWidth: 2,
-        ),
-      )
-          : Text(label),
+      icon:
+          isLoading || icon == null
+              ? null
+              : SizedBox(
+                height: AppDimensions.kButtonIconSize,
+                width: AppDimensions.kButtonIconSize,
+                child: icon,
+              ),
+      label:
+          isLoading
+              ? SizedBox(
+                height: loaderSize ?? 20,
+                width: loaderSize ?? 20,
+                child: CircularProgressIndicator(
+                  color: AppColor.kPrimaryColor,
+                  strokeWidth: 2,
+                ),
+              )
+              : Text(label),
       iconAlignment: IconAlignment.start,
       style: FilledButton.styleFrom(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(borderRadius??10),
+          borderRadius: BorderRadius.circular(borderRadius ?? 10),
         ),
         elevation: 0,
-        minimumSize: Size(double.infinity, height??50),
-        fixedSize: Size(double.infinity, height??50),
+        minimumSize: Size(double.infinity, height ?? 50),
+        fixedSize: Size(double.infinity, height ?? 50),
         backgroundColor: backgroundColor ?? Colors.white,
         foregroundColor: AppColor.kPrimaryColor,
         side: BorderSide(
@@ -65,16 +67,15 @@ class SecondaryButton extends StatelessWidget {
         ),
         padding: EdgeInsets.zero,
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        textStyle: textStyle ??
-             TextStyle(
+        textStyle:
+            textStyle ??
+            TextStyle(
               fontSize: 12.sp,
               fontFamily: 'GeneralSans',
               fontWeight: FontWeight.w500,
               height: 1.3,
-
             ),
       ),
     );
   }
 }
-

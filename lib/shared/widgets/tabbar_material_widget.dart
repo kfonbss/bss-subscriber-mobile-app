@@ -50,19 +50,35 @@ class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
         children: [
           Padding(
             padding: const EdgeInsets.only(left: 8.0),
-            child: _buildTabItem(index: 0, icon: AppAssets.homeTab, label: context.bssSubL10n.home),
+            child: _buildTabItem(
+              index: 0,
+              icon: AppAssets.homeTab,
+              label: context.bssSubL10n.home,
+            ),
           ),
           Padding(
             padding: const EdgeInsets.only(right: 20.0),
-            child: _buildTabItem(index: 1, icon: AppAssets.selfCareTab, label: context.bssSubL10n.selfCare),
+            child: _buildTabItem(
+              index: 1,
+              icon: AppAssets.selfCareTab,
+              label: context.bssSubL10n.selfCare,
+            ),
           ),
           Padding(
             padding: const EdgeInsets.only(left: 20.0),
-            child: _buildTabItem(index: 2, icon: AppAssets.chatTab, label: context.bssSubL10n.faq),
+            child: _buildTabItem(
+              index: 2,
+              icon: AppAssets.chatTab,
+              label: context.bssSubL10n.faq,
+            ),
           ),
           Padding(
             padding: const EdgeInsets.only(right: 8.0),
-            child: _buildTabItem(index: 3, icon: AppAssets.profileTab, label: context.bssSubL10n.profile),
+            child: _buildTabItem(
+              index: 3,
+              icon: AppAssets.profileTab,
+              label: context.bssSubL10n.profile,
+            ),
           ),
         ],
       ),
@@ -76,10 +92,11 @@ class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
   }) {
     final isSelected = index == selectedIndex;
     return InkWell(
-      onTap: () => setState(() {
-        selectedIndex = index;
-        widget.onChangedTab(index);
-      }),
+      onTap:
+          () => setState(() {
+            selectedIndex = index;
+            widget.onChangedTab(index);
+          }),
       child: Column(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
         children: [
@@ -97,7 +114,8 @@ class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
               Container(
                 height: 2.h,
                 width: 5.w,
-                decoration: isSelected ? _selectedIndicator : _unselectedIndicator,
+                decoration:
+                    isSelected ? _selectedIndicator : _unselectedIndicator,
               ),
             ],
           ),
