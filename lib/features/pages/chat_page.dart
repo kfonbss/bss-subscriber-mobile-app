@@ -3,7 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
-import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class ChatPage extends StatefulWidget {
@@ -28,24 +27,25 @@ class _ChatPageState extends State<ChatPage> {
     return Align(
       alignment: isOwnMessage ? Alignment.centerRight : Alignment.centerLeft,
       child: Container(
-        margin: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
+        margin: const EdgeInsets.symmetric(horizontal: 15, vertical: 12),
         padding: const EdgeInsets.symmetric(horizontal: 16, vertical: 12),
         decoration: ShapeDecoration(
           color: isOwnMessage ? AppColor.kPrimaryColor : Colors.white,
           shape: RoundedRectangleBorder(
-            borderRadius: BorderRadius.only(
-              topLeft: Radius.circular(20),
-              topRight: Radius.circular(20),
-              bottomRight: Radius.circular(isOwnMessage ? 0 : 20),
-              bottomLeft: Radius.circular(isOwnMessage ? 20 : 0),
-            ),
+            borderRadius: isOwnMessage
+                ? BorderRadius.circular(20)
+                : const BorderRadius.only(
+                    topLeft: Radius.circular(20),
+                    topRight: Radius.circular(20),
+                    bottomRight: Radius.circular(20),
+                  ),
           ),
         ),
         child: Column(
           mainAxisSize: MainAxisSize.min,
           mainAxisAlignment: MainAxisAlignment.start,
           crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: name.isEmpty ? 0 : 4,
+          spacing: name.isEmpty ? 1 : 4,
           children: [
             name.isEmpty
                 ? Container(width: 0)
@@ -56,6 +56,7 @@ class _ChatPageState extends State<ChatPage> {
                           ? AppColor.kLightSkyBlue
                           : AppColor.kStoneGrey,
                       fontSize: 12,
+                      fontFamily: 'General Sans',
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -64,6 +65,7 @@ class _ChatPageState extends State<ChatPage> {
               style: TextStyle(
                 color: isOwnMessage ? Colors.white : AppColor.kCharcoalDark,
                 fontSize: 14,
+                fontFamily: 'General Sans',
                 fontWeight: FontWeight.w400,
                 height: 1.43,
               ),
@@ -101,83 +103,110 @@ class _ChatPageState extends State<ChatPage> {
               ],
             ),
           ),
-          Padding(
-            padding: EdgeInsets.only(
-              top: 16.0,
-              left: 16.0,
-              right: 16.0,
-              bottom: MediaQuery.of(context).viewInsets.bottom + 20.0,
-            ),
+          Container(
+            width: double.infinity,
+            padding: const EdgeInsets.all(16),
             child: Row(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.start,
+              crossAxisAlignment: CrossAxisAlignment.center,
               children: [
-                IconButton(
-                  icon: Icon(Icons.add),
-                  iconSize: 20,
-                  color: AppColor.kPrimaryColor,
-                  padding: EdgeInsets.all(8),
-                  constraints: const BoxConstraints(),
-                  onPressed: () {},
+                Container(
+                  padding: const EdgeInsets.all(8),
+                  child: Row(
+                    mainAxisSize: MainAxisSize.min,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      Container(
+                        width: 16.w,
+                        height: 16.h,
+                        clipBehavior: Clip.antiAlias,
+                        decoration: const BoxDecoration(),
+                        child: Icon(
+                          Icons.add,
+                          size: 16.sp,
+                          color: AppColor.kPrimaryColor,
+                        ),
+                      ),
+                    ],
+                  ),
                 ),
-                SizedBox(width: 6.w),
                 Expanded(
                   child: Container(
-                    height: 40.h,
                     padding: const EdgeInsets.only(
+                      top: 8,
                       left: 16,
                       right: 6,
-                      top: 8,
                       bottom: 8,
                     ),
-                    decoration: BoxDecoration(
+                    clipBehavior: Clip.antiAlias,
+                    decoration: ShapeDecoration(
                       color: AppColor.kGhostWhite,
-                      borderRadius: BorderRadius.circular(71),
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(71),
+                      ),
                     ),
                     child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      mainAxisAlignment: MainAxisAlignment.start,
+                      crossAxisAlignment: CrossAxisAlignment.center,
                       children: [
                         Expanded(
-                          child: TextField(
-                            controller: _messageController,
-                            decoration: InputDecoration(
-                              border: InputBorder.none,
-                              hintText: context.bssSubL10n.enterASearchTerm,
-                              hintStyle: TextStyle(
-                                color: AppColor.kCharcoalDark,
-                                fontSize: 14,
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            crossAxisAlignment: CrossAxisAlignment.center,
+                            children: [
+                              Expanded(
+                                child: TextField(
+                                  controller: _messageController,
+                                  decoration: InputDecoration(
+                                    border: InputBorder.none,
+                                    hintText: "You're the bes",
+                                    hintStyle: TextStyle(
+                                      color: AppColor.kCharcoalDark,
+                                      fontSize: 14,
+                                      fontFamily: 'General Sans',
+                                      fontWeight: FontWeight.w400,
+                                      height: 1.43,
+                                    ),
+                                    contentPadding: EdgeInsets.zero,
+                                    isDense: true,
+                                  ),
+                                  style: TextStyle(
+                                    color: AppColor.kCharcoalDark,
+                                    fontSize: 14,
+                                    fontFamily: 'General Sans',
+                                    fontWeight: FontWeight.w400,
+                                    height: 1.43,
+                                  ),
+                                  textAlignVertical: TextAlignVertical.center,
+                                ),
                               ),
-                              contentPadding: EdgeInsets.zero,
-                              isDense: true,
-                            ),
-                            style: const TextStyle(
-                              color: AppColor.kCharcoalDark,
-                              fontSize: 14,
-                            ),
-                            onChanged: (text) {},
-                            textAlignVertical: TextAlignVertical.center,
+                            ],
                           ),
                         ),
-                        SizedBox(width: 12.w),
-                        ClipOval(
-                          child: Container(
-                            width: 32.w,
-                            height: 32.h,
-                            decoration: BoxDecoration(
-                              color: AppColor.kPrimaryColor,
-                              shape: BoxShape.circle,
+                        Container(
+                          width: 32.w,
+                          height: 32.h,
+                          clipBehavior: Clip.antiAlias,
+                          decoration: ShapeDecoration(
+                            color: AppColor.kPrimaryColor,
+                            shape: RoundedRectangleBorder(
+                              borderRadius: BorderRadius.circular(38),
                             ),
-                            child: Material(
-                              color: Colors.transparent,
-                              child: InkWell(
-                                onTap: () {},
-                                child: Center(
-                                  child: SvgPicture.asset(
-                                    AppAssets.chatSend,
-                                    width: 12.w,
-                                    height: 12.h,
-                                    colorFilter: const ColorFilter.mode(
-                                      Colors.white,
-                                      BlendMode.srcIn,
-                                    ),
-                                  ),
+                          ),
+                          child: InkWell(
+                            onTap: () {},
+                            child: Center(
+                              child: SvgPicture.asset(
+                                AppAssets.chatSend,
+                                width: 12.w,
+                                height: 12.h,
+                                colorFilter: const ColorFilter.mode(
+                                  Colors.white,
+                                  BlendMode.srcIn,
                                 ),
                               ),
                             ),

@@ -1,21 +1,22 @@
+import 'package:kfon_subscriber/shared/widgets/common_text_button.dart';
 import 'dart:async';
 
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
-import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_event.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_state.dart';
 import 'package:kfon_subscriber/features/auth/presentation/components/auth_header.dart';
 import 'package:kfon_subscriber/features/auth/presentation/components/verification_success_sheet.dart';
-import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/common_bottom_sheet.dart';
+import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/shared/widgets/login_background.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/shared/widgets/otp_input_field.dart';
 import 'package:kfon_subscriber/shared/widgets/white_button.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class OtpVerificationPage extends StatefulWidget {
@@ -40,6 +41,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   Timer? _timer;
   int _otpWidgetKey = 0;
   final DialogUtil _dialogUtil = DialogUtil();
+
   @override
   void initState() {
     super.initState();
@@ -68,7 +70,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
     final authBloc = context.read<AuthBloc>();
     if (widget.isFromForgotPassword) {
       authBloc.add(
-        SendForgotPasswordOtpRequested(
+        ResendForgotPasswordOtpRequested(
           username: authBloc.forgotPasswordUsername!,
         ),
       );
@@ -119,10 +121,15 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
               context: context,
               isDismissible: false,
               enableDrag: false,
-              builder: (context) => const VerificationSuccessSheet(),
+              // Account Verified design: white sheet, 42×6 handle 8 from top.
+              // 8 + 6 + 22 = 36, same handle area as the default.
+              backgroundColor: Colors.white,
+              dragHandleColor: AppColor.kDividerGrey,
+              dragHandleSize: Size(42.w, 6.h),
+              dragHandlePadding: EdgeInsets.only(top: 8.h, bottom: 22.h),
+              builder: (context) => VerificationSuccessSheet(),
             );
           } else if (state is ForgotPasswordOtpVerified) {
-            // Navigate to new password page for forgot password flow
             Navigator.pushReplacementNamed(context, AppRoutes.newPassword);
           } else if (state is OtpVerificationFailed) {
             _dialogUtil.showCustomSnackbar(
@@ -141,90 +148,102 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
             body: Stack(
               children: [
                 LoginBackground(),
-                Column(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  mainAxisAlignment: MainAxisAlignment.start,
-                  children: [
-                    // Header has its own 24px side padding (as in the design).
-                    AuthHeader(
-                      heading: context.bssSubL10n.verifyYourAccount,
-                      description: context.bssSubL10n.otpSentMessage(
-                        widget.mobileNumber,
+                Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 24.w),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    mainAxisAlignment: MainAxisAlignment.start,
+                    children: [
+                      AuthHeader(
+                        topSpacing: 104.5.h,
+                        heading: context.bssSubL10n.verifyYourAccount,
+                        description: context.bssSubL10n.otpSentMessage(
+                          widget.mobileNumber,
+                        ),
+                        descriptionHighlight: widget.mobileNumber,
+                        // Page already pads 24 each side; the first line
+                        // needs the full 327 width to stay on one line.
+                        descriptionPadding: EdgeInsets.only(
+                          top: 12.h,
+                          bottom: 32.h,
+                        ),
                       ),
-                      descriptionHighlight: widget.mobileNumber,
-                      topSpacing: Sizer.isTablet ? null : 104.5.h,
-                    ),
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: 24.w),
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.stretch,
-                        mainAxisAlignment: MainAxisAlignment.start,
-                        children: [
-                          OtpInputField(
-                            key: ValueKey(_otpWidgetKey),
-                            length: 6,
-                            onCompleted: (otp) {
-                              setState(() {
-                                _otp = otp;
-                              });
-                            },
-                            onChanged: (otp) {
-                              setState(() {
-                                _otp = otp;
-                              });
-                            },
-                          ),
 
-                          SizedBox(height: 24.h),
+                      OtpInputField(
+                        key: ValueKey(_otpWidgetKey),
+                        length: 6,
+                        onCompleted: (otp) {
+                          setState(() {
+                            _otp = otp;
+                          });
+                        },
+                        onChanged: (otp) {
+                          setState(() {
+                            _otp = otp;
+                          });
+                        },
+                      ),
 
-                          Text(
-                            _formatTime(_remainingSeconds),
-                            textAlign: TextAlign.center,
-                            style: TextStyle(
-                              fontSize: 14.sp,
-                              fontWeight: FontWeight.w500,
-                              color: Colors.white,
-                              fontFamily: 'GeneralSans',
-                              height: 1.65,
-                              letterSpacing: -0.14,
-                            ),
-                          ),
+                      SizedBox(height: 24.h),
 
-                          SizedBox(height: 40.h),
+                      Text(
+                        _formatTime(_remainingSeconds),
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontSize: 14.sp,
+                          fontWeight: FontWeight.w500,
+                          color: Colors.white,
+                          fontFamily: 'General Sans',
+                          height: 1.65.h,
+                          letterSpacing: -0.14,
+                        ),
+                      ),
 
-                          WhiteButton(
-                            isLoading: isLoading,
-                            label: context.bssSubL10n.verifyNow,
-                            borderRadius: 10,
-                            height: 52.h,
-                            textColor: AppColor.kPrimaryColor,
-                            onClicked: _otp.length == 6 ? _verifyOtp : null,
-                          ),
+                      SizedBox(height: 54.h),
 
-                          SizedBox(height: 24.h),
+                      WhiteButton(
+                        isLoading: isLoading,
+                        label: context.bssSubL10n.verifyNow,
+                        borderRadius: 10,
+                        textColor: AppColor.kPrimaryColor,
+                        onClicked: _otp.length == 6 ? _verifyOtp : null,
+                      ),
 
-                          if (_remainingSeconds == 0)
-                            Center(
-                              child: TextButton(
-                                onPressed: _resendOtp,
-                                child: Text(
-                                  context.bssSubL10n.resendOtp,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w600,
-                                    color: Colors.white,
-                                    decoration: TextDecoration.underline,
-                                    decorationColor: Colors.white,
-                                  ),
-                                ),
+                      SizedBox(height: 20.h),
+
+                      if (_remainingSeconds == 0)
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.center,
+                          children: [
+                            Text(
+                              '${context.bssSubL10n.didntReceiveCode} ',
+                              style: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                                fontFamily: 'General Sans',
+                                height: 1.65.h,
+                                letterSpacing: -0.14,
                               ),
                             ),
+                            CommonTextButton(
+                              label: context.bssSubL10n.resendOtp,
+                              onPressed: _resendOtp,
+                              textStyle: TextStyle(
+                                fontSize: 14.sp,
+                                fontWeight: FontWeight.w600,
+                                color: Colors.white,
+                                fontFamily: 'General Sans',
+                                height: 1.65.h,
+                                letterSpacing: -0.14,
+                              ),
+                            ),
+                          ],
+                        ),
 
-                          SizedBox(height: 40.h),
-                        ],
-                      ),
-                    ),
-                  ],
+                      SizedBox(height: 40.h),
+                    ],
+                  ),
                 ),
               ],
             ),

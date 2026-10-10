@@ -170,7 +170,11 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
         }
 
         if (hasTooLargeFile && mounted) {
-          _dialogUtil.showMessage(l10n.fileSizeMustBeLess, context);
+          _dialogUtil.showCustomSnackbar(
+            content: l10n.fileSizeMustBeLess,
+            context: context,
+            isError: true,
+          );
         }
 
         if (_selectedFiles.isNotEmpty) {
@@ -242,9 +246,10 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
 
   void _showSubjectPicker() {
     if (_selectedCategory == null) {
-      _dialogUtil.showMessage(
-        '${context.bssSubL10n.selectCategory} first.',
-        context,
+      _dialogUtil.showCustomSnackbar(
+        content: '${context.bssSubL10n.selectCategory} first.',
+        context: context,
+        isError: true,
       );
       return;
     }
@@ -277,9 +282,10 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
               : null;
 
       if (customerTypeId == null) {
-        _dialogUtil.showMessage(
-          context.bssSubL10n.customerTypeCouldNotBeResolved,
-          context,
+        _dialogUtil.showCustomSnackbar(
+          content: context.bssSubL10n.customerTypeCouldNotBeResolved,
+          context: context,
+          isError: true,
         );
         return;
       }
@@ -352,7 +358,11 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
               (context, state) => state is OnError || state is TicketSubmitted,
           listener: (context, state) {
             if (state is OnError) {
-              _dialogUtil.showMessage(state.errorMessage, context);
+              _dialogUtil.showCustomSnackbar(
+                content: state.errorMessage,
+                context: context,
+                isError: true,
+              );
             } else if (state is TicketSubmitted) {
               _showSuccessBottomSheet(state.respoEntity.ticketId);
             }
@@ -463,9 +473,10 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                                       InkWell(
                                         onTap: () {
                                           if (categories.isEmpty) {
-                                            _dialogUtil.showMessage(
-                                              l10n.noDataFound,
-                                              context,
+                                            _dialogUtil.showCustomSnackbar(
+                                              content: l10n.noDataFound,
+                                              context: context,
+                                              isError: true,
                                             );
                                             return;
                                           }

@@ -1,10 +1,6 @@
-import 'package:flutter/material.dart';
-import 'package:flutter/services.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kfon_subscriber/core/constant/app_styles.dart';
-import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/util/dialog_util.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/core/validator/validators.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_event.dart';
@@ -13,9 +9,11 @@ import 'package:kfon_subscriber/features/auth/presentation/components/auth_heade
 import 'package:kfon_subscriber/features/auth/presentation/components/login_text_field.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/login_background.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/shared/widgets/white_button.dart';
-import 'package:kfon_subscriber/core/constant/app_assets.dart';
-import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class ForgotPasswordPage extends StatefulWidget {
   const ForgotPasswordPage({super.key});
@@ -26,9 +24,7 @@ class ForgotPasswordPage extends StatefulWidget {
 
 class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
   final _formKey = GlobalKey<FormState>();
-  final TextEditingController _usernameController = TextEditingController(
-    text: '',
-  );
+  final TextEditingController _usernameController = TextEditingController();
 
   @override
   void dispose() {
@@ -83,33 +79,32 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
               Column(
                 children: [
                   AuthHeader(
+                    topSpacing: 104.5.h,
                     heading: context.bssSubL10n.forgotPassword,
-                    description:
-                        context.bssSubL10n.forgotPasswordDescription,
-                    topSpacing: Sizer.isTablet ? null : 104.5.h,
+                    description: context.bssSubL10n.forgotPasswordDescription,
                   ),
                   Form(
                     key: _formKey,
                     child: Container(
                       margin: EdgeInsets.symmetric(horizontal: 24.w),
-                      decoration: AppStyles.boxDecorationMedium.copyWith(
+                      decoration: BoxDecoration(
+                        color: Colors.white,
                         borderRadius: BorderRadius.circular(10),
                       ),
-                      child: Container(
-                        constraints: BoxConstraints(minHeight: 56.h),
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.symmetric(horizontal: 14.w),
+                      child: Padding(
+                        // 48 field + 8 = 56 input area.
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 14.w,
+                          vertical: 4.h,
+                        ),
                         child: LoginTextField(
                           hintText: context.bssSubL10n.enterUsername,
                           textEditingController: _usernameController,
-                          iconName: AppAssets.user,
                           textInputType: TextInputType.text,
-                          validator:
-                              (v) => Validators.validateRequired(
-                                v,
-                                fieldName: context.bssSubL10n.username,
-                                l10n: context.bssSubL10n,
-                              ),
+                          validator: (v) => Validators.validateRequired(
+                            v,
+                            fieldName: context.bssSubL10n.username,
+                          ),
                         ),
                       ),
                     ),
@@ -130,7 +125,6 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                           isLoading: isLoading,
                           label: context.bssSubL10n.getOtp,
                           borderRadius: 10,
-                          height: 52.h,
                           textColor: AppColor.kPrimaryColor,
                           onClicked: _getOtp,
                         );
@@ -140,7 +134,13 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                 ],
               ),
               //place backbutton same as app bar backbutton
-              Positioned(top: 50, child: BackButton(color: Colors.white)),
+              Positioned(
+                top: 50,
+                child: BackButton(
+                  color: Colors.white,
+                  onPressed: () => Navigator.pop(context),
+                ),
+              ),
             ],
           ),
         ),

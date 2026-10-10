@@ -1,24 +1,27 @@
+import 'package:kfon_subscriber/shared/widgets/common_text_button.dart';
+import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
+import 'package:kfon_subscriber/core/routes/app_routes.dart';
+import 'package:kfon_subscriber/core/constant/app_styles.dart';
+import 'package:kfon_subscriber/core/util/preference_util.dart';
+import 'package:kfon_subscriber/core/validator/validators.dart';
+import 'package:kfon_subscriber/features/auth/presentation/components/remember_me.dart';
+import 'package:kfon_subscriber/features/auth/presentation/components/selected_tenant_card.dart';
+import 'package:kfon_subscriber/shared/widgets/login_background.dart';
+import 'package:kfon_subscriber/shared/widgets/shimmer/shimmer_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kfon_subscriber/core/constant/app_styles.dart';
-import 'package:kfon_subscriber/core/constant/constant_colors.dart';
-import 'package:kfon_subscriber/core/routes/app_routes.dart';
-import 'package:kfon_subscriber/core/util/dialog_util.dart';
-import 'package:kfon_subscriber/core/util/sizer.dart';
-import 'package:kfon_subscriber/core/validator/validators.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_event.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_state.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/features/auth/presentation/components/auth_header.dart';
 import 'package:kfon_subscriber/features/auth/presentation/components/login_text_field.dart';
-import 'package:kfon_subscriber/features/auth/presentation/components/selected_tenant_card.dart';
-import 'package:kfon_subscriber/l10n/l10n_ext.dart';
-import 'package:kfon_subscriber/shared/widgets/login_background.dart';
 import 'package:kfon_subscriber/shared/widgets/login_password_text_field.dart';
-import 'package:kfon_subscriber/shared/widgets/shimmer/shimmer_box.dart';
 import 'package:kfon_subscriber/shared/widgets/white_button.dart';
-import 'package:kfon_subscriber/core/constant/app_assets.dart';
+import 'package:kfon_subscriber/core/util/dialog_util.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 
 class LoginPage extends StatefulWidget {
   const LoginPage({super.key});
@@ -29,16 +32,41 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final _usernameTextFieldController = TextEditingController(text: 'ld.ajithrshivan123'); //9114676354
-  final _passwordTextFieldController = TextEditingController(text: 'Pass@123'); //pass1234
+  final _usernameTextFieldController = TextEditingController(
+    text: '6008426648',
+    //ld lnp '6008426648'
+    //qa lnp '2951432933'
+    //dev lnp '8453892290'
+    //qa agnp '6368189449'
+    //qa fe 'FE-Vinod',
+  );
+  final _passwordTextFieldController = TextEditingController(
+    text: 'Pass@123',
+    //ld lnp 'Pass@123',
+    //qa lnp 'Pass@1234',
+    //dev lnp 'Pass@123',
+    //qa agnp 'Pass@123',
+    //qa fe 'Pass@123',
+  );
   final DialogUtil _dialogUtil = DialogUtil();
   String tenantName = '';
   String tenantId = '';
+  bool rememberMe = false;
 
   @override
   void initState() {
     super.initState();
     context.read<AuthBloc>().add(LoadSelectedTenant());
+    _loadSavedCredentials();
+  }
+
+  Future<void> _loadSavedCredentials() async {
+    final username = await PreferenceUtils.getUsername();
+    final password = await PreferenceUtils.getPassword();
+    if (mounted) {
+      _usernameTextFieldController.text = username ?? '';
+      _passwordTextFieldController.text = password ?? '';
+    }
   }
 
   @override
@@ -61,26 +89,17 @@ class _LoginPageState extends State<LoginPage> {
         username: username,
         password: password,
         tenantId: tenantId,
+        rememberMe: rememberMe,
       ),
     );
   }
-
-  static const _websitePillDecoration = BoxDecoration(
-    color: Colors.white,
-    borderRadius: BorderRadius.all(Radius.circular(23)),
-  );
-
-  // Design: 24px side margin, 56px fields, 52px buttons.
-  static final double _sideMargin = 24.w;
-  static final double _fieldMinHeight = 56.h;
-  static final double _buttonHeight = 52.h;
 
   @override
   Widget build(BuildContext context) {
     return AnnotatedRegion(
       value: SystemUiOverlayStyle(
         statusBarBrightness: Brightness.dark,
-        statusBarColor: Colors.transparent,
+        statusBarColor: AppColor.kPrimaryColor,
       ),
       child: BlocListener<AuthBloc, AuthState>(
         listener: (context, state) {
@@ -118,14 +137,13 @@ class _LoginPageState extends State<LoginPage> {
                   ),
                   child: Column(
                     children: [
-                      AuthHeader(description: ''),
+                      AuthHeader(
+                        description: '',
+                        topSpacing: 74.h,
+                        bottomSpacing: 24.h,
+                      ),
                       Padding(
-                        padding: EdgeInsets.fromLTRB(
-                          _sideMargin,
-                          0,
-                          _sideMargin,
-                          24.h,
-                        ),
+                        padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 24.h),
                         child: BlocBuilder<AuthBloc, AuthState>(
                           buildWhen:
                               (previous, current) =>
@@ -153,108 +171,94 @@ class _LoginPageState extends State<LoginPage> {
                       Form(
                         key: _formKey,
                         child: Container(
-                          margin: EdgeInsets.symmetric(horizontal: _sideMargin),
-                          decoration: AppStyles.boxDecorationMedium.copyWith(
-                            borderRadius: BorderRadius.circular(10),
+                          margin: EdgeInsets.symmetric(
+                            horizontal: 24.w, // Proportional scaling
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            boxShadow: AppStyles.boxShadowForWhite,
+                            borderRadius: BorderRadius.circular(10.0),
                           ),
                           child: Column(
                             children: [
-                              Container(
-                                constraints: BoxConstraints(
-                                  minHeight: _fieldMinHeight,
+                              Padding(
+                                padding: EdgeInsets.symmetric(
+                                  horizontal: 14.w, // Proportional scaling
+                                  vertical: 4.h, // 48 field + 8 = 56 row
                                 ),
-                                alignment: Alignment.center,
-                                padding: EdgeInsets.symmetric(horizontal: 14.w),
                                 child: LoginTextField(
                                   hintText: context.bssSubL10n.enterUsername,
                                   textEditingController:
                                       _usernameTextFieldController,
-                                  iconName: AppAssets.user,
-                                  textInputType: TextInputType.name,
+                                  textInputType: TextInputType.number,
                                   validator:
                                       (v) => Validators.validateRequired(
                                         v,
                                         fieldName: context.bssSubL10n.username,
-                                        l10n: context.bssSubL10n,
                                       ),
                                 ),
                               ),
-                              const Divider(
+                              Divider(
                                 color: AppColor.kFieldBorder,
                                 thickness: 1,
-                                height: 1,
+                                height: 1.h,
                               ),
-                              Container(
-                                constraints: BoxConstraints(
-                                  minHeight: _fieldMinHeight,
+                              Padding(
+                                padding: EdgeInsets.only(
+                                  left: 14.w, // Proportional scaling
+                                  top: 4.h,
+                                  bottom: 4.h,
                                 ),
-                                alignment: Alignment.center,
-                                // Eye IconButton's own padding gives the
-                                // 14px right inset.
-                                padding: EdgeInsets.only(left: 14.w),
                                 child: LoginPasswordTextField(
                                   textEditingController:
                                       _passwordTextFieldController,
                                   hintText: context.bssSubL10n.enterPassword,
-                                  validator:
-                                      (v) => Validators.validatePassword(
-                                        v,
-                                        l10n: context.bssSubL10n,
-                                      ),
+                                  validator: Validators.validatePassword,
                                 ),
                               ),
                             ],
                           ),
                         ),
                       ),
-
                       Padding(
-                        padding: EdgeInsets.only(
-                          left: _sideMargin,
-                          right: _sideMargin,
-                          top: Sizer.isTablet ? 10.h : 19.h,
-                          bottom: Sizer.isTablet ? 24.h : 27.h,
-                        ),
+                        // Checkbox row → Sign In: 48 in the login design.
+                        padding: EdgeInsets.fromLTRB(24.w, 16.h, 24.w, 48.h),
                         child: Row(
-                          mainAxisAlignment: MainAxisAlignment.end,
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
                           children: [
-                            TextButton(
+                            Expanded(
+                              child: RememberMe(
+                                onChanged: (value) => rememberMe = value,
+                              ),
+                            ),
+                            CommonTextButton(
+                              label: context.bssSubL10n.forgotPassword,
                               onPressed:
                                   () => Navigator.pushNamed(
                                     context,
                                     AppRoutes.forgotPassword,
                                   ),
-                              // No internal padding, so the gaps above and
-                              // below match the design.
-                              style: TextButton.styleFrom(
-                                padding: EdgeInsets.zero,
-                                minimumSize: Size.zero,
-                                tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                              ),
-                              child: Text(
-                                context.bssSubL10n.forgotPassword,
-                                style: TextStyle(
-                                  fontSize: Sizer.isTablet ? 15.0 : 14.sp,
-                                  fontWeight: FontWeight.w500,
-                                  color: Colors.white,
-                                  fontFamily: 'GeneralSans',
-                                  height: 1.30,
-                                ),
+                              textStyle: TextStyle(
+                                fontSize: 14.0.sp,
+                                fontWeight: FontWeight.w500,
+                                color: Colors.white,
+                                fontFamily: 'General Sans',
+                                height: 1.30.h,
                               ),
                             ),
                           ],
                         ),
                       ),
-
                       Padding(
-                        padding: EdgeInsets.symmetric(horizontal: _sideMargin),
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 24.w, // Proportional scaling
+                        ),
                         child: BlocBuilder<AuthBloc, AuthState>(
                           builder: (context, state) {
                             return WhiteButton(
                               isLoading: state is AuthLoading,
                               label: context.bssSubL10n.signIn,
                               borderRadius: 10,
-                              height: _buttonHeight,
                               textColor: AppColor.kPrimaryColor,
                               onClicked: () => _doLogin(),
                               //Navigator.pushNamed(context, AppRoutes.mainPage),
@@ -268,50 +272,65 @@ class _LoginPageState extends State<LoginPage> {
               ),
               Align(
                 alignment: Alignment.bottomCenter,
-                child: Column(
-                  spacing: 11.h,
-                  mainAxisAlignment: MainAxisAlignment.end,
-                  children: [
-                    Padding(
-                      padding: EdgeInsets.symmetric(horizontal: _sideMargin),
-                      child: WhiteButton(
-                        isLoading: false,
-                        label: context.bssSubL10n.enquiryForms,
-                        borderRadius: 10,
-                        height: _buttonHeight,
-                        backgroundColor: AppColor.kPrimaryColor,
-                        borderColor: Colors.white,
-                        textColor: Colors.white,
-                        onClicked:
-                            () => Navigator.pushNamed(
-                              context,
-                              AppRoutes.enquiryListPage,
-                            ),
-                      ),
+                child: ConstrainedBox(
+                  constraints: BoxConstraints(
+                    maxWidth:
+                        Sizer.isTablet
+                            ? 600.0
+                            : double.infinity, // Match form width
+                  ),
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 24.w, // Proportional scaling
+                      // LNP Enquiry bottom → screen bottom: 45 in the design.
+                      vertical: Sizer.isTablet ? 32.h : 45.h,
                     ),
-                    Container(
-                      height: 30.h,
-                      margin: EdgeInsets.only(bottom: 44.h),
-                      padding: EdgeInsets.symmetric(horizontal: 28.w),
-                      decoration: _websitePillDecoration,
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          Text(
-                            context.bssSubL10n.kerlaInternetWebsite,
-                            style: TextStyle(
-                              color: AppColor.kPrimaryColor,
-                              fontSize: 12.sp,
-                              fontWeight: FontWeight.w400,
-                              fontFamily: 'GeneralSans',
-                              height: 1.40,
-                              letterSpacing: -0.12,
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        SecondaryButton(
+                          label: context.bssSubL10n.enquiryForms,
+                          borderRadius: 10,
+                          backgroundColor: AppColor.kPrimaryColor,
+                          borderColor: Colors.white,
+                          foregroundColor: Colors.white,
+                          padding: EdgeInsets.symmetric(
+                            vertical: Sizer.isTablet ? 18.0 : 17.0,
+                            horizontal: Sizer.isTablet ? 30.0 : 28.0,
+                          ),
+                          onClicked: () {},
+                          textStyle: TextStyle(
+                            fontSize: Sizer.isTablet ? 15.0.sp : 14.0.sp,
+                            fontWeight: FontWeight.w600,
+                            fontFamily: 'General Sans',
+                            height: 1.30.h,
+                          ),
+                        ),
+                        Container(
+                          height: 30.h,
+                          margin: EdgeInsets.only(
+                            bottom: 50,
+                            left: 100,
+                            right: 100,
+                          ),
+                          decoration: BoxDecoration(
+                            color: Colors.white,
+                            borderRadius: BorderRadius.all(Radius.circular(23)),
+                          ),
+                          child: Center(
+                            child: Text(
+                              context.bssSubL10n.kerlaInternetWebsite,
+                              style: TextStyle(
+                                color: AppColor.kPrimaryColor,
+                                fontSize: 12,
+                                fontWeight: FontWeight.w400,
+                              ),
                             ),
                           ),
-                        ],
-                      ),
+                        ),
+                      ],
                     ),
-                  ],
+                  ),
                 ),
               ),
             ],

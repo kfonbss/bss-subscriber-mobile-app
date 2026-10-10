@@ -18,8 +18,9 @@ class TenantRepositoryImpl implements TenantRepository {
 
     if (response.isSuccess) {
       final list = (response.data as List<dynamic>)
-          .map((e) => TenantModel.fromJson(e as Map<String, dynamic>)
-          .toEntity())
+          .map(
+            (e) => TenantModel.fromJson(e as Map<String, dynamic>).toEntity(),
+          )
           .toList();
       // filter only active
       return Right(list.where((e) => e.isActive).toList());

@@ -115,6 +115,7 @@ class IntroScreenLayout extends StatelessWidget {
                       isLoading: false,
                       borderRadius: 50,
                       height: 52.h,
+                      backgroundColor: Colors.white.withValues(alpha: 0.2),
                       textStyle: TextStyle(
                         fontFamily: 'GeneralSans',
                         fontSize: 14.sp,

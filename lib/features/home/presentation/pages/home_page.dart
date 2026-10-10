@@ -70,6 +70,7 @@ class _HomePageState extends State<HomePage> {
 
   // Design: blue header is 276 tall; the expanded bar covers the first 220.
   double get _headerHeight => 276.h;
+
   double get _barHeight => 220.h;
 
   Widget _headerBackground() {
@@ -129,7 +130,7 @@ class _HomePageState extends State<HomePage> {
       title: Padding(
         padding: EdgeInsets.only(top: 6.h),
         child: Image.asset(
-          AppAssets.kLogo,
+          AppAssets.kWhitLogoAsset,
           width: 77.w,
           height: 48.h,
           fit: BoxFit.contain,
@@ -148,7 +149,11 @@ class _HomePageState extends State<HomePage> {
             (prev, curr) => curr is GetDataFailure || curr is GetDataSuccess,
         listener: (context, state) {
           if (state is GetDataFailure) {
-            _dialogUtil.showMessage(state.errorMessage, context);
+            _dialogUtil.showCustomSnackbar(
+              content: state.errorMessage,
+              context: context,
+              isError: true,
+            );
           } else if (state is GetDataSuccess) {
             final pkg = state.homeEntity.packageDetails;
             if (pkg != null && state.loadPackage) {
@@ -723,6 +728,7 @@ class _QuickActionsState extends State<_QuickActions> {
 
   // Precomputed — shared across all action items.
   static const _actionRadius = BorderRadius.all(Radius.circular(16));
+
   // Design uses Inter for these labels.
   static final _actionLabelStyle = GoogleFonts.inter(
     color: Colors.white,
@@ -855,30 +861,31 @@ class _PlanChangeSection extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(context.bssSubL10n.planChange, style: _headingStyle),
-              CommonTextButton(
-                onPressed:
-                    () => Navigator.push(
-                      context,
-                      MaterialPageRoute<void>(
-                        builder:
-                            (_) => SeasonalPlanPage(
-                              subscriberUuid: subscriberUuid,
-                              subscriberName: name,
-                              currentPackageId: currentPackageId,
-                            ),
-                      ),
-                    ),
-                child: Row(
-                  spacing: 4.w,
-                  children: [
-                    Text(context.bssSubL10n.seeAll, style: _seeAllStyle),
-                    Icon(
-                      Icons.arrow_forward,
-                      size: 16.sp,
-                      color: AppColor.kPrimaryColor,
-                    ),
-                  ],
-                ),
+              Row(
+                spacing: 4.w,
+                children: [
+                  CommonTextButton(
+                    onPressed:
+                        () => Navigator.push(
+                          context,
+                          MaterialPageRoute<void>(
+                            builder:
+                                (_) => SeasonalPlanPage(
+                                  subscriberUuid: subscriberUuid,
+                                  subscriberName: name,
+                                  currentPackageId: currentPackageId,
+                                ),
+                          ),
+                        ),
+                    label: context.bssSubL10n.seeAll,
+                    textStyle: _seeAllStyle,
+                  ),
+                  Icon(
+                    Icons.arrow_forward,
+                    size: 16.sp,
+                    color: AppColor.kPrimaryColor,
+                  ),
+                ],
               ),
             ],
           ),

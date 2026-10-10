@@ -80,15 +80,20 @@ class _TicketNoteBottomSheetState extends State<TicketNoteBottomSheet> {
       }
 
       if (hasTooLargeFile) {
-        _dialogUtil.showMessage(l10n.fileSizeMustBeLess, context);
+        _dialogUtil.showCustomSnackbar(
+          content: l10n.fileSizeMustBeLess,
+          context: context,
+          isError: true,
+        );
       }
 
       setState(() {});
     } catch (e) {
       if (mounted) {
-        final l10n = context.bssSubL10n;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.errorPickingFile(e.toString()))),
+        _dialogUtil.showCustomSnackbar(
+          content: context.bssSubL10n.errorPickingFile(e.toString()),
+          context: context,
+          isError: true,
         );
       }
     }

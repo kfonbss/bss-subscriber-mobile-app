@@ -159,7 +159,11 @@ class _TicketsPageState extends State<TicketsPage> {
       listenWhen: (previous, current) => current is OnError,
       listener: (context, state) {
         if (state is OnError) {
-          _dialogUtil.showMessage(state.errorMessage, context);
+          _dialogUtil.showCustomSnackbar(
+            content: state.errorMessage,
+            context: context,
+            isError: true,
+          );
         }
       },
       child: BlocBuilder<TicketBloc, TicketState>(

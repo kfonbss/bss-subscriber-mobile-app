@@ -1,11 +1,11 @@
 import 'package:equatable/equatable.dart';
 
 class TenantEntity extends Equatable {
-  final String  id;
-  final String  code;
-  final String  name;
+  final String id;
+  final String code;
+  final String name;
   final String? nameInLocal;
-  final bool    isActive;
+  final bool isActive;
 
   const TenantEntity({
     required this.id,

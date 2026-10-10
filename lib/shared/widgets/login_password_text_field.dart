@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
 
@@ -69,7 +70,13 @@ class _LoginPasswordTextFieldState extends State<LoginPasswordTextField> {
         ),
         prefixIcon: Padding(
           padding: const EdgeInsets.only(right: 12.0),
-          child: Image.asset(AppAssets.lock,color: AppColor.kPrimaryColor,),
+          child: SvgPicture.asset(
+            AppAssets.lock,
+            colorFilter: ColorFilter.mode(
+              AppColor.kPrimaryColor,
+              BlendMode.srcIn,
+            ),
+          ),
         ),
 
         suffixIcon: IconButton(

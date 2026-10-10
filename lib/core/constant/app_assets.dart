@@ -16,6 +16,7 @@ class AppAssets {
   static const String retailSubscribers = 'assets/icons/retail.png';
   static const String retailSubscriptions =
       'assets/icons/retail_subscriptions.png';
+  static const String editPencil = 'assets/icons/edit_pencil.svg';
   static const String subscriberRecharge =
       'assets/icons/subscriber_recharge.png';
   static const String noInternet = 'assets/images/no_internet.png';
@@ -83,7 +84,8 @@ class AppAssets {
   static const String myEarnings = 'assets/icons/my_earnings.png';
   static const String ticketStar = 'assets/icons/ticket_star.png';
 
-  static const String kLogo ='assets/images/railwire_white.png';
+  static const String kLogoAsset ='assets/images/railwire_logo.png';
+  static const String kWhitLogoAsset = 'assets/images/railwire_white.png';
   static const String introRoundLogo =
       'assets/images/intro_round_logo.png';
   static const String logoTransparent = 'assets/images/logo_transparent.png';
@@ -135,10 +137,9 @@ class AppAssets {
   static const String documentUpload = 'assets/icons/document-upload.svg';
   static const String searchImage = 'assets/images/search.svg';
   static const String filterImage = 'assets/images/filter.svg';
-  static const String lock = 'assets/icons/lock.png';
 
-  // Dynamic widget icons
-  static const String user = 'assets/icons/user.png';
+  static const String lock = 'assets/icons/lock.svg';
+  static const String user = 'assets/icons/user.svg';
   static const String rechargeIcon = 'assets/icons/recharge_icon.svg';
   static const String moneyIcon = 'assets/icons/money_icon.svg';
   static const String invoiceIcon = 'assets/icons/invoice_icon.svg';

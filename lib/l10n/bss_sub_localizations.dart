@@ -1400,6 +1400,12 @@ abstract class BssSubLocalizations {
   /// **'Change Password'**
   String get changePassword;
 
+  /// No description provided for @didntReceiveCode.
+  ///
+  /// In en, this message translates to:
+  /// **'Didn\'t receive code?'**
+  String get didntReceiveCode;
+
   /// No description provided for @language.
   ///
   /// In en, this message translates to:
@@ -3416,17 +3422,53 @@ abstract class BssSubLocalizations {
   /// **'Start Now'**
   String get startNow;
 
+  /// No description provided for @rememberMe.
+  ///
+  /// In en, this message translates to:
+  /// **'Remember Me'**
+  String get rememberMe;
+
+  /// No description provided for @yourSessionHasExpiredPleaseLogIn.
+  ///
+  /// In en, this message translates to:
+  /// **'Your session has expired. Please log in again.'**
+  String get yourSessionHasExpiredPleaseLogIn;
+
   /// No description provided for @chooseYourCircle.
   ///
   /// In en, this message translates to:
   /// **'Choose Your Circle'**
   String get chooseYourCircle;
 
+  /// No description provided for @youDoNotHaveAccessToThis.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have access to this app. Please contact support.'**
+  String get youDoNotHaveAccessToThis;
+
+  /// No description provided for @unableToLoadYourProfilePleaseTry.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to load your profile. Please try again.'**
+  String get unableToLoadYourProfilePleaseTry;
+
+  /// No description provided for @otpSessionExpiredPleaseRequestANew.
+  ///
+  /// In en, this message translates to:
+  /// **'OTP session expired. Please request a new OTP.'**
+  String get otpSessionExpiredPleaseRequestANew;
+
   /// No description provided for @selectStateToContinue.
   ///
   /// In en, this message translates to:
   /// **'Select your state to continue with the login'**
   String get selectStateToContinue;
+
+  /// No description provided for @verificationExpiredPleaseVerifyTheOtpAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Verification expired. Please verify the OTP again.'**
+  String get verificationExpiredPleaseVerifyTheOtpAgain;
 
   /// No description provided for @searchState.
   ///

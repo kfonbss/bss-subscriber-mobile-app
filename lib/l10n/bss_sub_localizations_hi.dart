@@ -735,6 +735,9 @@ class BssSubLocalizationsHi extends BssSubLocalizations {
   String get changePassword => 'पासवर्ड बदलें';
 
   @override
+  String get didntReceiveCode => 'कोड प्राप्त नहीं हुआ?';
+
+  @override
   String get language => 'भाषा';
 
   @override
@@ -1805,10 +1808,33 @@ class BssSubLocalizationsHi extends BssSubLocalizations {
   String get startNow => 'अभी शुरू करें';
 
   @override
+  String get rememberMe => 'मुझे याद रखें';
+
+  @override
+  String get yourSessionHasExpiredPleaseLogIn =>
+      'आपका सत्र समाप्त हो गया है। कृपया फिर से लॉग इन करें।';
+
+  @override
   String get chooseYourCircle => 'अपना सर्किल चुनें';
 
   @override
+  String get youDoNotHaveAccessToThis =>
+      'आपके पास इस ऐप तक पहुंच नहीं है। कृपया सहायता से संपर्क करें।';
+
+  @override
+  String get unableToLoadYourProfilePleaseTry =>
+      'आपकी प्रोफ़ाइल लोड नहीं हो सकी। कृपया पुनः प्रयास करें।';
+
+  @override
+  String get otpSessionExpiredPleaseRequestANew =>
+      'OTP सत्र समाप्त हो गया है। कृपया नया OTP मांगें।';
+
+  @override
   String get selectStateToContinue => 'लॉगिन जारी रखने के लिए राज्य चुनें';
+
+  @override
+  String get verificationExpiredPleaseVerifyTheOtpAgain =>
+      'सत्यापन समाप्त हो गया है। कृपया OTP फिर से सत्यापित करें।';
 
   @override
   String get searchState => 'राज्य खोजें';

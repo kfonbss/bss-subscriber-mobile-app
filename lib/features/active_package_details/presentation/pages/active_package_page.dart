@@ -16,6 +16,7 @@ import 'package:kfon_subscriber/service_locator.dart';
 
 class ActivePackagePage extends StatefulWidget {
   final String subscriberUuid;
+
   const ActivePackagePage({super.key, required this.subscriberUuid});
 
   @override
@@ -53,7 +54,11 @@ class _ActivePackagePageState extends State<ActivePackagePage> {
       listenWhen: (prev, curr) => curr is GetDataFailure,
       listener: (context, state) {
         if (state is GetDataFailure) {
-          DialogUtil().showMessage(state.errorMessage, context);
+          DialogUtil().showCustomSnackbar(
+            content: state.errorMessage,
+            context: context,
+            isError: true,
+          );
         }
       },
       child: CommonAppBar(

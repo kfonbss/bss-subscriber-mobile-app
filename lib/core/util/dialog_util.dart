@@ -10,24 +10,21 @@ import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_state.dart'
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/common_bottom_sheet.dart';
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
+import 'package:kfon_subscriber/shared/widgets/common_text_button.dart';
 import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
 
 class DialogUtil {
-  static final _contentStyle = const TextStyle(
+  final TextStyle _contentStyle = TextStyle(
     color: Colors.black,
-    fontSize: 15.0,
+    fontSize: 15.sp,
   );
-  static final _positiveButtonStyle = const TextStyle(
-    color: AppColor.kCompletedGreen,
+  final TextStyle _positiveButtonStyle = TextStyle(
+    color: Colors.green.shade600,
   );
-  static final _negativeButtonStyle = const TextStyle(
-    color: AppColor.kFailedRed,
-  );
-  static final _logo = Image.asset(
-    AppAssets.logoTransparent,
-    height: 50.0.h,
-  );
+  final TextStyle _negativeButtonStyle = TextStyle(color: Colors.red);
+
+  Widget get logo => Image.asset(AppAssets.kLogoAsset, height: 40.h);
 
   showConfirmationAlert({
     required BuildContext context,
@@ -35,19 +32,24 @@ class DialogUtil {
     required VoidCallback onPositiveButtonClick,
     required VoidCallback onNegativeButtonClick,
   }) {
-    final negativeButton = TextButton(
+    final l10n = context.bssSubL10n;
+    Widget negativeButton = CommonTextButton(
+      label: l10n.no,
       onPressed: onNegativeButtonClick,
-      child: Text(context.bssSubL10n.no, style: _negativeButtonStyle),
+      textStyle: _negativeButtonStyle,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
     );
-    final positiveButton = TextButton(
+    Widget positiveButton = CommonTextButton(
+      label: l10n.yes,
       onPressed: onPositiveButtonClick,
-      child: Text(context.bssSubL10n.yes, style: _positiveButtonStyle),
+      textStyle: _positiveButtonStyle,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
     );
 
     // set up the AlertDialog
-    final alert = AlertDialog(
+    AlertDialog alert = AlertDialog(
       //title: Text(kAppName,style: _titleStyle),
-      icon: _logo,
+      icon: logo,
       content: Text(content, style: _contentStyle),
       actions: [negativeButton, positiveButton],
       elevation: 5.0,
@@ -62,130 +64,6 @@ class DialogUtil {
         return PopScope(canPop: false, child: alert);
       },
     );
-  }
-
-  showOKWithAction({
-    required BuildContext context,
-    required String content,
-    required VoidCallback onConfirmation,
-  }) {
-    final positiveButton = TextButton(
-      onPressed: onConfirmation,
-      child: Text(context.bssSubL10n.ok, style: _positiveButtonStyle),
-    );
-
-    // set up the AlertDialog
-    final alert = AlertDialog(
-      icon: _logo,
-      content: Text(content, style: _contentStyle),
-      actions: [positiveButton],
-      elevation: 5.0,
-      backgroundColor: Colors.white,
-    );
-
-    // show the dialog
-    return showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return PopScope(canPop: false, child: alert);
-      },
-    );
-  }
-
-  /// Convenience wrapper — delegates to [showCustomSnackbar].
-  void showMessage(
-    String content,
-    BuildContext context, {
-    Color? backgroundColor,
-  }) {
-    showCustomSnackbar(
-      context: context,
-      content: content,
-      backgroundColor: backgroundColor ?? AppColor.kFailedRed,
-    );
-  }
-
-  void showCustomSnackbar({
-    required BuildContext context,
-    required String content,
-    Color? backgroundColor,
-    bool isError = false,
-  }) {
-    final theme = Theme.of(context);
-    final Color accentColor =
-        backgroundColor ??
-        (isError ? AppColor.kFailedRed : AppColor.kSecondaryColor);
-    final Color themedBorderColor = (isError
-            ? AppColor.kFailedRed
-            : AppColor.kSecondaryColor)
-        .withValues(alpha: 0.45);
-    final Color themedShadowColor = (isError
-            ? AppColor.kFailedRed
-            : AppColor.kSecondaryColor)
-        .withValues(alpha: 0.16);
-    final IconData leadingIcon =
-        isError ? Icons.error_outline_rounded : Icons.info_outline_rounded;
-
-    ScaffoldMessenger.of(context)
-      ..hideCurrentSnackBar()
-      ..showSnackBar(
-        SnackBar(
-          behavior: SnackBarBehavior.floating,
-          elevation: 0,
-          backgroundColor: Colors.transparent,
-          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
-          content: Container(
-            width: double.infinity,
-            decoration: BoxDecoration(
-              color: AppColor.kWhite,
-              borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: themedBorderColor, width: 1.2),
-              boxShadow: [
-                BoxShadow(
-                  color: themedShadowColor,
-                  blurRadius: 10,
-                  offset: Offset(0, 3),
-                ),
-              ],
-            ),
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(12),
-              child: IntrinsicHeight(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.stretch,
-                  children: [
-                    Container(
-                      width: 60.w,
-                      color: accentColor,
-                      alignment: Alignment.center,
-                      child: Icon(leadingIcon, color: Colors.white, size: 30),
-                    ),
-                    Expanded(
-                      child: Padding(
-                        padding: const EdgeInsets.symmetric(
-                          horizontal: 16,
-                          vertical: 14,
-                        ),
-                        child: Text(
-                          content,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
-                          style: theme.textTheme.bodyMedium?.copyWith(
-                            color: AppColor.kDialogTitleDark,
-                            fontWeight: FontWeight.w500,
-                          ),
-                        ),
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-            ),
-          ),
-          duration: const Duration(seconds: 3),
-        ),
-      );
   }
 
   showConfirmationSheet({
@@ -210,7 +88,7 @@ class DialogUtil {
       isLoading: false,
     );
 
-    final contentWidget = Padding(
+    Widget contentWidget = Padding(
       padding: const EdgeInsets.all(16.0),
       child: Column(
         mainAxisSize: MainAxisSize.min,
@@ -257,6 +135,147 @@ class DialogUtil {
     );
   }
 
+  showOKWithAction({
+    required BuildContext context,
+    required String content,
+    required VoidCallback onConfirmation,
+  }) {
+    final l10n = context.bssSubL10n;
+    Widget positiveButton = CommonTextButton(
+      label: l10n.ok,
+      onPressed: onConfirmation,
+      textStyle: _positiveButtonStyle,
+      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
+    );
+
+    // set up the AlertDialog
+    AlertDialog alert = AlertDialog(
+      icon: logo,
+      content: Text(content, style: _contentStyle),
+      actions: [positiveButton],
+      elevation: 5.0,
+      backgroundColor: Colors.white,
+    );
+
+    // show the dialog
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return PopScope(canPop: false, child: alert);
+      },
+    );
+  }
+
+  showProgressIndicator(BuildContext context, String label) {
+    return showDialog<bool>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return PopScope(
+          canPop: false,
+          child: AlertDialog(
+            contentPadding: EdgeInsets.all(20),
+            content: Row(
+              spacing: 15,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                CircularProgressIndicator(color: AppColor.kPrimaryColor),
+                Text(label, style: _contentStyle),
+              ],
+            ),
+            elevation: 5.0,
+            backgroundColor: Colors.white,
+          ),
+        );
+      },
+    );
+  }
+
+  void showCustomSnackbar({
+    required BuildContext context,
+    required String content,
+    Color? backgroundColor,
+    bool isError = false,
+  }) {
+    final theme = Theme.of(context);
+    final Color accentColor =
+        backgroundColor ??
+            (isError ? AppColor.kFailedRed : AppColor.kPrimaryColor);
+    final Color themedBorderColor =
+    (isError ? AppColor.kFailedRed : AppColor.kPrimaryColor).withValues(
+      alpha: 0.45,
+    );
+    final Color themedShadowColor =
+    (isError ? AppColor.kFailedRed : AppColor.kPrimaryColor).withValues(
+      alpha: 0.16,
+    );
+    final IconData leadingIcon = isError
+        ? Icons.error_outline_rounded
+        : Icons.info_outline_rounded;
+
+    ScaffoldMessenger.of(context)
+      ..hideCurrentSnackBar()
+      ..showSnackBar(
+        SnackBar(
+          behavior: SnackBarBehavior.floating,
+          elevation: 0,
+          backgroundColor: Colors.transparent,
+          padding: EdgeInsets.symmetric(horizontal: 16, vertical: 8),
+          content: Container(
+            width: double.infinity,
+            decoration: BoxDecoration(
+              color: Color(0xFFFFFFFF),
+              borderRadius: BorderRadius.circular(12),
+              border: Border.all(color: themedBorderColor, width: 1.2.w),
+              boxShadow: [
+                BoxShadow(
+                  color: themedShadowColor,
+                  blurRadius: 10,
+                  offset: Offset(0, 3),
+                ),
+              ],
+            ),
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(12),
+              child: IntrinsicHeight(
+                child: Row(
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    Container(
+                      width: 60.w,
+                      color: accentColor,
+                      alignment: Alignment.center,
+                      child: Icon(leadingIcon, color: Colors.white, size: 30),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 14,
+                        ),
+                        child: Text(
+                          content,
+                          maxLines: 2,
+                          overflow: TextOverflow.ellipsis,
+                          style: theme.textTheme.bodyMedium?.copyWith(
+                            color: const Color(0xFF2F3447),
+                            fontWeight: FontWeight.w500,
+                          ),
+                        ),
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
+          ),
+          duration: const Duration(seconds: 3),
+        ),
+      );
+  }
+
+  /// Shows a common logout confirmation dialog
   void showLogoutDialog(BuildContext context) {
     showModalBottomSheet(
       context: context,

@@ -8,13 +8,9 @@ class AuthEntity extends Equatable {
   const AuthEntity({
     required this.otpRefId,
     required this.mobile,
-    required this.loginSessionToken
+    required this.loginSessionToken,
   });
 
   @override
-  List<Object?> get props => [
-    otpRefId,
-    mobile,
-    loginSessionToken
-  ];
+  List<Object?> get props => [otpRefId, mobile, loginSessionToken];
 }

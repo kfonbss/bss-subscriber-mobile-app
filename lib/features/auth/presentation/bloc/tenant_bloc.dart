@@ -1,4 +1,6 @@
+import 'package:kfon_subscriber/core/util/preference_util.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import '../../domain/entity/tenant_entity.dart';
 import '../../domain/repository/tenant_repository.dart';
 import 'tenant_event.dart';
 import 'tenant_state.dart';
@@ -12,50 +14,58 @@ class TenantBloc extends Bloc<TenantEvent, TenantState> {
     on<SelectTenant>(_onSelect);
   }
 
-  Future<void> _onLoad(
-      LoadTenants event,
-      Emitter<TenantState> emit,
-      ) async {
+  Future<void> _onLoad(LoadTenants event, Emitter<TenantState> emit) async {
     emit(state.copyWith(status: TenantLoadStatus.loading));
 
+    final savedCode = (await PreferenceUtils.getTenantId())?.trim();
     final result = await _repository.getTenants();
 
     result.fold(
-          (failure) => emit(state.copyWith(
-        status:       TenantLoadStatus.error,
-        errorMessage: failure.message,
-      )),
-          (list) => emit(state.copyWith(
-        status:          TenantLoadStatus.loaded,
-        allTenants:      list,
-        filteredTenants: list,
-      )),
+      (failure) => emit(
+        state.copyWith(
+          status: TenantLoadStatus.error,
+          errorMessage: failure.message,
+        ),
+      ),
+      (list) => emit(
+        state.copyWith(
+          status: TenantLoadStatus.loaded,
+          allTenants: list,
+          filteredTenants: list,
+          selectedTenant: _matchSaved(list, savedCode),
+        ),
+      ),
     );
   }
 
-  void _onSearch(
-      SearchTenants event,
-      Emitter<TenantState> emit,
-      ) {
+  /// Pre-selects the tenant already saved on this device, so reopening the
+  /// picker shows the current choice instead of an empty selection.
+  TenantEntity? _matchSaved(List<TenantEntity> tenants, String? savedCode) {
+    if (savedCode == null || savedCode.isEmpty) return null;
+    for (final tenant in tenants) {
+      if (tenant.code.trim().toUpperCase() == savedCode.toUpperCase()) {
+        return tenant;
+      }
+    }
+    return null;
+  }
+
+  void _onSearch(SearchTenants event, Emitter<TenantState> emit) {
     final q = event.query.toLowerCase();
     final filtered = q.isEmpty
         ? state.allTenants
         : state.allTenants
-        .where((e) =>
-    e.name.toLowerCase().contains(q) ||
-        e.code.toLowerCase().contains(q))
-        .toList();
+              .where(
+                (e) =>
+                    e.name.toLowerCase().contains(q) ||
+                    e.code.toLowerCase().contains(q),
+              )
+              .toList();
 
-    emit(state.copyWith(
-      filteredTenants: filtered,
-      searchQuery:     event.query,
-    ));
+    emit(state.copyWith(filteredTenants: filtered, searchQuery: event.query));
   }
 
-  void _onSelect(
-      SelectTenant event,
-      Emitter<TenantState> emit,
-      ) {
+  void _onSelect(SelectTenant event, Emitter<TenantState> emit) {
     emit(state.copyWith(selectedTenant: event.tenant));
   }
 }

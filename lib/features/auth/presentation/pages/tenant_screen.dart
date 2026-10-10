@@ -1,21 +1,22 @@
+import 'package:kfon_subscriber/shared/widgets/common_text_field.dart';
+import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 import 'package:kfon_subscriber/core/constant/app_brand.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/util/preference_util.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
-import 'package:kfon_subscriber/features/pages/intro_screen_page.dart';
-import 'package:flutter/material.dart';
-import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/login_background.dart';
 import 'package:kfon_subscriber/shared/widgets/no_data_found.dart';
 import 'package:kfon_subscriber/shared/widgets/retry_widget.dart';
-import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../service_locator.dart';
 import '../../domain/repository/tenant_repository.dart';
 import '../bloc/tenant_bloc.dart';
 import '../bloc/tenant_event.dart';
 import '../bloc/tenant_state.dart';
-import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 
 class TenantScreen extends StatefulWidget {
   const TenantScreen({super.key});
@@ -48,10 +49,9 @@ class _TenantScreenState extends State<TenantScreen> {
 
   // Before anything is tapped: the saved tenant's primary when coming back to
   // change tenant, or the neutral colour on first launch (no tenant yet).
-  static Color get _unselectedColor =>
-      AppBrand.hasTenant
-          ? AppColor.kPrimaryColor
-          : AppColor.kTenantScreenBackground;
+  static Color get _unselectedColor => AppBrand.hasTenant
+      ? AppColor.kPrimaryColor
+      : AppColor.kTenantScreenBackground;
 
   @override
   Widget build(BuildContext context) {
@@ -62,15 +62,13 @@ class _TenantScreenState extends State<TenantScreen> {
         builder: (context, selectedCode) {
           return TweenAnimationBuilder<Color?>(
             tween: ColorTween(
-              end:
-              selectedCode == null
+              end: selectedCode == null
                   ? _unselectedColor
                   : AppColor.primaryFor(selectedCode),
             ),
             duration: _colorAnimationDuration,
             curve: Curves.easeInOutCubic,
-            builder:
-                (context, color, _) =>
+            builder: (context, color, _) =>
                 _buildScreen(context, color ?? _unselectedColor),
           );
         },
@@ -133,20 +131,18 @@ class _TenantScreenState extends State<TenantScreen> {
                               Icon(Icons.search, color: accent, size: 20.sp),
                               SizedBox(width: 10.w),
                               Expanded(
-                                child: TextField(
-                                  controller: _searchController,
-                                  onChanged:
-                                      (q) => _bloc.add(SearchTenants(query: q)),
-                                  decoration: InputDecoration(
-                                    hintText: context.bssSubL10n.searchState,
-                                    hintStyle: TextStyle(
-                                      fontSize: 14.sp,
-                                      color: AppColor.kSilverGrey,
-                                      fontFamily: 'GeneralSans',
-                                    ),
-                                    border: InputBorder.none,
-                                    isDense: true,
-                                    contentPadding: EdgeInsets.zero,
+                                child: CommonTextField(
+                                  hintText: context.bssSubL10n.searchState,
+                                  textEditingController: _searchController,
+                                  onTextChanged: (q) =>
+                                      _bloc.add(SearchTenants(query: q)),
+                                  fillColor: Colors.transparent,
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.zero,
+                                  hintStyle: TextStyle(
+                                    fontSize: 14.sp,
+                                    color: AppColor.kSilverGrey,
+                                    fontFamily: 'GeneralSans',
                                   ),
                                 ),
                               ),
@@ -173,7 +169,7 @@ class _TenantScreenState extends State<TenantScreen> {
                               return RetryWidget(
                                 textColor: Colors.white,
                                 errorMessage:
-                                state.errorMessage ??
+                                    state.errorMessage ??
                                     context.bssSubL10n.somethingWentWrong,
                                 onRetry: () => _bloc.add(const LoadTenants()),
                               );
@@ -199,8 +195,7 @@ class _TenantScreenState extends State<TenantScreen> {
                                 shrinkWrap: true,
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemCount: state.filteredTenants.length,
-                                separatorBuilder:
-                                    (_, __) => Divider(
+                                separatorBuilder: (_, __) => Divider(
                                   height: 1.h,
                                   color: AppColor.kLightBorderGrey,
                                   indent: 16.w,
@@ -212,17 +207,14 @@ class _TenantScreenState extends State<TenantScreen> {
                                       state.selectedTenant?.id == tenant.id;
 
                                   return InkWell(
-                                    onTap:
-                                        () => _bloc.add(
-                                      SelectTenant(tenant: tenant),
-                                    ),
+                                    onTap: () =>
+                                        _bloc.add(SelectTenant(tenant: tenant)),
                                     borderRadius: BorderRadius.vertical(
-                                      top:
-                                      i == 0
+                                      top: i == 0
                                           ? Radius.circular(12)
                                           : Radius.zero,
                                       bottom:
-                                      i == state.filteredTenants.length - 1
+                                          i == state.filteredTenants.length - 1
                                           ? Radius.circular(12)
                                           : Radius.zero,
                                     ),
@@ -232,21 +224,17 @@ class _TenantScreenState extends State<TenantScreen> {
                                         vertical: 16.h,
                                       ),
                                       decoration: BoxDecoration(
-                                        color:
-                                        isSelected
+                                        color: isSelected
                                             ? Colors.white
                                             : Colors.transparent,
                                         borderRadius: BorderRadius.vertical(
-                                          top:
-                                          i == 0
+                                          top: i == 0
                                               ? Radius.circular(12)
                                               : Radius.zero,
                                           bottom:
-                                          i ==
-                                              state
-                                                  .filteredTenants
-                                                  .length -
-                                                  1
+                                              i ==
+                                                  state.filteredTenants.length -
+                                                      1
                                               ? Radius.circular(12)
                                               : Radius.zero,
                                         ),
@@ -258,12 +246,10 @@ class _TenantScreenState extends State<TenantScreen> {
                                               tenant.name,
                                               style: TextStyle(
                                                 fontSize: 15.sp,
-                                                fontWeight:
-                                                isSelected
+                                                fontWeight: isSelected
                                                     ? FontWeight.w600
                                                     : FontWeight.w400,
-                                                color:
-                                                isSelected
+                                                color: isSelected
                                                     ? accent
                                                     : Colors.black87,
                                                 fontFamily: 'GeneralSans',
@@ -300,60 +286,59 @@ class _TenantScreenState extends State<TenantScreen> {
                         children: [
                           // Back
                           Expanded(
+                            // Transparent over the tenant backdrop, white rule
+                            // and label; borderRadius 999 for the stadium.
                             child: SecondaryButton(
                               label: context.bssSubL10n.back,
-                              borderRadius: 30,
+                              borderRadius: 999,
                               height: 52.h,
                               backgroundColor: Colors.transparent,
                               borderColor: Colors.white,
-                              foregroundColor: Colors.white,
-                              icon: const Icon(Icons.arrow_back, size: 18),
+                              icon: const Icon(
+                                Icons.arrow_back,
+                                color: Colors.white,
+                              ),
                               onClicked: () => Navigator.pop(context),
+                              textStyle: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'GeneralSans',
+                              ),
                             ),
                           ),
                           SizedBox(width: 12.w),
 
                           // Continue
                           Expanded(
-                            child: SecondaryButton(
+                            child: PrimaryButton(
                               label: context.bssSubL10n.continueText,
-                              borderRadius: 30,
+                              isLoading: false,
+                              borderRadius: 999,
                               height: 52.h,
                               backgroundColor: Colors.white,
-                              borderColor: Colors.white,
                               foregroundColor: accent,
-                              icon: const Icon(Icons.arrow_forward, size: 18),
+                              icon: Icon(Icons.arrow_forward, color: accent),
+                              textStyle: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'GeneralSans',
+                              ),
                               onClicked: state.canContinue
                                   ? () async {
-                                    final tenant = state.selectedTenant!;
-                                    await PreferenceUtils.setTenant(
-                                      tenant.code,
-                                      tenant.name,
-                                    );
-                                    AppBrand.setTenant(tenant.code);
-                                    final showIntro =
-                                        await PreferenceUtils.showIntroScreen();
-                                    if (!context.mounted) return;
-                                    if (showIntro) {
-                                      Navigator.pushReplacement(
-                                        context,
-                                        MaterialPageRoute(
-                                          builder:
-                                              (_) =>
-                                                  const IntroScreenPage(),
-                                        ),
+                                      final tenant = state.selectedTenant!;
+                                      await PreferenceUtils.setTenant(
+                                        tenant.code,
+                                        tenant.name,
                                       );
-                                      return;
+                                      AppBrand.setTenant(tenant.code);
+                                      if (!context.mounted) return;
+                                      Navigator.pushReplacementNamed(
+                                        context,
+                                        AppRoutes.login,
+                                        arguments: {
+                                          'tenantId': tenant.code,
+                                          'tenantName': tenant.name,
+                                        },
+                                      );
                                     }
-                                    Navigator.pushReplacementNamed(
-                                      context,
-                                      AppRoutes.login,
-                                      arguments: {
-                                        'tenantId': tenant.code,
-                                        'tenantName': tenant.name,
-                                      },
-                                    );
-                                  }
                                   : null,
                             ),
                           ),

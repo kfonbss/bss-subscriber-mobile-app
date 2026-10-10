@@ -8,7 +8,7 @@ class AuthModel {
   AuthModel({
     required this.otpRefId,
     required this.mobile,
-    required this.loginSessionToken
+    required this.loginSessionToken,
   });
 
   factory AuthModel.fromJson(Map<String, dynamic> json) {
@@ -16,7 +16,6 @@ class AuthModel {
       otpRefId: json['otpRefId'] as String,
       mobile: json['mobile'] as String,
       loginSessionToken: json['loginSessionToken'] as String,
-
     );
   }
 
@@ -24,16 +23,15 @@ class AuthModel {
     return {
       'otpRefId': otpRefId,
       'mobile': mobile,
-      'loginSessionToken': loginSessionToken
+      'loginSessionToken': loginSessionToken,
     };
   }
 
   AuthEntity toEntity() {
     return AuthEntity(
-        otpRefId: otpRefId,
-        mobile: mobile,
-        loginSessionToken: loginSessionToken
+      otpRefId: otpRefId,
+      mobile: mobile,
+      loginSessionToken: loginSessionToken,
     );
   }
-
 }

@@ -27,6 +27,7 @@ class AuthInterceptor extends Interceptor {
     ApiUrls.loginURL,
     ApiUrls.resendOTPURL,
     ApiUrls.sendForgotPasswordOTPURL,
+    ApiUrls.verifyForgotPasswordOTPURL,
     ApiUrls.verifyOTPURL,
     ApiUrls.resetForgotPasswordURL,
     ApiUrls.refreshTokenURL,
@@ -140,7 +141,7 @@ class AuthInterceptor extends Interceptor {
 
   /// Handles refresh failure by clearing all tokens and redirecting to login
   Future<void> _handleRefreshFailure() async {
-    await PreferenceUtils.clearAll();
+    await PreferenceUtils.clearAll(false);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       navigatorKey.currentState?.pushNamedAndRemoveUntil(
         AppRoutes.login,

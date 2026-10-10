@@ -730,6 +730,9 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get changePassword => 'Change Password';
 
   @override
+  String get didntReceiveCode => 'Didn\'t receive code?';
+
+  @override
   String get language => 'Language';
 
   @override
@@ -1808,11 +1811,34 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get startNow => 'Start Now';
 
   @override
+  String get rememberMe => 'Remember Me';
+
+  @override
+  String get yourSessionHasExpiredPleaseLogIn =>
+      'Your session has expired. Please log in again.';
+
+  @override
   String get chooseYourCircle => 'Choose Your Circle';
+
+  @override
+  String get youDoNotHaveAccessToThis =>
+      'You do not have access to this app. Please contact support.';
+
+  @override
+  String get unableToLoadYourProfilePleaseTry =>
+      'Unable to load your profile. Please try again.';
+
+  @override
+  String get otpSessionExpiredPleaseRequestANew =>
+      'OTP session expired. Please request a new OTP.';
 
   @override
   String get selectStateToContinue =>
       'Select your state to continue with the login';
+
+  @override
+  String get verificationExpiredPleaseVerifyTheOtpAgain =>
+      'Verification expired. Please verify the OTP again.';
 
   @override
   String get searchState => 'Search state';
