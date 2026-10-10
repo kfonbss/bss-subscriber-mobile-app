@@ -4598,6 +4598,48 @@ abstract class BssSubLocalizations {
   /// **'Failed to save PDF: {error}'**
   String failedToSavePdf(String error);
 
+  /// No description provided for @howCanIPayMyBillOnline.
+  ///
+  /// In en, this message translates to:
+  /// **'How can I pay my bill online?'**
+  String get howCanIPayMyBillOnline;
+
+  /// No description provided for @goToWalletPaymentsChoosePaymentMethod.
+  ///
+  /// In en, this message translates to:
+  /// **'Go to \"Wallet / Payments\" → Choose payment method → Proceed to Pay.'**
+  String get goToWalletPaymentsChoosePaymentMethod;
+
+  /// No description provided for @whatPaymentModesAreAccepted.
+  ///
+  /// In en, this message translates to:
+  /// **'What payment modes are accepted?'**
+  String get whatPaymentModesAreAccepted;
+
+  /// No description provided for @weAcceptVariousPaymentMethodsIncludingCredit.
+  ///
+  /// In en, this message translates to:
+  /// **'We accept various payment methods including credit cards, debit cards, UPI, and net banking.'**
+  String get weAcceptVariousPaymentMethodsIncludingCredit;
+
+  /// No description provided for @myInternetSpeedIsSlowWhatShould.
+  ///
+  /// In en, this message translates to:
+  /// **'My internet speed is slow. What should I do?'**
+  String get myInternetSpeedIsSlowWhatShould;
+
+  /// No description provided for @pleaseCheckYourConnectionRestartYourRouter.
+  ///
+  /// In en, this message translates to:
+  /// **'Please check your connection, restart your router, or contact our support team for assistance.'**
+  String get pleaseCheckYourConnectionRestartYourRouter;
+
+  /// No description provided for @payments.
+  ///
+  /// In en, this message translates to:
+  /// **'Payments'**
+  String get payments;
+
   /// No description provided for @failedToLoadPreview.
   ///
   /// In en, this message translates to:

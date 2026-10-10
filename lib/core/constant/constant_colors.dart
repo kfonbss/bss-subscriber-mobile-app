@@ -266,7 +266,7 @@ class AppColor {
   static const Color kSourceColor = Color(0xFF1095C5);
   static const Color kNotificationBorder = Color(0xFFE8E8E8);
   static const Color kNotificationDarkText = Color(0xFF222222);
-  static const Color kNotificationSubText = Color(0xFF666666);
+  static const Color kNotificationSubText = Color(0xFF67697A);
   static const Color kBadgeRed = Color(0xFFEF4444);
   static const Color kTealOverlay = Color(0x3D005D5D);
   static const Color kCheckboxBorderGrey = Color(0xFFBDBDBD);

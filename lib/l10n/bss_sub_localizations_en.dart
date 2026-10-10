@@ -2461,6 +2461,31 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   }
 
   @override
+  String get howCanIPayMyBillOnline => 'How can I pay my bill online?';
+
+  @override
+  String get goToWalletPaymentsChoosePaymentMethod =>
+      'Go to \"Wallet / Payments\" → Choose payment method → Proceed to Pay.';
+
+  @override
+  String get whatPaymentModesAreAccepted => 'What payment modes are accepted?';
+
+  @override
+  String get weAcceptVariousPaymentMethodsIncludingCredit =>
+      'We accept various payment methods including credit cards, debit cards, UPI, and net banking.';
+
+  @override
+  String get myInternetSpeedIsSlowWhatShould =>
+      'My internet speed is slow. What should I do?';
+
+  @override
+  String get pleaseCheckYourConnectionRestartYourRouter =>
+      'Please check your connection, restart your router, or contact our support team for assistance.';
+
+  @override
+  String get payments => 'Payments';
+
+  @override
   String get failedToLoadPreview => 'Failed to load preview';
 
   @override

@@ -170,8 +170,8 @@ class AppAssets {
   static const String securitySettings = 'assets/icons/security_settings.svg';
   static const String myTickets = 'assets/icons/my_tickets.svg';
   static const String myRechargesIcon = 'assets/icons/my_recharges.svg';
-  static const String homeTab = 'assets/bottomNaviBarIcons/home.png';
-  static const String selfCareTab = 'assets/bottomNaviBarIcons/self_care.png';
-  static const String chatTab = 'assets/bottomNaviBarIcons/chat.png';
-  static const String profileTab = 'assets/bottomNaviBarIcons/profile.png';
+  static const String homeTab = 'assets/bottomNaviBarIcons/home.svg';
+  static const String selfCareTab = 'assets/bottomNaviBarIcons/self_care.svg';
+  static const String chatTab = 'assets/bottomNaviBarIcons/chat.svg';
+  static const String profileTab = 'assets/bottomNaviBarIcons/profile.svg';
 }

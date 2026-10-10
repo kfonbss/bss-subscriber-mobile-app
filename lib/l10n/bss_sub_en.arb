@@ -1098,6 +1098,14 @@
       "error": { "type": "String" }
     }
   },
+  "howCanIPayMyBillOnline": "How can I pay my bill online?",
+  "goToWalletPaymentsChoosePaymentMethod": "Go to \"Wallet / Payments\" → Choose payment method → Proceed to Pay.",
+  "whatPaymentModesAreAccepted": "What payment modes are accepted?",
+  "weAcceptVariousPaymentMethodsIncludingCredit": "We accept various payment methods including credit cards, debit cards, UPI, and net banking.",
+  "myInternetSpeedIsSlowWhatShould": "My internet speed is slow. What should I do?",
+  "pleaseCheckYourConnectionRestartYourRouter": "Please check your connection, restart your router, or contact our support team for assistance.",
+
+  "payments": "Payments",
   "failedToLoadPreview": "Failed to load preview",
   "noAccessContactSupport": "You do not have access to this app. Please contact support.",
   "invalidResponse": "Invalid response",

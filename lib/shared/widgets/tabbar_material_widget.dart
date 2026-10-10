@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
@@ -90,13 +91,9 @@ class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
       shape: const _CurvedNotchShape(),
       color: Colors.white,
       surfaceTintColor: Colors.transparent,
-      // M3 default padding (16 × 12) squeezed the tabs and caused overflow.
       padding: EdgeInsets.zero,
-      // Design: soft black 11% shadow, blur ~19.
       elevation: 10.0,
       shadowColor: AppColor.kNavBarShadow,
-      // Design: 20.93 side padding, tabs 48.84 wide and 26.16 apart in pairs
-      // either side of the FAB; items sit ~15 below the bar top.
       child: Padding(
         padding: EdgeInsets.fromLTRB(20.93.w, 8.h, 20.93.w, 0),
         child: Row(
@@ -138,6 +135,7 @@ class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
     );
   }
 
+
   Widget _buildTabItem({
     required int index,
     required String icon,
@@ -145,45 +143,43 @@ class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
   }) {
     final isSelected = index == selectedIndex;
     return InkWell(
-      onTap:
-          () => setState(() {
-            selectedIndex = index;
-            widget.onChangedTab(index);
-          }),
+      onTap: () => setState(() {
+        selectedIndex = index;
+        widget.onChangedTab(index);
+      }),
       child: SizedBox(
-        width: 48.837.w,
-        // Scales down instead of overflowing when the bar is short (small
-        // screens or a large bottom inset).
-        child: FittedBox(
-          fit: BoxFit.scaleDown,
-          child: Padding(
-            padding: EdgeInsets.all(3.488.w),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                ImageIcon(
-                  AssetImage(icon),
-                  size: 20.93.w,
-                  color:
-                      isSelected
-                          ? AppColor.kPrimaryColor
-                          : AppColor.kNeutralGray90,
+        width: 49.w,
+        child: Padding(
+          padding: EdgeInsets.all(3.488.w),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              SvgPicture.asset(
+                icon,
+                height: 21.h,
+                width: 21.w,
+                colorFilter: ColorFilter.mode(
+                  isSelected
+                      ? AppColor.kPrimaryColor
+                      : AppColor.kNeutralGray90,
+                  BlendMode.srcIn,
                 ),
-                Text(
-                  label,
-                  maxLines: 1,
-                  overflow: TextOverflow.visible,
-                  softWrap: false,
-                  style: isSelected ? _selectedTextStyle : _unselectedTextStyle,
-                ),
-                Container(
-                  height: 2.616.h,
-                  width: 4.36.w,
-                  decoration:
-                      isSelected ? _selectedIndicator : _unselectedIndicator,
-                ),
-              ],
-            ),
+              ),
+              Text(
+                label,
+                maxLines: 1,
+                overflow: TextOverflow.visible,
+                softWrap: false,
+                style: isSelected ? _selectedTextStyle : _unselectedTextStyle,
+              ),
+              Container(
+                height: 2.616.h,
+                width: 4.36.w,
+                decoration: isSelected
+                    ? _selectedIndicator
+                    : _unselectedIndicator,
+              ),
+            ],
           ),
         ),
       ),

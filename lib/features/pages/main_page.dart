@@ -92,7 +92,6 @@ class _MainPageState extends State<MainPage> {
       bottomNavigationBar: TabBarMaterialWidget(
         onChangedTab: (i) => _currentIndex.value = i,
       ),
-      // Design: 56 circle, 24 icon, soft teal shadow (0, 7, blur 8.7).
       floatingActionButton: DecoratedBox(
         decoration: const BoxDecoration(
           shape: BoxShape.circle,
@@ -118,7 +117,6 @@ class _MainPageState extends State<MainPage> {
           ),
         ),
       ),
-      // Design: FAB centre sits ~9 above the bar's top edge.
       floatingActionButtonLocation: const _RaisedCenterDockedLocation(9),
       body: ValueListenableBuilder<int>(
         valueListenable: _currentIndex,

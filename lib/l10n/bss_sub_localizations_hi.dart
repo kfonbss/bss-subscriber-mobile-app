@@ -2454,6 +2454,33 @@ class BssSubLocalizationsHi extends BssSubLocalizations {
   }
 
   @override
+  String get howCanIPayMyBillOnline =>
+      'मैं अपना बिल ऑनलाइन कैसे भर सकता/सकती हूं?';
+
+  @override
+  String get goToWalletPaymentsChoosePaymentMethod =>
+      '\"वॉलेट / भुगतान\" पर जाएं → भुगतान का तरीका चुनें → भुगतान के लिए आगे बढ़ें।';
+
+  @override
+  String get whatPaymentModesAreAccepted =>
+      'कौन-से भुगतान माध्यम स्वीकार किए जाते हैं?';
+
+  @override
+  String get weAcceptVariousPaymentMethodsIncludingCredit =>
+      'हम क्रेडिट कार्ड, डेबिट कार्ड, UPI और नेट बैंकिंग सहित कई भुगतान माध्यम स्वीकार करते हैं।';
+
+  @override
+  String get myInternetSpeedIsSlowWhatShould =>
+      'मेरे इंटरनेट की स्पीड धीमी है। मुझे क्या करना चाहिए?';
+
+  @override
+  String get pleaseCheckYourConnectionRestartYourRouter =>
+      'कृपया अपना कनेक्शन जांचें, अपना राउटर रीस्टार्ट करें, या सहायता के लिए हमारी सपोर्ट टीम से संपर्क करें।';
+
+  @override
+  String get payments => 'भुगतान';
+
+  @override
   String get failedToLoadPreview => 'पूर्वावलोकन लोड करने में विफल';
 
   @override

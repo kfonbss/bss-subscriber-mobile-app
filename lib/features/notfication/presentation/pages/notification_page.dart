@@ -120,8 +120,9 @@ class _NotificationViewState extends State<_NotificationView> {
                         maxLines: 2,
                         overflow: TextOverflow.ellipsis,
                         style: TextStyle(
-                          fontSize: 15.sp,
+                          fontSize: 14.sp,
                           fontWeight: FontWeight.w600,
+                          height: 1.30,
                           color: AppColor.kNotificationDarkText,
                         ),
                       ),
@@ -144,8 +145,8 @@ class _NotificationViewState extends State<_NotificationView> {
                   maxLines: 3,
                   overflow: TextOverflow.ellipsis,
                   style: TextStyle(
-                    fontSize: 13.sp,
-                    height: 1.4,
+                    fontSize: 12.sp,
+                    height: 1.6,
                     fontWeight: FontWeight.w400,
                     color: AppColor.kNotificationSubText,
                   ),
@@ -162,15 +163,15 @@ class _NotificationViewState extends State<_NotificationView> {
 
   Widget _buildNotificationIcon() {
     return Container(
-      height: 44.h,
-      width: 44.w,
+      height: 38.h,
+      width: 38.w,
       decoration: BoxDecoration(
-        color: AppColor.kPrimaryColor.withValues(alpha: 0.1),
+        color: AppColor.kIconBackground,
         shape: BoxShape.circle,
       ),
       child: Icon(
-        Icons.notifications_outlined,
-        size: 22.sp,
+        Icons.language,
+        size: 20.sp,
         color: AppColor.kPrimaryColor,
       ),
     );
