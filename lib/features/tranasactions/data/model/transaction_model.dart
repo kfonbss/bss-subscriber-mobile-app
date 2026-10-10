@@ -44,7 +44,7 @@ class TransactionModel {
       paidBy: json['paidBy']?.toString() ?? '',
       paymentGateway: json['paymentGateway']?.toString() ?? '',
       responseMessage: json['responseMessage']?.toString() ?? '',
-      fileId: json['fileId']?.toString() ?? '4a6de59c-6d65-40e6-8e1b-43e42f0be25f',
+      fileId: json['fileId']?.toString() ?? '',
     );
   }
 

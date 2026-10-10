@@ -23,11 +23,7 @@ class CommonToggleSwitch extends StatelessWidget {
     shape: BoxShape.circle,
     color: Colors.white,
     boxShadow: [
-      BoxShadow(
-        color: Color(0x1A000000),
-        blurRadius: 2,
-        offset: Offset(0, 1),
-      ),
+      BoxShadow(color: AppColor.kBlack10, blurRadius: 2, offset: Offset(0, 1)),
     ],
   );
 

@@ -1,24 +1,39 @@
 import 'package:dartz/dartz.dart';
+import 'package:intl/intl.dart';
 import 'package:kfon_subscriber/core/constant/api_urls.dart';
 import 'package:kfon_subscriber/core/error/failure.dart';
 import 'package:kfon_subscriber/core/network/dio_client.dart';
 import 'package:kfon_subscriber/features/tranasactions/data/model/transaction_model.dart';
 import 'package:kfon_subscriber/features/tranasactions/domain/entity/transaction_entity.dart';
+import 'package:kfon_subscriber/features/tranasactions/domain/entity/transaction_filter.dart';
 import 'package:kfon_subscriber/features/tranasactions/domain/repository/transaction_repository.dart';
+import 'package:kfon_subscriber/service_locator.dart';
 
 class TransactionRepositoryImp extends TransactionRepository {
-  final DioClient _client;
 
-  TransactionRepositoryImp({required DioClient client}) : _client = client;
+  TransactionRepositoryImp();
 
   @override
   Future<Either<Failure, TransactionPageEntity>> getTransactions({
     required int page,
     required int size,
+    TransactionFilter filter = TransactionFilter.none,
   }) async {
-    final response = await _client.get(
+    // Optional filters are omitted entirely when not set.
+    final dateFormat = DateFormat('yyyy-MM-dd');
+    final queryParameters = <String, dynamic>{
+      'page': page,
+      'size': size,
+      if (filter.status != null && filter.status!.isNotEmpty)
+        'status': filter.status,
+      if (filter.hasDateRange) ...{
+        'fromDate': dateFormat.format(filter.fromDate!),
+        'toDate': dateFormat.format(filter.toDate!),
+      },
+    };
+    final response = await sl<DioClient>().get(
       ApiUrls.rechargeTransactionsURL,
-      queryParameters: {'page': page, 'size': size},
+      queryParameters: queryParameters,
     );
     if (response.isSuccess) {
       final model = TransactionPageModel.fromJson(

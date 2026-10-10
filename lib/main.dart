@@ -3,9 +3,10 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
-import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/constant/app_brand.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/routes/navigator_key.dart';
+import 'package:kfon_subscriber/core/util/app_locale.dart';
 import 'package:kfon_subscriber/core/util/preference_util.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_bloc.dart';
@@ -15,22 +16,15 @@ import 'package:kfon_subscriber/features/auth/presentation/pages/login_page.dart
 import 'package:kfon_subscriber/features/auth/presentation/pages/new_password_page.dart';
 import 'package:kfon_subscriber/features/auth/presentation/pages/otp_verification_page.dart';
 import 'package:kfon_subscriber/features/auth/presentation/pages/tenant_screen.dart';
-import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/agnp_enquiry_form.dart';
-import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/bpl_enquiry_form.dart';
-import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/dark_fibre_enquiry_form.dart';
-import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/enquiry_list_page.dart';
-import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/gov_and_corp_enquiry_form.dart';
-import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/home_enquiry_form.dart';
-import 'package:kfon_subscriber/features/enquiery_forms/presentation/pages/lnp_enquiry_form.dart';
 import 'package:kfon_subscriber/features/home/domain/repository/home_repository.dart';
 import 'package:kfon_subscriber/features/home/presentation/bloc/home_bloc.dart';
 import 'package:kfon_subscriber/features/invoice_list/domain/repository/invoice_repository.dart';
 import 'package:kfon_subscriber/features/invoice_list/presentation/bloc/invoice_list_bloc.dart';
 import 'package:kfon_subscriber/features/invoice_list/presentation/bloc/invoice_list_event.dart';
 import 'package:kfon_subscriber/features/invoice_list/presentation/pages/invoice_list_page.dart';
+import 'package:kfon_subscriber/features/notfication/presentation/pages/notification_page.dart';
 import 'package:kfon_subscriber/features/pages/intro_screen_page.dart';
 import 'package:kfon_subscriber/features/pages/main_page.dart';
-import 'package:kfon_subscriber/features/pages/notification_page.dart';
 import 'package:kfon_subscriber/features/profile/domain/repository/profile_repository.dart';
 import 'package:kfon_subscriber/features/profile/presentation/account_information/pages/account_information_page.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/settings_page.dart';
@@ -58,19 +52,16 @@ Future<void> main() async {
   setUpServiceLocator();
   final showIntro = await PreferenceUtils.showIntroScreen();
   final tenantId = await PreferenceUtils.getTenantId() ?? '';
-  runApp(
-    MyApp(showIntro: showIntro, tenantId: tenantId),
-  );
+  AppBrand.setTenant(tenantId);
+  await AppLocale.load();
+  runApp(MyApp(showIntro: showIntro, tenantId: tenantId));
 }
 
 class MyApp extends StatefulWidget {
   final bool showIntro;
   final String tenantId;
-  const MyApp({
-    super.key,
-    required this.showIntro,
-    required this.tenantId,
-  });
+
+  const MyApp({super.key, required this.showIntro, required this.tenantId});
 
   @override
   State<MyApp> createState() => _MyAppState();
@@ -81,18 +72,18 @@ class _MyAppState extends State<MyApp> {
 
   late final ProfileBloc _profileBloc;
   late final HomeBloc _homeBloc;
+
   @override
   void initState() {
     super.initState();
     _profileBloc = ProfileBloc(repository: sl<ProfileRepository>());
     _homeBloc = HomeBloc(repository: sl<HomeRepository>());
     _authBloc.add(const CheckAuthStatus());
+    AppLocale.notifier.addListener(_onLocaleChanged);
   }
 
   @override
   Widget build(BuildContext context) {
-    final theme = ThemeData.light();
-    final textTheme = theme.textTheme.apply(fontFamily: 'GeneralSans');
     return MultiBlocProvider(
       providers: [
         BlocProvider.value(value: _authBloc),
@@ -101,46 +92,16 @@ class _MyAppState extends State<MyApp> {
       ],
       child: MaterialApp(
         navigatorKey: navigatorKey,
-        theme: theme.copyWith(
-          primaryColor: AppColor.kPrimaryColor,
-          scaffoldBackgroundColor: AppColor.kMainBackgroundColor,
-          colorScheme: theme.colorScheme.copyWith(
-            primary: AppColor.kPrimaryColor,
-          ),
-          textTheme: textTheme.copyWith(
-            titleLarge: textTheme.titleLarge?.copyWith(
-              fontSize: 18,
-              letterSpacing: 0.0,
-            ),
-            titleMedium: textTheme.titleMedium?.copyWith(letterSpacing: 0.0),
-            titleSmall: textTheme.titleSmall?.copyWith(letterSpacing: 0.0),
-            bodyLarge: textTheme.bodyLarge?.copyWith(letterSpacing: 0.0),
-            bodyMedium: textTheme.bodyMedium?.copyWith(letterSpacing: 0.0),
-            bodySmall: textTheme.bodySmall?.copyWith(letterSpacing: 0.0),
-            labelLarge: textTheme.labelLarge?.copyWith(letterSpacing: 0.0),
-            labelMedium: textTheme.labelMedium?.copyWith(letterSpacing: 0.0),
-            labelSmall: textTheme.labelSmall?.copyWith(letterSpacing: 0.0),
-          ),
-          elevatedButtonTheme: ElevatedButtonThemeData(
-            style: ElevatedButton.styleFrom(
-              backgroundColor: AppColor.kPrimaryColor,
-              foregroundColor: Colors.white,
-              padding: EdgeInsets.symmetric(vertical: 14, horizontal: 28),
-              shape: RoundedRectangleBorder(
-                borderRadius: BorderRadius.circular(10),
-              ),
-            ),
-          ),
-        ),
         builder: (context, child) {
           Sizer.init(context, designHeight: 812.0, designWidth: 375.0);
           return child!;
         },
-        localizationsDelegates: [BssSubLocalizations.delegate],
-        supportedLocales: [const Locale('en')],
+        localizationsDelegates: BssSubLocalizations.localizationsDelegates,
+        locale: AppLocale.notifier.value,
+        supportedLocales: AppLocale.supported,
         routes: {
           AppRoutes.tenant: (context) => TenantScreen(),
-          AppRoutes.login: (context)=>LoginPage(),
+          AppRoutes.login: (context) => LoginPage(),
           AppRoutes.otpVerification: (context) {
             final args =
                 ModalRoute.of(context)?.settings.arguments
@@ -154,16 +115,6 @@ class _MyAppState extends State<MyApp> {
           AppRoutes.newPassword: (context) => const NewPasswordPage(),
           AppRoutes.mainPage: (context) => MainPage(),
           AppRoutes.forgotPassword: (context) => ForgotPasswordPage(),
-          AppRoutes.enquiryListPage: (context) => EnquiryFormList(),
-          AppRoutes.homeEnquiryForm: (context) => HomeEnquiryForm(),
-          AppRoutes.lnpEnquiryForm: (context) => LNPEnquiryForm(),
-          AppRoutes.bplEnquiryForm: (context) => BPLEnquiryForm(),
-          AppRoutes.governmentEnquiryForm:
-              (context) => GovAndCorpEnquiryForm(isGovernmentEnquiry: true),
-          AppRoutes.corporateEnquiryForm:
-              (context) => GovAndCorpEnquiryForm(isGovernmentEnquiry: false),
-          AppRoutes.agnpEnquiryForm: (context) => AGNPEnquiryForm(),
-          AppRoutes.darkFibreEnquiryForm: (context) => DarkFibreEnquiryForm(),
           AppRoutes.accountInformationPage:
               (context) => AccountInformationPage(),
           AppRoutes.notificationPage: (context) => NotificationPage(),
@@ -185,12 +136,14 @@ class _MyAppState extends State<MyApp> {
             FlutterNativeSplash.remove();
           },
           builder: (context, state) {
+            // Flow: tenant → intro (first launch) → login. The tenant comes
+            // first because the intro uses the tenant's primary colour.
             if (state is Authenticated) {
               return MainPage();
-            } else if (widget.showIntro) {
-              return IntroScreenPage();
             } else if (widget.tenantId.isEmpty) {
               return TenantScreen();
+            } else if (widget.showIntro) {
+              return IntroScreenPage();
             } else {
               return LoginPage();
             }
@@ -199,9 +152,13 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
+  void _onLocaleChanged() {
+    if (mounted) setState(() {});
+  }
 
   @override
   void dispose() {
+    AppLocale.notifier.removeListener(_onLocaleChanged);
     _authBloc.close();
     _profileBloc.close();
     _homeBloc.close();

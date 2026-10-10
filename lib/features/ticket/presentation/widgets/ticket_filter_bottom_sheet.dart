@@ -1,11 +1,13 @@
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
-import 'package:kfon_subscriber/core/helper/bottom_sheet_helper.dart';
+import 'package:kfon_subscriber/shared/widgets/common_bottom_sheet.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class TicketFilterValue {
   final String? priority;
@@ -38,13 +40,13 @@ class TicketFilterBottomSheet extends StatefulWidget {
     required TicketFilterValue initialValue,
     required ValueChanged<TicketFilterValue> onApply,
   }) async {
-    await BottomSheetHelper.show<void>(
+    await showAppModalBottomSheet<void>(
       context: context,
-      title: context.bssSubL10n.filter,
-      child: TicketFilterBottomSheet(
-        initialValue: initialValue,
-        onApply: onApply,
-      ),
+      builder:
+          (_) => TicketFilterBottomSheet(
+            initialValue: initialValue,
+            onApply: onApply,
+          ),
     );
   }
 
@@ -89,7 +91,7 @@ class _TicketFilterBottomSheetState extends State<TicketFilterBottomSheet> {
   }
 
   String _dateLabel(DateTime? value) {
-    if (value == null) return 'Select date';
+    if (value == null) return context.bssSubL10n.selectDate;
     return DateFormat('dd MMM yyyy').format(value);
   }
 
@@ -133,30 +135,53 @@ class _TicketFilterBottomSheetState extends State<TicketFilterBottomSheet> {
     Navigator.of(context).pop();
   }
 
+  // Drag handle, background and safe area come from showAppModalBottomSheet;
+  // the title and padding match the old BottomSheetHelper layout.
+  static final _titleStyle = TextStyle(
+    color: AppColor.kNearBlack,
+    fontSize: 18.sp,
+    fontWeight: FontWeight.w600,
+    height: 1.4,
+  );
+
   @override
   Widget build(BuildContext context) {
+    return Padding(
+      padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+      child: Column(
+        mainAxisSize: MainAxisSize.min,
+        children: [
+          Text(context.bssSubL10n.filter, style: _titleStyle),
+          SizedBox(height: 30.h),
+          _buildFields(context),
+        ],
+      ),
+    );
+  }
+
+  Widget _buildFields(BuildContext context) {
     return Column(
       children: [
         _dropdownField<String?>(
-          label: 'Priority',
+          label: context.bssSubL10n.priority,
           value: _selectedPriority,
           items: [null, ..._priorities],
           itemLabel: (value) => value ?? context.bssSubL10n.all,
           controller: _priorityController,
           onChanged: (value) => setState(() => _selectedPriority = value),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12.h),
         _dropdownField<String?>(
-          label: 'Status',
+          label: context.bssSubL10n.status,
           value: _selectedStatus,
           items: [null, ..._statuses],
           itemLabel: (value) => value ?? context.bssSubL10n.all,
           controller: _statusController,
           onChanged: (value) => setState(() => _selectedStatus = value),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12.h),
         _dateField(
-          label: 'Created Date From',
+          label: context.bssSubL10n.createdDateFrom,
           value: _dateLabel(_createdDateFrom),
           onTap: _pickFromDate,
           onClear:
@@ -164,9 +189,9 @@ class _TicketFilterBottomSheetState extends State<TicketFilterBottomSheet> {
                   ? null
                   : () => setState(() => _createdDateFrom = null),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12.h),
         _dateField(
-          label: 'Created Date To',
+          label: context.bssSubL10n.createdDateTo,
           value: _dateLabel(_createdDateTo),
           onTap: _pickToDate,
           onClear:
@@ -175,7 +200,7 @@ class _TicketFilterBottomSheetState extends State<TicketFilterBottomSheet> {
                   : () => setState(() => _createdDateTo = null),
         ),
 
-        const SizedBox(height: 24),
+        SizedBox(height: 24.h),
         Row(
           children: [
             Expanded(
@@ -186,7 +211,7 @@ class _TicketFilterBottomSheetState extends State<TicketFilterBottomSheet> {
                 onClicked: () => Navigator.of(context).pop(),
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12.w),
             Expanded(
               child: PrimaryButton(
                 label: context.bssSubL10n.search,
@@ -219,16 +244,16 @@ class _TicketFilterBottomSheetState extends State<TicketFilterBottomSheet> {
     required VoidCallback onTap,
     VoidCallback? onClear,
   }) {
-    final isPlaceholder = value == 'Select date';
+    final isPlaceholder = value == context.bssSubL10n.selectDate;
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _fieldLabel(label),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         InkWell(
           onTap: onTap,
           child: Container(
-            height: 48,
+            height: 48.h,
             padding: const EdgeInsets.symmetric(horizontal: 16),
             decoration: BoxDecoration(
               color: Colors.white,
@@ -265,11 +290,11 @@ class _TicketFilterBottomSheetState extends State<TicketFilterBottomSheet> {
                   )
                 else
                   SvgPicture.asset(
-                    'assets/icons/calendar.svg',
-                    width: 20,
-                    height: 20,
+                    AppAssets.calendar,
+                    width: 20.w,
+                    height: 20.h,
                     colorFilter: const ColorFilter.mode(
-                      Color(0xFF9CA3AF),
+                      AppColor.kCoolGrey,
                       BlendMode.srcIn,
                     ),
                   ),
@@ -300,7 +325,7 @@ class _TicketFilterBottomSheetState extends State<TicketFilterBottomSheet> {
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         _fieldLabel(label),
-        const SizedBox(height: 8),
+        SizedBox(height: 8.h),
         Container(
           decoration: BoxDecoration(
             color: Colors.white,
@@ -321,7 +346,7 @@ class _TicketFilterBottomSheetState extends State<TicketFilterBottomSheet> {
                   fontSize: 14,
                   fontWeight: FontWeight.w400,
                 ),
-                inputDecorationTheme: const InputDecorationTheme(
+                inputDecorationTheme: InputDecorationTheme(
                   contentPadding: EdgeInsets.symmetric(
                     horizontal: 16,
                     vertical: 14,
@@ -331,7 +356,7 @@ class _TicketFilterBottomSheetState extends State<TicketFilterBottomSheet> {
                   enabledBorder: InputBorder.none,
                   focusedBorder: InputBorder.none,
                   disabledBorder: InputBorder.none,
-                  constraints: BoxConstraints.tightFor(height: 48),
+                  constraints: BoxConstraints.tightFor(height: 48.h),
                 ),
                 menuStyle: MenuStyle(
                   alignment: Alignment.bottomLeft,
@@ -386,7 +411,7 @@ class _TicketFilterBottomSheetState extends State<TicketFilterBottomSheet> {
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           _fieldLabel(label),
-          const SizedBox(height: 8),
+          SizedBox(height: 8.h),
           Wrap(
             spacing: 16,
             runSpacing: 8,
@@ -419,8 +444,8 @@ class _TicketFilterBottomSheetState extends State<TicketFilterBottomSheet> {
         mainAxisSize: MainAxisSize.min,
         children: [
           SizedBox(
-            width: 20,
-            height: 20,
+            width: 20.w,
+            height: 20.h,
             child: Radio<T>(
               value: value,
               groupValue: groupValue,
@@ -430,7 +455,7 @@ class _TicketFilterBottomSheetState extends State<TicketFilterBottomSheet> {
               visualDensity: VisualDensity.compact,
             ),
           ),
-          const SizedBox(width: 8),
+          SizedBox(width: 8.w),
           Text(
             label,
             style: const TextStyle(

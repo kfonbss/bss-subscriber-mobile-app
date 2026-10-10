@@ -8,22 +8,33 @@ class SecondaryButton extends StatelessWidget {
   final Widget? icon;
   final String label;
   final bool isLoading;
-  final VoidCallback onClicked;
-  final double? borderRadius;
+  final VoidCallback? onClicked;
+  final double borderRadius;
   final double? height;
+  final double? width;
   final Color? backgroundColor;
+  final Color? borderColor;
+
+  /// Text and icon colour; defaults to [borderColor] so an outlined button
+  /// reads as one colour unless the caller says otherwise.
+  final Color? foregroundColor;
   final TextStyle? textStyle;
   final double? loaderSize;
+  final EdgeInsetsGeometry? padding;
 
   const SecondaryButton({
     super.key,
     this.icon,
     required this.label,
     this.isLoading = false,
-    required this.onClicked,
-    this.borderRadius,
+    this.onClicked,
+    required this.borderRadius,
     this.height,
+    this.width,
+    this.padding,
     this.backgroundColor,
+    this.borderColor,
+    this.foregroundColor,
     this.textStyle,
     this.loaderSize,
   });
@@ -35,46 +46,44 @@ class SecondaryButton extends StatelessWidget {
       icon: isLoading || icon == null
           ? null
           : SizedBox(
-        height: AppDimensions.kButtonIconSize,
-        width: AppDimensions.kButtonIconSize,
-        child: icon,
-      ),
+              height: AppDimensions.kButtonIconSize,
+              width: AppDimensions.kButtonIconSize,
+              child: icon,
+            ),
       label: isLoading
           ? SizedBox(
-        height: loaderSize ?? 20,
-        width: loaderSize ?? 20,
-        child: CircularProgressIndicator(
-          color: AppColor.kPrimaryColor,
-          strokeWidth: 2,
-        ),
-      )
+              height: loaderSize ?? 20,
+              width: loaderSize ?? 20,
+              child: CircularProgressIndicator(
+                color: borderColor ?? AppColor.kPrimaryColor,
+                strokeWidth: 2,
+              ),
+            )
           : Text(label),
       iconAlignment: IconAlignment.start,
       style: FilledButton.styleFrom(
         shape: RoundedRectangleBorder(
-          borderRadius: BorderRadius.circular(borderRadius??10),
+          borderRadius: BorderRadius.circular(borderRadius),
         ),
         elevation: 0,
-        minimumSize: Size(double.infinity, height??50),
-        fixedSize: Size(double.infinity, height??50),
+        minimumSize: Size(width ?? double.infinity, height ?? 52.h),
+        fixedSize: Size(width ?? double.infinity, height ?? 52.h),
         backgroundColor: backgroundColor ?? Colors.white,
-        foregroundColor: AppColor.kPrimaryColor,
+        foregroundColor:
+            foregroundColor ?? borderColor ?? AppColor.kPrimaryColor,
         side: BorderSide(
-          color: AppColor.kPrimaryColor, // Border color
-          width: 1, // Border width
+          color: borderColor ?? AppColor.kPrimaryColor, // Border color
+          width: 1.w, // Border width
         ),
-        padding: EdgeInsets.zero,
+        padding: padding ?? EdgeInsets.zero,
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        textStyle: textStyle ??
-             TextStyle(
-              fontSize: 12.sp,
-              fontFamily: 'GeneralSans',
+        textStyle:
+            textStyle ??
+            TextStyle(
+              fontSize: AppDimensions.kButtonTextSize.sp,
               fontWeight: FontWeight.w500,
-              height: 1.3,
-
             ),
       ),
     );
   }
 }
-

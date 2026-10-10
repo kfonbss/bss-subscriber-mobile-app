@@ -21,7 +21,8 @@ class CommonPasswordTextField extends StatefulWidget {
   });
 
   @override
-  State<CommonPasswordTextField> createState() => _CommonPasswordTextFieldState();
+  State<CommonPasswordTextField> createState() =>
+      _CommonPasswordTextFieldState();
 }
 
 class _CommonPasswordTextFieldState extends State<CommonPasswordTextField> {
@@ -29,16 +30,20 @@ class _CommonPasswordTextFieldState extends State<CommonPasswordTextField> {
 
   @override
   Widget build(BuildContext context) {
+    // Design: heading 14 w600 #0F1121, 8 above a 48-tall field
+    // (1px #EAEAEA border, radius 12, 16 side padding, 24 eye icon).
     return Column(
-      spacing: 6,
+      spacing: 8.h,
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
         Text(
           widget.heading,
           style: TextStyle(
+            fontFamily: 'GeneralSans',
             fontSize: 14.sp,
             fontWeight: FontWeight.w600,
-            color: Colors.black,
+            height: 1.30,
+            color: AppColor.kTextSecondaryDark,
           ),
         ),
         TextFormField(
@@ -59,25 +64,40 @@ class _CommonPasswordTextFieldState extends State<CommonPasswordTextField> {
             counterText: '',
 
             hintText: widget.hintText,
-            hintStyle: Theme.of(
-              context,
-            ).textTheme.bodyMedium?.copyWith(color: AppColor.kTextFiledHintColor),
+            hintStyle: TextStyle(
+              fontFamily: 'GeneralSans',
+              fontSize: 12.sp,
+              fontWeight: FontWeight.w400,
+              height: 1.60,
+              color: AppColor.kTextFiledPlaceholderColor,
+            ),
             errorStyle: Theme.of(
               context,
             ).textTheme.bodySmall?.copyWith(color: AppColor.kFailedRed),
-            contentPadding: EdgeInsets.all(12),
+            contentPadding: EdgeInsets.symmetric(
+              horizontal: 16.w,
+              vertical: 12,
+            ),
 
-            suffixIcon: IconButton(
-              icon: Icon(
-                obscureText
-                    ? Icons.visibility_outlined
-                    : Icons.visibility_off_outlined,
+            // 40-wide tap target + 8 right padding puts the 24 icon 16 from
+            // the edge; the 48 min height sets the field height.
+            suffixIcon: Padding(
+              padding: const EdgeInsets.only(right: 8),
+              child: IconButton(
+                padding: EdgeInsets.zero,
+                constraints: const BoxConstraints(minWidth: 40, minHeight: 48),
+                iconSize: 24,
+                icon: Icon(
+                  obscureText
+                      ? Icons.visibility_outlined
+                      : Icons.visibility_off_outlined,
+                ),
+                onPressed: () {
+                  setState(() {
+                    obscureText = !obscureText;
+                  });
+                },
               ),
-              onPressed: () {
-                setState(() {
-                  obscureText = !obscureText;
-                });
-              },
             ),
 
             focusedBorder: OutlineInputBorder(

@@ -37,8 +37,9 @@ class _DataUsageChartState extends State<_DataUsageChart> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     // Cached here so build() doesn't call withValues() on every frame.
-    _belowBarColor =
-        Theme.of(context).colorScheme.primary.withValues(alpha: 0.1);
+    _belowBarColor = Theme.of(
+      context,
+    ).colorScheme.primary.withValues(alpha: 0.1);
   }
 
   @override
@@ -50,14 +51,16 @@ class _DataUsageChartState extends State<_DataUsageChart> {
   }
 
   void _recompute(List<GraphDataEntity> data) {
-    _usageSpots = data
-        .asMap()
-        .entries
-        .map((e) => FlSpot(e.key.toDouble() + 1, e.value.usageGb))
-        .toList();
-    final maxY = data.isNotEmpty
-        ? data.map((e) => e.usageGb).reduce((a, b) => a > b ? a : b)
-        : 10.0;
+    _usageSpots =
+        data
+            .asMap()
+            .entries
+            .map((e) => FlSpot(e.key.toDouble() + 1, e.value.usageGb))
+            .toList();
+    final maxY =
+        data.isNotEmpty
+            ? data.map((e) => e.usageGb).reduce((a, b) => a > b ? a : b)
+            : 10.0;
     _adjustedMaxY = maxY * 1.2;
   }
 
@@ -101,44 +104,45 @@ class _DataUsageChartState extends State<_DataUsageChart> {
                             fontWeight: FontWeight.w500,
                           ),
                         ),
-                        const SizedBox(width: 4),
+                        SizedBox(width: 4.w),
                         const Icon(Icons.keyboard_arrow_down, size: 16),
                       ],
                     ),
                   ),
                   onSelected: widget.onPeriodChanged,
-                  itemBuilder: (context) => [
-                    PopupMenuItem(
-                      value: 'DAY',
-                      child: Row(
-                        children: [
-                          const Icon(Icons.today, size: 18),
-                          const SizedBox(width: 12),
-                          Text(context.bssSubL10n.day),
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 'WEEK',
-                      child: Row(
-                        children: [
-                          const Icon(Icons.calendar_view_week, size: 18),
-                          const SizedBox(width: 12),
-                          Text(context.bssSubL10n.week),
-                        ],
-                      ),
-                    ),
-                    PopupMenuItem(
-                      value: 'MONTH',
-                      child: Row(
-                        children: [
-                          const Icon(Icons.calendar_view_month, size: 18),
-                          const SizedBox(width: 12),
-                          Text(context.bssSubL10n.month),
-                        ],
-                      ),
-                    ),
-                  ],
+                  itemBuilder:
+                      (context) => [
+                        PopupMenuItem(
+                          value: 'DAY',
+                          child: Row(
+                            children: [
+                              const Icon(Icons.today, size: 18),
+                              SizedBox(width: 12.w),
+                              Text(context.bssSubL10n.day),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 'WEEK',
+                          child: Row(
+                            children: [
+                              const Icon(Icons.calendar_view_week, size: 18),
+                              SizedBox(width: 12.w),
+                              Text(context.bssSubL10n.week),
+                            ],
+                          ),
+                        ),
+                        PopupMenuItem(
+                          value: 'MONTH',
+                          child: Row(
+                            children: [
+                              const Icon(Icons.calendar_view_month, size: 18),
+                              SizedBox(width: 12.w),
+                              Text(context.bssSubL10n.month),
+                            ],
+                          ),
+                        ),
+                      ],
                   offset: const Offset(0, 40),
                   shape: RoundedRectangleBorder(
                     borderRadius: BorderRadius.circular(8),
@@ -148,9 +152,9 @@ class _DataUsageChartState extends State<_DataUsageChart> {
                 ),
               ],
             ),
-            const SizedBox(height: 16),
+            SizedBox(height: 16.h),
             SizedBox(
-              height: 180,
+              height: 180.h,
               child: LineChart(
                 LineChartData(
                   minX: 1,
@@ -161,10 +165,11 @@ class _DataUsageChartState extends State<_DataUsageChart> {
                     show: true,
                     horizontalInterval: _adjustedMaxY / 5,
                     verticalInterval: 1,
-                    getDrawingHorizontalLine: (value) => const FlLine(
-                      color: Color(0x26808080), // grey @ 15% opacity
-                      strokeWidth: 1,
-                    ),
+                    getDrawingHorizontalLine:
+                        (value) => const FlLine(
+                          color: AppColor.kGrey15, // grey @ 15% opacity
+                          strokeWidth: 1,
+                        ),
                     drawVerticalLine: false,
                   ),
                   borderData: FlBorderData(show: false),
@@ -183,7 +188,9 @@ class _DataUsageChartState extends State<_DataUsageChart> {
                         getTitlesWidget: (value, meta) {
                           if (value == 0) return const SizedBox.shrink();
                           return Text(
-                            context.bssSubL10n.valueInGb(value.toInt().toString()),
+                            context.bssSubL10n.valueInGb(
+                              value.toInt().toString(),
+                            ),
                             style: theme.textTheme.labelSmall?.copyWith(
                               fontSize: 9,
                               color: AppColor.kTextSecondary,
@@ -218,15 +225,17 @@ class _DataUsageChartState extends State<_DataUsageChart> {
                   ),
                   lineTouchData: LineTouchData(
                     handleBuiltInTouches: true,
-                    getTouchedSpotIndicator: (barData, spotIndexes) =>
-                        spotIndexes.map((_) => null).toList(),
+                    getTouchedSpotIndicator:
+                        (barData, spotIndexes) =>
+                            spotIndexes.map((_) => null).toList(),
                     touchTooltipData: LineTouchTooltipData(
                       tooltipPadding: const EdgeInsets.symmetric(
                         horizontal: 10,
                         vertical: 8,
                       ),
-                      getTooltipColor: (LineBarSpot touchedSpot) =>
-                          AppColor.kSecondaryBackgroundColor,
+                      getTooltipColor:
+                          (LineBarSpot touchedSpot) =>
+                              AppColor.kSecondaryBackgroundColor,
                     ),
                   ),
 

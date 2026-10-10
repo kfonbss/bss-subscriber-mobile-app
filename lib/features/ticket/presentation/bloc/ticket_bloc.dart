@@ -32,6 +32,7 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
     on<OnCategorySelect>(_onCategorySelect);
     on<OnFileSelect>(_onFileSelect);
     on<OnAddNote>(_onAddNote);
+    on<OnRateTicket>(_onRateTicket);
   }
 
   void _emitMaster(Emitter<TicketState> emit) {
@@ -60,14 +61,11 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
   }
 
   Future<void> _onLoadSubjects(
-      LoadSubjects event,
-      Emitter<TicketState> emit,
-      ) async {
+    LoadSubjects event,
+    Emitter<TicketState> emit,
+  ) async {
     try {
-      _master = _master.copyWith(
-        subjectsLoading: true,
-        subjectsError: null,
-      );
+      _master = _master.copyWith(subjectsLoading: true, subjectsError: null);
       _emitMaster(emit);
 
       final result = await ticketRepository.getSubjects(
@@ -75,14 +73,14 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
       );
 
       result.fold(
-            (error) {
+        (error) {
           _master = _master.copyWith(
             subjectsLoading: false,
             subjectsError: error.toString(),
           );
           _emitMaster(emit);
         },
-            (subjects) {
+        (subjects) {
           _master = _master.copyWith(
             subjectsLoading: false,
             subjectsError: null,
@@ -101,9 +99,9 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
   }
 
   Future<void> _onLoadCategories(
-      LoadCategories event,
-      Emitter<TicketState> emit,
-      ) async {
+    LoadCategories event,
+    Emitter<TicketState> emit,
+  ) async {
     try {
       _master = _master.copyWith(
         categoriesLoading: true,
@@ -114,14 +112,14 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
       final result = await ticketRepository.getCategories();
 
       result.fold(
-            (error) {
+        (error) {
           _master = _master.copyWith(
             categoriesLoading: false,
             categoriesError: error.toString(),
           );
           _emitMaster(emit);
         },
-            (categories) {
+        (categories) {
           _master = _master.copyWith(
             categoriesLoading: false,
             categoriesError: null,
@@ -140,24 +138,25 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
   }
 
   Future<void> _onLoadCustomerTypeId(
-      LoadCustomerTypeId event,
-      Emitter<TicketState> emit,
-      ) async {
+    LoadCustomerTypeId event,
+    Emitter<TicketState> emit,
+  ) async {
     try {
       final result = await ticketRepository.getCustomerTypes();
 
       result.fold(
-            (error) {
+        (error) {
           // Non-blocking: just log; submit will guard via null check
         },
-            (customerTypes) {
-          final match = customerTypes
-              .where(
-                (ct) =>
-            ct.code.toUpperCase() == event.code.toUpperCase() &&
-                ct.isActive,
-          )
-              .firstOrNull;
+        (customerTypes) {
+          final match =
+              customerTypes
+                  .where(
+                    (ct) =>
+                        ct.code.toUpperCase() == event.code.toUpperCase() &&
+                        ct.isActive,
+                  )
+                  .firstOrNull;
 
           if (match != null) {
             _master = _master.copyWith(customerTypeId: match.id);
@@ -171,9 +170,9 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
   }
 
   Future<void> _onLoadPriorities(
-      LoadPriorities event,
-      Emitter<TicketState> emit,
-      ) async {
+    LoadPriorities event,
+    Emitter<TicketState> emit,
+  ) async {
     try {
       _master = _master.copyWith(
         prioritiesLoading: true,
@@ -184,14 +183,14 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
       final result = await ticketRepository.getPriorities();
 
       result.fold(
-            (error) {
+        (error) {
           _master = _master.copyWith(
             prioritiesLoading: false,
             prioritiesError: error.toString(),
           );
           _emitMaster(emit);
         },
-            (priorities) {
+        (priorities) {
           _master = _master.copyWith(
             prioritiesLoading: false,
             prioritiesError: null,
@@ -210,18 +209,18 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
   }
 
   Future<void> _onLoadVisibilityPermissions(
-      LoadVisibilityPermissions event,
-      Emitter<TicketState> emit,
-      ) async {
+    LoadVisibilityPermissions event,
+    Emitter<TicketState> emit,
+  ) async {
     try {
       emit(const VisibilityLoading());
       final result = await ticketRepository.getVisibilityPermissions();
 
       result.fold(
-            (error) {
+        (error) {
           emit(OnError(errorMessage: error.toString()));
         },
-            (visibilities) {
+        (visibilities) {
           emit(VisibilityLoaded(visibilities: visibilities));
         },
       );
@@ -231,19 +230,19 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
   }
 
   Future<void> _onSubmitTicket(
-      OnSubmitTicket event,
-      Emitter<TicketState> emit,
-      ) async {
+    OnSubmitTicket event,
+    Emitter<TicketState> emit,
+  ) async {
     try {
       emit(const TicketSubmitting());
       final result = await ticketRepository.submitTicket(event.params);
 
       result.fold(
-            (error) {
+        (error) {
           emit(OnError(errorMessage: error.toString()));
           _emitMaster(emit);
         },
-            (respoEntity) {
+        (respoEntity) {
           emit(TicketSubmitted(respoEntity: respoEntity));
         },
       );
@@ -254,9 +253,9 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
   }
 
   Future<void> _onLoadTickets(
-      LoadTickets event,
-      Emitter<TicketState> emit,
-      ) async {
+    LoadTickets event,
+    Emitter<TicketState> emit,
+  ) async {
     _lastTicketsParams = event.params;
 
     final currentState = state;
@@ -274,12 +273,12 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
       final result = await ticketRepository.getTickets(event.params);
 
       result.fold(
-            (error) {
+        (error) {
           emit(
             OnError(errorMessage: error.toString(), previousData: previousData),
           );
         },
-            (response) {
+        (response) {
           emit(TicketsLoaded(data: response));
         },
       );
@@ -289,9 +288,9 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
   }
 
   Future<void> _onLoadMoreTickets(
-      LoadMoreTickets event,
-      Emitter<TicketState> emit,
-      ) async {
+    LoadMoreTickets event,
+    Emitter<TicketState> emit,
+  ) async {
     final currentState = state;
     if (currentState is! TicketsLoaded) return;
 
@@ -319,10 +318,10 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
       final result = await ticketRepository.getTickets(params);
 
       result.fold(
-            (error) {
+        (error) {
           emit(currentState.copyWith(isLoadingMore: false));
         },
-            (response) {
+        (response) {
           final allTickets = [
             ...currentState.data.tickets,
             ...response.tickets,
@@ -344,19 +343,37 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
     }
   }
 
-  Future<void> _onAddNote(
-      OnAddNote event,
-      Emitter<TicketState> emit,
-      ) async {
+  Future<void> _onRateTicket(
+    OnRateTicket event,
+    Emitter<TicketState> emit,
+  ) async {
+    emit(const RatingSubmitting());
+    try {
+      final result = await ticketRepository.rateTicket(event.params);
+      result.fold(
+        (error) => emit(OnError(errorMessage: error.toString())),
+        (_) => emit(
+          RatingSubmitted(
+            rating: event.params.rating,
+            comment: event.params.comment,
+          ),
+        ),
+      );
+    } catch (e) {
+      emit(OnError(errorMessage: e.toString()));
+    }
+  }
+
+  Future<void> _onAddNote(OnAddNote event, Emitter<TicketState> emit) async {
     try {
       emit(const NoteSubmitting());
       final result = await ticketRepository.addNote(event.params);
 
       result.fold(
-            (error) {
+        (error) {
           emit(OnError(errorMessage: error.toString()));
         },
-            (respoEntity) {
+        (respoEntity) {
           emit(NoteSubmitted(respoEntity: respoEntity));
         },
       );
@@ -366,9 +383,9 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
   }
 
   Future<void> _onRefreshTickets(
-      RefreshTickets event,
-      Emitter<TicketState> emit,
-      ) async {
+    RefreshTickets event,
+    Emitter<TicketState> emit,
+  ) async {
     _lastTicketsParams = event.params;
 
     final currentState = state;
@@ -386,14 +403,14 @@ class TicketBloc extends Bloc<TicketEvent, TicketState> {
       final result = await ticketRepository.getTickets(event.params);
 
       result.fold(
-            (error) {
+        (error) {
           if (currentData != null) {
             emit(TicketsLoaded(data: currentData));
           } else {
             emit(OnError(errorMessage: error.toString()));
           }
         },
-            (response) {
+        (response) {
           emit(TicketsLoaded(data: response));
         },
       );

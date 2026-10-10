@@ -20,10 +20,6 @@ class PriorityModel {
   }
 
   PriorityEntity toEntity() {
-    return PriorityEntity(
-      code: code,
-      name: name,
-      isActive: isActive,
-    );
+    return PriorityEntity(code: code, name: name, isActive: isActive);
   }
 }

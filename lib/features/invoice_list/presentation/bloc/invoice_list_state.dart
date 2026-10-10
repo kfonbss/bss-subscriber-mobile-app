@@ -51,9 +51,10 @@ class InvoiceListLoaded extends InvoiceListState {
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       currentPage: currentPage ?? this.currentPage,
-      paginationError: identical(paginationError, _clear)
-          ? this.paginationError
-          : paginationError as String?,
+      paginationError:
+          identical(paginationError, _clear)
+              ? this.paginationError
+              : paginationError as String?,
     );
   }
 

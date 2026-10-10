@@ -22,6 +22,7 @@ class LoadPackages extends ChangePlanEvent {
   @override
   List<Object?> get props => [tab, packageId, subscriberUuid];
 }
+
 class LoadMorePackages extends ChangePlanEvent {
   final PlanTab tab;
   final String packageId;

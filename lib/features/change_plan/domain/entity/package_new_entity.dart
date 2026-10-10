@@ -93,7 +93,6 @@ class PackageInfoEntity extends Equatable {
     required this.volumeType,
     required this.volumeValue,
     required this.planTypeName,
-
   });
 
   @override

@@ -37,11 +37,17 @@ class TicketMovementEntity {
   final String? note;
   final String status;
   final String? assignedToName;
+  final String? assignedFromName;
+  final String? assignedFromDesignation;
+  final String? assignedToSeatName;
+  final String? assignedFromSeatName;
   final DateTime? createdDate;
+
   /// Legacy: direct URL strings when API returns plain strings.
   final List<String> imageUrl;
   final List<String> videoUrl;
   final List<String> documentUrl;
+
   /// When API returns `{ fileId, attachmentsId, movementId }` objects per item.
   final List<String> imageFileIds;
   final List<String> videoFileIds;
@@ -52,6 +58,10 @@ class TicketMovementEntity {
     this.note,
     required this.status,
     this.assignedToName,
+    this.assignedFromName,
+    this.assignedFromDesignation,
+    this.assignedToSeatName,
+    this.assignedFromSeatName,
     this.createdDate,
     this.imageUrl = const [],
     this.videoUrl = const [],
@@ -85,6 +95,13 @@ class TicketEntity {
   final List<TicketAttachmentEntity> attachments;
   final List<TicketMovementEntity> movements;
 
+  /// Only present on GST and PAN Updation tickets.
+  final TicketGstinDetailsEntity? gstinDetails;
+
+  /// Existing customer rating (1–5), if the ticket has been rated.
+  final int? rating;
+  final String? ratingComment;
+
   const TicketEntity({
     required this.uuid,
     this.ticketId,
@@ -107,5 +124,37 @@ class TicketEntity {
     this.remarks,
     this.attachments = const [],
     this.movements = const [],
+    this.gstinDetails,
+    this.rating,
+    this.ratingComment,
+  });
+}
+
+class TicketGstinDetailsEntity {
+  /// e.g. `GST_PAN_UPDATE` / "GST and PAN Updation".
+  final String type;
+  final String typeName;
+  final String pan;
+  final String gstin;
+  final String serviceDescription;
+  final String sac;
+  final String taxPayerType;
+  final String legalName;
+  final String tradeName;
+  final String? gstDocFileId;
+  final String? panCopyFileId;
+
+  const TicketGstinDetailsEntity({
+    this.type = '',
+    this.typeName = '',
+    required this.pan,
+    required this.gstin,
+    required this.serviceDescription,
+    required this.sac,
+    required this.taxPayerType,
+    this.legalName = '',
+    this.tradeName = '',
+    this.gstDocFileId,
+    this.panCopyFileId,
   });
 }

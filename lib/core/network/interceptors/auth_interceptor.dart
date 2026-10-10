@@ -23,12 +23,18 @@ class AuthInterceptor extends Interceptor {
 
   static List<String> get _publicEndpoints => [
     ApiUrls.tenantsURL,
+    ApiUrls.lDTenantsURL,
     ApiUrls.loginURL,
     ApiUrls.resendOTPURL,
     ApiUrls.sendForgotPasswordOTPURL,
+    ApiUrls.verifyForgotPasswordOTPURL,
     ApiUrls.verifyOTPURL,
     ApiUrls.resetForgotPasswordURL,
     ApiUrls.refreshTokenURL,
+    // Home enquiry: OTP send/verify, then save (the form is used before login).
+    ApiUrls.enquiryOtpSendURL,
+    ApiUrls.enquiryOtpVerifyURL,
+    ApiUrls.subscriptionEnquiryFormURL,
   ];
 
   @override
@@ -37,8 +43,14 @@ class AuthInterceptor extends Interceptor {
     RequestInterceptorHandler handler,
   ) async {
     final tenantId = await PreferenceUtils.getTenantId();
-    options.headers['X-Tenant-ID'] = '$tenantId';
-    final isPublicEndpoint = _publicEndpoints.contains(options.path);
+    // Keep a tenant header the request already set (e.g. the enquiry form's
+    // selected circle); otherwise use the saved tenant.
+    if (!options.headers.containsKey('X-Tenant-ID')) {
+      options.headers['X-Tenant-ID'] = '$tenantId';
+    }
+    final isPublicEndpoint =
+        _publicEndpoints.contains(options.path) ||
+        options.path.startsWith(ApiUrls.customerEnquiryByMobileBase);
 
     try {
       if (!isPublicEndpoint) {
@@ -139,14 +151,7 @@ class AuthInterceptor extends Interceptor {
 
   /// Handles refresh failure by clearing all tokens and redirecting to login
   Future<void> _handleRefreshFailure() async {
-    await PreferenceUtils.clearAll();
-
-    // Navigate to login and clear navigation stack
-    // navigatorKey.currentState?.pushNamedAndRemoveUntil(
-    //   AppRoutes.login,
-    //   (route) => false,
-    // );
-
+    await PreferenceUtils.clearAll(false);
     WidgetsBinding.instance.addPostFrameCallback((_) {
       navigatorKey.currentState?.pushNamedAndRemoveUntil(
         AppRoutes.login,

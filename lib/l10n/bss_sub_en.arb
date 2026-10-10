@@ -1,5 +1,4 @@
 {
-  "welcomeLabel": "Welcome to KFON",
   "otpSentMessage": "We have sent you 6 digits verification code to \n {mobileNumber}",
   "@otpSentMessage": {
     "placeholders": {
@@ -10,13 +9,24 @@
   "willReturnToLoginScreen": "This will return you to the log in screen.",
 
   "downloadPdf": "Download PDF",
+  "close": "Close",
   "stayConnectedAlways": "Stay Connected, Always",
-  "experienceLightningFast": "Experience lightning-fast internet with KFON's reliable fiber network, keeping you online anytime, anywhere.",
+  "experienceLightningFast": "Experience lightning-fast internet with {appName}'s reliable fiber network, keeping you online anytime, anywhere.",
+  "@experienceLightningFast": {
+    "placeholders": {
+      "appName": { "type": "String" }
+    }
+  },
   "bridgingDigitalDivide": "Bridging the Digital Divide",
-  "kfonEmpowersCitizen": "KFON empowers every citizen with affordable internet, supporting education, business, and government services.",
+  "appEmpowersCitizen": "{appName} empowers every citizen with affordable internet, supporting education, business, and government services.",
+  "@appEmpowersCitizen": {
+    "placeholders": {
+      "appName": { "type": "String" }
+    }
+  },
   "internetWorksForYou": "Internet That Works for You",
   "enjoyHighSpeed": "Enjoy high-speed, secure, and cost-effective internet designed for every household and business.",
-  "welcomeToKfon": "Welcome to KFON",
+  "welcomeText": "Welcome to {name}",
   "enterUsername": "Enter Username",
   "enterPassword": "Enter Password",
   "forgotPassword": "Forgot Password?",
@@ -69,7 +79,6 @@
   "all": "All",
   "attachment": "Attachment",
   "recharge": "Recharge",
-  "volume": "Volume",
   "walletBalance": "Wallet Balance",
   "updatedDate": "Updated {date}",
   "@updatedDate": { "placeholders": { "date": { "type": "String" } } },
@@ -82,7 +91,7 @@
   "speed": "Speed",
   "fpu": "FPU",
   "usage": "Usage",
-  "packsActive": "+{count} Pack Active",
+  "packsActive": "{count} Pack Active",
   "@packsActive": { "placeholders": { "count": { "type": "String" } } },
   "viewUsage": "View Usage",
   "transactions": "Transactions",
@@ -189,14 +198,29 @@
   "transactionDetailsTitle": "Transaction Details",
   "orderTime": "Order Time",
   "orderAmount": "Order Amount",
-  "bssReference": "BSS Reference",
-  "bssStatus": "BSS Status",
+  "appReference": "{appName} Reference",
+  "@appReference": {
+    "placeholders": {
+      "appName": { "type": "String" }
+    }
+  },
+  "appStatus": "{appName} Status",
+  "@appStatus": {
+    "placeholders": {
+      "appName": { "type": "String" }
+    }
+  },
   "txnReference": "Txn. Reference",
   "responseMessage": "Response Message   ",
   "paymentGateway": "Payment Gateway",
   "closeButton": "Close",
   "noTransactionsFound": "No transactions found",
-  "bssNo": "BSS No",
+  "appNo": "{appName} No",
+  "@appNo": {
+    "placeholders": {
+      "appName": { "type": "String" }
+    }
+  },
   "package": "Package",
   "expireDate": "Expire Date",
   "status": "Status",
@@ -235,7 +259,14 @@
   "chatWithUs": "Chat with Us",
   "chatwithAI": "Chat with AI",
 
-  "aboutApp": "About App",
+  "aboutBrand": "About {brandName}",
+  "@aboutBrand": {
+    "placeholders": {
+      "brandName": {}
+    }
+  },
+  "notifications": "Notifications",
+  "youDontHaveAnyNotificationsYet": "You don't have any notifications yet.",
   "appInformation": "App Information",
   "appVersion": "App Version",
   "copyright": "Copyright",
@@ -245,9 +276,8 @@
   "support": "Support",
   "contactUs": "Contact Us",
 
-  "aboutKfon": "About Kfon",
-  "kfon": "KFON",
-  "kfonDescription": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting",
+  "aboutApp": "About App",
+  "appDescription": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting",
   "mission": "Mission",
   "missionDescription": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting",
   "achievements": "Achievements",
@@ -272,7 +302,12 @@
 
 
   "securitySettings": "Security Settings",
-  "changeBssPortalPassword": "Change BSS Portal Password",
+  "changeAppPortalPassword": "Change {appName} Portal Password",
+  "@changeAppPortalPassword": {
+    "placeholders": {
+      "appName": { "type": "String" }
+    }
+  },
   "changeInternetPassword": "Change Internet Password",
   "changeSsidPassword": "Change SSID Password",
   "changeWifiPassword": "Change WiFi Password",
@@ -287,14 +322,14 @@
   "passwordUpdatedSuccessfullyTitle": "Password Updated\n Successfully 🎉",
   "passwordUpdatedSuccessfullyDescription": "Your password has been changed. You'll be redirected to Security Settings.",
   "loginNow": "Login Now",
-
+  "changePassword": "Change Password",
+  "didntReceiveCode": "Didn't receive code?",
   "language": "Language",
   "searchLanguage": "Search language",
   "languageChoice": "Language Choice",
 
   "settings": "Settings",
   "notificationsSettings": "Notifications Settings",
-  "aboutKfonTitle": "About KFON",
 
   "accountInformation": "Account Information",
   "personalInformation": "Personal Information",
@@ -497,7 +532,12 @@
     }
   },
   "rechargeFailed": "Recharge Failed",
-  "rechargeFailedMessage": "Your recharge of ₹500 could not be completed.",
+  "rechargeFailedMessage": "Your recharge of ₹{amount} could not be completed.",
+   "@rechargeFailedMessage": {
+    "placeholders": {
+      "amount": { "type": "String" }
+    }
+  },
   "rechargePaymentCancelled": "Recharge payment is cancelled",
   "rechargeFailedError": "Recharge failed: {error}",
   "@rechargeFailedError": {
@@ -512,8 +552,12 @@
   "invoiceNo": "Invoice No : ",
   "amountLabel": "Amount : ",
   "dateLabel": "Date : ",
-
-  "introducingKfonApp": "Introducing KFON app",
+  "introducingApp": "Introducing {appName}",
+  "@introducingApp": {
+    "placeholders": {
+      "appName": { "type": "String" }
+    }
+  },
   "getStarted": "Get Started",
 
   "back": "Back",
@@ -559,6 +603,14 @@
   "aadharLinkedMobileNumber": "Aadhar linked mobile number of the ration card holder*",
   "enterMobileNumber": "Enter Mobile Number",
   "ksebConsumerNo": "KSEB Consumer No*",
+  "subscriptionType": "Subscription Type",
+  "sme": "SME",
+  "ews": "EWS",
+  "planType": "Plan Type",
+  "searchPackage": "Search Package",
+  "fup": "FUP",
+  "unlimited": "Unlimited",
+  "upgradePlan": "Upgrade Plan",
   "enterKsebConsumerNo": "Enter KSEB Consumer No",
   "aadharNumberOfRationCardHolder": "Aadhar number of the ration card holder*",
   "enterAadharNumberOfRationCardHolder": "Enter Aadhar number of the ration card holder",
@@ -568,7 +620,12 @@
   "enterPincode": "Enter Pincode",
   "referralCode": "Referral Code",
   "enterReferralCode": "Enter Referral Code",
-  "declarationConsent": "I hereby give my consent to receive calls, texts, WhatsApp and emails regarding updates, newsletters, and other important information from or on behalf of KFON at the mobile number provided above.",
+  "declarationConsent": "I hereby give my consent to receive calls, texts, WhatsApp and emails regarding updates, newsletters, and other important information from or on behalf of {appName} at the mobile number provided above.",
+  "@declarationConsent": {
+    "placeholders": {
+      "appName": { "type": "String" }
+    }
+  },
 
 
   "darkFibreEnquiry": "Dark Fibre Enquiry",
@@ -718,5 +775,351 @@
   "discountAppliedSubtitle": "Discount resolved via Rule Engine - auto-applied",
   "referralCodeApplied": "Referral Code Applied Successfully!",
   "remove": "Remove",
-  "apply": "Apply"
+  "apply": "Apply",
+  "futureRecharges": "Future Recharges",
+  "wallet": "Wallet",
+  "direct": "Direct",
+  "today": "Today",
+  "thisWeek": "This week",
+  "thisMonth": "This month",
+  "rechargeCount": "{count} Recharge",
+  "@rechargeCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "date": "Date",
+  "unableToLoadInvoicePdf": "Unable to load invoice PDF",
+  "downloading": "Downloading...",
+  "selectedCircle": "SELECTED CIRCLE",
+  "accountVerified": "Account Verified! 🎉",
+  "accountVerifiedMessage": "Congratulations! your account has been verified from our system. Please login first before enjoy our amazing experience. We hope you enjoy it!",
+  "startNow": "Start Now",
+  "rememberMe": "Remember Me",
+  "yourSessionHasExpiredPleaseLogIn": "Your session has expired. Please log in again.",
+  "chooseYourCircle": "Choose Your Circle",
+  "youDoNotHaveAccessToThis": "You do not have access to this app. Please contact support.",
+  "unableToLoadYourProfilePleaseTry": "Unable to load your profile. Please try again.",
+  "otpSessionExpiredPleaseRequestANew": "OTP session expired. Please request a new OTP.",
+  "selectStateToContinue": "Select your state to continue with the login",
+  "verificationExpiredPleaseVerifyTheOtpAgain": "Verification expired. Please verify the OTP again.",
+  "searchState": "Search state",
+  "noStatesFound": "No states found",
+  "continueText": "Continue",
+  "failedToLoadTapToRetry": "Failed to load. Tap to retry",
+  "insufficientWalletBalance": "Insufficient wallet balance. ₹{amount} will be charged online. Please select an online payment method also.",
+  "@insufficientWalletBalance": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "percentOff": "{percent}% OFF",
+  "@percentOff": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "amountOff": "₹{amount} OFF",
+  "@amountOff": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "saveAmount": "Save ₹{amount}",
+  "@saveAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "selectServiceType": "Select Service Type",
+  "usageOfTotalGb": "{available} GB / {total} GB",
+  "@usageOfTotalGb": {
+    "placeholders": {
+      "available": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "daysValue": "{days} Days",
+  "@daysValue": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "invoiceFileNotAvailable": "Invoice file is not available",
+  "rechargeType": "Recharge type",
+  "online": "Online",
+  "offline": "Offline",
+  "filterByDate": "Filter by date",
+  "monthly": "Monthly",
+  "yearly": "Yearly",
+  "dateSelected": "Date selected",
+  "selected": "Selected",
+  "enterASearchTerm": "Enter a search term",
+  "needHelp": "Need Help?",
+  "hereToAssistAnytime": "We’re Here to assist you Anytime.",
+  "callBack": "Call Back",
+  "talkToOurAgent": "Talk to our Agent",
+  "confirmCallBackRequest": "Are you sure want to create call back request?",
+  "notificationSoundDefault": "Default",
+  "notificationSettingsTitle": "Notification Settings",
+  "general": "General",
+  "paymentReminders": "Payment Reminders",
+  "paymentRemindersDesc": "Get notified about upcoming payment due dates.",
+  "packageExpiryAlerts": "Package Expiry Alerts",
+  "packageExpiryAlertsDesc": "Receive alerts when your package is about to expire.",
+  "promotionsAndOffers": "Promotions & Offers",
+  "promotionsAndOffersDesc": "Stay updated on the latest deals and discounts.",
+  "dataExhaustionWarnings": "Data Exhaustion Warnings",
+  "dataExhaustionWarningsDesc": "Know when your data is nearing its limit.",
+  "soundAndVibration": "Sound & Vibration",
+  "notificationSound": "Notification Sound",
+  "vibration": "Vibration",
+  "labelPreviews": "{label} Previews",
+  "@labelPreviews": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingCategories": "Error loading categories",
+  "noCategoriesAvailable": "No categories available",
+  "searchSubject": "Search Subject",
+  "selectDate": "Select date",
+  "createdDateFrom": "Created Date From",
+  "createdDateTo": "Created Date To",
+  "successfullyCompletedReceiptGenerated": "Successfully completed\nand Receipt generated",
+  "plusPackCount": "+ {count} Pack",
+  "@plusPackCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "gbAvailableOfTotal": "{available} GB Available / {total} GB",
+  "@gbAvailableOfTotal": {
+    "placeholders": {
+      "available": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "preview": "Preview",
+  "documentPreview": "Document Preview",
+  "viewPdfDocument": "View PDF Document",
+  "previewNotAvailable": "Preview not available",
+  "selfCare": "Self care",
+  "faq": "FAQ",
+  "profile": "Profile",
+  "errorLoadingVideo": "Error loading video",
+  "currentPackage": "CURRENT PACKAGE",
+  "daysValidity": "{days} Days Validity",
+  "@daysValidity": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "speedCaps": "SPEED",
+  "packageFee": "Package Fee",
+  "cgstSgst": "CGST+SGST",
+  "specialDiscount": "Special Discount",
+  "appliedCaps": "APPLIED",
+  "inclusiveOfAllTaxes": "Inclusive of all applicable taxes",
+  "referralCodeOptionalHint": "ENTER REFERRAL CODE (OPTIONAL)",
+  "walletCaps": "WALLET",
+  "myWallet": "My Wallet",
+  "balanceLabel": "Balance:",
+  "sufficient": "Sufficient",
+  "insufficient": "Insufficient",
+  "orPayViaGateway": "OR PAY VIA GATEWAY",
+  "atomPayDescription": "All cards, UPI & Net Banking",
+  "razorpayDescription": "Cards, UPI, Wallets & Net Banking",
+  "paymentSecureNote": "Your payment is 100% secure & encrypted via 256-bit SSL standard.",
+  "termsAndConditionsTitle": "Terms & Conditions",
+  "termsAndConditionsText": "The terms and condition shall be governed by Indian Laws. Any and all disputes, controversies and conflicts (\"Disputes\") arising out of the Program shall be settled through regular judicial process and the court of Delhi shall have exclusive jurisdiction to any matter arising hereof and RailTel / KFON liability shall be limited to the extent of registration fees charged and received from the customers.",
+  "privacyPolicyCaps": "PRIVACY POLICY",
+  "privacyPolicyText": "Entity website considers the protection of your personal information a top priority when you use our services. All data transmitted through this portal is safeguarded through standard compliance protocols.",
+  "agreeToTerms": "I agree to the terms and conditions",
+  "proceedToPay": "Proceed to Pay",
+  "unableToStartPayment": "Unable to start payment. Please try again or contact support.",
+  "autoPay": "Auto Pay",
+  "autopayEnrollIn": "Enroll in",
+  "upiAutopay": "UPI Autopay",
+  "autopayEnrollSuffix": "to renew your plan automatically on every due date with zero manual intervention.",
+  "chargeSummary": "Charge Summary",
+  "renewalChargeInclGst": "Renewal Charge (incl. GST)",
+  "platformChargeInclGst": "Platform Charge (incl. GST)",
+  "totalRenewalCharge": "Total Renewal Charge",
+  "setUpAutopay": "Set Up Autopay",
+  "enterUpiId": "Enter UPI ID",
+  "upiIdHint": "example@upi",
+  "upiLabel": "UPI",
+  "invalidUpiId": "Enter a valid UPI ID (e.g. name@okaxis)",
+  "autopayAgreePrefix": "I agree to the",
+  "autopayAgreeMiddle": "and authorize automatic debit of",
+  "autopayAgreeSuffix": "from my UPI account.",
+  "platformChargePolicy": "Platform Charge Policy",
+  "platformChargePolicyText": "If the renewal fee (incl. GST) is between ₹1 and ₹800, a platform charge of ₹10 plus applicable GST applies. If it exceeds ₹800, a platform charge of ₹20 plus applicable GST applies. The platform charge is non-refundable under any circumstances.",
+  "refundCancellationPolicy": "Refund / Cancellation Policy",
+  "refundCancellationPolicyText": "If a payment fails, the amount will be reverted within 5–8 working days.",
+  "contactUsPrefix": "For any support, please call our toll-free number",
+  "tollFreeNumber": "1800 1039",
+  "contactUsSuffix": "or contact your local cable operator or MSP.",
+  "process": "Process",
+  "autopayNotEligible": "Autopay isn't available for your plan right now.",
+  "broadbandPlan": "BROADBAND PLAN",
+  "baseRate": "Base Rate",
+  "perMonth": "/mo",
+  "nextAutoDebitDate": "Next Auto-Debit Date:",
+  "dueInDays": "(Due in {days} days)",
+  "@dueInDays": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "dueToday": "(Due today)",
+  "totalScheduledDebit": "Total Scheduled Debit:",
+  "inclGst": "(incl. GST)",
+  "paymentInstrument": "Payment Instrument",
+  "mandateUmn": "Mandate UMN",
+  "maxAutoDebitCap": "Max Auto-Debit Cap",
+  "upToPerMonth": "Up to {amount} / Monthly",
+  "@upToPerMonth": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "removeFromAutoPay": "Remove from Auto-Pay",
+  "goBack": "Go Back",
+  "autopayPendingApproval": "Waiting for approval in your UPI app. Approve the mandate request to activate Autopay.",
+  "removeFromAutoPayQuestion": "Remove from auto-pay?",
+  "removeAutopayMessage": "Auto-pay will be permanently removed for this plan. Your active mandate will be revoked and you will need to re-authenticate to set up auto-pay again.",
+  "yesRemove": "Yes, remove",
+  "autopayRequestSent": "Autopay request sent. Approve it in your UPI app.",
+  "autopayRemoved": "Autopay removed.",
+  "panNumberLabel": "PAN Number",
+  "enterPanNumber": "ENTER PAN NUMBER",
+  "gstinLabel": "GSTIN",
+  "serviceDescriptionLabel": "Service Description",
+  "enterServiceDescription": "Enter Service Description",
+  "sacCodeLabel": "SAC Code",
+  "enterSacCode": "Enter SAC Code",
+  "taxPayerTypeLabel": "TAX-PAYER Type",
+  "selectTaxPayerType": "Select TAX-PAYER Type",
+  "legalBusinessName": "Legal Business Name",
+  "tradeName": "Trade Name",
+  "gstinSupportingDocument": "GSTIN Supporting Document",
+  "panCardCopy": "PAN Card Copy",
+  "acceptedDocFormatsInfo": "Accepted formats: PDF, JPEG, PNG, JPG. Max file size: 5MB.",
+  "invalidPanNumber": "Enter a valid PAN number (e.g. ABCDE1234F)",
+  "invalidGstin": "Enter a valid GSTIN",
+  "invalidSacCode": "Enter a valid 6-digit SAC code",
+  "taxPayerRegular": "Regular",
+  "taxPayerComposite": "Composite",
+  "taxPayerCasual": "Casual Taxable Person",
+  "taxPayerNonResident": "Non-Resident Taxable Person",
+  "taxPayerSezUnit": "SEZ Unit",
+  "taxPayerSezDeveloper": "SEZ Developer",
+  "taxPayerIsd": "Input Service Distributor",
+  "taxPayerUnBody": "UN Body / Embassy",
+  "ticketTypeLabel": "Type",
+  "rateYourExperience": "Rate your experience",
+  "rateTicketSubtitle": "How satisfied are you with how this ticket was handled?",
+  "ratingVeryPoor": "Very poor",
+  "ratingPoor": "Poor",
+  "ratingAverage": "Average",
+  "ratingGood": "Good",
+  "ratingExcellent": "Excellent",
+  "ratingCommentHint": "Tell us more about your experience (optional)",
+  "submitRating": "Submit Rating",
+  "thanksForFeedback": "Thanks for your feedback!",
+  "yourRating": "Your rating",
+  "ratingSubmitted": "Rating submitted successfully",
+  "fieldIsRequired": "{fieldName} is required",
+  "@fieldIsRequired": {
+    "placeholders": {
+      "fieldName": { "type": "String" }
+    }
+  },
+  "pleaseEnterMobileNumber": "Please enter mobile number",
+  "pleaseEnterValidMobileNumber": "Please enter valid 10-digit mobile number",
+  "pleaseEnterPassword": "Please enter password",
+  "passwordMinLength": "Password must be at least 6 characters",
+  "pleaseEnterEmailAddress": "Please enter email address",
+  "pleaseEnterValidEmailAddress": "Please enter a valid email address",
+  "pleaseConfirmPassword": "Please confirm your password",
+  "noInternetConnection": "No internet connection",
+  "cacheErrorOccurred": "Cache error occurred",
+  "requestTimedOut": "Request timed out",
+  "anUnexpectedErrorOccurred": "An unexpected error occurred",
+  "connectionTimeoutPleaseTryAgain": "Connection timeout, please try again.",
+  "sendTimeoutPleaseCheckInternet": "Send timeout, please check your internet.",
+  "receiveTimeoutPleaseTryAgain": "Receive timeout, please try again.",
+  "requestWasCancelled": "Request was cancelled.",
+  "unknownErrorOccurred": "Unknown error occurred",
+  "noResponseFromServer": "No response from server",
+  "anErrorOccurred": "An error occurred.",
+  "downloadSuccessful": "Download successful",
+  "downloadFailedWithStatus": "Download failed with status {status}",
+  "@downloadFailedWithStatus": {
+    "placeholders": {
+      "status": { "type": "String" }
+    }
+  },
+  "failedToSavePdf": "Failed to save PDF: {error}",
+  "@failedToSavePdf": {
+    "placeholders": {
+      "error": { "type": "String" }
+    }
+  },
+  "howCanIPayMyBillOnline": "How can I pay my bill online?",
+  "goToWalletPaymentsChoosePaymentMethod": "Go to \"Wallet / Payments\" → Choose payment method → Proceed to Pay.",
+  "whatPaymentModesAreAccepted": "What payment modes are accepted?",
+  "weAcceptVariousPaymentMethodsIncludingCredit": "We accept various payment methods including credit cards, debit cards, UPI, and net banking.",
+  "myInternetSpeedIsSlowWhatShould": "My internet speed is slow. What should I do?",
+  "pleaseCheckYourConnectionRestartYourRouter": "Please check your connection, restart your router, or contact our support team for assistance.",
+
+  "payments": "Payments",
+  "failedToLoadPreview": "Failed to load preview",
+  "noAccessContactSupport": "You do not have access to this app. Please contact support.",
+  "invalidResponse": "Invalid response",
+  "fileUrlNotFound": "File URL not found",
+  "customerTypeCouldNotBeResolved": "Customer type could not be resolved. Please try again.",
+  "selectedFileNotAvailable": "Selected file is not available",
+  "fileUploadSucceededNoId": "File upload succeeded but no fileId returned",
+  "txnStatusSuccess": "Success",
+  "txnStatusFailed": "Failed",
+  "txnStatusPending": "Pending",
+  "txnStatusInitiated": "Initiated",
+  "txnStatusCancelled": "Cancelled",
+  "txnStatusRefunded": "Refunded",
+  "allTransactions": "All Transactions",
+  "last30Days": "Last 30 Days",
+  "customDate": "Custom Date"
 }

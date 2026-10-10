@@ -1,18 +1,15 @@
 import 'dart:io';
 
+import 'package:kfon_subscriber/core/constant/app_brand.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/dialog_util.dart';
-import 'package:kfon_subscriber/features/ticket/data/model/add_note_req.dart';
 import 'package:kfon_subscriber/features/ticket/domain/entity/ticket_entity.dart'; // Import TicketEntity
 import 'package:kfon_subscriber/features/ticket/domain/repository/ticket_repository.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/bloc/ticket_bloc.dart';
-import 'package:kfon_subscriber/features/ticket/presentation/bloc/ticket_event.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/bloc/ticket_state.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/pages/ticket_models.dart';
-import 'package:kfon_subscriber/features/ticket/presentation/widgets/ticket_note_bottom_sheet.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
-import 'package:kfon_subscriber/shared/widgets/common_bottom_sheet.dart';
 import 'package:kfon_subscriber/shared/widgets/file_preview_page.dart'; // Import FilePreviewPage
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
@@ -20,6 +17,11 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
+import 'package:kfon_subscriber/features/ticket/presentation/widgets/tax_payer_types.dart';
+import 'package:kfon_subscriber/features/ticket/presentation/widgets/ticket_rating_card.dart';
 
 class TicketDetailPage extends StatefulWidget {
   final TicketEntity ticket;
@@ -35,6 +37,13 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
     ticketRepository: sl<TicketRepository>(),
   );
   final DialogUtil _dialogUtil = DialogUtil();
+
+  /// Rating is offered only once the ticket is Closed or Resolved.
+  bool get _canRateTicket {
+    final status = widget.ticket.status.trim().toLowerCase();
+    return status == 'closed' || status == 'resolved';
+  }
+
   late List<TicketMovementEntity> _movements;
   String? _lastAddedNote;
   bool _hasNewNotes = false;
@@ -93,30 +102,6 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
     return DateFormat('EEE, dd-MM-yyyy  hh:mm a').format(dateTime);
   }
 
-  /// API may send `""` for names; `name ?? fallback` keeps empty string, so avatars show "?".
-  String _senderDisplayName(String? name, String fallback) {
-    final t = name?.trim();
-    if (t == null || t.isEmpty) return fallback;
-    return t;
-  }
-
-  /// The API often returns movements newest-first. The opening note exists both as
-  /// [TicketEntity.remarks] and as a movement with the same text/time as [submitDate].
-  /// Skip that movement when we already render the remarks card — do not rely on
-  /// `movements.first` matching remarks (newest-first breaks that check).
-  bool _isDuplicateOfInitialRemarks({
-    required TicketMovementEntity movement,
-    required bool showingRemarksCard,
-  }) {
-    if (!showingRemarksCard) return false;
-    final remarks = widget.ticket.remarks?.trim();
-    final note = movement.note?.trim();
-    if (remarks == null || remarks.isEmpty || note != remarks) return false;
-    final submit = widget.ticket.submitDate;
-    final created = movement.createdDate;
-    if (submit == null || created == null) return note == remarks;
-    return created.difference(submit).inSeconds.abs() <= 120;
-  }
 
   List<TicketAttachmentEntity> _attachmentsFromPlatformFiles(
     List<PlatformFile> files,
@@ -145,88 +130,34 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
     }
     return out;
   }
-
-  /// Root `attachments` lists every file on the ticket; movements scope files per note.
-  /// Exclude fileIds that belong to other (non–initial-remarks) movements from the top card.
-  Set<String> _fileIdsClaimedByNonInitialMovements({
-    required bool showingRemarksCard,
-  }) {
-    final ids = <String>{};
-    if (!showingRemarksCard) return ids;
-    for (final movement in _movements) {
-      if (_isDuplicateOfInitialRemarks(
-        movement: movement,
-        showingRemarksCard: showingRemarksCard,
-      )) {
-        continue;
-      }
-      ids.addAll(movement.imageFileIds);
-      ids.addAll(movement.videoFileIds);
-      ids.addAll(movement.documentFileIds);
-    }
-    return ids;
+  List<TicketMovementEntity> _sortedMovements() {
+    final indexed = _movements.asMap().entries.toList()
+      ..sort((a, b) {
+        final left = a.value.createdDate;
+        final right = b.value.createdDate;
+        if (left != null && right != null) {
+          final byDate = left.compareTo(right);
+          if (byDate != 0) return byDate;
+        } else if (left == null && right != null) {
+          return 1;
+        } else if (left != null && right == null) {
+          return -1;
+        }
+        return a.key.compareTo(b.key);
+      });
+    return indexed.map((entry) => entry.value).toList();
   }
-
-  List<TicketAttachmentEntity> _attachmentsForRemarksCard({
-    required bool showingRemarksCard,
-  }) {
-    if (!showingRemarksCard) return [];
-    final claimed = _fileIdsClaimedByNonInitialMovements(
-      showingRemarksCard: showingRemarksCard,
-    );
-    if (claimed.isEmpty) {
-      return widget.ticket.attachments;
-    }
-    return widget.ticket.attachments.where((a) {
-      final fid = a.fileId;
-      if (fid == null || fid.isEmpty) return true;
-      return !claimed.contains(fid);
-    }).toList();
-  }
-
   @override
   Widget build(BuildContext context) {
-    // Construct messages from TicketEntity
-    // 1. Main ticket remarks (as the first message)
-    // 2. Movements (as subsequent messages)
-
     final List<TicketMessage> messages = [];
-
-    // Add initial ticket as a message if remarks exist
-    final bool showingRemarksCard =
-        widget.ticket.remarks != null && widget.ticket.remarks!.isNotEmpty;
-    if (showingRemarksCard) {
-      messages.add(
-        TicketMessage(
-          number: '01',
-          senderName: _senderDisplayName(widget.ticket.partnerName, 'You'),
-          senderRole: widget.ticket.customerType ?? 'Partner',
-          dateTime: _formatDateTime(widget.ticket.submitDate),
-          message: widget.ticket.remarks!,
-          attachments: _attachmentsForRemarksCard(
-            showingRemarksCard: showingRemarksCard,
-          ),
-          status: widget.ticket.status,
-          isMe: true,
-        ),
-      );
-    }
-
-    // Add movements; skip any row that duplicates the remarks card (see [_isDuplicateOfInitialRemarks])
-    final movements = _movements;
+    final movements = _sortedMovements();
     for (int i = 0; i < movements.length; i++) {
       final movement = movements[i];
-      if (_isDuplicateOfInitialRemarks(
-        movement: movement,
-        showingRemarksCard: showingRemarksCard,
-      )) {
-        continue;
-      }
       final number = (messages.length + 1).toString().padLeft(2, '0');
 
       // If assignedToName matches the user who created the ticket, it's the partner
-      final bool isMe = movement.assignedToName == widget.ticket.createdByUser;
-
+      final bool isMe =
+          movement.assignedFromName == widget.ticket.createdByUser;
       final List<TicketAttachmentEntity> movementAttachments = [];
       for (final fid in movement.imageFileIds) {
         movementAttachments.add(
@@ -307,10 +238,11 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
       messages.add(
         TicketMessage(
           number: number,
-          senderName: isMe
-              ? _senderDisplayName(widget.ticket.partnerName, 'You')
-              : _senderDisplayName(movement.assignedToName, 'Support'),
-          senderRole: isMe ? (widget.ticket.customerType ?? 'Partner') : 'KFON',
+          senderName: movement.assignedFromName ?? 'Support',
+          senderRole:
+              movement.assignedFromDesignation ??
+              movement.assignedFromSeatName ??
+              AppBrand.appName,
           dateTime: _formatDateTime(movement.createdDate),
           message: movement.note ?? '',
           attachments: movementAttachments,
@@ -329,8 +261,9 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
       },
       child: BlocListener<TicketBloc, TicketState>(
         bloc: _ticketBloc,
-        listenWhen: (previous, current) =>
-            current is NoteSubmitted || current is OnError,
+        listenWhen:
+            (previous, current) =>
+                current is NoteSubmitted || current is OnError,
         listener: (context, state) {
           if (state is NoteSubmitted) {
             setState(() {
@@ -358,69 +291,70 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
               content: 'Note saved successfully',
             );
           } else if (state is OnError) {
-            _dialogUtil.showMessage(state.errorMessage, context);
+            _dialogUtil.showCustomSnackbar(
+              content: state.errorMessage,
+              context: context,
+            );
           }
         },
         child: CommonAppBar(
           onBackPressed: () => Navigator.pop(context, _hasNewNotes),
-          title: 'Ticket ID #${widget.ticket.ticketId}',
+          title: context.bssSubL10n.ticketIdTitle('${widget.ticket.ticketId}'),
           body: SafeArea(
             child: ListView(
-              padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+              padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 20.h),
               children: [
                 // Header Card
+                // Design: 64 tall, radius 12, 16 blur black @ 6%, 12 padding.
                 Container(
-                  padding: const EdgeInsets.all(16),
-                  decoration: BoxDecoration(
+                  padding: EdgeInsets.all(12.w),
+                  decoration: const BoxDecoration(
                     color: Colors.white,
-                    borderRadius: BorderRadius.circular(16),
+                    borderRadius: BorderRadius.all(Radius.circular(12)),
                     boxShadow: [
-                      BoxShadow(
-                        color: Colors.black.withOpacity(0.03),
-                        blurRadius: 10,
-                        offset: const Offset(0, 4),
-                      ),
+                      BoxShadow(color: AppColor.kCardShadow, blurRadius: 16),
                     ],
                   ),
                   child: Row(
                     children: [
-                      // Ticket Icon
+                      // Ticket Icon — Design: 38 #F5F5F5 circle, 20 icon.
                       Container(
-                        width: 40,
-                        height: 40,
-                        decoration: const BoxDecoration(
+                        width: 38.w,
+                        height: 38.w,
+                        decoration: BoxDecoration(
                           shape: BoxShape.circle,
-                          color: Color(0xFFFFF0F6),
+                          color: AppColor.kIconBackground,
                         ),
                         child: Center(
                           child: SvgPicture.asset(
                             'assets/icons/ticket.svg',
-                            width: 20,
-                            height: 20,
-                            colorFilter: const ColorFilter.mode(
+                            width: 20.w,
+                            height: 20.w,
+                            colorFilter: ColorFilter.mode(
                               AppColor.kPrimaryColor,
                               BlendMode.srcIn,
                             ),
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 16.w),
                       // Title
                       Expanded(
                         child: Text(
-                          widget.ticket.subject?.name ?? 'No Subject',
-                          style: const TextStyle(
+                          widget.ticket.subject?.name ?? context.bssSubL10n.noSubject,
+                          style: TextStyle(
                             color: AppColor.kTextSecondaryDark,
-                            fontSize: 14,
+                            fontSize: 14.sp,
                             fontWeight: FontWeight.w500,
                             fontFamily: 'GeneralSans',
+                            height: 1.30,
                           ),
                         ),
                       ),
-                      const SizedBox(width: 12),
+                      SizedBox(width: 12.w),
                       // Status Badge
                       Container(
-                        height: 28,
+                        height: 28.h,
                         padding: const EdgeInsets.symmetric(horizontal: 16),
                         decoration: ShapeDecoration(
                           color: _getStatusColor(
@@ -428,7 +362,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                           ).withOpacity(0.1),
                           shape: RoundedRectangleBorder(
                             side: BorderSide(
-                              width: 1,
+                              width: 1.w,
                               color: _getStatusColor(widget.ticket.status),
                             ),
                             borderRadius: BorderRadius.circular(8),
@@ -442,30 +376,44 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                             ),
                           ],
                         ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          mainAxisAlignment: MainAxisAlignment.center,
-                          crossAxisAlignment: CrossAxisAlignment.center,
-                          children: [
-                            Text(
-                              _getStatusText(widget.ticket.status),
-                              style: TextStyle(
-                                color: _getStatusColor(widget.ticket.status),
-                                fontSize: 12,
-                                fontWeight: FontWeight.w500,
-                                fontFamily: 'GeneralSans',
-                              ),
+                        child: Center(
+                          child: Text(
+                            _getStatusText(widget.ticket.status),
+                            style: TextStyle(
+                              color: _getStatusColor(widget.ticket.status),
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w500,
+                              fontFamily: 'GeneralSans',
                             ),
-                          ],
+                          ),
                         ),
                       ),
                     ],
                   ),
                 ),
-                const SizedBox(height: 16),
+                // GST and PAN Updation details (only when the API sends them)
+                if (widget.ticket.gstinDetails != null) ...[
+                  SizedBox(height: 16.h),
+                  _GstinDetailsCard(
+                    details: widget.ticket.gstinDetails!,
+                    fallbackTypeName: widget.ticket.subject?.name ?? '',
+                  ),
+                ],
+                SizedBox(height: 20.h),
 
                 // Message Cards
                 ...messages.map((message) => _buildMessageCard(message)),
+
+                // Rate this ticket
+                if (_canRateTicket) ...[
+                  SizedBox(height: 8.h),
+                  TicketRatingCard(
+                    ticketUuid: widget.ticket.uuid,
+                    ticketBloc: _ticketBloc,
+                    initialRating: widget.ticket.rating,
+                    initialComment: widget.ticket.ratingComment,
+                  ),
+                ],
               ],
             ),
           ),
@@ -475,27 +423,22 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
   }
 
   Widget _buildMessageCard(TicketMessage message) {
+    // Design: radius 8, 4 blur black @ 5%, no offset; 12 between cards.
     return Container(
-      margin: const EdgeInsets.only(bottom: 16),
-      padding: const EdgeInsets.all(16),
-      decoration: BoxDecoration(
+      margin: EdgeInsets.only(bottom: 12.h),
+      padding: EdgeInsets.all(16.w),
+      decoration: const BoxDecoration(
         color: Colors.white,
-        borderRadius: BorderRadius.circular(16),
-        boxShadow: [
-          BoxShadow(
-            color: Colors.black.withOpacity(0.03),
-            blurRadius: 10,
-            offset: const Offset(0, 4),
-          ),
-        ],
+        borderRadius: BorderRadius.all(Radius.circular(8)),
+        boxShadow: [BoxShadow(color: AppColor.kCardShadowDark, blurRadius: 4)],
       ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
           // Number Badge
           Container(
-            width: 17,
-            height: 17,
+            width: 17.w,
+            height: 17.h,
             alignment: Alignment.center,
             decoration: BoxDecoration(
               color: const Color(0xFFF97316),
@@ -505,13 +448,13 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
               message.number,
               style: GoogleFonts.manrope(
                 color: Colors.white,
-                fontSize: 12,
+                fontSize: 12.sp,
                 fontWeight: FontWeight.w600,
                 height: 1.0,
               ),
             ),
           ),
-          const SizedBox(width: 10), // Gap configuration
+          SizedBox(width: 10.w), // Gap configuration
           // Content
           Expanded(
             child: Column(
@@ -519,12 +462,12 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
               children: [
                 // Avatar and Header Row
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
+                  crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
                     // Avatar
                     Container(
-                      width: 40,
-                      height: 40,
+                      width: 40.w,
+                      height: 40.w,
                       decoration: const ShapeDecoration(
                         color: Color(0xFFF3E2C8),
                         shape: OvalBorder(),
@@ -535,16 +478,17 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                                   ? message.senderName[0]
                                   : '?')
                               .toUpperCase(),
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: Color(0xFFC2A060),
-                            fontSize: 18,
+                            fontSize: 18.sp,
                             fontWeight: FontWeight.w600,
                             fontFamily: 'GeneralSans',
                           ),
                         ),
                       ),
                     ),
-                    const SizedBox(width: 12),
+                    // Design: 16 between avatar and name.
+                    SizedBox(width: 16.w),
 
                     // Name and Role
                     Expanded(
@@ -553,19 +497,19 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                         children: [
                           Text(
                             message.senderName,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppColor.kPrimaryColor,
-                              fontSize: 12,
+                              fontSize: 12.sp,
                               fontWeight: FontWeight.w600,
                               fontFamily: 'GeneralSans',
                             ),
                           ),
-                          const SizedBox(height: 2),
+                          SizedBox(height: 2.h),
                           Text(
                             message.senderRole,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: Color(0xFF232F50),
-                              fontSize: 10,
+                              fontSize: 10.sp,
                               fontWeight: FontWeight.w400,
                               fontFamily: 'GeneralSans',
                             ),
@@ -579,9 +523,9 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                       flex: 0,
                       child: Text(
                         message.dateTime,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: Color(0xFF232F4F),
-                          fontSize: 8,
+                          fontSize: 8.sp,
                           fontWeight: FontWeight.w600,
                           fontFamily: 'GeneralSans',
                         ),
@@ -589,19 +533,19 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                     ),
                   ],
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 20.h),
 
                 // Message Text
                 Text(
                   message.message,
                   style: GoogleFonts.figtree(
                     color: const Color(0xFF232F50),
-                    fontSize: 12,
+                    fontSize: 12.sp,
                     fontWeight: FontWeight.w400,
                     height: 2.0, // 12 * 2.0 = 24px line height
                   ),
                 ),
-                const SizedBox(height: 16),
+                SizedBox(height: 20.h),
 
                 // Attachments + status: one line when it fits; Wrap only reflows on overflow
                 Row(
@@ -611,23 +555,29 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                       Expanded(
                         child: Builder(
                           builder: (context) {
-                            final images = message.attachments
-                                .where(
-                                  (a) => a.fileType.toUpperCase() == 'IMAGE',
-                                )
-                                .toList();
-                            final videos = message.attachments
-                                .where(
-                                  (a) => a.fileType.toUpperCase() == 'VIDEO',
-                                )
-                                .toList();
-                            final pdfs = message.attachments
-                                .where(
-                                  (a) =>
-                                      a.fileType.toUpperCase() == 'PDF' ||
-                                      a.fileType.toUpperCase() == 'DOCUMENT',
-                                )
-                                .toList();
+                            final images =
+                                message.attachments
+                                    .where(
+                                      (a) =>
+                                          a.fileType.toUpperCase() == 'IMAGE',
+                                    )
+                                    .toList();
+                            final videos =
+                                message.attachments
+                                    .where(
+                                      (a) =>
+                                          a.fileType.toUpperCase() == 'VIDEO',
+                                    )
+                                    .toList();
+                            final pdfs =
+                                message.attachments
+                                    .where(
+                                      (a) =>
+                                          a.fileType.toUpperCase() == 'PDF' ||
+                                          a.fileType.toUpperCase() ==
+                                              'DOCUMENT',
+                                    )
+                                    .toList();
 
                             Widget buildAttachmentChip(
                               String label,
@@ -640,21 +590,22 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
 
                               Widget chip = Container(
                                 margin: const EdgeInsets.only(right: 8),
-                                width: 24,
-                                height: 24,
+                                width: 24.w,
+                                height: 24.h,
                                 decoration: BoxDecoration(
                                   border: Border.all(
                                     color: AppColor.kPrimaryColor,
-                                    width: 1,
+                                    width: 1.w,
                                   ),
                                   borderRadius: BorderRadius.circular(8),
                                 ),
                                 child: Center(
                                   child: SvgPicture.asset(
                                     iconAsset,
-                                    width: 16,
-                                    height: 16,
-                                    colorFilter: const ColorFilter.mode(
+                                    // Design: 14 icon in a 24 chip.
+                                    width: 14.w,
+                                    height: 14.w,
+                                    colorFilter: ColorFilter.mode(
                                       AppColor.kPrimaryColor,
                                       BlendMode.srcIn,
                                     ),
@@ -678,38 +629,44 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => FilePreviewPage(
-                                          file: hasLocal
-                                              ? File(a.filePath)
-                                              : null,
-                                          fileUrl: a.fileUrl.isNotEmpty
-                                              ? a.fileUrl
-                                              : null,
-                                          fileId: a.fileId,
-                                          fileName: label,
-                                          fileExtension:
-                                              a.fileType.toUpperCase() ==
-                                                  'VIDEO'
-                                              ? '.mp4'
-                                              : (a.fileType.toUpperCase() ==
-                                                        'PDF' ||
-                                                    a.fileType.toUpperCase() ==
-                                                        'DOCUMENT')
-                                              ? '.pdf'
-                                              : '.jpg',
-                                        ),
+                                        builder:
+                                            (context) => FilePreviewPage(
+                                              file:
+                                                  hasLocal
+                                                      ? File(a.filePath)
+                                                      : null,
+                                              fileUrl:
+                                                  a.fileUrl.isNotEmpty
+                                                      ? a.fileUrl
+                                                      : null,
+                                              fileId: a.fileId,
+                                              fileName: label,
+                                              fileExtension:
+                                                  a.fileType.toUpperCase() ==
+                                                          'VIDEO'
+                                                      ? '.mp4'
+                                                      : (a.fileType
+                                                                  .toUpperCase() ==
+                                                              'PDF' ||
+                                                          a.fileType
+                                                                  .toUpperCase() ==
+                                                              'DOCUMENT')
+                                                      ? '.pdf'
+                                                      : '.jpg',
+                                            ),
                                       ),
                                     );
                                   } else {
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(
-                                        builder: (context) => FilePreviewPage(
-                                          files: files,
-                                          title: '$label Previews',
-                                          fileName: label,
-                                          fileExtension: '',
-                                        ),
+                                        builder:
+                                            (context) => FilePreviewPage(
+                                              files: files,
+                                              title: context.bssSubL10n.labelPreviews(label),
+                                              fileName: label,
+                                              fileExtension: '',
+                                            ),
                                       ),
                                     );
                                   }
@@ -725,17 +682,17 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                               children: [
                                 buildAttachmentChip(
                                   'Router Image',
-                                  'assets/icons/paperclip.svg',
+                                  AppAssets.paperclip,
                                   images,
                                 ),
                                 buildAttachmentChip(
                                   'Document',
-                                  'assets/icons/paperclip.svg',
+                                  AppAssets.paperclip,
                                   pdfs,
                                 ),
                                 buildAttachmentChip(
                                   'Video',
-                                  'assets/icons/video.svg',
+                                  AppAssets.video,
                                   videos,
                                 ),
                               ],
@@ -748,7 +705,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
 
                     // Status Badge
                     Container(
-                      height: 24,
+                      height: 24.h,
                       padding: const EdgeInsets.symmetric(horizontal: 16),
                       decoration: ShapeDecoration(
                         color: _getStatusColor(message.status).withOpacity(0.1),
@@ -756,21 +713,16 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                           borderRadius: BorderRadius.circular(8),
                         ),
                       ),
-                      child: Row(
-                        mainAxisSize: MainAxisSize.min,
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        crossAxisAlignment: CrossAxisAlignment.center,
-                        children: [
-                          Text(
-                            _getStatusText(message.status),
-                            style: TextStyle(
-                              color: _getStatusColor(message.status),
-                              fontSize: 14,
-                              fontWeight: FontWeight.w500,
-                              fontFamily: 'GeneralSans',
-                            ),
+                      child: Center(
+                        child: Text(
+                          _getStatusText(message.status),
+                          style: TextStyle(
+                            color: _getStatusColor(message.status),
+                            fontSize: 14.sp,
+                            fontWeight: FontWeight.w500,
+                            fontFamily: 'GeneralSans',
                           ),
-                        ],
+                        ),
                       ),
                     ),
                   ],
@@ -780,6 +732,110 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
           ),
         ],
       ),
+    );
+  }
+}
+
+/// GST and PAN Updation values in a two-column grid, styled like the header
+/// card. Empty values (e.g. optional legal / trade name) are skipped.
+class _GstinDetailsCard extends StatelessWidget {
+  final TicketGstinDetailsEntity details;
+  final String fallbackTypeName;
+
+  const _GstinDetailsCard({
+    required this.details,
+    required this.fallbackTypeName,
+  });
+
+  static const _decoration = BoxDecoration(
+    color: Colors.white,
+    borderRadius: BorderRadius.all(Radius.circular(12)),
+    boxShadow: [BoxShadow(color: AppColor.kCardShadow, blurRadius: 16)],
+  );
+
+  @override
+  Widget build(BuildContext context) {
+    final l10n = context.bssSubL10n;
+    final typeName =
+        details.typeName.isNotEmpty ? details.typeName : fallbackTypeName;
+
+    final items =
+        <(String, String)>[
+          (l10n.panNumberLabel, details.pan),
+          (l10n.sacCodeLabel, details.sac),
+          (l10n.ticketTypeLabel, typeName),
+          (l10n.gstinLabel, details.gstin),
+          (
+            l10n.taxPayerTypeLabel,
+            details.taxPayerType.isEmpty
+                ? ''
+                : taxPayerTypeLabel(l10n, details.taxPayerType),
+          ),
+          (l10n.serviceDescriptionLabel, details.serviceDescription),
+          (l10n.legalBusinessName, details.legalName),
+          (l10n.tradeName, details.tradeName),
+        ].where((item) => item.$2.trim().isNotEmpty).toList();
+
+    return Container(
+      width: double.infinity,
+      padding: EdgeInsets.all(16.w),
+      decoration: _decoration,
+      child: Column(
+        spacing: 16.h,
+        children: [
+          for (var i = 0; i < items.length; i += 2)
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              spacing: 16.w,
+              children: [
+                Expanded(child: _GstinDetailItem(item: items[i])),
+                Expanded(
+                  child:
+                      i + 1 < items.length
+                          ? _GstinDetailItem(item: items[i + 1])
+                          : const SizedBox.shrink(),
+                ),
+              ],
+            ),
+        ],
+      ),
+    );
+  }
+}
+
+class _GstinDetailItem extends StatelessWidget {
+  final (String, String) item;
+
+  const _GstinDetailItem({required this.item});
+
+  @override
+  Widget build(BuildContext context) {
+    return Column(
+      crossAxisAlignment: CrossAxisAlignment.start,
+      spacing: 4.h,
+      children: [
+        Text(
+          item.$1.toUpperCase(),
+          style: TextStyle(
+            fontSize: 11.sp,
+            fontWeight: FontWeight.w600,
+            letterSpacing: 0.4,
+            height: 1.3,
+            color: AppColor.kLabelGrey,
+            fontFamily: 'GeneralSans',
+          ),
+        ),
+        Text(
+          item.$2,
+          style: TextStyle(
+            fontSize: 14.sp,
+            fontWeight: FontWeight.w500,
+            height: 1.3,
+            color: AppColor.kTextSecondaryDark,
+            fontFamily: 'GeneralSans',
+          ),
+        ),
+      ],
     );
   }
 }

@@ -1,29 +1,24 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 /// Reusable widget for help option cards (icon + label)
 class HelpOptionCard extends StatelessWidget {
   final String icon;
   final String label;
   final VoidCallback? onTap;
-  final bool isSvg;
-  final bool isImageAsset;
   final double containerWidth;
-  final Color? iconColor;
 
   const HelpOptionCard({
     super.key,
     required this.icon,
     required this.label,
     this.onTap,
-    this.isSvg = false,
-    this.isImageAsset = false,
     this.containerWidth = 98,
-    this.iconColor,
   });
 
-  static const _shadowColor = Color(0x0F000000); // black @ 6% opacity
+  static const _shadowColor = AppColor.kCardShadow; // black @ 6% opacity
   static const _cardDecoration = BoxDecoration(
     color: Colors.white,
     borderRadius: BorderRadius.all(Radius.circular(12)),
@@ -55,26 +50,20 @@ class HelpOptionCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.center,
           children: [
             SizedBox(
-              height: 32,
-              width: 32,
-              child: isSvg
-                  ? SvgPicture.asset(
-                      'assets/images/$icon',
-                      height: 32,
-                      width: 32,
-                      fit: BoxFit.contain,
-                      colorFilter: iconColor != null
-                          ? ColorFilter.mode(iconColor!, BlendMode.srcIn)
-                          : null,
-                    )
-                  : Image.asset(
-                      'assets/images/$icon',
-                      height: 32,
-                      width: 32,
-                      fit: BoxFit.contain,
-                    ),
+              height: 32.h,
+              width: 32.w,
+              child: SvgPicture.asset(
+                icon,
+                height: 32.h,
+                width: 32.w,
+                fit: BoxFit.contain,
+                colorFilter: ColorFilter.mode(
+                  AppColor.kPrimaryColor,
+                  BlendMode.srcIn,
+                ),
+              ),
             ),
-            const SizedBox(height: 11),
+            SizedBox(height: 11.h),
             FittedBox(
               fit: BoxFit.scaleDown,
               child: Text(

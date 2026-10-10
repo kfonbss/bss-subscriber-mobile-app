@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
-import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/features/home/presentation/pages/home_page.dart';
 import 'package:kfon_subscriber/features/pages/chat_page.dart';
 import 'package:kfon_subscriber/features/pages/faq/faq_page.dart';
@@ -8,8 +7,28 @@ import 'package:kfon_subscriber/features/profile/presentation/profile/pages/prof
 import 'package:kfon_subscriber/features/self_care/presentation/pages/self_care_page.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/pages/create_ticket_page.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
+import 'package:kfon_subscriber/shared/widgets/common_bottom_sheet.dart';
 import 'package:kfon_subscriber/shared/widgets/help_option_card.dart';
 import 'package:kfon_subscriber/shared/widgets/tabbar_material_widget.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
+import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
+
+/// [FloatingActionButtonLocation.centerDocked] lifted by [lift] pixels.
+class _RaisedCenterDockedLocation extends FloatingActionButtonLocation {
+  const _RaisedCenterDockedLocation(this.lift);
+
+  final double lift;
+
+  @override
+  Offset getOffset(ScaffoldPrelayoutGeometry geometry) {
+    final docked = FloatingActionButtonLocation.centerDocked.getOffset(
+      geometry,
+    );
+    return Offset(docked.dx, docked.dy - lift);
+  }
+}
 
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
@@ -29,35 +48,12 @@ class _MainPageState extends State<MainPage> {
   ];
 
   // ── Static decorations ────────────────────────────────────────────────────
-  static const _helpDragHandleDecoration = BoxDecoration(
-    color: AppColor.kDividerGrey,
-    borderRadius: BorderRadius.all(Radius.circular(100)),
-  );
-  static const _callbackDragHandleDecoration = BoxDecoration(
-    color: AppColor.kDragHandleGrey,
-    borderRadius: BorderRadius.all(Radius.circular(100)),
-  );
   static const _homeIndicatorDecoration = BoxDecoration(
     color: AppColor.kNearBlack,
     borderRadius: BorderRadius.all(Radius.circular(100)),
   );
 
-  // ── Static text styles ────────────────────────────────────────────────────
-  static const _sheetTitleStyle = TextStyle(
-    color: AppColor.kTextSecondaryDark,
-    fontSize: 18,
-    fontWeight: FontWeight.w600,
-    height: 1.3,
-    fontFamily: 'GeneralSans',
-  );
-  static const _sheetSubtitleStyle = TextStyle(
-    color: AppColor.kDarkBlue,
-    fontSize: 13,
-    fontWeight: FontWeight.w500,
-    height: 20 / 13,
-    fontFamily: 'GeneralSans',
-  );
-  static const _buttonLabelStyle = TextStyle(
+  static get _buttonLabelStyle => TextStyle(
     color: AppColor.kPrimaryColor,
     fontSize: 14,
     fontWeight: FontWeight.w600,
@@ -96,164 +92,152 @@ class _MainPageState extends State<MainPage> {
       bottomNavigationBar: TabBarMaterialWidget(
         onChangedTab: (i) => _currentIndex.value = i,
       ),
-      floatingActionButton: FloatingActionButton(
-        shape: const CircleBorder(),
-        backgroundColor: AppColor.kPrimaryColor,
-        elevation: 5,
-        onPressed: () => _showHelpOptions(context),
-        child: const Padding(
-          padding: EdgeInsets.all(15.0),
-          child: Image(image: AssetImage('assets/bottomNaviBarIcons/headphone.png')),
+      floatingActionButton: DecoratedBox(
+        decoration: const BoxDecoration(
+          shape: BoxShape.circle,
+          boxShadow: [
+            BoxShadow(
+              color: AppColor.kTealOverlay,
+              blurRadius: 8.721,
+              offset: Offset(0, 6.977),
+            ),
+          ],
+        ),
+        child: FloatingActionButton(
+          shape: const CircleBorder(),
+          backgroundColor: AppColor.kPrimaryColor,
+          elevation: 0,
+          focusElevation: 0,
+          hoverElevation: 0,
+          highlightElevation: 0,
+          onPressed: () => _showHelpOptions(context),
+          child: const Padding(
+            padding: EdgeInsets.all(16.0),
+            child: Image(image: AssetImage(AppAssets.headphone)),
+          ),
         ),
       ),
-      floatingActionButtonLocation: FloatingActionButtonLocation.centerDocked,
+      floatingActionButtonLocation: const _RaisedCenterDockedLocation(9),
       body: ValueListenableBuilder<int>(
         valueListenable: _currentIndex,
-        builder: (_, index, __) => IndexedStack(
-          index: index,
-          children: _pages,
-        ),
+        builder: (_, index, __) => IndexedStack(index: index, children: _pages),
       ),
     );
   }
 
   void _showHelpOptions(BuildContext context) {
-    final bottomPadding = MediaQuery.of(context).padding.bottom;
-
-    showModalBottomSheet(
+    // Background, top radius, drag handle and bottom safe area come from
+    // showAppModalBottomSheet.
+    showAppModalBottomSheet<void>(
       context: context,
-      backgroundColor: AppColor.kMainBackgroundColor,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
-      ),
       builder: (BuildContext sheetContext) {
-        return SafeArea(
-          top: false,
-          child: Container(
-            width: double.infinity,
-            padding: EdgeInsets.only(
-              left: 20,
-              right: 20,
-              top: 20,
-              bottom: bottomPadding > 0 ? bottomPadding : 20,
-            ),
-            child: Column(
-              mainAxisSize: MainAxisSize.min,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                // Drag Handle
-                Container(
-                  width: 42,
-                  height: 6,
-                  margin: const EdgeInsets.only(bottom: 20),
-                  decoration: _helpDragHandleDecoration,
+        return Container(
+          width: double.infinity,
+          padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
+          child: Column(
+            mainAxisSize: MainAxisSize.min,
+            crossAxisAlignment: CrossAxisAlignment.center,
+            children: [
+              // Title and Subtitle — inlined; no redundant Column wrapper
+              Text(
+                context.bssSubL10n.needHelp,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppColor.kTextSecondaryDark,
+                  fontSize: 18.sp,
+                  fontWeight: FontWeight.w600,
+                  height: 1.3,
+                  fontFamily: 'GeneralSans',
                 ),
-                // Title and Subtitle — inlined; no redundant Column wrapper
-                const Text(
-                  'Need Help?',
-                  textAlign: TextAlign.center,
-                  style: _sheetTitleStyle,
+              ),
+              SizedBox(height: 4.h),
+              Text(
+                context.bssSubL10n.hereToAssistAnytime,
+                textAlign: TextAlign.center,
+                style: TextStyle(
+                  color: AppColor.kDarkBlue,
+                  fontSize: 13.sp,
+                  fontWeight: FontWeight.w500,
+                  height: 20.h / 13.h,
+                  fontFamily: 'GeneralSans',
                 ),
-                const SizedBox(height: 4),
-                const Text(
-                  'We\u2019re Here to assist you Anytime.',
-                  textAlign: TextAlign.center,
-                  style: _sheetSubtitleStyle,
-                ),
-                const SizedBox(height: 30),
-                // Three Action Buttons
-                Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  children: [
-                    Flexible(
-                      child: HelpOptionCard(
-                        icon: 'chat.png',
-                        label: context.bssSubL10n.chatWithUs,
-                        containerWidth: 98,
-                        onTap: () {
-                          Navigator.pop(sheetContext);
-                          _gotoChatPage(context.bssSubL10n.chatWithUs);
-                        },
-                      ),
+              ),
+              SizedBox(height: 30.h),
+              // Three Action Buttons
+              Row(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Flexible(
+                    child: HelpOptionCard(
+                      icon: AppAssets.chat,
+                      label: context.bssSubL10n.chatWithUs,
+                      containerWidth: 98.w,
+                      onTap: () {
+                        Navigator.pop(sheetContext);
+                        _gotoChatPage(context.bssSubL10n.chatWithUs);
+                      },
                     ),
-                    const SizedBox(width: 20),
-                    Flexible(
-                      child: HelpOptionCard(
-                        icon: 'chat_with_ai.png',
-                        label: context.bssSubL10n.chatwithAI,
-                        containerWidth: 99,
-                        onTap: () {
-                          Navigator.pop(sheetContext);
-                          _gotoChatPage(context.bssSubL10n.chatwithAI);
-                        },
-                      ),
-                    ),
-                    const SizedBox(width: 20),
-                    Flexible(
-                      child: HelpOptionCard(
-                        icon: 'callback.svg',
-                        label: 'Call Back',
-                        isSvg: true,
-                        isImageAsset: true,
-                        containerWidth: 98,
-                        iconColor: AppColor.kPrimaryColor,
-                        onTap: () {
-                          Navigator.pop(sheetContext);
-                          _showCallbackConfirmation(context);
-                        },
-                      ),
-                    ),
-                  ],
-                ),
-                const SizedBox(height: 24),
-                // Create Ticket Button (Outlined)
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: OutlinedButton(
-                    onPressed: () {
-                      Navigator.pop(sheetContext);
-                      Navigator.push(
-                        context,
-                        MaterialPageRoute(
-                          builder: (_) => const CreateTicketPage(),
-                        ),
-                      );
-                    },
-                    style: OutlinedButton.styleFrom(
-                      side: const BorderSide(color: AppColor.kPrimaryColor, width: 1),
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                      backgroundColor: Colors.white,
-                    ),
-                    child: const Text('Create Ticket', style: _buttonLabelStyle),
                   ),
-                ),
-                const SizedBox(height: 13),
-                // Talk to our Agent Button (Filled)
-                SizedBox(
-                  width: double.infinity,
-                  height: 52,
-                  child: ElevatedButton(
-                    onPressed: () {
-                      Navigator.pop(sheetContext);
-                      // TODO: Implement talk to agent functionality
-                    },
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColor.kPrimaryColor,
-                      foregroundColor: Colors.white,
-                      shape: const RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(10)),
-                      ),
-                      elevation: 0,
+                  SizedBox(width: 20.w),
+                  Flexible(
+                    child: HelpOptionCard(
+                      icon: AppAssets.chatWithAi,
+                      label: context.bssSubL10n.chatwithAI,
+                      containerWidth: 99.w,
+                      onTap: () {
+                        Navigator.pop(sheetContext);
+                        _gotoChatPage(context.bssSubL10n.chatwithAI);
+                      },
                     ),
-                    child: const Text('Talk to our Agent', style: _filledButtonLabelStyle),
                   ),
-                ),
-              ],
-            ),
+                  SizedBox(width: 20.w),
+                  Flexible(
+                    child: HelpOptionCard(
+                      icon: AppAssets.callback,
+                      label: context.bssSubL10n.callBack,
+                      containerWidth: 98.w,
+                      onTap: () {
+                        Navigator.pop(sheetContext);
+                        _showCallbackConfirmation(context);
+                      },
+                    ),
+                  ),
+                ],
+              ),
+              SizedBox(height: 24.h),
+              // Create Ticket Button (Outlined)
+              SecondaryButton(
+                label: context.bssSubL10n.createTicket,
+                borderRadius: 10,
+                height: 52.h,
+                backgroundColor: Colors.white,
+                borderColor: AppColor.kPrimaryColor,
+                foregroundColor: AppColor.kPrimaryColor,
+                textStyle: _buttonLabelStyle,
+                onClicked: () {
+                  Navigator.pop(sheetContext);
+                  Navigator.push(
+                    context,
+                    MaterialPageRoute(
+                      builder: (_) => const CreateTicketPage(),
+                    ),
+                  );
+                },
+              ),
+              SizedBox(height: 13.h),
+              // Talk to our Agent Button (Filled)
+              PrimaryButton(
+                label: context.bssSubL10n.talkToOurAgent,
+                isLoading: false,
+                borderRadius: 10,
+                height: 52.h,
+                textStyle: _filledButtonLabelStyle,
+                onClicked: () {
+                  Navigator.pop(sheetContext);
+                  // TODO: Implement talk to agent functionality
+                },
+              ),
+            ],
           ),
         );
       },
@@ -267,75 +251,54 @@ class _MainPageState extends State<MainPage> {
   }
 
   void _showCallbackConfirmation(BuildContext context) {
-    showModalBottomSheet(
+    showAppModalBottomSheet<void>(
       context: context,
-      backgroundColor: AppColor.kMainBackgroundColor,
-      isScrollControlled: true,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.vertical(top: Radius.circular(20.0)),
-      ),
       builder: (BuildContext ctx) {
-        return Container(
-          padding: const EdgeInsets.fromLTRB(20, 20, 20, 0),
+        return Padding(
+          padding: const EdgeInsets.symmetric(horizontal: 20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
             children: [
-              // Drag Handle
-              Container(
-                width: 50,
-                height: 5,
-                margin: const EdgeInsets.only(bottom: 16),
-                decoration: _callbackDragHandleDecoration,
-              ),
               // Title
-              const Text('Call Back', style: _callbackTitleStyle),
-              const SizedBox(height: 24),
+              Text(context.bssSubL10n.callBack, style: _callbackTitleStyle),
+              SizedBox(height: 24.h),
               // Message
-              const Text(
-                'Are you sure want to create call back request?',
+              Text(
+                context.bssSubL10n.confirmCallBackRequest,
                 textAlign: TextAlign.center,
                 style: _callbackBodyStyle,
               ),
-              const SizedBox(height: 30),
-              // Buttons
+              SizedBox(height: 30.h),
+              // Buttons — two fixed 158 buttons + 21 gap (337) overflowed the
+              // 335 left by the 20 side padding, so they share the width.
               Row(
-                mainAxisAlignment: MainAxisAlignment.center,
                 children: [
                   // Cancel Button
-                  SizedBox(
-                    width: 158,
-                    height: 52,
-                    child: OutlinedButton(
-                      onPressed: () => Navigator.pop(ctx),
-                      style: OutlinedButton.styleFrom(
-                        side: const BorderSide(color: AppColor.kPrimaryColor, width: 1),
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                        ),
-                        backgroundColor: Colors.white,
-                      ),
-                      child: const Text('Cancel', style: _buttonLabelStyle),
+                  Expanded(
+                    child: SecondaryButton(
+                      label: context.bssSubL10n.cancel,
+                      borderRadius: 10,
+                      height: 52.h,
+                      backgroundColor: Colors.white,
+                      borderColor: AppColor.kPrimaryColor,
+                      foregroundColor: AppColor.kPrimaryColor,
+                      textStyle: _buttonLabelStyle,
+                      onClicked: () => Navigator.pop(ctx),
                     ),
                   ),
-                  const SizedBox(width: 21),
+                  SizedBox(width: 21.w),
                   // Yes Button
-                  SizedBox(
-                    width: 158,
-                    height: 52,
-                    child: ElevatedButton(
-                      onPressed: () {
+                  Expanded(
+                    child: PrimaryButton(
+                      label: context.bssSubL10n.yes,
+                      isLoading: false,
+                      borderRadius: 10,
+                      height: 52.h,
+                      textStyle: _filledButtonLabelStyle,
+                      onClicked: () {
                         Navigator.pop(ctx);
                         // TODO: Implement callback request creation
                       },
-                      style: ElevatedButton.styleFrom(
-                        backgroundColor: AppColor.kPrimaryColor,
-                        foregroundColor: Colors.white,
-                        shape: const RoundedRectangleBorder(
-                          borderRadius: BorderRadius.all(Radius.circular(10)),
-                        ),
-                        elevation: 0,
-                      ),
-                      child: const Text('Yes', style: _filledButtonLabelStyle),
                     ),
                   ),
                 ],
@@ -343,8 +306,8 @@ class _MainPageState extends State<MainPage> {
               // Home Indicator
               Container(
                 margin: const EdgeInsets.only(top: 32, bottom: 8),
-                width: 140,
-                height: 5,
+                width: 140.w,
+                height: 5.h,
                 decoration: _homeIndicatorDecoration,
               ),
             ],

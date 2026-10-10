@@ -1,9 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:kfon_subscriber/core/constant/app_brand.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/white_button.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/util/preference_util.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
 
 class IntroScreenLayout extends StatelessWidget {
   final int index;
@@ -32,35 +37,45 @@ class IntroScreenLayout extends StatelessWidget {
         children: [
           Padding(
             padding: const EdgeInsets.symmetric(horizontal: 75.0),
-            child: SvgPicture.asset('assets/images/$imageName'),
+            child: SvgPicture.asset(imageName),
           ),
           SizedBox(height: 120.h),
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               Container(
-                height: 32.h,
-                width: 146.w,
                 decoration: BoxDecoration(
-                  color: const Color.fromRGBO(255, 255, 255, 0.2),
+                  color: AppColor.kIntroAccent,
                   borderRadius: BorderRadius.circular(40.0),
                 ),
                 child: Padding(
-                  padding: const EdgeInsets.all(4.0),
+                  padding: EdgeInsets.fromLTRB(4.w, 4.h, 12.w, 4.h),
                   child: Row(
-                    spacing: 4,
+                    mainAxisSize: MainAxisSize.min,
+                    spacing: 6.w,
                     children: [
-                      Image.asset(
-                        'assets/images/logo_round.png',
-                        height: 24.h,
+                      Container(
                         width: 24.w,
+                        height: 24.w,
+                        decoration: ShapeDecoration(
+                          color: Colors.white,
+                          shape: RoundedRectangleBorder(
+                            borderRadius: BorderRadius.circular(40),
+                          ),
+                        ),
+                        child: Image.asset(
+                          AppAssets.introRoundLogo,
+                          width: 9.w,
+                          height: 16.h,
+                        ),
                       ),
                       Text(
-                        l10n.introducingKfonApp,
+                        l10n.introducingApp(AppBrand.appName),
                         style: TextStyle(
                           fontFamily: 'GeneralSans',
                           fontWeight: FontWeight.w400,
                           fontSize: 10.sp,
+                          height: 1.60,
                           color: Colors.white,
                         ),
                       ),
@@ -75,6 +90,7 @@ class IntroScreenLayout extends StatelessWidget {
                   fontFamily: 'GeneralSans',
                   fontWeight: FontWeight.w600,
                   fontSize: 24.sp,
+                  height: 1.30,
                   color: Colors.white,
                 ),
               ),
@@ -85,42 +101,47 @@ class IntroScreenLayout extends StatelessWidget {
                   fontFamily: 'GeneralSans',
                   fontWeight: FontWeight.w400,
                   fontSize: 14.sp,
-                  color: Colors.white,
+                  height: 1.60,
+                  color: AppColor.kWhite80,
                 ),
               ),
               SizedBox(height: 32.h),
               Row(
-                spacing: 15,
+                spacing: 15.w,
                 children: [
                   Expanded(
-                    child: FilledButton(
-                      onPressed: () => Navigator.pushReplacementNamed(
-                        context,
-                        AppRoutes.login,
+                    child: PrimaryButton(
+                      label: l10n.signIn,
+                      isLoading: false,
+                      borderRadius: 50,
+                      height: 52.h,
+                      backgroundColor: Colors.white.withValues(alpha: 0.2),
+                      textStyle: TextStyle(
+                        fontFamily: 'GeneralSans',
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w600,
+                        height: 1.30,
                       ),
-                      style: FilledButton.styleFrom(
-                        elevation: 0,
-                        minimumSize: const Size(double.infinity, 50),
-                        fixedSize: const Size(double.infinity, 50),
-                        backgroundColor: const Color.fromRGBO(255, 255, 255, 0.2),
-                        foregroundColor: Colors.white,
-                        padding: EdgeInsets.zero,
-                      ),
-                      child: Text(
-                        l10n.signIn,
-                        style: const TextStyle(
-                          fontSize: 14,
-                          fontWeight: FontWeight.w600,
-                        ),
-                      ),
+                      onClicked: () {
+                        PreferenceUtils.setIntroScreenStatus(false);
+                        Navigator.pushReplacementNamed(
+                          context,
+                          AppRoutes.login,
+                        );
+                      },
                     ),
                   ),
                   Expanded(
-                    child: WhiteButton(
-                      label: index == 2 ? l10n.getStarted : l10n.next,
-                      borderRadius: 50,
-                      isLoading: false,
-                      onClicked: nextButtonCallback,
+                    // Tight height overrides WhiteButton's default 50.
+                    child: SizedBox(
+                      height: 52.h,
+                      child: WhiteButton(
+                        label: index == 2 ? l10n.getStarted : l10n.next,
+                        borderRadius: 50,
+                        textColor: AppColor.kTextSecondaryDark,
+                        isLoading: false,
+                        onClicked: nextButtonCallback,
+                      ),
                     ),
                   ),
                 ],

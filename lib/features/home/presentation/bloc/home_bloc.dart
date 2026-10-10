@@ -26,7 +26,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         (homeEntity) async {
           await PreferenceUtils.setUserDetails(
             userId: homeEntity.subscriberId,
-            userName: homeEntity.firstName,
+            userName: homeEntity.username,
           );
           emit(
             GetDataSuccess(
@@ -63,7 +63,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             //         .where((package) => package.id != event.packageId)
             //         .take(2)
             //         .toList(),
-            packageEntities: packages.content
+            packageEntities: packages.content,
           ),
         ),
       );

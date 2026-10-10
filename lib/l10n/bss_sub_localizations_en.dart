@@ -9,9 +9,6 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   BssSubLocalizationsEn([String locale = 'en']) : super(locale);
 
   @override
-  String get welcomeLabel => 'Welcome to KFON';
-
-  @override
   String otpSentMessage(Object mobileNumber) {
     return 'We have sent you 6 digits verification code to \n $mobileNumber';
   }
@@ -27,18 +24,23 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get downloadPdf => 'Download PDF';
 
   @override
+  String get close => 'Close';
+
+  @override
   String get stayConnectedAlways => 'Stay Connected, Always';
 
   @override
-  String get experienceLightningFast =>
-      'Experience lightning-fast internet with KFON\'s reliable fiber network, keeping you online anytime, anywhere.';
+  String experienceLightningFast(String appName) {
+    return 'Experience lightning-fast internet with $appName\'s reliable fiber network, keeping you online anytime, anywhere.';
+  }
 
   @override
   String get bridgingDigitalDivide => 'Bridging the Digital Divide';
 
   @override
-  String get kfonEmpowersCitizen =>
-      'KFON empowers every citizen with affordable internet, supporting education, business, and government services.';
+  String appEmpowersCitizen(String appName) {
+    return '$appName empowers every citizen with affordable internet, supporting education, business, and government services.';
+  }
 
   @override
   String get internetWorksForYou => 'Internet That Works for You';
@@ -48,7 +50,9 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
       'Enjoy high-speed, secure, and cost-effective internet designed for every household and business.';
 
   @override
-  String get welcomeToKfon => 'Welcome to KFON';
+  String welcomeText(Object name) {
+    return 'Welcome to $name';
+  }
 
   @override
   String get enterUsername => 'Enter Username';
@@ -173,9 +177,6 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get recharge => 'Recharge';
 
   @override
-  String get volume => 'Volume';
-
-  @override
   String get walletBalance => 'Wallet Balance';
 
   @override
@@ -210,7 +211,7 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
 
   @override
   String packsActive(String count) {
-    return '+$count Pack Active';
+    return '$count Pack Active';
   }
 
   @override
@@ -453,10 +454,14 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get orderAmount => 'Order Amount';
 
   @override
-  String get bssReference => 'BSS Reference';
+  String appReference(String appName) {
+    return '$appName Reference';
+  }
 
   @override
-  String get bssStatus => 'BSS Status';
+  String appStatus(String appName) {
+    return '$appName Status';
+  }
 
   @override
   String get txnReference => 'Txn. Reference';
@@ -474,7 +479,9 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get noTransactionsFound => 'No transactions found';
 
   @override
-  String get bssNo => 'BSS No';
+  String appNo(String appName) {
+    return '$appName No';
+  }
 
   @override
   String get package => 'Package';
@@ -584,7 +591,16 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get chatwithAI => 'Chat with AI';
 
   @override
-  String get aboutApp => 'About App';
+  String aboutBrand(Object brandName) {
+    return 'About $brandName';
+  }
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get youDontHaveAnyNotificationsYet =>
+      'You don\'t have any notifications yet.';
 
   @override
   String get appInformation => 'App Information';
@@ -611,13 +627,10 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get contactUs => 'Contact Us';
 
   @override
-  String get aboutKfon => 'About Kfon';
+  String get aboutApp => 'About App';
 
   @override
-  String get kfon => 'KFON';
-
-  @override
-  String get kfonDescription =>
+  String get appDescription =>
       'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting';
 
   @override
@@ -665,7 +678,9 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get securitySettings => 'Security Settings';
 
   @override
-  String get changeBssPortalPassword => 'Change BSS Portal Password';
+  String changeAppPortalPassword(String appName) {
+    return 'Change $appName Portal Password';
+  }
 
   @override
   String get changeInternetPassword => 'Change Internet Password';
@@ -712,6 +727,12 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get loginNow => 'Login Now';
 
   @override
+  String get changePassword => 'Change Password';
+
+  @override
+  String get didntReceiveCode => 'Didn\'t receive code?';
+
+  @override
   String get language => 'Language';
 
   @override
@@ -725,9 +746,6 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
 
   @override
   String get notificationsSettings => 'Notifications Settings';
-
-  @override
-  String get aboutKfonTitle => 'About KFON';
 
   @override
   String get accountInformation => 'Account Information';
@@ -1173,8 +1191,9 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get rechargeFailed => 'Recharge Failed';
 
   @override
-  String get rechargeFailedMessage =>
-      'Your recharge of ₹500 could not be completed.';
+  String rechargeFailedMessage(String amount) {
+    return 'Your recharge of ₹$amount could not be completed.';
+  }
 
   @override
   String get rechargePaymentCancelled => 'Recharge payment is cancelled';
@@ -1203,7 +1222,9 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get dateLabel => 'Date : ';
 
   @override
-  String get introducingKfonApp => 'Introducing KFON app';
+  String introducingApp(String appName) {
+    return 'Introducing $appName';
+  }
 
   @override
   String get getStarted => 'Get Started';
@@ -1335,6 +1356,30 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get ksebConsumerNo => 'KSEB Consumer No*';
 
   @override
+  String get subscriptionType => 'Subscription Type';
+
+  @override
+  String get sme => 'SME';
+
+  @override
+  String get ews => 'EWS';
+
+  @override
+  String get planType => 'Plan Type';
+
+  @override
+  String get searchPackage => 'Search Package';
+
+  @override
+  String get fup => 'FUP';
+
+  @override
+  String get unlimited => 'Unlimited';
+
+  @override
+  String get upgradePlan => 'Upgrade Plan';
+
+  @override
   String get enterKsebConsumerNo => 'Enter KSEB Consumer No';
 
   @override
@@ -1364,8 +1409,9 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get enterReferralCode => 'Enter Referral Code';
 
   @override
-  String get declarationConsent =>
-      'I hereby give my consent to receive calls, texts, WhatsApp and emails regarding updates, newsletters, and other important information from or on behalf of KFON at the mobile number provided above.';
+  String declarationConsent(String appName) {
+    return 'I hereby give my consent to receive calls, texts, WhatsApp and emails regarding updates, newsletters, and other important information from or on behalf of $appName at the mobile number provided above.';
+  }
 
   @override
   String get darkFibreEnquiry => 'Dark Fibre Enquiry';
@@ -1647,6 +1693,9 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get packageDetails => 'Package Details';
 
   @override
+  String get volume => 'Volume';
+
+  @override
   String get referralCodeLabel => 'Referral Code';
 
   @override
@@ -1715,4 +1764,775 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
 
   @override
   String get apply => 'Apply';
+
+  @override
+  String get futureRecharges => 'Future Recharges';
+
+  @override
+  String get wallet => 'Wallet';
+
+  @override
+  String get direct => 'Direct';
+
+  @override
+  String get today => 'Today';
+
+  @override
+  String get thisWeek => 'This week';
+
+  @override
+  String get thisMonth => 'This month';
+
+  @override
+  String rechargeCount(int count) {
+    return '$count Recharge';
+  }
+
+  @override
+  String get date => 'Date';
+
+  @override
+  String get unableToLoadInvoicePdf => 'Unable to load invoice PDF';
+
+  @override
+  String get downloading => 'Downloading...';
+
+  @override
+  String get selectedCircle => 'SELECTED CIRCLE';
+
+  @override
+  String get accountVerified => 'Account Verified! 🎉';
+
+  @override
+  String get accountVerifiedMessage =>
+      'Congratulations! your account has been verified from our system. Please login first before enjoy our amazing experience. We hope you enjoy it!';
+
+  @override
+  String get startNow => 'Start Now';
+
+  @override
+  String get rememberMe => 'Remember Me';
+
+  @override
+  String get yourSessionHasExpiredPleaseLogIn =>
+      'Your session has expired. Please log in again.';
+
+  @override
+  String get chooseYourCircle => 'Choose Your Circle';
+
+  @override
+  String get youDoNotHaveAccessToThis =>
+      'You do not have access to this app. Please contact support.';
+
+  @override
+  String get unableToLoadYourProfilePleaseTry =>
+      'Unable to load your profile. Please try again.';
+
+  @override
+  String get otpSessionExpiredPleaseRequestANew =>
+      'OTP session expired. Please request a new OTP.';
+
+  @override
+  String get selectStateToContinue =>
+      'Select your state to continue with the login';
+
+  @override
+  String get verificationExpiredPleaseVerifyTheOtpAgain =>
+      'Verification expired. Please verify the OTP again.';
+
+  @override
+  String get searchState => 'Search state';
+
+  @override
+  String get noStatesFound => 'No states found';
+
+  @override
+  String get continueText => 'Continue';
+
+  @override
+  String get failedToLoadTapToRetry => 'Failed to load. Tap to retry';
+
+  @override
+  String insufficientWalletBalance(String amount) {
+    return 'Insufficient wallet balance. ₹$amount will be charged online. Please select an online payment method also.';
+  }
+
+  @override
+  String percentOff(String percent) {
+    return '$percent% OFF';
+  }
+
+  @override
+  String amountOff(String amount) {
+    return '₹$amount OFF';
+  }
+
+  @override
+  String saveAmount(String amount) {
+    return 'Save ₹$amount';
+  }
+
+  @override
+  String get selectServiceType => 'Select Service Type';
+
+  @override
+  String usageOfTotalGb(String available, String total) {
+    return '$available GB / $total GB';
+  }
+
+  @override
+  String daysValue(String days) {
+    return '$days Days';
+  }
+
+  @override
+  String get invoiceFileNotAvailable => 'Invoice file is not available';
+
+  @override
+  String get rechargeType => 'Recharge type';
+
+  @override
+  String get online => 'Online';
+
+  @override
+  String get offline => 'Offline';
+
+  @override
+  String get filterByDate => 'Filter by date';
+
+  @override
+  String get monthly => 'Monthly';
+
+  @override
+  String get yearly => 'Yearly';
+
+  @override
+  String get dateSelected => 'Date selected';
+
+  @override
+  String get selected => 'Selected';
+
+  @override
+  String get enterASearchTerm => 'Enter a search term';
+
+  @override
+  String get needHelp => 'Need Help?';
+
+  @override
+  String get hereToAssistAnytime => 'We’re Here to assist you Anytime.';
+
+  @override
+  String get callBack => 'Call Back';
+
+  @override
+  String get talkToOurAgent => 'Talk to our Agent';
+
+  @override
+  String get confirmCallBackRequest =>
+      'Are you sure want to create call back request?';
+
+  @override
+  String get notificationSoundDefault => 'Default';
+
+  @override
+  String get notificationSettingsTitle => 'Notification Settings';
+
+  @override
+  String get general => 'General';
+
+  @override
+  String get paymentReminders => 'Payment Reminders';
+
+  @override
+  String get paymentRemindersDesc =>
+      'Get notified about upcoming payment due dates.';
+
+  @override
+  String get packageExpiryAlerts => 'Package Expiry Alerts';
+
+  @override
+  String get packageExpiryAlertsDesc =>
+      'Receive alerts when your package is about to expire.';
+
+  @override
+  String get promotionsAndOffers => 'Promotions & Offers';
+
+  @override
+  String get promotionsAndOffersDesc =>
+      'Stay updated on the latest deals and discounts.';
+
+  @override
+  String get dataExhaustionWarnings => 'Data Exhaustion Warnings';
+
+  @override
+  String get dataExhaustionWarningsDesc =>
+      'Know when your data is nearing its limit.';
+
+  @override
+  String get soundAndVibration => 'Sound & Vibration';
+
+  @override
+  String get notificationSound => 'Notification Sound';
+
+  @override
+  String get vibration => 'Vibration';
+
+  @override
+  String labelPreviews(String label) {
+    return '$label Previews';
+  }
+
+  @override
+  String get errorLoadingCategories => 'Error loading categories';
+
+  @override
+  String get noCategoriesAvailable => 'No categories available';
+
+  @override
+  String get searchSubject => 'Search Subject';
+
+  @override
+  String get selectDate => 'Select date';
+
+  @override
+  String get createdDateFrom => 'Created Date From';
+
+  @override
+  String get createdDateTo => 'Created Date To';
+
+  @override
+  String get successfullyCompletedReceiptGenerated =>
+      'Successfully completed\nand Receipt generated';
+
+  @override
+  String plusPackCount(String count) {
+    return '+ $count Pack';
+  }
+
+  @override
+  String gbAvailableOfTotal(String available, String total) {
+    return '$available GB Available / $total GB';
+  }
+
+  @override
+  String get preview => 'Preview';
+
+  @override
+  String get documentPreview => 'Document Preview';
+
+  @override
+  String get viewPdfDocument => 'View PDF Document';
+
+  @override
+  String get previewNotAvailable => 'Preview not available';
+
+  @override
+  String get selfCare => 'Self care';
+
+  @override
+  String get faq => 'FAQ';
+
+  @override
+  String get profile => 'Profile';
+
+  @override
+  String get errorLoadingVideo => 'Error loading video';
+
+  @override
+  String get currentPackage => 'CURRENT PACKAGE';
+
+  @override
+  String daysValidity(String days) {
+    return '$days Days Validity';
+  }
+
+  @override
+  String get speedCaps => 'SPEED';
+
+  @override
+  String get packageFee => 'Package Fee';
+
+  @override
+  String get cgstSgst => 'CGST+SGST';
+
+  @override
+  String get specialDiscount => 'Special Discount';
+
+  @override
+  String get appliedCaps => 'APPLIED';
+
+  @override
+  String get inclusiveOfAllTaxes => 'Inclusive of all applicable taxes';
+
+  @override
+  String get referralCodeOptionalHint => 'ENTER REFERRAL CODE (OPTIONAL)';
+
+  @override
+  String get walletCaps => 'WALLET';
+
+  @override
+  String get myWallet => 'My Wallet';
+
+  @override
+  String get balanceLabel => 'Balance:';
+
+  @override
+  String get sufficient => 'Sufficient';
+
+  @override
+  String get insufficient => 'Insufficient';
+
+  @override
+  String get orPayViaGateway => 'OR PAY VIA GATEWAY';
+
+  @override
+  String get atomPayDescription => 'All cards, UPI & Net Banking';
+
+  @override
+  String get razorpayDescription => 'Cards, UPI, Wallets & Net Banking';
+
+  @override
+  String get paymentSecureNote =>
+      'Your payment is 100% secure & encrypted via 256-bit SSL standard.';
+
+  @override
+  String get termsAndConditionsTitle => 'Terms & Conditions';
+
+  @override
+  String get termsAndConditionsText =>
+      'The terms and condition shall be governed by Indian Laws. Any and all disputes, controversies and conflicts (\"Disputes\") arising out of the Program shall be settled through regular judicial process and the court of Delhi shall have exclusive jurisdiction to any matter arising hereof and RailTel / KFON liability shall be limited to the extent of registration fees charged and received from the customers.';
+
+  @override
+  String get privacyPolicyCaps => 'PRIVACY POLICY';
+
+  @override
+  String get privacyPolicyText =>
+      'Entity website considers the protection of your personal information a top priority when you use our services. All data transmitted through this portal is safeguarded through standard compliance protocols.';
+
+  @override
+  String get agreeToTerms => 'I agree to the terms and conditions';
+
+  @override
+  String get proceedToPay => 'Proceed to Pay';
+
+  @override
+  String get unableToStartPayment =>
+      'Unable to start payment. Please try again or contact support.';
+
+  @override
+  String get autoPay => 'Auto Pay';
+
+  @override
+  String get autopayEnrollIn => 'Enroll in';
+
+  @override
+  String get upiAutopay => 'UPI Autopay';
+
+  @override
+  String get autopayEnrollSuffix =>
+      'to renew your plan automatically on every due date with zero manual intervention.';
+
+  @override
+  String get chargeSummary => 'Charge Summary';
+
+  @override
+  String get renewalChargeInclGst => 'Renewal Charge (incl. GST)';
+
+  @override
+  String get platformChargeInclGst => 'Platform Charge (incl. GST)';
+
+  @override
+  String get totalRenewalCharge => 'Total Renewal Charge';
+
+  @override
+  String get setUpAutopay => 'Set Up Autopay';
+
+  @override
+  String get enterUpiId => 'Enter UPI ID';
+
+  @override
+  String get upiIdHint => 'example@upi';
+
+  @override
+  String get upiLabel => 'UPI';
+
+  @override
+  String get invalidUpiId => 'Enter a valid UPI ID (e.g. name@okaxis)';
+
+  @override
+  String get autopayAgreePrefix => 'I agree to the';
+
+  @override
+  String get autopayAgreeMiddle => 'and authorize automatic debit of';
+
+  @override
+  String get autopayAgreeSuffix => 'from my UPI account.';
+
+  @override
+  String get platformChargePolicy => 'Platform Charge Policy';
+
+  @override
+  String get platformChargePolicyText =>
+      'If the renewal fee (incl. GST) is between ₹1 and ₹800, a platform charge of ₹10 plus applicable GST applies. If it exceeds ₹800, a platform charge of ₹20 plus applicable GST applies. The platform charge is non-refundable under any circumstances.';
+
+  @override
+  String get refundCancellationPolicy => 'Refund / Cancellation Policy';
+
+  @override
+  String get refundCancellationPolicyText =>
+      'If a payment fails, the amount will be reverted within 5–8 working days.';
+
+  @override
+  String get contactUsPrefix =>
+      'For any support, please call our toll-free number';
+
+  @override
+  String get tollFreeNumber => '1800 1039';
+
+  @override
+  String get contactUsSuffix => 'or contact your local cable operator or MSP.';
+
+  @override
+  String get process => 'Process';
+
+  @override
+  String get autopayNotEligible =>
+      'Autopay isn\'t available for your plan right now.';
+
+  @override
+  String get broadbandPlan => 'BROADBAND PLAN';
+
+  @override
+  String get baseRate => 'Base Rate';
+
+  @override
+  String get perMonth => '/mo';
+
+  @override
+  String get nextAutoDebitDate => 'Next Auto-Debit Date:';
+
+  @override
+  String dueInDays(String days) {
+    return '(Due in $days days)';
+  }
+
+  @override
+  String get dueToday => '(Due today)';
+
+  @override
+  String get totalScheduledDebit => 'Total Scheduled Debit:';
+
+  @override
+  String get inclGst => '(incl. GST)';
+
+  @override
+  String get paymentInstrument => 'Payment Instrument';
+
+  @override
+  String get mandateUmn => 'Mandate UMN';
+
+  @override
+  String get maxAutoDebitCap => 'Max Auto-Debit Cap';
+
+  @override
+  String upToPerMonth(String amount) {
+    return 'Up to $amount / Monthly';
+  }
+
+  @override
+  String get removeFromAutoPay => 'Remove from Auto-Pay';
+
+  @override
+  String get goBack => 'Go Back';
+
+  @override
+  String get autopayPendingApproval =>
+      'Waiting for approval in your UPI app. Approve the mandate request to activate Autopay.';
+
+  @override
+  String get removeFromAutoPayQuestion => 'Remove from auto-pay?';
+
+  @override
+  String get removeAutopayMessage =>
+      'Auto-pay will be permanently removed for this plan. Your active mandate will be revoked and you will need to re-authenticate to set up auto-pay again.';
+
+  @override
+  String get yesRemove => 'Yes, remove';
+
+  @override
+  String get autopayRequestSent =>
+      'Autopay request sent. Approve it in your UPI app.';
+
+  @override
+  String get autopayRemoved => 'Autopay removed.';
+
+  @override
+  String get panNumberLabel => 'PAN Number';
+
+  @override
+  String get enterPanNumber => 'ENTER PAN NUMBER';
+
+  @override
+  String get gstinLabel => 'GSTIN';
+
+  @override
+  String get serviceDescriptionLabel => 'Service Description';
+
+  @override
+  String get enterServiceDescription => 'Enter Service Description';
+
+  @override
+  String get sacCodeLabel => 'SAC Code';
+
+  @override
+  String get enterSacCode => 'Enter SAC Code';
+
+  @override
+  String get taxPayerTypeLabel => 'TAX-PAYER Type';
+
+  @override
+  String get selectTaxPayerType => 'Select TAX-PAYER Type';
+
+  @override
+  String get legalBusinessName => 'Legal Business Name';
+
+  @override
+  String get tradeName => 'Trade Name';
+
+  @override
+  String get gstinSupportingDocument => 'GSTIN Supporting Document';
+
+  @override
+  String get panCardCopy => 'PAN Card Copy';
+
+  @override
+  String get acceptedDocFormatsInfo =>
+      'Accepted formats: PDF, JPEG, PNG, JPG. Max file size: 5MB.';
+
+  @override
+  String get invalidPanNumber => 'Enter a valid PAN number (e.g. ABCDE1234F)';
+
+  @override
+  String get invalidGstin => 'Enter a valid GSTIN';
+
+  @override
+  String get invalidSacCode => 'Enter a valid 6-digit SAC code';
+
+  @override
+  String get taxPayerRegular => 'Regular';
+
+  @override
+  String get taxPayerComposite => 'Composite';
+
+  @override
+  String get taxPayerCasual => 'Casual Taxable Person';
+
+  @override
+  String get taxPayerNonResident => 'Non-Resident Taxable Person';
+
+  @override
+  String get taxPayerSezUnit => 'SEZ Unit';
+
+  @override
+  String get taxPayerSezDeveloper => 'SEZ Developer';
+
+  @override
+  String get taxPayerIsd => 'Input Service Distributor';
+
+  @override
+  String get taxPayerUnBody => 'UN Body / Embassy';
+
+  @override
+  String get ticketTypeLabel => 'Type';
+
+  @override
+  String get rateYourExperience => 'Rate your experience';
+
+  @override
+  String get rateTicketSubtitle =>
+      'How satisfied are you with how this ticket was handled?';
+
+  @override
+  String get ratingVeryPoor => 'Very poor';
+
+  @override
+  String get ratingPoor => 'Poor';
+
+  @override
+  String get ratingAverage => 'Average';
+
+  @override
+  String get ratingGood => 'Good';
+
+  @override
+  String get ratingExcellent => 'Excellent';
+
+  @override
+  String get ratingCommentHint =>
+      'Tell us more about your experience (optional)';
+
+  @override
+  String get submitRating => 'Submit Rating';
+
+  @override
+  String get thanksForFeedback => 'Thanks for your feedback!';
+
+  @override
+  String get yourRating => 'Your rating';
+
+  @override
+  String get ratingSubmitted => 'Rating submitted successfully';
+
+  @override
+  String fieldIsRequired(String fieldName) {
+    return '$fieldName is required';
+  }
+
+  @override
+  String get pleaseEnterMobileNumber => 'Please enter mobile number';
+
+  @override
+  String get pleaseEnterValidMobileNumber =>
+      'Please enter valid 10-digit mobile number';
+
+  @override
+  String get pleaseEnterPassword => 'Please enter password';
+
+  @override
+  String get passwordMinLength => 'Password must be at least 6 characters';
+
+  @override
+  String get pleaseEnterEmailAddress => 'Please enter email address';
+
+  @override
+  String get pleaseEnterValidEmailAddress =>
+      'Please enter a valid email address';
+
+  @override
+  String get pleaseConfirmPassword => 'Please confirm your password';
+
+  @override
+  String get noInternetConnection => 'No internet connection';
+
+  @override
+  String get cacheErrorOccurred => 'Cache error occurred';
+
+  @override
+  String get requestTimedOut => 'Request timed out';
+
+  @override
+  String get anUnexpectedErrorOccurred => 'An unexpected error occurred';
+
+  @override
+  String get connectionTimeoutPleaseTryAgain =>
+      'Connection timeout, please try again.';
+
+  @override
+  String get sendTimeoutPleaseCheckInternet =>
+      'Send timeout, please check your internet.';
+
+  @override
+  String get receiveTimeoutPleaseTryAgain =>
+      'Receive timeout, please try again.';
+
+  @override
+  String get requestWasCancelled => 'Request was cancelled.';
+
+  @override
+  String get unknownErrorOccurred => 'Unknown error occurred';
+
+  @override
+  String get noResponseFromServer => 'No response from server';
+
+  @override
+  String get anErrorOccurred => 'An error occurred.';
+
+  @override
+  String get downloadSuccessful => 'Download successful';
+
+  @override
+  String downloadFailedWithStatus(String status) {
+    return 'Download failed with status $status';
+  }
+
+  @override
+  String failedToSavePdf(String error) {
+    return 'Failed to save PDF: $error';
+  }
+
+  @override
+  String get howCanIPayMyBillOnline => 'How can I pay my bill online?';
+
+  @override
+  String get goToWalletPaymentsChoosePaymentMethod =>
+      'Go to \"Wallet / Payments\" → Choose payment method → Proceed to Pay.';
+
+  @override
+  String get whatPaymentModesAreAccepted => 'What payment modes are accepted?';
+
+  @override
+  String get weAcceptVariousPaymentMethodsIncludingCredit =>
+      'We accept various payment methods including credit cards, debit cards, UPI, and net banking.';
+
+  @override
+  String get myInternetSpeedIsSlowWhatShould =>
+      'My internet speed is slow. What should I do?';
+
+  @override
+  String get pleaseCheckYourConnectionRestartYourRouter =>
+      'Please check your connection, restart your router, or contact our support team for assistance.';
+
+  @override
+  String get payments => 'Payments';
+
+  @override
+  String get failedToLoadPreview => 'Failed to load preview';
+
+  @override
+  String get noAccessContactSupport =>
+      'You do not have access to this app. Please contact support.';
+
+  @override
+  String get invalidResponse => 'Invalid response';
+
+  @override
+  String get fileUrlNotFound => 'File URL not found';
+
+  @override
+  String get customerTypeCouldNotBeResolved =>
+      'Customer type could not be resolved. Please try again.';
+
+  @override
+  String get selectedFileNotAvailable => 'Selected file is not available';
+
+  @override
+  String get fileUploadSucceededNoId =>
+      'File upload succeeded but no fileId returned';
+
+  @override
+  String get txnStatusSuccess => 'Success';
+
+  @override
+  String get txnStatusFailed => 'Failed';
+
+  @override
+  String get txnStatusPending => 'Pending';
+
+  @override
+  String get txnStatusInitiated => 'Initiated';
+
+  @override
+  String get txnStatusCancelled => 'Cancelled';
+
+  @override
+  String get txnStatusRefunded => 'Refunded';
+
+  @override
+  String get allTransactions => 'All Transactions';
+
+  @override
+  String get last30Days => 'Last 30 Days';
+
+  @override
+  String get customDate => 'Custom Date';
 }

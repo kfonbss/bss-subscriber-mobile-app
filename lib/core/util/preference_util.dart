@@ -7,10 +7,44 @@ class PreferenceUtils {
   static const _keyRefreshToken = 'refreshToken';
   static const _keyTokenExpiryAt = 'tokenExpiryAt';
   static const _keyUserId = 'userId';
-  static const _keyUserName = 'userName';
+  static const _keyMobileNumber = 'mobileNumber';
   static const _keyTenantId = 'tenantId';
   static const _keyTenantName = 'tenantName';
   static const _introScreenStatus = 'introScreenStatus';
+  static const _keyLanguageCode = 'languageCode';
+  static const _keyUsername = 'userName';
+  static const _keyPassword = 'password';
+  static Future<void> saveLoginCredentials(
+      String userName,
+      String password,
+      ) async {
+    await Future.wait([
+      _storage.write(key: _keyUsername, value: userName),
+      _storage.write(key: _keyPassword, value: password),
+    ]);
+  }
+
+
+  static Future<void> clearLoginCredentials() async {
+    await Future.wait([
+      _storage.delete(key: _keyUsername),
+      _storage.delete(key: _keyPassword),
+    ]);
+  }
+
+  static Future<String?> getUsername() async =>
+      await _storage.read(key: _keyUsername);
+
+  static Future<String?> getPassword() async =>
+      await _storage.read(key: _keyPassword);
+
+  /// App language chosen on the language page ('en' / 'hi'); null = device language.
+  static Future<String?> getLanguageCode() async =>
+      await _storage.read(key: _keyLanguageCode);
+
+  static Future<void> setLanguageCode(String code) async =>
+      await _storage.write(key: _keyLanguageCode, value: code);
+
 
   static Future<String?> getAccessToken() async =>
       await _storage.read(key: _keyAccessToken);
@@ -78,24 +112,34 @@ class PreferenceUtils {
   static Future<void> setUserDetails({required String userId,required String userName}) async {
     await Future.wait([
       _storage.write(key: _keyUserId, value: userId),
-      _storage.write(key: _keyUserName, value: userName)
+      _storage.write(key: _keyUsername, value: userName)
     ]);
   }
 
   static Future<String?> getUserId() async =>
       await _storage.read(key: _keyUserId);
-  static Future<String?> getUserName() async =>
-      await _storage.read(key: _keyUserName);
 
-  static Future<void> clearAll() async{
+  static Future<String?> getUserName() async =>
+      await _storage.read(key: _keyUsername);
+
+  /// Logged-in subscriber's mobile number (saved at OTP verification).
+  static Future<void> setMobileNumber(String mobileNumber) async =>
+      await _storage.write(key: _keyMobileNumber, value: mobileNumber);
+  static Future<String?> getMobileNumber() async =>
+      await _storage.read(key: _keyMobileNumber);
+
+  static Future<void> clearAll(bool clearLogin) async{
     await Future.wait([
       _storage.delete(key: _keyAccessToken),
       _storage.delete(key: _keyRefreshToken),
       _storage.delete(key: _keyTokenExpiryAt),
       _storage.delete(key: _keyUserId),
-      _storage.delete(key: _keyUserName),
+      _storage.delete(key: _keyMobileNumber),
+      if (clearLogin) ...[
+        _storage.delete(key: _keyUsername),
+        _storage.delete(key: _keyPassword),
+      ],
     ]);
- // await _storage.deleteAll();
 
 }
 }

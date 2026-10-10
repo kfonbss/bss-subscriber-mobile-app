@@ -20,10 +20,10 @@ class DataUsageSessionHistoryCard extends StatelessWidget {
             fontWeight: FontWeight.w600,
           ),
         ),
-        const SizedBox(height: 12),
+        SizedBox(height: 12.h),
         for (int i = 0; i < sessionHistory.length; i++) ...[
           _SessionListTile(session: sessionHistory[i]),
-          if (i < sessionHistory.length - 1) const SizedBox(height: 16),
+          if (i < sessionHistory.length - 1) SizedBox(height: 16.h),
         ],
       ],
     );
@@ -40,8 +40,12 @@ class _SessionListTile extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final theme = Theme.of(context);
-    final boldStyle = theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w600);
-    final lightStyle = theme.textTheme.bodyMedium?.copyWith(fontWeight: FontWeight.w300);
+    final boldStyle = theme.textTheme.bodyMedium?.copyWith(
+      fontWeight: FontWeight.w600,
+    );
+    final lightStyle = theme.textTheme.bodyMedium?.copyWith(
+      fontWeight: FontWeight.w300,
+    );
     final l10n = context.bssSubL10n;
 
     return GestureDetector(
@@ -62,11 +66,8 @@ class _SessionListTile extends StatelessWidget {
             Column(
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                Text(
-                  _dateFormat.format(session.startTime),
-                  style: boldStyle,
-                ),
-                const SizedBox(height: 4),
+                Text(_dateFormat.format(session.startTime), style: boldStyle),
+                SizedBox(height: 4.h),
                 Row(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -74,7 +75,7 @@ class _SessionListTile extends StatelessWidget {
                       l10n.durationValue(session.sessionDuration),
                       style: lightStyle,
                     ),
-                    const SizedBox(width: 24),
+                    SizedBox(width: 24.w),
                     Text(
                       l10n.totalValueMb(session.totalMb.toString()),
                       style: lightStyle,

@@ -2,6 +2,8 @@ import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 /// Reusable attachment upload field with dashed border.
 /// Used in Create Ticket, Submit GSTR, Add CAF Details, etc.
@@ -26,7 +28,7 @@ class AttachmentUploadField extends StatelessWidget {
   static const _kLabelStyle = TextStyle(
     fontSize: 14,
     fontWeight: FontWeight.w600,
-    color: Color(0xFF0F1121),
+    color: AppColor.kTextSecondaryDark,
     height: 1.3,
     fontFamily: 'GeneralSans',
   );
@@ -41,15 +43,14 @@ class AttachmentUploadField extends StatelessWidget {
       validator: validator,
       builder: (state) {
         final hasError = state.hasError;
-        final color = hasError
-            ? const Color(0xFFE23224)
-            : AppColor.kPrimaryColor;
+        final color =
+            hasError ? AppColor.kAttachmentErrorRed : AppColor.kPrimaryColor;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(isMandatory ? '$label*' : label, style: _kLabelStyle),
-            const SizedBox(height: 8),
+            SizedBox(height: 8.h),
             GestureDetector(
               onTap: onTap,
               child: Container(
@@ -71,12 +72,12 @@ class AttachmentUploadField extends StatelessWidget {
                       mainAxisAlignment: MainAxisAlignment.center,
                       children: [
                         SvgPicture.asset(
-                          'assets/icons/document-upload.svg',
-                          width: 24,
-                          height: 24,
+                          AppAssets.documentUpload,
+                          width: 24.w,
+                          height: 24.h,
                           colorFilter: ColorFilter.mode(color, BlendMode.srcIn),
                         ),
-                        const SizedBox(height: 4),
+                        SizedBox(height: 4.h),
                         Text(
                           l10n.attachment,
                           style: TextStyle(
@@ -94,21 +95,21 @@ class AttachmentUploadField extends StatelessWidget {
               ),
             ),
             if (hasError) ...[
-              const SizedBox(height: 6),
+              SizedBox(height: 6.h),
               Row(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Icon(
                     Icons.error_outline,
-                    color: Color(0xFFE23224),
+                    color: AppColor.kAttachmentErrorRed,
                     size: 14,
                   ),
-                  const SizedBox(width: 4),
+                  SizedBox(width: 4.w),
                   Expanded(
                     child: Text(
                       state.errorText!,
                       style: const TextStyle(
-                        color: Color(0xFFE23224),
+                        color: AppColor.kAttachmentErrorRed,
                         fontSize: 12,
                         fontFamily: 'GeneralSans',
                       ),
@@ -142,18 +143,19 @@ class DashedBorderPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = strokeWidth
-      ..style = PaintingStyle.stroke;
+    final paint =
+        Paint()
+          ..color = color
+          ..strokeWidth = strokeWidth
+          ..style = PaintingStyle.stroke;
 
-    final path = Path()
-      ..addRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(0, 0, size.width, size.height),
-          Radius.circular(borderRadius),
-        ),
-      );
+    final path =
+        Path()..addRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromLTWH(0, 0, size.width, size.height),
+            Radius.circular(borderRadius),
+          ),
+        );
 
     final dashPath = _dashPath(path, dashWidth, dashSpace);
     canvas.drawPath(dashPath, paint);

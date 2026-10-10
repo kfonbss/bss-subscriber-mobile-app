@@ -34,10 +34,7 @@ class AboutAppPage extends StatelessWidget {
                   _buildSection(
                     title: l10n.appInformation,
                     children: [
-                      _AppInfoItem(
-                        title: l10n.appVersion,
-                        value: 'v10.2.2',
-                      ),
+                      _AppInfoItem(title: l10n.appVersion, value: 'v10.2.2'),
                       _AppInfoItem(
                         title: l10n.copyright,
                         value: '@2025kfon.in',
@@ -146,7 +143,7 @@ class _AppInfoItem extends StatelessWidget {
     height: 1.3,
     letterSpacing: 0,
   );
-  static final _valueStyle = TextStyle(
+  static get _valueStyle => TextStyle(
     fontFamily: 'GeneralSans',
     color: AppColor.kPrimaryColor,
     fontSize: 14.sp,

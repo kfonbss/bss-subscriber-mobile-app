@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/l10n/bss_sub_localizations.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
+import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
 
 class SpeedFilterSheet extends StatefulWidget {
   final int? currentSpeed;
@@ -21,20 +24,6 @@ class _SpeedFilterSheetState extends State<SpeedFilterSheet> {
   static const _dragHandleDecoration = BoxDecoration(
     color: AppColor.kDragHandleGrey,
     borderRadius: BorderRadius.all(Radius.circular(2)),
-  );
-  static final _cancelButtonStyle = OutlinedButton.styleFrom(
-    side: const BorderSide(color: AppColor.kPrimaryColor),
-    padding: const EdgeInsets.symmetric(vertical: 14),
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(12)),
-    ),
-  );
-  static final _applyButtonStyle = ElevatedButton.styleFrom(
-    backgroundColor: AppColor.kPrimaryColor,
-    padding: const EdgeInsets.symmetric(vertical: 14),
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(12)),
-    ),
   );
 
   @override
@@ -56,8 +45,8 @@ class _SpeedFilterSheetState extends State<SpeedFilterSheet> {
         children: [
           Center(
             child: Container(
-              width: 40,
-              height: 4,
+              width: 40.w,
+              height: 4.h,
               margin: const EdgeInsets.only(bottom: 16),
               decoration: _dragHandleDecoration,
             ),
@@ -85,42 +74,41 @@ class _SpeedFilterSheetState extends State<SpeedFilterSheet> {
               ),
             ],
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20.h),
           RadioGroup<int>(
             groupValue: _selectedSpeed,
             onChanged: (value) => setState(() => _selectedSpeed = value),
             child: Column(
               mainAxisSize: MainAxisSize.min,
-              children: _speedOptions
-                  .map((speed) => _buildSpeedTile(speed, theme, l10n))
-                  .toList(),
+              children:
+                  _speedOptions
+                      .map((speed) => _buildSpeedTile(speed, theme, l10n))
+                      .toList(),
             ),
           ),
-          const SizedBox(height: 20),
+          SizedBox(height: 20.h),
           Row(
             children: [
               Expanded(
-                child: OutlinedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: _cancelButtonStyle,
-                  child: Text(
-                    l10n.cancel,
-                    style: const TextStyle(color: AppColor.kPrimaryColor),
-                  ),
+                child: SecondaryButton(
+                  label: l10n.cancel,
+                  borderRadius: 12,
+                  backgroundColor: Colors.transparent,
+                  borderColor: AppColor.kPrimaryColor,
+                  foregroundColor: AppColor.kPrimaryColor,
+                  onClicked: () => Navigator.pop(context),
                 ),
               ),
-              const SizedBox(width: 12),
+              SizedBox(width: 12.w),
               Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
+                child: PrimaryButton(
+                  label: l10n.search,
+                  borderRadius: 12,
+                  isLoading: false,
+                  onClicked: () {
                     Navigator.pop(context);
                     widget.onApply(_selectedSpeed);
                   },
-                  style: _applyButtonStyle,
-                  child: Text(
-                    l10n.search,
-                    style: const TextStyle(color: Colors.white),
-                  ),
                 ),
               ),
             ],
@@ -138,8 +126,8 @@ class _SpeedFilterSheetState extends State<SpeedFilterSheet> {
         child: Row(
           children: [
             SizedBox(
-              width: 24,
-              height: 24,
+              width: 24.w,
+              height: 24.h,
               child: Radio<int>(
                 value: speed,
                 activeColor: AppColor.kPrimaryColor,
@@ -147,7 +135,7 @@ class _SpeedFilterSheetState extends State<SpeedFilterSheet> {
                 visualDensity: VisualDensity.compact,
               ),
             ),
-            const SizedBox(width: 12),
+            SizedBox(width: 12.w),
             Text(l10n.mbps(speed), style: theme.textTheme.bodyMedium),
           ],
         ),

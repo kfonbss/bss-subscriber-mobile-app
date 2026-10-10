@@ -14,4 +14,12 @@ class ProfileModel extends ProfileEntity {
       status: json['status'] ?? '',
     );
   }
+
+  ProfileEntity toEntity() {
+    return ProfileEntity(
+      subscriberId: subscriberId,
+      name: name,
+      status: status
+    );
+  }
 }

@@ -18,28 +18,37 @@ import 'package:kfon_subscriber/features/data_usage/presentation/pages/session_h
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/presentation/page_component/package_info_card.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
+import 'package:kfon_subscriber/shared/widgets/no_data_found.dart';
+import 'package:kfon_subscriber/shared/widgets/retry_widget.dart';
 import 'package:kfon_subscriber/shared/widgets/shimmer/shimmer_base.dart';
 import 'package:kfon_subscriber/shared/widgets/shimmer/shimmer_box.dart';
+import 'package:kfon_subscriber/shared/widgets/tenant_svg_color_mapper.dart';
 import 'package:kfon_subscriber/service_locator.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
 
 part '../components/active_session_card.dart';
+
 part '../components/data_usage_chart.dart';
+
 part '../components/data_usage_session_history_card.dart';
 
 class DataUsageView extends StatefulWidget {
   final String subscriberUuid;
   final ActivePackagesDetailsEntity? entity;
 
-  const DataUsageView(
-      {super.key, required this.subscriberUuid, required this.entity});
+  const DataUsageView({
+    super.key,
+    required this.subscriberUuid,
+    required this.entity,
+  });
 
   @override
   State<DataUsageView> createState() => _DataUsageViewState();
 }
 
 class _DataUsageViewState extends State<DataUsageView> {
-  static const _modemAvatarBg = Color(0x0D8D0247); // kPrimaryColor @ 5% opacity
-  static const _modemIconColorFilter =
+  static get _modemAvatarBg => AppColor.kPrimary5; // kPrimaryColor @ 5% opacity
+  static get _modemIconColorFilter =>
       ColorFilter.mode(AppColor.kPrimaryColor, BlendMode.srcIn);
   static const _cardRadius = BorderRadius.all(Radius.circular(12));
 
@@ -111,8 +120,11 @@ class _DataUsageViewState extends State<DataUsageView> {
               right: 0,
               child: SizedBox(
                 height: 200.h,
-                child: SvgPicture.asset(
-                  'assets/images/speed_test_background.svg',
+                child: SvgPicture(
+                  SvgAssetLoader(
+                    AppAssets.speedTestBackground,
+                    colorMapper: TenantSvgColorMapper(),
+                  ),
                   fit: BoxFit.fill,
                 ),
               ),
@@ -121,174 +133,130 @@ class _DataUsageViewState extends State<DataUsageView> {
               child: Padding(
                 padding: const EdgeInsets.only(left: 20, right: 20, top: 140),
                 child: BlocBuilder<DataUsageBloc, DataUsageState>(
-                bloc: _bloc,
-                buildWhen: (prev, curr) => prev.status != curr.status,
-                builder: (context, state) {
-                  final dataUsageState = state;
+                  bloc: _bloc,
+                  buildWhen: (prev, curr) => prev.status != curr.status,
+                  builder: (context, state) {
+                    final dataUsageState = state;
 
-                  if (dataUsageState.status == DataUsageStatus.loading) {
-                    return SingleChildScrollView(
-                      child: AppShimmer(
+                    if (dataUsageState.status == DataUsageStatus.loading) {
+                      return SingleChildScrollView(
+                        child: AppShimmer(
+                          child: Column(
+                            crossAxisAlignment: CrossAxisAlignment.start,
+                            children: [
+                              ShimmerBox(width: double.infinity, height: 190.h),
+                              SizedBox(height: 24.h),
+                              ShimmerBox(width: double.infinity, height: 270.h),
+                              SizedBox(height: 16.h),
+                              ShimmerBox(width: double.infinity, height: 400.h),
+                            ],
+                          ),
+                        ),
+                      );
+                    }
+
+                    if (dataUsageState.status == DataUsageStatus.error) {
+                      return RetryWidget(
+                        errorMessage:
+                            dataUsageState.error ??
+                            context.bssSubL10n.somethingWentWrong,
+                        onRetry: _onRetry,
+                      );
+                    }
+
+                    if (dataUsageState.status == DataUsageStatus.loaded &&
+                        dataUsageState.data != null) {
+                      final dataUsage = dataUsageState.data!;
+
+                      if (dataUsage.dataUsage == null) {
+                        return NoDataFound(
+                          errorMessage: context.bssSubL10n.noDataFound,
+                        );
+                      }
+
+                      return SingleChildScrollView(
                         child: Column(
                           crossAxisAlignment: CrossAxisAlignment.start,
                           children: [
-                            ShimmerBox(width: double.infinity, height: 190.h),
-                            const SizedBox(height: 24),
-                            ShimmerBox(width: double.infinity, height: 270.h),
-                            const SizedBox(height: 16),
-                            ShimmerBox(width: double.infinity, height: 400.h),
-
-                          ],
-                        ),
-                      ),
-                    );
-                  }
-
-                  if (dataUsageState.status == DataUsageStatus.error) {
-                    return Center(
-                      child: Column(
-                        mainAxisAlignment: MainAxisAlignment.center,
-                        children: [
-                          Image.asset(
-                            'assets/images/filler.png',
-                            width: 180,
-                            height: 128,
-                            fit: BoxFit.contain,
-                          ),
-                          const SizedBox(height: 16),
-                          Text(
-                            dataUsageState.error ?? context.bssSubL10n.somethingWentWrong,
-                            style: theme.textTheme.bodyMedium?.copyWith(
-                              color: AppColor.kTextSecondaryDark,
+                            PackageInfoCard(entity: widget.entity),
+                            SizedBox(height: 24.h),
+                            _DataUsageChart(
+                              graphData: dataUsage.dataUsage!.graphData,
+                              period: dataUsage.period,
+                              onPeriodChanged: _onPeriodChanged,
                             ),
-                            textAlign: TextAlign.center,
-                          ),
-                          const SizedBox(height: 16),
-                          ElevatedButton(
-                            onPressed: _onRetry,
-                            child: Text(context.bssSubL10n.retry),
-                          ),
-                        ],
-                      ),
-                    );
-                  }
-
-                  if (dataUsageState.status == DataUsageStatus.loaded &&
-                      dataUsageState.data != null) {
-                    final dataUsage = dataUsageState.data!;
-
-                    if (dataUsage.dataUsage == null) {
-                      return _buildEmptyState(theme);
-                    }
-
-                    return SingleChildScrollView(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        children: [
-                          PackageInfoCard(entity: widget.entity),
-                          const SizedBox(height: 24),
-                          _DataUsageChart(
-                            graphData: dataUsage.dataUsage!.graphData,
-                            period: dataUsage.period,
-                            onPeriodChanged: _onPeriodChanged,
-                          ),
-                          const SizedBox(height: 24),
-                          InkWell(
-                            onTap: () {
-                              Navigator.push(
-                                context,
-                                MaterialPageRoute(
-                                  builder: (_) => const RestartModemPage(),
-                                ),
-                              );
-                            },
-                            borderRadius: _cardRadius,
-                            child: Container(
-                              decoration: AppStyles.boxDecorationMedium,
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 16,
-                                vertical: 12,
-                              ),
-                              child: Row(
-                                children: [
-                                  CircleAvatar(
-                                    minRadius: 24,
-                                    maxRadius: 24,
-                                    backgroundColor: _modemAvatarBg,
-                                    child: SvgPicture.asset(
-                                      'assets/icons/modem_restart.svg',
-                                      colorFilter: _modemIconColorFilter,
-                                      width: 22,
-                                      height: 22,
-                                    ),
+                            SizedBox(height: 24.h),
+                            InkWell(
+                              onTap: () {
+                                Navigator.push(
+                                  context,
+                                  MaterialPageRoute(
+                                    builder: (_) => const RestartModemPage(),
                                   ),
-                                  const SizedBox(width: 12),
-                                  Expanded(
-                                    child: Text(
-                                      context.bssSubL10n.restartModem,
-                                      style: Theme
-                                          .of(
-                                        context,
-                                      )
-                                          .textTheme
-                                          .labelLarge
-                                          ?.copyWith(
-                                        fontWeight: FontWeight.w600,
+                                );
+                              },
+                              borderRadius: _cardRadius,
+                              child: Container(
+                                decoration: AppStyles.boxDecorationMedium,
+                                padding: const EdgeInsets.symmetric(
+                                  horizontal: 16,
+                                  vertical: 12,
+                                ),
+                                child: Row(
+                                  children: [
+                                    CircleAvatar(
+                                      minRadius: 24,
+                                      maxRadius: 24,
+                                      backgroundColor: _modemAvatarBg,
+                                      child: SvgPicture.asset(
+                                        AppAssets.modemRestart,
+                                        colorFilter: _modemIconColorFilter,
+                                        width: 22.w,
+                                        height: 22.h,
                                       ),
                                     ),
-                                  ),
-                                  const Icon(
-                                    Icons.arrow_forward_ios,
-                                    size: 16,
-                                    color: AppColor.kLabelGrey,
-                                  ),
-                                ],
+                                    SizedBox(width: 12.w),
+                                    Expanded(
+                                      child: Text(
+                                        context.bssSubL10n.restartModem,
+                                        style: Theme.of(
+                                          context,
+                                        ).textTheme.labelLarge?.copyWith(
+                                          fontWeight: FontWeight.w600,
+                                        ),
+                                      ),
+                                    ),
+                                    const Icon(
+                                      Icons.arrow_forward_ios,
+                                      size: 16,
+                                      color: AppColor.kLabelGrey,
+                                    ),
+                                  ],
+                                ),
                               ),
                             ),
-                          ),
-                          const SizedBox(height: 24),
-                          SessionCard(session: dataUsage.activeSession),
-                          const SizedBox(height: 24),
-                          DataUsageSessionHistoryCard(
-                            sessionHistory: dataUsage.sessionHistory,
-                          ),
-                          const SizedBox(height: 20),
-                        ],
-                      ),
-                    );
-                  }
+                            SizedBox(height: 24.h),
+                            SessionCard(session: dataUsage.activeSession),
+                            SizedBox(height: 24.h),
+                            DataUsageSessionHistoryCard(
+                              sessionHistory: dataUsage.sessionHistory,
+                            ),
+                            SizedBox(height: 20.h),
+                          ],
+                        ),
+                      );
+                    }
 
-                  return _buildEmptyState(theme);
-                },
+                    return NoDataFound(
+                      errorMessage: context.bssSubL10n.noDataFound,
+                    );
+                  },
+                ),
               ),
             ),
-          ),
-        ],
-        ),   // closes Stack
-      ),     // closes SizedBox.expand
-    );
-  }
-
-  Widget _buildEmptyState(ThemeData theme) {
-    return Center(
-      child: Column(
-        mainAxisAlignment: MainAxisAlignment.center,
-        children: [
-          Image.asset(
-            'assets/images/filler.png',
-            width: 180,
-            height: 128,
-            fit: BoxFit.contain,
-          ),
-          const SizedBox(height: 16),
-          Text(
-            context.bssSubL10n.noDataFound,
-            style: theme.textTheme.bodyMedium?.copyWith(
-              color: AppColor.kTextSecondaryDark,
-            ),
-          ),
-        ],
-      ),
+          ],
+        ), // closes Stack
+      ), // closes SizedBox.expand
     );
   }
 }

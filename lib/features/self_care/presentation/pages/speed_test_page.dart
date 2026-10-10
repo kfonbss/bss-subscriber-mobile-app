@@ -1,12 +1,15 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:google_fonts/google_fonts.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
+import 'package:kfon_subscriber/shared/widgets/tenant_svg_color_mapper.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
 
 import '../../../../shared/widgets/primary_button.dart' show PrimaryButton;
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
 
 class SpeedTestPage extends StatelessWidget {
   const SpeedTestPage({super.key});
@@ -14,14 +17,23 @@ class SpeedTestPage extends StatelessWidget {
   // ── Static decorations ───────────────────────────────────────────────────────
   static const _resultsCardDecoration = BoxDecoration(
     color: Colors.white,
+    border: Border.fromBorderSide(
+      BorderSide(color: AppColor.kinputFiledLightBorder),
+    ),
     borderRadius: BorderRadius.all(Radius.circular(12)),
   );
-  static const _serverCardPadding =
-      EdgeInsets.only(left: 20, right: 20, top: 130);
+  // Design: server card 335 wide at y=134.
+  static const _serverCardPadding = EdgeInsets.only(
+    left: 20,
+    right: 20,
+    top: 134,
+  );
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.bssSubL10n;
+    // Design: button ends 32 above the home indicator.
+    final bottomInset = MediaQuery.paddingOf(context).bottom;
 
     return CommonAppBar(
       onBackPressed: () => Navigator.pop(context),
@@ -37,22 +49,27 @@ class SpeedTestPage extends StatelessWidget {
             children: <Widget>[
               SizedBox(
                 width: double.infinity,
-                height: 190.h,
-                child: SvgPicture.asset(
-                  'assets/images/speed_test_background.svg',
+                height: 191.h,
+                child: SvgPicture(
+                  SvgAssetLoader(
+                    AppAssets.speedTestBackground,
+                    colorMapper: TenantSvgColorMapper(),
+                  ),
                   fit: BoxFit.fill,
                 ),
               ),
               Padding(
                 padding: _serverCardPadding,
                 child: Card(
+                  // No default 4 margin, so the card is the full 335 wide.
+                  margin: EdgeInsets.zero,
                   shape: const RoundedRectangleBorder(
                     borderRadius: BorderRadius.all(Radius.circular(16.0)),
                   ),
                   color: Colors.white,
                   elevation: 4.0,
                   child: Container(
-                    height: 75.h,
+                    height: 70.h,
                     padding: const EdgeInsets.all(16),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -61,12 +78,12 @@ class SpeedTestPage extends StatelessWidget {
                         _ServerLocItem(
                           heading: l10n.server,
                           data: 'Kfon.in',
-                          icon: 'glob.png',
+                          icon: AppAssets.glob,
                         ),
                         _ServerLocItem(
                           heading: l10n.location,
                           data: 'Ernakulam',
-                          icon: 'location.png',
+                          icon: AppAssets.location,
                         ),
                       ],
                     ),
@@ -111,7 +128,7 @@ class SpeedTestPage extends StatelessWidget {
                       RangePointer(
                         value: 80,
                         cornerStyle: CornerStyle.bothCurve,
-                        width: 0.2,
+                        width: 0.2.w,
                         color: AppColor.kPrimaryColor,
                         sizeUnit: GaugeSizeUnit.factor,
                       ),
@@ -120,6 +137,7 @@ class SpeedTestPage extends StatelessWidget {
                       color: Colors.black,
                       fontSize: 14,
                       fontWeight: FontWeight.w500,
+                      fontFamily: 'GeneralSans',
                     ),
                     axisLineStyle: AxisLineStyle(
                       thickness: 0.2,
@@ -134,10 +152,11 @@ class SpeedTestPage extends StatelessWidget {
           ),
           Column(
             children: [
+              // Design: 68 tall, content 16 inside, #EAEAEA border.
               Container(
-                height: 75,
+                height: 68.h,
                 margin: const EdgeInsets.symmetric(horizontal: 20),
-                padding: const EdgeInsets.symmetric(horizontal: 25, vertical: 16),
+                padding: const EdgeInsets.symmetric(horizontal: 16),
                 decoration: _resultsCardDecoration,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -146,32 +165,36 @@ class SpeedTestPage extends StatelessWidget {
                     _SpeedResultItem(
                       heading: l10n.uploadSpeed,
                       data: '0 MB/s',
-                      icon: 'upload.png',
+                      icon: AppAssets.upload,
                     ),
                     _SpeedResultItem(
                       heading: l10n.downloadSpeed,
                       data: '0 MB/s',
-                      icon: 'download.png',
+                      icon: AppAssets.download,
                     ),
                     _SpeedResultItem(
                       heading: l10n.ping,
                       data: '0 MB/s',
-                      icon: 'download.png',
+                      icon: AppAssets.ping,
                     ),
                   ],
                 ),
               ),
+              // Design: results card ends at 596, button at 694–746.
               Padding(
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 20,
-                  vertical: 30,
-                ),
+                padding: EdgeInsets.fromLTRB(20, 98.h, 20, 32.h + bottomInset),
                 child: PrimaryButton(
                   label: l10n.startSpeedTest,
                   isLoading: false,
                   onClicked: () {},
                   borderRadius: 10,
                   height: 52.h,
+                  textStyle: TextStyle(
+                    fontSize: 14.sp,
+                    fontFamily: 'GeneralSans',
+                    fontWeight: FontWeight.w600,
+                    height: 1.3,
+                  ),
                 ),
               ),
             ],
@@ -194,25 +217,6 @@ class _ServerLocItem extends StatelessWidget {
     required this.data,
     required this.icon,
   });
-
-  static const _iconBgDecoration = BoxDecoration(
-    shape: BoxShape.circle,
-    color: Color(0xFFF9F2F6),
-  );
-  static final _headingStyle = TextStyle(
-    color: AppColor.kBodyTextGrey,
-    fontSize: 12.sp,
-    fontWeight: FontWeight.w400,
-    fontFamily: 'GeneralSans',
-  );
-  static final _dataStyle = TextStyle(
-    color: AppColor.kTextSecondaryDark,
-    fontSize: 14.sp,
-    fontWeight: FontWeight.w600,
-    height: 1.30,
-    fontFamily: 'GeneralSans',
-  );
-
   @override
   Widget build(BuildContext context) {
     return Row(
@@ -223,18 +227,41 @@ class _ServerLocItem extends StatelessWidget {
           width: 38.w,
           height: 38.h,
           padding: const EdgeInsets.all(10),
-          decoration: _iconBgDecoration,
-          child: Image.asset(
-            'assets/icons/$icon',
-            color: AppColor.kPrimaryColor,
+          decoration: BoxDecoration(
+            shape: BoxShape.circle,
+            color: AppColor.kIconBackground,
+          ),
+          child: SvgPicture.asset(
+            icon,
+            colorFilter: ColorFilter.mode(
+              AppColor.kPrimaryColor,
+              BlendMode.srcIn,
+            ),
           ),
         ),
+        // Design: Poppins Regular 12 label directly above the value.
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 5,
+          mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            Text(heading, style: _headingStyle),
-            Expanded(child: Text(data, style: _dataStyle)),
+            Text(
+              heading,
+              style: GoogleFonts.poppins(
+                color: AppColor.kBodyTextGrey,
+                fontSize: 12.sp,
+                fontWeight: FontWeight.w400,
+              ),
+            ),
+            Text(
+              data,
+              style: TextStyle(
+                color: AppColor.kTextSecondaryDark,
+                fontSize: 14.sp,
+                fontWeight: FontWeight.w600,
+                height: 1.30,
+                fontFamily: 'GeneralSans',
+              ),
+            ),
           ],
         ),
       ],
@@ -255,12 +282,13 @@ class _SpeedResultItem extends StatelessWidget {
     required this.icon,
   });
 
-  static final _headingStyle = TextStyle(
+  // Design: Poppins Regular 10.
+  static final _headingStyle = GoogleFonts.poppins(
     color: AppColor.kBodyTextGrey,
     fontSize: 10.sp,
     fontWeight: FontWeight.w400,
-    fontFamily: 'GeneralSans',
   );
+
   // fontSize: 16 is a literal — const-constructible TextStyle.
   static const _dataStyle = TextStyle(
     color: AppColor.kTextSecondaryDark,
@@ -272,14 +300,23 @@ class _SpeedResultItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // Design: 24 icon, text 8 after it, no gap between label and value.
     return Row(
       crossAxisAlignment: CrossAxisAlignment.center,
-      spacing: 10,
+      spacing: 8,
       children: [
-        Image.asset('assets/icons/$icon', height: 24.h, width: 24.w),
+        SvgPicture.asset(
+          icon,
+          height: 24.h,
+          width: 24.w,
+          colorFilter: ColorFilter.mode(
+            AppColor.kPrimaryColor,
+            BlendMode.srcIn,
+          ),
+        ),
         Column(
           crossAxisAlignment: CrossAxisAlignment.start,
-          spacing: 5,
+          mainAxisSize: MainAxisSize.min,
           children: [
             Text(heading, style: _headingStyle),
             Text(data, style: _dataStyle),

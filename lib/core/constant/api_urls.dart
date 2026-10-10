@@ -7,19 +7,25 @@ class ApiUrls {
   static const String packageManagementService =
       'bss-package-management-services/api';
 
-  static const String userRoleMapingService = 'bss-user-role-mapping-services/api';
+  static const String userRoleMapingService =
+      'bss-user-role-mapping-services/api';
   static const String coreExternalService = 'bss-core-external-services/api';
-  static const String fileStorageService = 'bss-file-storage-services/api/files';
-  static const String billingFinanceService = 'bss-billing-finance-services/api';
+  static const String fileStorageService =
+      'bss-file-storage-services/api/files';
+  static const String billingFinanceService =
+      'bss-billing-finance-services/api';
 
-  static String bssCoreDmdmService =
-      'bss-core-dmdm-service/api';
+  static String bssCoreDmdmService = 'bss-core-dmdm-service/api';
   static const setNewPasswordURL =
       'bss-user-role-mapping-services/api/auth/forgot-password';
   static const lnpEnquiryFormURL =
       'bss-enquiry-services/api/partner-enquiry/save';
   static const subscriptionEnquiryFormURL =
       'bss-enquiry-services/api/customer-enquiries/save';
+
+  /// Home enquiry mobile OTP (public endpoints).
+  static const String enquiryOtpSendURL = '$coreExternalService/otp/send';
+  static const String enquiryOtpVerifyURL = '$coreExternalService/otp/verify';
   static const agnpEnquiryFormURL =
       'bss-enquiry-services/api/agnp-enquiries/save';
   static const govAndCorpEnquiryFormURL =
@@ -27,6 +33,11 @@ class ApiUrls {
   static const darkFibreEnquiryFormURL =
       'bss-enquiry-services/api/darkfibre-enquiries/save';
   static const bplEnquiryFormURL = 'bplEnquiryFormURL';
+  static String get regionsURL => '$bssCoreDmdmService/region/fetch-all';
+  static const String customerEnquiryByMobileBase =
+      'bss-enquiry-services/api/customer-enquiries/mobile';
+  static String customerEnquiryByMobileURL(String mobileNumber) =>
+      '$customerEnquiryByMobileBase/$mobileNumber';
   static const getPostOfficesDistrictURL = 'get_post_offices.php';
   static const String homePageURL =
       '$subscriberManagementService/mobile/subscriber/home';
@@ -34,6 +45,10 @@ class ApiUrls {
       '$subscriberManagementService/mobile/subscribers/$subscriberUuid/data-usage';
   // static const String listPackagesURL =
   //     '$packageManagementService/mobile/packages';
+  static String get packageTabURL =>
+      '$billingFinanceService/subscriber-services/assess-eligibility';
+  static String get seasonalPreviewPackagesURL =>
+      '$billingFinanceService/subscriber-services/list-packages';
   static const String listPackagesURL =
       '$billingFinanceService/rule-engine/packages/seasonal-preview';
   static String changePlanURL({required String subscriberUuid}) =>
@@ -51,8 +66,10 @@ class ApiUrls {
   static const String walletTopupURL =
       '$billingFinanceService/mobile/payment/top-up';
   static String get loginURL => '$userRoleMapingService/mobile/login';
-  static String get resendOTPURL => '$userRoleMapingService/mobile/login/resend-otp';
-  static String get verifyOTPURL => '$userRoleMapingService/mobile/login/verify-otp';
+  static String get resendOTPURL =>
+      '$userRoleMapingService/mobile/login/resend-otp';
+  static String get verifyOTPURL =>
+      '$userRoleMapingService/mobile/login/verify-otp';
   static const String sendForgotPasswordOTPURL =
       '$userRoleMapingService/mobile/forgot-password/send-otp';
   static const String verifyForgotPasswordOTPURL =
@@ -82,7 +99,8 @@ class ApiUrls {
   static String subscriberDetailsURL({required String subscriberUuid}) =>
       '$subscriberManagementService/mobile/subscribers/$subscriberUuid/details';
   static const String subjectURL = '$userRoleMapingService/mobile/issue-types';
-  static const String prioritiesURL = '$userRoleMapingService/mobile/priorities';
+  static const String prioritiesURL =
+      '$userRoleMapingService/mobile/priorities';
   static const String visibilityPermissionURL =
       '$userRoleMapingService/crm/visibility-permission';
   static const String submitTicketURL = '$userRoleMapingService/mobile/tickets';
@@ -91,12 +109,39 @@ class ApiUrls {
       '$billingFinanceService/rule-engine/packages/subscriber-discount';
   static const String addNoteURL = '$userRoleMapingService/mobile/note';
 
+  /// Rate a ticket (POST `{rating, comment}`).
+  /// TODO(rating): placeholder — replace with the real rating endpoint.
+  static String rateTicketURL(String ticketUuid) =>
+      '$submitTicketURL/$ticketUuid/rating';
+  static String get getNotificationsURL =>
+      '$userRoleMapingService/v1/notifications';static String get notificationUnreadCountURL =>
+      '$userRoleMapingService/v1/notifications/unread-count';
+  static String get notificationReadAllURL =>
+      '$userRoleMapingService/v1/notifications/read-all';
   /// File Storage: Get view URL by file ID (GET)
   static String fileViewUrlByFileId(String fileId) =>
-      '$fileStorageService/files/$fileId/view-url';
+      '$fileStorageService/$fileId/view-url';
+
+  /// CRM: Upload a file, returns its file ID (POST multipart `file`).
+  /// Used for the GST/PAN documents sent with a create-ticket request.
+  static const String fileUploadURL = '$userRoleMapingService/crm/upload';
 
   /// File Storage: Get download URL by file ID (GET)
   static String fileDownloadUrlByFileId(String fileId) =>
-      '$fileStorageService/files/$fileId/download-url';
-  static String get tenantsURL => '$bssCoreDmdmService/state/fetch-all';
+      '$fileStorageService/$fileId/download-url';
+  static String get tenantsURL => '$bssCoreDmdmService/region/fetch-all';
+  static String get lDTenantsURL => '$bssCoreDmdmService/region/fetch-all';
+  static String get furtureRechargesListURL =>
+      '$billingFinanceService/mobile/future-recharges';
+  static String get paymentGateways => '$bssCoreDmdmService/gateway/fetch-all';
+
+  // UPI Autopay (mandate)
+  static const String upiMandateStatus =
+      '$billingFinanceService/upi-mandate/status';
+  static const String upiMandateQuote =
+      '$billingFinanceService/upi-mandate/quote';
+  static const String upiMandateInitiate =
+      '$billingFinanceService/upi-mandate/initiate';
+  static const String upiMandateRevoke =
+      '$billingFinanceService/upi-mandate/revoke';
 }

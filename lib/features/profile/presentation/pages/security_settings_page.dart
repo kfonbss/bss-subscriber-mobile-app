@@ -1,8 +1,10 @@
 import 'package:flutter/material.dart';
+import 'package:kfon_subscriber/core/constant/app_brand.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/change_password_page.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 
 enum PasswordChangeEnum { bss, internet, ssid, wifi }
 
@@ -11,12 +13,13 @@ class SecuritySettingsPage extends StatelessWidget {
 
   const SecuritySettingsPage({super.key, required this.types});
 
-  static String _getLabel(PasswordChangeEnum type) {
+  static String _getLabel(PasswordChangeEnum type, BuildContext context) {
+    final l10n = context.bssSubL10n;
     return switch (type) {
-      PasswordChangeEnum.bss      => 'Change BSS Portal Password',
-      PasswordChangeEnum.internet => 'Change Internet Password',
-      PasswordChangeEnum.ssid     => 'Change SSID Password',
-      PasswordChangeEnum.wifi     => 'Change WiFi Password',
+      PasswordChangeEnum.bss      => l10n.changeAppPortalPassword(AppBrand.appName),
+      PasswordChangeEnum.internet => l10n.changeInternetPassword,
+      PasswordChangeEnum.ssid     => l10n.changeSsidPassword,
+      PasswordChangeEnum.wifi     => l10n.changeWifiPassword,
     };
   }
 
@@ -24,14 +27,14 @@ class SecuritySettingsPage extends StatelessWidget {
   Widget build(BuildContext context) {
     return CommonAppBar(
       onBackPressed: () => Navigator.pop(context),
-      title: 'Security Settings',
+      title: context.bssSubL10n.securitySettings,
       body: Padding(
         padding: const EdgeInsets.symmetric(horizontal: 20.0),
         child: Column(
           children: types
               .map(
                 (type) => _SecurityItem(
-                  label: _getLabel(type),
+                  label: _getLabel(type, context),
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(

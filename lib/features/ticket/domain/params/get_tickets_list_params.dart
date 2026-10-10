@@ -20,10 +20,7 @@ class GetTicketsListParams {
   });
 
   Map<String, dynamic> toQueryParams() {
-    final map = <String, dynamic>{
-      'page': page,
-      'size': size,
-    };
+    final map = <String, dynamic>{'page': page, 'size': size};
     if (search != null && search!.trim().isNotEmpty) {
       map['search'] = search!.trim();
     }

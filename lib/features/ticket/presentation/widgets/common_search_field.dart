@@ -2,6 +2,8 @@ import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class CommonSearchField extends StatelessWidget {
   final ValueChanged<String> onChanged;
@@ -54,30 +56,31 @@ class CommonSearchField extends StatelessWidget {
           prefixIcon: Padding(
             padding: const EdgeInsets.symmetric(horizontal: 16),
             child: SvgPicture.asset(
-              'assets/icons/search.svg',
-              width: 24,
-              height: 24,
+              AppAssets.search,
+              width: 24.w,
+              height: 24.h,
               colorFilter: const ColorFilter.mode(
-                Color(0xFF606169),
+                AppColor.kSearchIconGrey,
                 BlendMode.srcIn,
               ),
             ),
           ),
-          suffixIcon: onFilterPressed != null
-              ? IconButton(
-                  onPressed: onFilterPressed,
-                  padding: const EdgeInsets.symmetric(horizontal: 16),
-                  icon: SvgPicture.asset(
-                    'assets/icons/filter.svg',
-                    width: 24,
-                    height: 24,
-                    colorFilter: ColorFilter.mode(
-                      filterIconColor ?? AppColor.kSecondaryColor,
-                      BlendMode.srcIn,
+          suffixIcon:
+              onFilterPressed != null
+                  ? IconButton(
+                    onPressed: onFilterPressed,
+                    padding: const EdgeInsets.symmetric(horizontal: 16),
+                    icon: SvgPicture.asset(
+                      AppAssets.filter,
+                      width: 24.w,
+                      height: 24.h,
+                      colorFilter: ColorFilter.mode(
+                        filterIconColor ?? AppColor.kSecondaryColor,
+                        BlendMode.srcIn,
+                      ),
                     ),
-                  ),
-                )
-              : null,
+                  )
+                  : null,
           border: InputBorder.none,
           contentPadding: const EdgeInsets.symmetric(
             vertical: 12,

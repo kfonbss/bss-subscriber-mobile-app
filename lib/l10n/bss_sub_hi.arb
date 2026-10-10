@@ -1,0 +1,1164 @@
+{
+  "otpSentMessage": "हमने आपके मोबाइल नंबर {mobileNumber} पर 6 अंकों का सत्यापन कोड भेजा है",
+  "@otpSentMessage": {
+    "placeholders": {
+      "mobileNumber": {}
+    }
+  },
+  "areYouSureLogout": "क्या आप निश्चित रूप से लॉग आउट करना चाहते हैं?",
+  "willReturnToLoginScreen": "यह आपको लॉग इन स्क्रीन पर वापस ले जाएगा।",
+  "downloadPdf": "पीडीएफ डाउनलोड करें",
+  "close": "बंद करें",
+  "stayConnectedAlways": "हमेशा जुड़े रहें",
+  "experienceLightningFast": "BSS के विश्वसनीय फाइबर नेटवर्क के साथ बेहद तेज़ इंटरनेट का अनुभव करें, जो आपको कभी भी, कहीं भी ऑनलाइन रखता है।",
+  "@experienceLightningFast": {
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "howCanIPayMyBillOnline": "मैं अपना बिल ऑनलाइन कैसे भर सकता/सकती हूं?",
+  "goToWalletPaymentsChoosePaymentMethod": "\"वॉलेट / भुगतान\" पर जाएं → भुगतान का तरीका चुनें → भुगतान के लिए आगे बढ़ें।",
+  "whatPaymentModesAreAccepted": "कौन-से भुगतान माध्यम स्वीकार किए जाते हैं?",
+  "weAcceptVariousPaymentMethodsIncludingCredit": "हम क्रेडिट कार्ड, डेबिट कार्ड, UPI और नेट बैंकिंग सहित कई भुगतान माध्यम स्वीकार करते हैं।",
+  "myInternetSpeedIsSlowWhatShould": "मेरे इंटरनेट की स्पीड धीमी है। मुझे क्या करना चाहिए?",
+  "pleaseCheckYourConnectionRestartYourRouter": "कृपया अपना कनेक्शन जांचें, अपना राउटर रीस्टार्ट करें, या सहायता के लिए हमारी सपोर्ट टीम से संपर्क करें।",
+  "payments": "भुगतान",
+  "bridgingDigitalDivide": "डिजिटल अंतर को पाटना",
+  "appEmpowersCitizen": "{appName} empowers every citizen with affordable internet, supporting education, business, and government services.",
+  "@appEmpowersCitizen": {
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "internetWorksForYou": "इंटरनेट जो आपके लिए काम करे",
+  "enjoyHighSpeed": "हर घर और व्यवसाय के लिए डिज़ाइन किए गए उच्च गति, सुरक्षित और लागत प्रभावी इंटरनेट का आनंद लें।",
+  "welcomeText": "{name} में आपका स्वागत है",
+  "enterUsername": "उपयोगकर्ता नाम दर्ज करें",
+  "enterPassword": "पासवर्ड दर्ज करें",
+  "forgotPassword": "पासवर्ड भूल गए?",
+  "signIn": "साइन इन करें",
+  "selectSubjectKey": "विषय चुनें",
+  "resolvedIn": "{time} में समाधान किया गया",
+  "@resolvedIn": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "selectPriorityKey": "प्राथमिकता चुनें",
+  "priority": "प्राथमिकता",
+  "ticketCategory": "टिकट श्रेणी",
+  "fileSizeMustBeLess": "फ़ाइल का आकार 5MB से कम होना चाहिए",
+  "pleaseAttachDocument": "कृपया कम से कम एक दस्तावेज़ संलग्न करें",
+  "attachments": "संलग्नक",
+  "ticketFileInstructions": "*कृपया निम्नलिखित प्रारूप में फ़ाइलें अपलोड करें:\nGIF, JPG, JPEG, PNG, PDF, MP4। अधिकतम अनुमत फ़ाइल आकार 5MB है।",
+  "selectCategory": "श्रेणी चुनें",
+  "open": "खुला है",
+  "progress": "प्रगति पर है",
+  "closed": "बंद है",
+  "enquiryForms": "पूछताछ फॉर्म",
+  "kerlaInternetWebsite": "www.kerlainternet.com",
+  "forgotPasswordDescription": "चिंता न करें! अपना पासवर्ड रीसेट करने के लिए अपना पंजीकृत उपयोगकर्ता नाम दर्ज करें।",
+  "ticketIdCopied": "टिकट आईडी क्लिपबोर्ड पर कॉपी की गई",
+  "getOtp": "ओटीपी प्राप्त करें",
+  "passwordUpdatedSuccessfully": "पासवर्ड सफलतापूर्वक अपडेट किया गया",
+  "enterNewPassword": "नया पासवर्ड दर्ज करें",
+  "enterConfirmPassword": "पुष्टि के लिए पासवर्ड दर्ज करें",
+  "resetPassword": "पासवर्ड रीसेट करें",
+  "otpResentSuccessfully": "ओटीपी सफलतापूर्वक पुनः भेजा गया",
+  "verifyYourAccount": "अपने खाते को सत्यापित करें",
+  "weHaveSentOtpTo": "हमने आपके {mobileNumber} पर 6 अंकों का सत्यापन कोड भेजा है",
+  "@weHaveSentOtpTo": {
+    "placeholders": {
+      "mobileNumber": {
+        "type": "String"
+      }
+    }
+  },
+  "yourTicketHasBeenCreated": "आपका टिकट सफलतापूर्वक बना दिया गया है!",
+  "ourSupportTeamWillGetBack": "हमारी सहायता टीम जल्द ही आपसे संपर्क करेगी",
+  "success": "सफलता  🎉",
+  "filter": "फ़िल्टर",
+  "verifyNow": "अब सत्यापित करें",
+  "resendOtp": "ओटीपी पुनः भेजें",
+  "all": "सभी",
+  "attachment": "संलग्नक",
+  "recharge": "रिचार्ज",
+  "walletBalance": "वॉलेट बैलेंस",
+  "updatedDate": "अपडेट किया गया {date}",
+  "@updatedDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "topUp": "टॉप अप",
+  "activeUntilDate": "{date} तक सक्रिय",
+  "@activeUntilDate": {
+    "placeholders": {
+      "date": {
+        "type": "String"
+      }
+    }
+  },
+  "daysLeft": "{days} दिन शेष",
+  "@daysLeft": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "amount": "राशि",
+  "speed": "गति",
+  "fpu": "एफपीयूपी",
+  "usage": "उपयोग",
+  "packsActive": "{count} पैक सक्रिय",
+  "@packsActive": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "viewUsage": "उपयोग देखें",
+  "transactions": "लेन-देन",
+  "invoice": "चालान",
+  "planChange": "प्लान बदलें",
+  "seeAll": "सभी देखें",
+  "data": "डेटा",
+  "validity": "वैधता",
+  "choosePlan": "प्लान चुनें",
+  "fiberToHome": "फाइबर टू होम\n(FTTH)",
+  "internetLeasedLine": "इंटरनेट लीज्ड\nलाइन (IIL)",
+  "darkFiber": "डार्क फाइबर\nलीज (DFL)",
+  "coLocation": "को-लोकेशन",
+  "wifiServices": "वाई-फाई सेवाएं",
+  "ott": "ओवर-द-टॉप\n(OTT)",
+  "servicesOffered": "प्रदत्त सेवाएं",
+  "activePackageTitle": "सक्रिय पैकेज",
+  "activeAddOns": "सक्रिय ऐड-ऑन",
+  "addonServiceTitle": "+{serviceTypeName}   ₹{amount}",
+  "@addonServiceTitle": {
+    "placeholders": {
+      "serviceTypeName": {
+        "type": "String"
+      },
+      "amount": {
+        "type": "double"
+      }
+    }
+  },
+  "activeStatus": "सक्रिय",
+  "inactiveStatus": "निष्क्रिय",
+  "sessionInformation": "सत्र जानकारी",
+  "startTime": "शुरू होने का समय",
+  "endTime": "समाप्त होने का समय",
+  "ongoing": "जारी है",
+  "duration": "अवधि",
+  "dataUsage": "डेटा उपयोग",
+  "upload": "अपलोड",
+  "download": "डाउनलोड",
+  "total": "कुल",
+  "valueInMb": "{value} MB",
+  "@valueInMb": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "networkDetails": "नेटवर्क विवरण",
+  "mac": "मैक (MAC)",
+  "framedIp": "फ्रेम्ड-आईपी",
+  "framedIpv6Prefix": "फ्रेम्ड-IPv6 प्रीफिक्स",
+  "framedIpv6Delegated": "फ्रेम्ड-IPv6 डेलीगेटेड",
+  "weekly": "साप्ताहिक",
+  "day": "दिन",
+  "week": "सप्ताह",
+  "month": "महीना",
+  "valueInGb": "{value} GB",
+  "@valueInGb": {
+    "placeholders": {
+      "value": {
+        "type": "String"
+      }
+    }
+  },
+  "sessionHistory": "सत्र इतिहास",
+  "durationValue": "अवधि : {duration}",
+  "@durationValue": {
+    "placeholders": {
+      "duration": {
+        "type": "String"
+      }
+    }
+  },
+  "totalValueMb": "कुल : {totalMb} MB",
+  "@totalValueMb": {
+    "placeholders": {
+      "totalMb": {
+        "type": "String"
+      }
+    }
+  },
+  "somethingWentWrong": "कुछ गलत हो गया",
+  "retry": "पुनः प्रयास करें",
+  "restartModem": "मोडेम रीस्टार्ट करें",
+  "noDataFound": "कोई डेटा नहीं मिला",
+  "modemRestartedSuccessfully": "मोडेम सफलतापूर्वक रीस्टार्ट हो गया!",
+  "modemRestartedDescription": "आपका मोडेम रीस्टार्ट हो गया है। कनेक्शन बहाल और उपयोग के लिए तैयार है।",
+  "ok": "ठीक है",
+  "restartFailed": "रीस्टार्ट विफल रहा",
+  "restartFailedDescription": "हम आपका मोडेम रीस्टार्ट नहीं कर सके। कृपया पुनः प्रयास करें या सहायता टीम से संपर्क करें।",
+  "cancel": "रद्द करें",
+  "restartYourModem": "अपना मोडेम रीस्टार्ट करें",
+  "restartYourModemDescription": "मोडेम रीस्टार्ट करने से कनेक्शन की समस्याएं ठीक होती हैं और प्रदर्शन में सुधार होता है।\nइसमें लगभग 2-3 मिनट लगेंगे।",
+  "restartNow": "अभी रीस्टार्ट करें",
+  "restartingModem": "मोडेम रीस्टार्ट हो रहा है",
+  "restartingModemDescription": "मोडेम रीस्टार्ट हो रहा है... कृपया प्रतीक्षा करें।",
+  "restartingDots": "रीस्टार्ट हो रहा है.....",
+  "rechargeSuccess": "रिचार्ज सफल",
+  "lastPaid": "अंतिम भुगतान",
+  "rechargeCountLabel": "रिचार्ज की संख्या",
+  "rechargeCountTimes": "{count} बार",
+  "@rechargeCountTimes": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "lastPlan": "अंतिम प्लान",
+  "topupTo": "टॉप-अप प्राप्तकर्ता",
+  "topupAmount": "टॉप-अप राशि",
+  "accountBalance": "खाता शेष",
+  "topupMessage": "टॉप-अप संदेश",
+  "no": "नहीं",
+  "yes": "हाँ",
+  "rechargeCompletedSuccessfully": "आपका रिचार्ज सफलतापूर्वक पूरा हो गया है",
+  "transactionDetailsTitle": "लेन-देन विवरण",
+  "orderTime": "ऑर्डर का समय",
+  "orderAmount": "ऑर्डर राशि",
+  "appReference": "{appName} Reference",
+  "@appReference": {
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "appStatus": "{appName} Status",
+  "@appStatus": {
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "txnReference": "लेन-देन संदर्भ",
+  "responseMessage": "प्रतिक्रिया संदेश   ",
+  "paymentGateway": "भुगतान गेटवे",
+  "closeButton": "बंद करें",
+  "noTransactionsFound": "कोई लेन-देन नहीं मिला",
+  "appNo": "{appName} No",
+  "@appNo": {
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "package": "पैकेज",
+  "expireDate": "समाप्ति तिथि",
+  "status": "स्थिति",
+  "paidOn": "भुगतान तिथि",
+  "paidBy": "भुगतानकर्ता",
+  "downloadInvoice": "चालान डाउनलोड करें",
+  "faqs": "सामान्य प्रश्न",
+  "faqSectionAccount": "खाता",
+  "faqSectionPayments": "भुगतान",
+  "faqAccountQ1": "मैं अपने बिल का ऑनलाइन भुगतान कैसे कर सकता हूँ?",
+  "faqAccountA1": "\"वॉलेट / भुगतान\" पर जाएं → भुगतान विधि चुनें → भुगतान करने के लिए आगे बढ़ें।",
+  "faqAccountQ2": "कौन से भुगतान तरीके स्वीकार किए जाते हैं?",
+  "faqAccountA2": "हम क्रेडिट कार्ड, डेबिट कार्ड, यूपीआई और नेट बैंकिंग सहित विभिन्न भुगतान विधियों को स्वीकार करते हैं।",
+  "faqAccountQ3": "मेरी इंटरनेट स्पीड धीमी है। मुझे क्या करना चाहिए?",
+  "faqAccountA3": "कृपया अपना कनेक्शन जांचें, अपना राउटर रीस्टार्ट करें, या सहायता के लिए हमारी सहायता टीम से संपर्क करें।",
+  "faqPaymentsQ1": "मैं अपने बिल का ऑनलाइन भुगतान कैसे कर सकता हूँ?",
+  "faqPaymentsA1": "\"वॉलेट / भुगतान\" पर जाएं → भुगतान विधि चुनें → भुगतान करने के लिए आगे बढ़ें।",
+  "faqPaymentsQ2": "कौन से भुगतान तरीके स्वीकार किए जाते हैं?",
+  "faqPaymentsA2": "हम क्रेडिट कार्ड, डेबिट कार्ड, यूपीआई और नेट बैंकिंग सहित विभिन्न भुगतान विधियों को स्वीकार करते हैं।",
+  "faqPaymentsQ3": "मेरी इंटरनेट स्पीड धीमी है। मुझे क्या करना चाहिए?",
+  "faqPaymentsA3": "कृपया अपना कनेक्शन जांचें, अपना राउटर रीस्टार्ट करें, या सहायता के लिए हमारी सहायता टीम से संपर्क करें।",
+  "notification": "अधिसूचना",
+  "promoAndOffer": "प्रोमो और ऑफ़र",
+  "recently": "हाल ही में",
+  "yesterday": "कल",
+  "clearAll": "सभी साफ़ करें",
+  "accountVerification": "खाता सत्यापन",
+  "accountVerificationMessage": "अपने दोस्त को पैकेज उपहार में देने के लिए कृपया अपने खाते का सत्यापन करें।",
+  "bestDealTitle": "सर्वश्रेष्ठ डील अनलिमिटेड कॉल! 🥰",
+  "bestDealMessage": "इस शानदार डील को न चूकें! हम आपको किसी भी ऑपरेटर पर 24 घंटे अनलिमिटेड कॉलिंग की सुविधा दे रहे हैं। समय या लागत की चिंता किए बिना अपने प्रियजनों से बात करें।",
+  "getItNow": "अभी प्राप्त करें",
+  "chatWithUs": "हमसे चैट करें",
+  "chatwithAI": "एआई से चैट करें",
+  "aboutApp": "ऐप के बारे में",
+  "aboutBrand": "{brandName} के बारे में",
+  "@aboutBrand": {
+    "placeholders": {
+      "brandName": {}
+    }
+  },
+  "notifications": "सूचनाएं",
+  "youDontHaveAnyNotificationsYet": "आपके पास अभी कोई सूचना नहीं है।",
+  "appInformation": "ऐप की जानकारी",
+  "appVersion": "ऐप संस्करण",
+  "copyright": "कॉपीराइट",
+  "legal": "कानूनी",
+  "termsOfService": "सेवा की शर्तें",
+  "privacyPolicy": "गोपनीयता नीति",
+  "support": "सहायता",
+  "contactUs": "संपर्क करें",
+  "appDescription": "Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry's standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting",
+  "mission": "हमारा लक्ष्य",
+  "missionDescription": "हर नागरिक को किफायती और उच्च गति वाली इंटरनेट सेवाएं प्रदान करना हमारा मुख्य उद्देश्य है।",
+  "achievements": "उपलब्धियां",
+  "achievementsDescription": "गुणवत्तापूर्ण सेवाओं और ग्राहक संतुष्टि में हमारे उत्कृष्ट कीर्तिमान।",
+  "appUpdateCheck": "ऐप अपडेट जांचें",
+  "currentVersion": "वर्तमान संस्करण",
+  "updateStatus": "अपडेट स्थिति",
+  "upToDate": "नवीनतम",
+  "noNewUpdatesAvailable": "कोई नया अपडेट उपलब्ध नहीं है",
+  "appIsUpToDateMessage": "आपका ऐप अपडेट है। नया संस्करण उपलब्ध होने पर हम आपको सूचित करेंगे।",
+  "checkForUpdate": "अपडेट के लिए जांचें",
+  "versionLabel": "संस्करण {version}",
+  "@versionLabel": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
+  "securitySettings": "सुरक्षा सेटिंग्स",
+  "changeAppPortalPassword": "Change {appName} Portal Password",
+  "@changeAppPortalPassword": {
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "changeInternetPassword": "इंटरनेट पासवर्ड बदलें",
+  "changeSsidPassword": "SSID पासवर्ड बदलें",
+  "changeWifiPassword": "वाई-फाई पासवर्ड बदलें",
+  "currentPassword": "वर्तमान पासवर्ड",
+  "newPassword": "नया पासवर्ड",
+  "confirmNewPassword": "नए पासवर्ड की पुष्टि करें",
+  "enterYourPassword": "अपना पासवर्ड दर्ज करें",
+  "enterNewPasswordHint": "नया पासवर्ड दर्ज करें",
+  "confirmNewPasswordHint": "नए पासवर्ड की पुष्टि करें",
+  "updatePassword": "पासवर्ड अपडेट करें",
+  "forgotPasswordLower": "पासवर्ड भूल गए",
+  "passwordUpdatedSuccessfullyTitle": "पासवर्ड सफलतापूर्वक\n अपडेट किया गया 🎉",
+  "passwordUpdatedSuccessfullyDescription": "आपका पासवर्ड बदल दिया गया है। आपको सुरक्षा सेटिंग्स में पुनः निर्देशित किया जाएगा।",
+  "loginNow": "अभी लॉगिन करें",
+  "changePassword": "पासवर्ड बदलें",
+  "didntReceiveCode": "कोड प्राप्त नहीं हुआ?",
+  "youDoNotHaveAccessToThis": "आपके पास इस ऐप तक पहुंच नहीं है। कृपया सहायता से संपर्क करें।",
+  "unableToLoadYourProfilePleaseTry": "आपकी प्रोफ़ाइल लोड नहीं हो सकी। कृपया पुनः प्रयास करें।",
+  "otpSessionExpiredPleaseRequestANew": "OTP सत्र समाप्त हो गया है। कृपया नया OTP मांगें।",
+  "verificationExpiredPleaseVerifyTheOtpAgain": "सत्यापन समाप्त हो गया है। कृपया OTP फिर से सत्यापित करें।",
+  "rememberMe": "मुझे याद रखें",
+  "yourSessionHasExpiredPleaseLogIn": "आपका सत्र समाप्त हो गया है। कृपया फिर से लॉग इन करें।",
+  "language": "भाषा",
+  "searchLanguage": "भाषा खोजें",
+  "languageChoice": "भाषा का चयन",
+  "settings": "सेटिंग्स",
+  "notificationsSettings": "अधिसूचना सेटिंग्स",
+  "accountInformation": "खाता जानकारी",
+  "personalInformation": "व्यक्तिगत जानकारी",
+  "subscriberId": "ग्राहक आईडी",
+  "username": "उपयोगकर्ता नाम",
+  "name": "नाम",
+  "mobileNo": "मोबाइल नं.",
+  "address": "पता",
+  "accountDetails": "खाता विवरण",
+  "kycIdProof": "केवाईसी/पहचान पत्र",
+  "subscription": "सदस्यता",
+  "onlineStatus": "ऑनलाइन स्थिति",
+  "taxInformation": "कर जानकारी",
+  "pan": "पैन (PAN)",
+  "gst": "जीएसटी (GST)",
+  "notAvailable": "उपलब्ध नहीं है",
+  "lnpContactDetails": "LNP संपर्क विवरण",
+  "lnpName": "LNP नाम",
+  "email": "ईमेल",
+  "lnpAddress": "LNP पता",
+  "myProfile": "मेरी प्रोफ़ाइल",
+  "account": "खाता",
+  "myTickets": "मेरे टिकट",
+  "logout": "लॉग आउट",
+  "logoutConfirmTitle": "क्या आप निश्चित रूप से लॉग आउट करना चाहते हैं?",
+  "logoutConfirmDescription": "यह आपको लॉग इन स्क्रीन पर वापस ले जाएगा।",
+  "idLabel": "आईडी : {id}",
+  "@idLabel": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "loadingText": "लोड हो रहा है...",
+  "deviceManagement": "डिवाइस प्रबंधन",
+  "connectedDevices": "कनेक्ट किए गए डिवाइस",
+  "lastSync": "अंतिम सिंक: {time}",
+  "@lastSync": {
+    "placeholders": {
+      "time": {
+        "type": "String"
+      }
+    }
+  },
+  "selfCareTools": "सेल्फ-केयर/उपकरण",
+  "restartModemRefreshConnection": "मोडेम रीस्टार्ट करें/कनेक्शन रिफ्रेश करें",
+  "networkHealthCheck": "नेटवर्क स्थिति जांचें",
+  "pingSpeedTest": "पिंग / स्पीड टेस्ट",
+  "manageYourConnectedDevices": "अपने कनेक्टेड डिवाइस प्रबंधित करें",
+  "changeSsidWifiPassword": "SSID / वाई-फाई पासवर्ड बदलें",
+  "speedTest": "स्पीड टेस्ट",
+  "server": "सर्वर",
+  "location": "स्थान",
+  "uploadSpeed": "अपलोड गति",
+  "downloadSpeed": "डाउनलोड गति",
+  "ping": "पिंग",
+  "startSpeedTest": "स्पीड टेस्ट शुरू करें",
+  "selectPriority": "प्राथमिकता चुनें",
+  "errorLoadingPriorities": "प्राथमिकताएं लोड करने में त्रुटि",
+  "noPrioritiesAvailable": "कोई प्राथमिकता उपलब्ध नहीं है",
+  "selectSubject": "विषय चुनें",
+  "selectSubjectHint": "विषय चुनें",
+  "errorLoadingSubjects": "विषय लोड करने में त्रुटि",
+  "noMatchingItemsFound": "कोई मेल खाते आइटम नहीं मिले",
+  "noSubjectsAvailable": "कोई विषय उपलब्ध नहीं है",
+  "selectSubscriber": "ग्राहक चुनें",
+  "searchSubscriber": "ग्राहक खोजें",
+  "noSubscribersAvailable": "कोई ग्राहक उपलब्ध नहीं है",
+  "addNote": "नोट जोड़ें",
+  "visibilityPermission": "दृश्यता अनुमति",
+  "note": "नोट",
+  "enterYourNoteHere": "अपना नोट यहाँ दर्ज करें...",
+  "remarksMustBeAtLeast10Characters": "टिप्पणी कम से कम 10 वर्णों की होनी चाहिए",
+  "saveNote": "नोट सहेजें",
+  "successTitle": "सफलता  🎉",
+  "ticketCreatedSuccessfully": "आपका टिकट सफलतापूर्वक बना दिया गया है!",
+  "supportTeamWillGetBack": "हमारी सहायता टीम जल्द ही आपसे संपर्क करेगी",
+  "ticketIdCopiedToClipboard": "टिकट आईडी क्लिपबोर्ड पर कॉपी की गई",
+  "returnToHomepage": "होमपेज पर लौटें",
+  "createTicket": "टिकट बनाएं",
+  "ticketCategoryLabel": "टिकट श्रेणी *",
+  "complaintRegistration": "शिकायत पंजीकरण",
+  "request": "अनुरोध",
+  "selectSubjectLabel": "विषय चुनें *",
+  "selectSubjectHintText": "विषय चुनें",
+  "selectPriorityLabel": "प्राथमिकता चुनें *",
+  "selectPriorityHintText": "प्राथमिकता चुनें",
+  "remarks": "टिप्पणियां",
+  "remarksHint": "टिप्पणियां",
+  "attachmentsLabel": "संलग्नक *",
+  "pleaseAttachAtLeastOneDocument": "कृपया कम से कम एक दस्तावेज़ संलग्न करें",
+  "fileFormatInstructions": "*कृपया निम्नलिखित प्रारूप में फ़ाइलें अपलोड करें:\nGIF, JPG, JPEG, PNG, PDF, MP4। अधिकतम अनुमत फ़ाइल आकार 5MB है।",
+  "fileSizeMustBeLessThan5MB": "फ़ाइल का आकार 5MB से कम होना चाहिए",
+  "errorPickingFile": "फ़ाइल चुनने में त्रुटि: {error}",
+  "@errorPickingFile": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "submit": "सबमिट करें",
+  "ticketIdTitle": "टिकट आईडी #{ticketId}",
+  "@ticketIdTitle": {
+    "placeholders": {
+      "ticketId": {
+        "type": "String"
+      }
+    }
+  },
+  "noSubject": "कोई विषय नहीं",
+  "noteSavedSuccessfully": "नोट सफलतापूर्वक सहेजा गया",
+  "routerImage": "राउटर इमेज",
+  "document": "दस्तावेज़",
+  "video": "वीडियो",
+  "youSender": "आप",
+  "supportSender": "सहायता टीम",
+  "searchTickets": "टिकट खोजें",
+  "noTickets": "कोई टिकट नहीं",
+  "ticketIdFormat": "टिकट आईडी #{id}",
+  "@ticketIdFormat": {
+    "placeholders": {
+      "id": {
+        "type": "String"
+      }
+    }
+  },
+  "ticketIdEmpty": "टिकट आईडी #--",
+  "priorityLabel": "प्राथमिकता",
+  "priorityInstant": "तत्काल",
+  "priorityHigh": "उच्च",
+  "priorityMedium": "मध्यम",
+  "priorityLow": "निम्न",
+  "statusOpen": "खुला है",
+  "statusProgress": "प्रगति पर है",
+  "statusClosed": "बंद है",
+  "statusResolved": "समाधान हो गया",
+  "amountTopUp": "राशि टॉप-अप",
+  "enterAmount": "राशि दर्ज करें",
+  "accountBalanceLabel": "खाता शेष : ",
+  "quickRecharge": "त्वरित रिचार्ज",
+  "selectPaymentGateway": "भुगतान गेटवे चुनें",
+  "processToPay": "भुगतान के लिए आगे बढ़ें",
+  "pleaseEnterAnAmount": "कृपया राशि दर्ज करें",
+  "pleaseEnterAValidAmount": "कृपया एक मान्य राशि दर्ज करें",
+  "pleaseSelectAPaymentGateway": "कृपया एक भुगतान गेटवे चुनें",
+  "paymentCancelled": "भुगतान रद्द कर दिया गया",
+  "topUpSuccessful": "टॉप-अप सफल!",
+  "topUpSuccessMessage": "धन्यवाद। आपका भुगतान सफलतापूर्वक प्राप्त हो गया है।",
+  "topUpNote": "नोट: भुगतान 3 कार्य दिवसों के भीतर आपके खाते में जमा कर दिया जाएगा",
+  "topUpFailed": "टॉप-अप विफल",
+  "topUpFailedMessage": "आपका ₹{amount} का रिचार्ज पूरा नहीं हो सका।",
+  "@topUpFailedMessage": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "topUpFailedRetryMessage": "कृपया अपनी भुगतान विधि या नेटवर्क कनेक्शन जांचें और पुनः प्रयास करें।",
+  "transactionDate": "लेन-देन की तारीख",
+  "paymentAmountRs": "भुगतान राशि (रुपये)",
+  "payment": "भुगतान",
+  "cancelPaymentTitle": "भुगतान रद्द करें?",
+  "cancelPaymentMessage": "क्या आप निश्चित रूप से इस भुगतान को रद्द करना चाहते हैं?",
+  "filterBySpeed": "गति के अनुसार फ़िल्टर करें",
+  "clear": "साफ़ करें",
+  "search": "खोजें",
+  "mbps": "{speed} Mbps",
+  "@mbps": {
+    "placeholders": {
+      "speed": {
+        "type": "int"
+      }
+    }
+  },
+  "changePlan": "प्लाॅॅन बदलें",
+  "allPlans": "सभी",
+  "ottPlans": "ओटीटी (OTT) प्लान्स",
+  "searchPlan": "प्लाॅॅन खोजें",
+  "changePackage": "पैकेज बदलें",
+  "noPackagesAvailable": "कोई पैकेज उपलब्ध नहीं है",
+  "payNow": "अभी भुगतान करें",
+  "rechargeSuccessful": "रिचार्ज सफल!",
+  "rechargeSuccessMessage": "आपका ₹{amount} का रिचार्ज सफलतापूर्वक पूरा हो गया है।",
+  "@rechargeSuccessMessage": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "transactionId": "लेन-देन आईडी: {txnId}",
+  "@transactionId": {
+    "placeholders": {
+      "txnId": {
+        "type": "String"
+      }
+    }
+  },
+  "rechargeFailed": "रिचार्ज विफल रहा",
+  "rechargeFailedMessage": "आपका ₹{amount} का रिचार्ज पूरा नहीं हो सका।",
+  "@rechargeFailedMessage": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "rechargePaymentCancelled": "रिचार्ज भुगतान रद्द कर दिया गया है",
+  "rechargeFailedError": "रिचार्ज विफल: {error}",
+  "@rechargeFailedError": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "paymentMethod": "भुगतान का तरीका",
+  "next": "अगला",
+  "noInvoicesFound": "कोई चालान नहीं मिला",
+  "invoiceNo": "चालान संख्या : ",
+  "amountLabel": "राशि : ",
+  "dateLabel": "तारीख : ",
+  "introducingApp": "Introducing {appName}",
+  "@introducingApp": {
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "getStarted": "शुरू करें",
+  "back": "वापस",
+  "saveAndContinue": "सहेजें और जारी रखें",
+  "agnpEnquiry": "AGNP पूछताछ",
+  "previewStep": "3. पूर्वावलोकन",
+  "companyInformation": "कंपनी की जानकारी",
+  "geographicInformation": "भौगोलिक जानकारी",
+  "companyInformationStep": "1. कंपनी की जानकारी",
+  "geographicInformationStep": "2. भौगोलिक जानकारी",
+  "currentlyAssociatedWithISP": "वर्तमान में किसी अन्य आईएसपी से जुड़े हैं?",
+  "agnpName": "AGNP नाम*",
+  "enterAgnpName": "AGNP नाम दर्ज करें",
+  "agnpContactName": "AGNP संपर्क व्यक्ति का नाम*",
+  "enterAgnpContactName": "AGNP संपर्क नाम दर्ज करें",
+  "agnpMobileNumber": "AGNP मोबाइल नंबर*",
+  "enterAgnpMobileNumber": "AGNP मोबाइल नंबर दर्ज करें",
+  "agnpAlternativeMobileNumber": "AGNP वैकल्पिक मोबाइल नंबर",
+  "enterAgnpAlternativeMobileNumber": "वैकल्पिक मोबाइल नंबर दर्ज करें",
+  "landlineNumber": "लैंडलाइन नंबर",
+  "enterLandlineNumber": "लैंडलाइन नंबर दर्ज करें",
+  "agnpEmail": "AGNP ईमेल*",
+  "enterAgnpEmail": "AGNP ईमेल दर्ज करें",
+  "agnpFullAddress": "AGNP पूरा पता*",
+  "enterAgnpFullAddress": "AGNP पूरा पता दर्ज करें",
+  "agnpLocation": "AGNP स्थान",
+  "enterAgnpLocation": "AGNP स्थान दर्ज करें",
+  "agnpLocationLatitude": "AGNP अक्षांश (Latitude)",
+  "enterAgnpLocationLatitude": "AGNP अक्षांश दर्ज करें",
+  "agnpLocationLongitude": "AGNP देशांतर (Longitude)",
+  "enterAgnpLocationLongitude": "AGNP देशांतर दर्ज करें",
+  "agnpPincode": "AGNP पिनकोड*",
+  "enterAgnpPincode": "AGNP पिनकोड दर्ज करें",
+  "successMessage": "सफलता",
+  "bplSubscriptionEnquiry": "बीपीएल सदस्यता पूछताछ",
+  "personalInformationStep": "1. व्यक्तिगत जानकारी",
+  "addressInformationStep": "2. पते की जानकारी",
+  "addressInformation": "पते की जानकारी",
+  "rationCardHolderName": "राशन कार्ड धारक का नाम*",
+  "enterRationCardHolderName": "राशन कार्ड धारक का नाम दर्ज करें",
+  "aadharLinkedMobileNumber": "राशन कार्ड धारक का आधार लिंक मोबाइल नंबर*",
+  "enterMobileNumber": "मोबाइल नंबर दर्ज करें",
+  "ksebConsumerNo": "KSEB उपभोक्ता संख्या*",
+  "subscriptionType": "सदस्यता का प्रकार",
+  "sme": "एसएमई (SME)",
+  "ews": "ईडब्ल्यूएस (EWS)",
+  "planType": "प्लाॅन प्रकार",
+  "searchPackage": "पैकेज खोजें",
+  "fup": "एफयूपी (FUP)",
+  "unlimited": "अनलिमिटेड",
+  "upgradePlan": "प्लाॅन अपग्रेड करें",
+  "enterKsebConsumerNo": "KSEB उपभोक्ता संख्या दर्ज करें",
+  "aadharNumberOfRationCardHolder": "राशन कार्ड धारक की आधार संख्या*",
+  "enterAadharNumberOfRationCardHolder": "आधार संख्या दर्ज करें",
+  "installationAddress": "स्थापना का पता*",
+  "enterInstallationAddress": "स्थापना का पता दर्ज करें",
+  "pincode": "पिनकोड*",
+  "enterPincode": "पिनकोड दर्ज करें",
+  "referralCode": "रेफ़रल कोड",
+  "enterReferralCode": "रेफ़रल कोड दर्ज करें",
+  "declarationConsent": "मैं ऊपर दिए गए मोबाइल नंबर पर BSS से अपडेट, समाचार पत्र और अन्य जानकारी प्राप्त करने की सहमति देता हूँ।",
+  "@declarationConsent": {
+    "placeholders": {
+      "appName": {
+        "type": "String"
+      }
+    }
+  },
+  "darkFibreEnquiry": "डार्क फाइबर पूछताछ",
+  "darkFibrePreviewStep": "2. पूर्वावलोकन",
+  "documentsCollection": "दस्तावेज़ संग्रह",
+  "documentsCollectionStep": "2. दस्तावेज़ संग्रह",
+  "uploadInternetServiceLicense": "इंटरनेट सेवा लाइसेंस अपलोड करें *",
+  "selectFileHere": "यहाँ फ़ाइल चुनें",
+  "areaTelecomServiceProvided": "क्षेत्र/सर्किल जहाँ दूरसंचार सेवा दी जाती है",
+  "enterAreaTelecomServiceProvided": "क्षेत्र/सर्किल दर्ज करें",
+  "uploadExperienceCertificate": "अनुभव प्रमाणपत्र अपलोड करें",
+  "behalfLeaseCompany": "लीज कंपनी M/S की ओर से",
+  "enterBehalfLeaseCompany": "लीज कंपनी M/S दर्ज करें",
+  "uploadCoveringLetter": "कवरिंग लेटर अपलोड करें",
+  "downloadCoveringLetterFormat": "कवरिंग लेटर फॉर्मेट डाउनलोड करें",
+  "uploadRouteLeaseCopy": "रूटरूट लीज प्रति अपलोड करें",
+  "downloadRouteLeaseFormat": "रूट लीज फॉर्मेट डाउनलोड करें",
+  "nameOfTheFirm": "फर्म का नाम*",
+  "enterNameOfTheFirm": "फर्म का नाम दर्ज करें",
+  "fullAddress": "पूरा पता",
+  "enterFullAddress": "पूरा पता दर्ज करें",
+  "firmPhoneNumber": "फर्म का फोन नंबर*",
+  "enterFirmPhoneNumber": "फर्म का फोन नंबर दर्ज करें",
+  "firmEmail": "फर्म का ईमेल*",
+  "enterFirmEmail": "फर्म का ईमेल दर्ज करें",
+  "contactPersonName": "संपर्क व्यक्ति का नाम*",
+  "enterContactPersonName": "संपर्क व्यक्ति का नाम दर्ज करें",
+  "contactPersonPhoneNumber": "संपर्क व्यक्ति का फोन नंबर*",
+  "enterContactPersonPhoneNumber": "संपर्क व्यक्ति का फोन नंबर दर्ज करें",
+  "contactPersonEmail": "संपर्क व्यक्ति का ईमेल*",
+  "enterContactPersonEmail": "संपर्क व्यक्ति का ईमेल दर्ज करें",
+  "purposeOfLeasing": "लीज का उद्देश्य",
+  "enterPurposeOfLeasing": "लीज का उद्देश्य दर्ज करें",
+  "home": "होम",
+  "corporate": "कॉर्पोरेट",
+  "government": "सरकारी",
+  "bplEnquiry": "बीपीएल पूछताछ",
+  "lnpEnquiry": "LNP पूछताछ",
+  "governmentEnquiry": "सरकारी पूछताछ",
+  "corporateEnquiry": "कॉर्पोरेट पूछताछ",
+  "letsGetToKnowYouStep": "1. आइए आपके बारे में जानें",
+  "whereShouldWeBringInternetStep": "2. हम इंटरनेट कहाँ तक पहुँचाएँ?",
+  "firstName": "पहला नाम*",
+  "enterFirstName": "पहला नाम दर्ज करें",
+  "lastName": "अंतिम नाम*",
+  "enterLastName": "अंतिम नाम दर्ज करें",
+  "mobileNumber": "मोबाइल नंबर*",
+  "enterMobileNumber2": "मोबाइल नंबर दर्ज करें",
+  "emailId": "ईमेल आईडी*",
+  "enterEmailId": "ईमेल आईडी दर्ज करें",
+  "companyName": "कंपनी का नाम",
+  "enterCompanyName": "कंपनी का नाम दर्ज करें",
+  "industry": "उद्योग*",
+  "selectIndustry": "उद्योग चुनें",
+  "service": "सेवा*",
+  "selectService": "सेवा चुनें",
+  "homeEnquiry": "होम पूछताछ",
+  "homePreviewStep": "4. पूर्वावलोकन",
+  "howCanWeReachYouStep": "3. हम आपसे कैसे संपर्क कर सकते हैं?",
+  "locationLabel": "स्थान*",
+  "enterLocation": "स्थान दर्ज करें",
+  "lnpEnquiryHeading": "स्थानीय कनेक्टिविटी नेटवर्क पार्टनर पूछताछ",
+  "partnerMobileNumber": "पार्टनर मोबाइल नंबर*",
+  "partnerEmail": "पार्टनर ईमेल*",
+  "enterPartnerEmail": "पार्टनर ईमेल दर्ज करें",
+  "partnerFullAddress": "पार्टनर पूरा पता*",
+  "enterPartnerFullAddress": "पार्टनर पूरा पता दर्ज करें",
+  "partnerLocation": "पार्टनर स्थान",
+  "enterPartnerLocation": "पार्टनर स्थान दर्ज करें",
+  "partnerLocationLatitude": "पार्टनर अक्षांश",
+  "enterPartnerLocationLatitude": "पार्टनर अक्षांश दर्ज करें",
+  "partnerLocationLongitude": "पार्टनर देशांतर",
+  "enterPartnerLocationLongitude": "पार्टनर देशांतर दर्ज करें",
+  "partnerPincode": "पार्टनर पिनकोड*",
+  "enterPartnerPincode": "पार्टनर पिनकोड दर्ज करें",
+  "uploadCableTvRegistrationLicense": "केबल टीवी पंजीकरण लाइसेंस अपलोड करें*",
+  "totalCableTvSubscriber": "मौजूदा केबल टीवी ग्राहकों की कुल संख्या*",
+  "enterTotalCableTvSubscriber": "केबल टीवी ग्राहकों की कुल संख्या दर्ज करें",
+  "totalInternetSubscriber": "मौजूदा इंटरनेट ग्राहकों की कुल संख्या*",
+  "enterTotalInternetSubscriber": "इंटरनेट ग्राहकों की कुल संख्या दर्ज करें",
+  "totalFibreAvailable": "उपलब्ध फाइबर की कुल मात्रा (किमी में)*",
+  "enterTotalFibreAvailable": "उपलब्ध फाइबर की कुल मात्रा दर्ज करें",
+  "createdBy": "द्वारा निर्मित*",
+  "chooseCreatedBy": "निर्माता चुनें",
+  "partnerCompanyName": "पार्टनर कंपनी का नाम*",
+  "enterPartnerCompanyName": "पार्टनर कंपनी का नाम दर्ज करें",
+  "partnerContactName": "पार्टनर संपर्क नाम*",
+  "enterPartnerContactName": "पार्टनर संपर्क नाम दर्ज करें",
+  "orderSummary": "ऑर्डर सारांश",
+  "packageDetails": "पैकेज विवरण",
+  "volume": "वॉल्यूम",
+  "referralCodeLabel": "रेफ़रल कोड",
+  "referralCodeHint": "कोड दर्ज करें (उदा. ONAM8F3A)",
+  "referralHelperText": "अतिरिक्त छूट के लिए रेफ़रल कोड दर्ज करें।",
+  "priceBreakdown": "मूल्य विवरण",
+  "packageBreakdownLabel": "पैकेज — {packageName}",
+  "@packageBreakdownLabel": {
+    "placeholders": {
+      "packageName": {
+        "type": "String"
+      }
+    }
+  },
+  "seasonDiscount": "सीज़न छूट",
+  "seasonDiscountRule": "{ruleName} - {discountValue}% की छूट",
+  "@seasonDiscountRule": {
+    "placeholders": {
+      "ruleName": {
+        "type": "String"
+      },
+      "discountValue": {
+        "type": "String"
+      }
+    }
+  },
+  "gstLabel": "जीएसटी (18%)",
+  "totalPayable": "कुल देय",
+  "billingDetails": "बिलिंग विवरण",
+  "paymentMode": "भुगतान मोड",
+  "subscriberCategory": "ग्राहक श्रेणी",
+  "subPackage": "उप-पैकेज",
+  "rechargeDays": "रिचार्ज दिन",
+  "confirmAndPay": "पुष्टि करें और {amount} का भुगतान करें",
+  "@confirmAndPay": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "discountAppliedHeader": "{ruleName} — {discountValue}% की छूट लागू!",
+  "@discountAppliedHeader": {
+    "placeholders": {
+      "ruleName": {
+        "type": "String"
+      },
+      "discountValue": {
+        "type": "String"
+      }
+    }
+  },
+  "discountAppliedSubtitle": "नियम इंजन के माध्यम से स्वचालित रूप से लागू",
+  "referralCodeApplied": "रेफ़रल कोड सफलतापूर्वक लागू किया गया!",
+  "remove": "हटाएं",
+  "apply": "लागू करें",
+  "futureRecharges": "भविष्य के रिचार्ज",
+  "wallet": "वॉलेट",
+  "direct": "डायरेक्ट",
+  "today": "आज",
+  "thisWeek": "इस सप्ताह",
+  "thisMonth": "इस महीने",
+  "rechargeCount": "{count} रिचार्ज",
+  "@rechargeCount": {
+    "placeholders": {
+      "count": {
+        "type": "int"
+      }
+    }
+  },
+  "date": "तारीख",
+  "unableToLoadInvoicePdf": "चालान पीडीएफ लोड करने में असमर्थ",
+  "downloading": "डाउनलोड हो रहा है...",
+  "selectedCircle": "चयनित सर्किल",
+  "accountVerified": "खाता सत्यापित! 🎉",
+  "accountVerifiedMessage": "बधाई हो! आपका खाता सत्यापित हो गया है।",
+  "startNow": "अभी शुरू करें",
+  "chooseYourCircle": "अपना सर्किल चुनें",
+  "selectStateToContinue": "लॉगिन जारी रखने के लिए राज्य चुनें",
+  "searchState": "राज्य खोजें",
+  "noStatesFound": "कोई राज्य नहीं मिला",
+  "continueText": "जारी रखें",
+  "failedToLoadTapToRetry": "लोड करने में विफल। पुनः प्रयास करें",
+  "insufficientWalletBalance": "वॉलेट बैलेंस अपर्याप्त है। ऑनलाइन भुगतान चुनें।",
+  "@insufficientWalletBalance": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "percentOff": "{percent}% की छूट",
+  "@percentOff": {
+    "placeholders": {
+      "percent": {
+        "type": "String"
+      }
+    }
+  },
+  "amountOff": "₹{amount} की छूट",
+  "@amountOff": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "saveAmount": "₹{amount} बचाएं",
+  "@saveAmount": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "selectServiceType": "सेवा का प्रकार चुनें",
+  "usageOfTotalGb": "{available} GB / {total} GB",
+  "@usageOfTotalGb": {
+    "placeholders": {
+      "available": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "daysValue": "{days} दिन",
+  "@daysValue": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "invoiceFileNotAvailable": "चालान फ़ाइल उपलब्ध नहीं है",
+  "rechargeType": "रिचार्ज प्रकार",
+  "online": "ऑनलाइन",
+  "offline": "ऑफ़लाइन",
+  "filterByDate": "तारीख से फ़िल्टर करें",
+  "monthly": "मासिक",
+  "yearly": "वार्षिक",
+  "dateSelected": "चयनित तारीख",
+  "selected": "चयनित",
+  "enterASearchTerm": "खोज शब्द दर्ज करें",
+  "needHelp": "सहायता चाहिए?",
+  "hereToAssistAnytime": "हम आपकी सहायता के लिए सदैव तत्पर हैं।",
+  "callBack": "कॉल बैक",
+  "talkToOurAgent": "हमारे एजेंट से बात करें",
+  "confirmCallBackRequest": "क्या आप कॉल बैक अनुरोध बनाना चाहते हैं?",
+  "notificationSoundDefault": "डिफ़ॉल्ट",
+  "notificationSettingsTitle": "अधिसूचना सेटिंग्स",
+  "general": "सामान्य",
+  "paymentReminders": "भुगतान अनुस्मारक",
+  "paymentRemindersDesc": "आगामी भुगतान तिथियों की सूचनाएं प्राप्त करें।",
+  "packageExpiryAlerts": "पैकेज समाप्ति चेतावनी",
+  "packageExpiryAlertsDesc": "पैकेज समाप्त होने पर अलर्ट प्राप्त करें।",
+  "promotionsAndOffers": "प्रचार और ऑफ़र",
+  "promotionsAndOffersDesc": "नवीनतम सौदों और छूटों से अपडेट रहें।",
+  "dataExhaustionWarnings": "डेटा समाप्ति चेतावनी",
+  "dataExhaustionWarningsDesc": "डेटा सीमा समाप्त होने पर जानकारी प्राप्त करें।",
+  "soundAndVibration": "ध्वनि और कंपन",
+  "notificationSound": "अधिसूचना ध्वनि",
+  "vibration": "कंपन",
+  "labelPreviews": "{label} पूर्वावलोकन",
+  "@labelPreviews": {
+    "placeholders": {
+      "label": {
+        "type": "String"
+      }
+    }
+  },
+  "errorLoadingCategories": "श्रेणियां लोड करने में त्रुटि",
+  "noCategoriesAvailable": "कोई श्रेणी उपलब्ध नहीं है",
+  "searchSubject": "विषय खोजें",
+  "selectDate": "तारीख चुनें",
+  "createdDateFrom": "निर्माण तिथि (प्रारंभ)",
+  "createdDateTo": "निर्माण तिथि (अंतिम)",
+  "successfullyCompletedReceiptGenerated": "सफलतापूर्वक पूरा हुआ\nऔर रसीद उत्पन्न हुई",
+  "plusPackCount": "+ {count} पैक",
+  "@plusPackCount": {
+    "placeholders": {
+      "count": {
+        "type": "String"
+      }
+    }
+  },
+  "gbAvailableOfTotal": "{available} GB उपलब्ध / {total} GB",
+  "@gbAvailableOfTotal": {
+    "placeholders": {
+      "available": {
+        "type": "String"
+      },
+      "total": {
+        "type": "String"
+      }
+    }
+  },
+  "preview": "पूर्वावलोकन",
+  "documentPreview": "दस्तावेज़ पूर्वावलोकन",
+  "viewPdfDocument": "पीडीएफ दस्तावेज़ देखें",
+  "previewNotAvailable": "पूर्वावलोकन उपलब्ध नहीं है",
+  "selfCare": "सेल्फ केयर",
+  "faq": "सामान्य प्रश्न",
+  "profile": "प्रोफ़ाइल",
+  "errorLoadingVideo": "वीडियो लोड करने में त्रुटि",
+  "currentPackage": "वर्तमान पैकेज",
+  "daysValidity": "{days} दिनों की वैधता",
+  "@daysValidity": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "speedCaps": "गति",
+  "packageFee": "पैकेज शुल्क",
+  "cgstSgst": "सीजीएसटी+एसजीएसटी",
+  "specialDiscount": "विशेष छूट",
+  "appliedCaps": "लागू",
+  "inclusiveOfAllTaxes": "सभी करों सहित",
+  "referralCodeOptionalHint": "रेफ़रल कोड दर्ज करें (वैकल्पिक)",
+  "walletCaps": "वॉलेट",
+  "myWallet": "मेरा वॉलेट",
+  "balanceLabel": "शेष:",
+  "sufficient": "पर्याप्त",
+  "insufficient": "अपर्याप्त",
+  "orPayViaGateway": "या गेटवे के माध्यम से भुगतान करें",
+  "atomPayDescription": "सभी कार्ड, यूपीआई और नेट बैंकिंग",
+  "razorpayDescription": "कार्ड, यूपीआई, वॉलेट और नेट बैंकिंग",
+  "paymentSecureNote": "आपका भुगतान 100% सुरक्षित और 256-बिट एसएसएल एन्क्रिप्टेड है।",
+  "termsAndConditionsTitle": "नियम एवं शर्तें",
+  "termsAndConditionsText": "नियम और शर्तें भारतीय कानूनों द्वारा शासित होंगी।",
+  "privacyPolicyCaps": "गोपनीयता नीति",
+  "privacyPolicyText": "वेबसाइट आपकी व्यक्तिगत जानकारी की सुरक्षा को सर्वोच्च प्राथमिकता देती है।",
+  "agreeToTerms": "मैं नियमों और शर्तों से सहमत हूँ",
+  "proceedToPay": "भुगतान करने के लिए आगे बढ़ें",
+  "unableToStartPayment": "भुगतान शुरू करने में असमर्थ। कृपया पुनः प्रयास करें।",
+  "autoPay": "ऑटो पे",
+  "autopayEnrollIn": "नामांकन करें",
+  "upiAutopay": "यूपीआई ऑटोपे",
+  "autopayEnrollSuffix": "बिना किसी बाधा के अपने प्लान को ऑटो-रिन्यू करने के लिए।",
+  "chargeSummary": "शुल्क सारांश",
+  "renewalChargeInclGst": "नवीनीकरण शुल्क (जीएसटी सहित)",
+  "platformChargeInclGst": "प्लेटफ़ॉर्म शुल्क (जीएसटी सहित)",
+  "totalRenewalCharge": "कुल नवीनीकरण शुल्क",
+  "setUpAutopay": "ऑटोपे सेट करें",
+  "enterUpiId": "यूपीआई आईडी दर्ज करें",
+  "upiIdHint": "example@upi",
+  "upiLabel": "यूपीआई",
+  "invalidUpiId": "एक मान्य यूपीआई आईडी दर्ज करें",
+  "autopayAgreePrefix": "मैं सहमत हूँ",
+  "autopayAgreeMiddle": "और स्वचालित कटौती को अधिकृत करता हूँ",
+  "autopayAgreeSuffix": "मेरे यूपीआई खाते से।",
+  "platformChargePolicy": "प्लेटफ़ॉर्म शुल्क नीति",
+  "platformChargePolicyText": "प्लेटफ़ॉर्म शुल्क किसी भी परिस्थिति में गैर-वापसीयोग्य है।",
+  "refundCancellationPolicy": "रिफंड / रद्दीकरण नीति",
+  "refundCancellationPolicyText": "भुगतान विफल होने पर, राशि 5-8 कार्य दिवसों में वापस कर दी जाएगी।",
+  "contactUsPrefix": "किसी भी सहायता के लिए कॉल करें",
+  "tollFreeNumber": "1800 1039",
+  "contactUsSuffix": "या अपने स्थानीय ऑपरेटर से संपर्क करें।",
+  "process": "प्रक्रिया",
+  "autopayNotEligible": "ऑटोपे अभी आपके प्लान के लिए उपलब्ध नहीं है।",
+  "broadbandPlan": "ब्रॉडबैंड प्लान",
+  "baseRate": "मूल दर",
+  "perMonth": "/माह",
+  "nextAutoDebitDate": "अगली ऑटो-डेबिट तिथि:",
+  "dueInDays": "({days} दिनों में देय)",
+  "@dueInDays": {
+    "placeholders": {
+      "days": {
+        "type": "String"
+      }
+    }
+  },
+  "dueToday": "(आज देय)",
+  "totalScheduledDebit": "कुल निर्धारित डेबिट:",
+  "inclGst": "(जीएसटी सहित)",
+  "paymentInstrument": "भुगतान का साधन",
+  "mandateUmn": "मैंडेट UMN",
+  "maxAutoDebitCap": "अधिकतम ऑटो-डेबिट सीमा",
+  "upToPerMonth": "{amount} तक / मासिक",
+  "@upToPerMonth": {
+    "placeholders": {
+      "amount": {
+        "type": "String"
+      }
+    }
+  },
+  "removeFromAutoPay": "ऑटो-पे से हटाएं",
+  "goBack": "वापस जाएं",
+  "autopayPendingApproval": "आपके यूपीआई ऐप में अनुमोदन की प्रतीक्षा है।",
+  "removeFromAutoPayQuestion": "ऑटो-पे से हटाएं?",
+  "removeAutopayMessage": "इस प्लान के लिए ऑटो-पे स्थायी रूप से हटा दिया जाएगा।",
+  "yesRemove": "हाँ, हटाएं",
+  "autopayRequestSent": "ऑटोपे अनुरोध भेजा गया। अपने यूपीआई ऐप में स्वीकृत करें।",
+  "autopayRemoved": "ऑटोपे हटा दिया गया।",
+  "panNumberLabel": "पैन नंबर",
+  "enterPanNumber": "पैन नंबर दर्ज करें",
+  "gstinLabel": "जीएसटीआईएन (GSTIN)",
+  "serviceDescriptionLabel": "सेवा विवरण",
+  "enterServiceDescription": "सेवा विवरण दर्ज करें",
+  "sacCodeLabel": "एसएसी (SAC) कोड",
+  "enterSacCode": "एसएसी कोड दर्ज करें",
+  "taxPayerTypeLabel": "करदाता का प्रकार",
+  "selectTaxPayerType": "करदाता का प्रकार चुनें",
+  "legalBusinessName": "कानूनी व्यवसाय नाम",
+  "tradeName": "व्यापार नाम",
+  "gstinSupportingDocument": "जीएसटीआईएन सहायक दस्तावेज",
+  "panCardCopy": "पैन कार्ड की प्रति",
+  "acceptedDocFormatsInfo": "स्वीकृत प्रारूप: PDF, JPEG, PNG, JPG। अधिकतम आकार: 5MB।",
+  "invalidPanNumber": "एक मान्य पैन नंबर दर्ज करें",
+  "invalidGstin": "एक मान्य जीएसटीआईएन दर्ज करें",
+  "invalidSacCode": "एक मान्य 6-अंकीय एसएसी कोड दर्ज करें",
+  "taxPayerRegular": "नियमित",
+  "taxPayerComposite": "कंपोजिट",
+  "taxPayerCasual": "कैज़ुअल करदाता",
+  "taxPayerNonResident": "अनिवासी करदाता",
+  "taxPayerSezUnit": "एसईझेड (SEZ) यूनिट",
+  "taxPayerSezDeveloper": "एसईझेड डेवलपर",
+  "taxPayerIsd": "इनपुट सेवा वितरक",
+  "taxPayerUnBody": "संयुक्त राष्ट्र निकाय / दूतावास",
+  "ticketTypeLabel": "प्रकार",
+  "rateYourExperience": "अपने अनुभव को रेट करें",
+  "rateTicketSubtitle": "आप समाधान से कितने संतुष्ट हैं?",
+  "ratingVeryPoor": "बहुत खराब",
+  "ratingPoor": "खराब",
+  "ratingAverage": "औसत",
+  "ratingGood": "अच्छा",
+  "ratingExcellent": "उत्कृष्ट",
+  "ratingCommentHint": "अपने अनुभव के बारे में अधिक बताएं (वैकल्पिक)",
+  "submitRating": "रेटिंग जमा करें",
+  "thanksForFeedback": "आपकी प्रतिक्रिया के लिए धन्यवाद!",
+  "yourRating": "आपकी रेटिंग",
+  "ratingSubmitted": "रेटिंग सफलतापूर्वक जमा की गई",
+  "fieldIsRequired": "{fieldName} आवश्यक है",
+  "@fieldIsRequired": {
+    "placeholders": {
+      "fieldName": {
+        "type": "String"
+      }
+    }
+  },
+  "pleaseEnterMobileNumber": "कृपया मोबाइल नंबर दर्ज करें",
+  "pleaseEnterValidMobileNumber": "कृपया मान्य 10-अंकीय मोबाइल नंबर दर्ज करें",
+  "pleaseEnterPassword": "कृपया पासवर्ड दर्ज करें",
+  "passwordMinLength": "पासवर्ड कम से कम 6 अक्षरों का होना चाहिए",
+  "pleaseEnterEmailAddress": "कृपया ईमेल पता दर्ज करें",
+  "pleaseEnterValidEmailAddress": "कृपया एक मान्य ईमेल पता दर्ज करें",
+  "pleaseConfirmPassword": "कृपया अपने पासवर्ड की पुष्टि करें",
+  "noInternetConnection": "कोई इंटरनेट कनेक्शन नहीं है",
+  "cacheErrorOccurred": "कैश त्रुटि हुई",
+  "requestTimedOut": "अनुरोध का समय समाप्त हो गया",
+  "anUnexpectedErrorOccurred": "एक अप्रत्याशित त्रुटि हुई",
+  "connectionTimeoutPleaseTryAgain": "कनेक्शन का समय समाप्त हो गया, कृपया पुनः प्रयास करें।",
+  "sendTimeoutPleaseCheckInternet": "भेजने का समय समाप्त हो गया, कृपया अपना इंटरनेट जांचें।",
+  "receiveTimeoutPleaseTryAgain": "प्राप्त करने का समय समाप्त हो गया, कृपया पुनः प्रयास करें।",
+  "requestWasCancelled": "अनुरोध रद्द कर दिया गया था।",
+  "unknownErrorOccurred": "अज्ञात त्रुटि हुई",
+  "noResponseFromServer": "सर्वर से कोई प्रतिक्रिया नहीं मिली",
+  "anErrorOccurred": "एक त्रुटि हुई।",
+  "downloadSuccessful": "डाउनलोड सफल रहा",
+  "downloadFailedWithStatus": "स्थिति {status} के साथ डाउनलोड विफल रहा",
+  "@downloadFailedWithStatus": {
+    "placeholders": {
+      "status": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToSavePdf": "पीडीएफ सहेजने में विफल: {error}",
+  "@failedToSavePdf": {
+    "placeholders": {
+      "error": {
+        "type": "String"
+      }
+    }
+  },
+  "failedToLoadPreview": "पूर्वावलोकन लोड करने में विफल",
+  "noAccessContactSupport": "आपको इस ऐप तक पहुंच प्राप्त नहीं है। कृपया सहायता टीम से संपर्क करें।",
+  "invalidResponse": "अमान्य प्रतिक्रिया",
+  "fileUrlNotFound": "फ़ाइल URL नहीं मिला",
+  "customerTypeCouldNotBeResolved": "ग्राहक प्रकार का समाधान नहीं हो सका। कृपया पुनः प्रयास करें।",
+  "selectedFileNotAvailable": "चयनित फ़ाइल उपलब्ध नहीं है",
+  "fileUploadSucceededNoId": "फ़ाइल अपलोड सफल रहा लेकिन कोई फ़ाइल आईडी प्राप्त नहीं हुई",
+  "txnStatusSuccess": "सफलता",
+  "txnStatusFailed": "विफल",
+  "txnStatusPending": "लंबित",
+  "txnStatusInitiated": "प्रारंभ किया गया",
+  "txnStatusCancelled": "रद्द किया गया",
+  "txnStatusRefunded": "वापस किया गया",
+  "allTransactions": "सभी लेन-देन",
+  "last30Days": "पिछले 30 दिन",
+  "customDate": "कस्टम तिथि"
+}

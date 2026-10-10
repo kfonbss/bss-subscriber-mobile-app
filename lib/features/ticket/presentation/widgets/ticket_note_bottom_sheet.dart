@@ -12,15 +12,13 @@ import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 import 'package:file_picker/file_picker.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 const int _kTicketNoteMaxLength = 500;
 
 class TicketNoteBottomSheet extends StatefulWidget {
-  final void Function(
-    String note,
-    String visibility,
-    List<PlatformFile>? files,
-  ) onSave;
+  final void Function(String note, String visibility, List<PlatformFile>? files)
+  onSave;
   final TicketBloc ticketBloc;
 
   const TicketNoteBottomSheet({
@@ -82,15 +80,20 @@ class _TicketNoteBottomSheetState extends State<TicketNoteBottomSheet> {
       }
 
       if (hasTooLargeFile) {
-        _dialogUtil.showMessage(l10n.fileSizeMustBeLess, context);
+        _dialogUtil.showCustomSnackbar(
+          content: l10n.fileSizeMustBeLess,
+          context: context,
+          isError: true,
+        );
       }
 
       setState(() {});
     } catch (e) {
       if (mounted) {
-        final l10n = context.bssSubL10n;
-        ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text(l10n.errorPickingFile(e.toString()))),
+        _dialogUtil.showCustomSnackbar(
+          content: context.bssSubL10n.errorPickingFile(e.toString()),
+          context: context,
+          isError: true,
         );
       }
     }
@@ -104,11 +107,12 @@ class _TicketNoteBottomSheetState extends State<TicketNoteBottomSheet> {
     Navigator.push(
       context,
       MaterialPageRoute(
-        builder: (context) => FilePreviewPage(
-          file: File(file.path!),
-          fileName: file.name,
-          fileExtension: extension,
-        ),
+        builder:
+            (context) => FilePreviewPage(
+              file: File(file.path!),
+              fileName: file.name,
+              fileExtension: extension,
+            ),
       ),
     );
   }
@@ -118,13 +122,15 @@ class _TicketNoteBottomSheetState extends State<TicketNoteBottomSheet> {
     final l10n = context.bssSubL10n;
     final noteLen = _noteController.text.length;
     final trimmedLen = _noteController.text.trim().length;
-    final isNoteValid =
-        trimmedLen >= 10 && noteLen <= _kTicketNoteMaxLength;
+    final isNoteValid = trimmedLen >= 10 && noteLen <= _kTicketNoteMaxLength;
 
     return BlocBuilder<TicketBloc, TicketState>(
       bloc: widget.ticketBloc,
-      buildWhen: (previous, current) =>
-          current is NoteSubmitting || current is NoteSubmitted || current is OnError,
+      buildWhen:
+          (previous, current) =>
+              current is NoteSubmitting ||
+              current is NoteSubmitted ||
+              current is OnError,
       builder: (context, state) {
         final isSubmitting = state is NoteSubmitting;
         if (state is NoteSubmitted) {
@@ -135,8 +141,7 @@ class _TicketNoteBottomSheetState extends State<TicketNoteBottomSheet> {
           });
         }
 
-        final hasNoteError =
-            _noteController.text.isNotEmpty && !isNoteValid;
+        final hasNoteError = _noteController.text.isNotEmpty && !isNoteValid;
 
         return Padding(
           padding: EdgeInsets.fromLTRB(
@@ -150,9 +155,9 @@ class _TicketNoteBottomSheetState extends State<TicketNoteBottomSheet> {
               mainAxisSize: MainAxisSize.min,
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
-                const Center(
+                Center(
                   child: Text(
-                    'Add Note',
+                    context.bssSubL10n.addNote,
                     style: TextStyle(
                       fontFamily: 'GeneralSans',
                       fontSize: 18,
@@ -161,10 +166,10 @@ class _TicketNoteBottomSheetState extends State<TicketNoteBottomSheet> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24.h),
 
-                const Text(
-                  'Note',
+                Text(
+                  context.bssSubL10n.note,
                   style: TextStyle(
                     fontSize: 14,
                     fontWeight: FontWeight.w600,
@@ -172,7 +177,7 @@ class _TicketNoteBottomSheetState extends State<TicketNoteBottomSheet> {
                     fontFamily: 'GeneralSans',
                   ),
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
@@ -181,9 +186,10 @@ class _TicketNoteBottomSheetState extends State<TicketNoteBottomSheet> {
                         color: Colors.white,
                         borderRadius: BorderRadius.circular(12),
                         border: Border.all(
-                          color: hasNoteError
-                              ? const Color(0xFFBA1A1A)
-                              : const Color(0xFFE0E0E0),
+                          color:
+                              hasNoteError
+                                  ? AppColor.kErrorRed
+                                  : AppColor.kShimmerBase,
                           width: 1,
                         ),
                       ),
@@ -194,7 +200,7 @@ class _TicketNoteBottomSheetState extends State<TicketNoteBottomSheet> {
                         readOnly: isSubmitting,
                         textAlignVertical: TextAlignVertical.top,
                         decoration: InputDecoration(
-                          hintText: 'Enter your note here...',
+                          hintText: context.bssSubL10n.enterYourNoteHere,
                           hintStyle: const TextStyle(
                             color: AppColor.kTextSecondary,
                             fontSize: 14,
@@ -227,9 +233,9 @@ class _TicketNoteBottomSheetState extends State<TicketNoteBottomSheet> {
                       Padding(
                         padding: const EdgeInsets.only(top: 8, left: 12),
                         child: Text(
-                          'Remarks must be at least 10 characters',
+                          context.bssSubL10n.remarksMustBeAtLeast10Characters,
                           style: const TextStyle(
-                            color: Color(0xFFBA1A1A),
+                            color: AppColor.kErrorRed,
                             fontSize: 12,
                             fontFamily: 'GeneralSans',
                           ),
@@ -237,50 +243,54 @@ class _TicketNoteBottomSheetState extends State<TicketNoteBottomSheet> {
                       ),
                   ],
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24.h),
 
                 AttachmentUploadField(
                   label: l10n.attachments,
                   onTap: isSubmitting ? () {} : _pickFile,
                 ),
-                const SizedBox(height: 12),
+                SizedBox(height: 12.h),
                 AttachmentListWidget(
                   selectedFiles: _selectedFiles,
                   onViewFile: isSubmitting ? (_) {} : _viewFile,
-                  onDeleteFile: isSubmitting
-                      ? (_) {}
-                      : (file) {
-                          setState(() {
-                            _selectedFiles.remove(file);
-                          });
-                        },
+                  onDeleteFile:
+                      isSubmitting
+                          ? (_) {}
+                          : (file) {
+                            setState(() {
+                              _selectedFiles.remove(file);
+                            });
+                          },
                 ),
-                const SizedBox(height: 8),
+                SizedBox(height: 8.h),
                 Text(
                   l10n.ticketFileInstructions,
                   style: const TextStyle(
-                    color: Color(0xFF67697A),
+                    color: AppColor.kTextFiledPlaceholderColor,
                     fontSize: 12,
                     fontWeight: FontWeight.w400,
                     height: 1.67,
                     fontFamily: 'GeneralSans',
                   ),
                 ),
-                const SizedBox(height: 24),
+                SizedBox(height: 24.h),
 
                 PrimaryButton(
-                  label: 'Save Note',
+                  label: context.bssSubL10n.saveNote,
                   isLoading: isSubmitting,
                   borderRadius: 12,
-                  onClicked: isSubmitting || !isNoteValid
-                      ? null
-                      : () {
-                          widget.onSave(
-                            _noteController.text.trim(),
-                            _visibility,
-                            _selectedFiles.isEmpty ? null : List.from(_selectedFiles),
-                          );
-                        },
+                  onClicked:
+                      isSubmitting || !isNoteValid
+                          ? null
+                          : () {
+                            widget.onSave(
+                              _noteController.text.trim(),
+                              _visibility,
+                              _selectedFiles.isEmpty
+                                  ? null
+                                  : List.from(_selectedFiles),
+                            );
+                          },
                 ),
               ],
             ),

@@ -23,7 +23,7 @@ class InvoiceModel {
       amount:
           (json['amount'] is num) ? (json['amount'] as num).toDouble() : 0.0,
       invoiceDate: json['invoiceDate']?.toString() ?? '',
-      fileId: json['fileId']?.toString() ?? '4a6de59c-6d65-40e6-8e1b-43e42f0be25f',
+      fileId: json['fileId']?.toString() ?? '',
     );
   }
 

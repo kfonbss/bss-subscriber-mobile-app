@@ -1,8 +1,15 @@
-import 'package:kfon_subscriber/core/constant/app_assets.dart';
+import 'package:kfon_subscriber/shared/widgets/common_text_field.dart';
+import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
+import 'package:kfon_subscriber/core/constant/app_brand.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/util/preference_util.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
+import 'package:kfon_subscriber/shared/widgets/login_background.dart';
+import 'package:kfon_subscriber/shared/widgets/no_data_found.dart';
+import 'package:kfon_subscriber/shared/widgets/retry_widget.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../../../service_locator.dart';
@@ -36,21 +43,47 @@ class _TenantScreenState extends State<TenantScreen> {
     super.dispose();
   }
 
+  // No tenant is chosen yet, so the primary colour isn't known: start neutral
+  // and cross-fade to the selected tenant's primary when one is tapped.
+  static const _colorAnimationDuration = Duration(milliseconds: 600);
+
+  // Before anything is tapped: the saved tenant's primary when coming back to
+  // change tenant, or the neutral colour on first launch (no tenant yet).
+  static Color get _unselectedColor => AppBrand.hasTenant
+      ? AppColor.kPrimaryColor
+      : AppColor.kTenantScreenBackground;
+
   @override
   Widget build(BuildContext context) {
     return BlocProvider.value(
       value: _bloc,
-      child: Scaffold(
-        backgroundColor: AppColor.kPrimaryColor,
-        resizeToAvoidBottomInset: false,
-        body: SafeArea(
-          child: Container(
-            decoration: const BoxDecoration(
-              image: DecorationImage(
-                image: AssetImage(AppAssets.loginBackground),
-                fit: BoxFit.cover,
-              ),
+      child: BlocSelector<TenantBloc, TenantState, String?>(
+        selector: (state) => state.selectedTenant?.code,
+        builder: (context, selectedCode) {
+          return TweenAnimationBuilder<Color?>(
+            tween: ColorTween(
+              end: selectedCode == null
+                  ? _unselectedColor
+                  : AppColor.primaryFor(selectedCode),
             ),
+            duration: _colorAnimationDuration,
+            curve: Curves.easeInOutCubic,
+            builder: (context, color, _) =>
+                _buildScreen(context, color ?? _unselectedColor),
+          );
+        },
+      ),
+    );
+  }
+
+  Widget _buildScreen(BuildContext context, Color accent) {
+    return Scaffold(
+      backgroundColor: accent,
+      resizeToAvoidBottomInset: false,
+      body: Stack(
+        children: [
+          LoginBackground(color: accent),
+          SafeArea(
             child: Column(
               children: [
                 Expanded(
@@ -63,7 +96,7 @@ class _TenantScreenState extends State<TenantScreen> {
 
                         // ── Title ──────────────────────────────
                         Text(
-                          'Choose Your Circle',
+                          context.bssSubL10n.chooseYourCircle,
                           style: TextStyle(
                             fontSize: 26.sp,
                             fontWeight: FontWeight.bold,
@@ -74,7 +107,7 @@ class _TenantScreenState extends State<TenantScreen> {
                         ),
                         SizedBox(height: 8.h),
                         Text(
-                          'Select your state to continue with the login',
+                          context.bssSubL10n.selectStateToContinue,
                           style: TextStyle(
                             fontSize: 14.sp,
                             color: Colors.white,
@@ -90,32 +123,26 @@ class _TenantScreenState extends State<TenantScreen> {
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.circular(12),
-                            border: Border.all(color: const Color(0xFFE0E0E0)),
+                            border: Border.all(color: AppColor.kShimmerBase),
                           ),
                           padding: EdgeInsets.symmetric(horizontal: 16.w),
                           child: Row(
                             children: [
-                              Icon(
-                                Icons.search,
-                                color: AppColor.kPrimaryColor,
-                                size: 20.sp,
-                              ),
+                              Icon(Icons.search, color: accent, size: 20.sp),
                               SizedBox(width: 10.w),
                               Expanded(
-                                child: TextField(
-                                  controller: _searchController,
-                                  onChanged: (q) =>
+                                child: CommonTextField(
+                                  hintText: context.bssSubL10n.searchState,
+                                  textEditingController: _searchController,
+                                  onTextChanged: (q) =>
                                       _bloc.add(SearchTenants(query: q)),
-                                  decoration: InputDecoration(
-                                    hintText: 'Search state',
-                                    hintStyle: TextStyle(
-                                      fontSize: 14.sp,
-                                      color: const Color(0xFFAAAAAA),
-                                      fontFamily: 'GeneralSans',
-                                    ),
-                                    border: InputBorder.none,
-                                    isDense: true,
-                                    contentPadding: EdgeInsets.zero,
+                                  fillColor: Colors.transparent,
+                                  isDense: true,
+                                  contentPadding: EdgeInsets.zero,
+                                  hintStyle: TextStyle(
+                                    fontSize: 14.sp,
+                                    color: AppColor.kSilverGrey,
+                                    fontFamily: 'GeneralSans',
                                   ),
                                 ),
                               ),
@@ -139,45 +166,20 @@ class _TenantScreenState extends State<TenantScreen> {
                             }
 
                             if (state.hasError) {
-                              return SizedBox(
-                                height: 300.h,
-                                child: Center(
-                                  child: Column(
-                                    mainAxisSize: MainAxisSize.min,
-                                    children: [
-                                      Text(
-                                        state.errorMessage ??
-                                            'Something went wrong',
-                                        style: TextStyle(
-                                          color: Colors.white,
-                                          fontSize: 13.sp,
-                                        ),
-                                        textAlign: TextAlign.center,
-                                      ),
-                                      SizedBox(height: 12.h),
-                                      TextButton(
-                                        onPressed: () =>
-                                            _bloc.add(const LoadTenants()),
-                                        child: const Text('Retry'),
-                                      ),
-                                    ],
-                                  ),
-                                ),
+                              return RetryWidget(
+                                textColor: Colors.white,
+                                errorMessage:
+                                    state.errorMessage ??
+                                    context.bssSubL10n.somethingWentWrong,
+                                onRetry: () => _bloc.add(const LoadTenants()),
                               );
                             }
 
                             if (state.filteredTenants.isEmpty) {
-                              return SizedBox(
-                                height: 200.h,
-                                child: Center(
-                                  child: Text(
-                                    'No states found',
-                                    style: TextStyle(
-                                      fontSize: 14.sp,
-                                      color: Colors.grey,
-                                    ),
-                                  ),
-                                ),
+                              return NoDataFound(
+                                textColor: Colors.white,
+                                iconColor: Colors.white,
+                                errorMessage: context.bssSubL10n.noStatesFound,
                               );
                             }
 
@@ -186,7 +188,7 @@ class _TenantScreenState extends State<TenantScreen> {
                                 color: Colors.white,
                                 borderRadius: BorderRadius.circular(12),
                                 border: Border.all(
-                                  color: const Color(0xFFE0E0E0),
+                                  color: AppColor.kShimmerBase,
                                 ),
                               ),
                               child: ListView.separated(
@@ -194,8 +196,8 @@ class _TenantScreenState extends State<TenantScreen> {
                                 physics: const NeverScrollableScrollPhysics(),
                                 itemCount: state.filteredTenants.length,
                                 separatorBuilder: (_, __) => Divider(
-                                  height: 1,
-                                  color: const Color(0xFFEEEEEE),
+                                  height: 1.h,
+                                  color: AppColor.kLightBorderGrey,
                                   indent: 16.w,
                                   endIndent: 16.w,
                                 ),
@@ -223,8 +225,7 @@ class _TenantScreenState extends State<TenantScreen> {
                                       ),
                                       decoration: BoxDecoration(
                                         color: isSelected
-                                            ? AppColor.kPrimaryColor
-                                                  .withOpacity(0.05)
+                                            ? Colors.white
                                             : Colors.transparent,
                                         borderRadius: BorderRadius.vertical(
                                           top: i == 0
@@ -249,7 +250,7 @@ class _TenantScreenState extends State<TenantScreen> {
                                                     ? FontWeight.w600
                                                     : FontWeight.w400,
                                                 color: isSelected
-                                                    ? AppColor.kPrimaryColor
+                                                    ? accent
                                                     : Colors.black87,
                                                 fontFamily: 'GeneralSans',
                                               ),
@@ -258,7 +259,7 @@ class _TenantScreenState extends State<TenantScreen> {
                                           if (isSelected)
                                             Icon(
                                               Icons.check_circle,
-                                              color: AppColor.kPrimaryColor,
+                                              color: accent,
                                               size: 20.sp,
                                             ),
                                         ],
@@ -285,27 +286,22 @@ class _TenantScreenState extends State<TenantScreen> {
                         children: [
                           // Back
                           Expanded(
-                            child: SizedBox(
+                            // Transparent over the tenant backdrop, white rule
+                            // and label; borderRadius 999 for the stadium.
+                            child: SecondaryButton(
+                              label: context.bssSubL10n.back,
+                              borderRadius: 999,
                               height: 52.h,
-                              child: OutlinedButton.icon(
-                                onPressed: () => Navigator.pop(context),
-                                icon: const Icon(
-                                  Icons.arrow_back,
-                                  size: 18,
-                                  color: Colors.white,
-                                ),
-                                label: const Text(
-                                  'Back',
-                                  style: TextStyle(
-                                    color: Colors.white,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: 'GeneralSans',
-                                  ),
-                                ),
-                                style: OutlinedButton.styleFrom(
-                                  side: const BorderSide(color: Colors.white),
-                                  shape: const StadiumBorder(),
-                                ),
+                              backgroundColor: Colors.transparent,
+                              borderColor: Colors.white,
+                              icon: const Icon(
+                                Icons.arrow_back,
+                                color: Colors.white,
+                              ),
+                              onClicked: () => Navigator.pop(context),
+                              textStyle: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'GeneralSans',
                               ),
                             ),
                           ),
@@ -313,47 +309,37 @@ class _TenantScreenState extends State<TenantScreen> {
 
                           // Continue
                           Expanded(
-                            child: SizedBox(
+                            child: PrimaryButton(
+                              label: context.bssSubL10n.continueText,
+                              isLoading: false,
+                              borderRadius: 999,
                               height: 52.h,
-                              child: ElevatedButton.icon(
-                                onPressed: state.canContinue
-                                    ? () async {
-                                        await PreferenceUtils.setTenant(
-                                          state.selectedTenant!.code,
-                                          state.selectedTenant!.name,
-                                        );
-                                        Navigator.pushReplacementNamed(
-                                          context,
-                                          AppRoutes.login,
-                                          arguments: {
-                                            'tenantId':
-                                                state.selectedTenant!.code,
-                                            'tenantName':
-                                                state.selectedTenant!.name,
-                                          },
-                                        );
-                                      }
-                                    : null,
-                                icon: const Text(
-                                  'Continue',
-                                  style: TextStyle(
-                                    color: AppColor.kPrimaryColor,
-                                    fontWeight: FontWeight.w600,
-                                    fontFamily: 'GeneralSans',
-                                  ),
-                                ),
-                                label: const Icon(
-                                  Icons.arrow_forward,
-                                  color: AppColor.kPrimaryColor,
-                                  size: 18,
-                                ),
-                                style: ElevatedButton.styleFrom(
-                                  backgroundColor: Colors.white,
-                                  disabledBackgroundColor: Colors.white
-                                      .withOpacity(0.4),
-                                  shape: const StadiumBorder(),
-                                ),
+                              backgroundColor: Colors.white,
+                              foregroundColor: accent,
+                              icon: Icon(Icons.arrow_forward, color: accent),
+                              textStyle: const TextStyle(
+                                fontWeight: FontWeight.w600,
+                                fontFamily: 'GeneralSans',
                               ),
+                              onClicked: state.canContinue
+                                  ? () async {
+                                      final tenant = state.selectedTenant!;
+                                      await PreferenceUtils.setTenant(
+                                        tenant.code,
+                                        tenant.name,
+                                      );
+                                      AppBrand.setTenant(tenant.code);
+                                      if (!context.mounted) return;
+                                      Navigator.pushReplacementNamed(
+                                        context,
+                                        AppRoutes.login,
+                                        arguments: {
+                                          'tenantId': tenant.code,
+                                          'tenantName': tenant.name,
+                                        },
+                                      );
+                                    }
+                                  : null,
                             ),
                           ),
                         ],
@@ -364,7 +350,7 @@ class _TenantScreenState extends State<TenantScreen> {
               ],
             ),
           ),
-        ),
+        ],
       ),
     );
   }

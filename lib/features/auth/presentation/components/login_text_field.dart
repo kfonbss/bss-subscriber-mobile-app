@@ -1,5 +1,7 @@
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
 import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 
 class LoginTextField extends StatelessWidget {
   final String hintText;
@@ -7,7 +9,6 @@ class LoginTextField extends StatelessWidget {
   final TextInputType? textInputType;
   final Function(String)? onTextChanged;
   final int? maxLength;
-  final String iconName;
   final TextCapitalization? textCapitalization;
   final String? Function(String?)? validator;
 
@@ -15,21 +16,12 @@ class LoginTextField extends StatelessWidget {
     super.key,
     required this.hintText,
     required this.textEditingController,
-    required this.iconName,
     this.textInputType,
     this.onTextChanged,
     this.maxLength,
     this.textCapitalization,
     this.validator,
   });
-
-  // Precomputed — pure compile-time values, no Sizer dependency.
-  static const _prefixIconConstraints = BoxConstraints(
-    minWidth: 28,
-    maxWidth: 28,
-    minHeight: 18,
-    maxHeight: 18,
-  );
 
   @override
   Widget build(BuildContext context) {
@@ -51,19 +43,30 @@ class LoginTextField extends StatelessWidget {
       decoration: InputDecoration(
         counterText: '',
         hintText: hintText,
-        hintStyle: Theme.of(
-          context,
-        ).textTheme.bodyMedium?.copyWith(color: AppColor.kTextFiledHintColor),
+        hintStyle: Theme.of(context).textTheme.bodyMedium?.copyWith(
+          color: AppColor.kTextFiledPlaceholderColor,
+        ),
         errorStyle: Theme.of(
           context,
-        ).textTheme.bodySmall?.copyWith(color: AppColor.kFailedRed),
-        contentPadding: const EdgeInsets.symmetric(vertical: 4),
-        prefixIconConstraints: _prefixIconConstraints,
-        prefixIcon: Padding(
-          padding: const EdgeInsets.only(right: 10.0),
-          child: Image.asset('assets/icons/$iconName'),
+        ).textTheme.bodySmall?.copyWith(color: Colors.red),
+        contentPadding: EdgeInsets.symmetric(vertical: 4),
+        prefixIconConstraints: BoxConstraints(
+          minWidth: 32,
+          maxWidth: 32,
+          minHeight: 20,
+          maxHeight: 20,
         ),
-        suffixIcon: const SizedBox.shrink(),
+        prefixIcon: Padding(
+          padding: const EdgeInsets.only(right: 12.0),
+          child:SvgPicture.asset(
+            AppAssets.user,
+            colorFilter: ColorFilter.mode(
+              AppColor.kPrimaryColor,
+              BlendMode.srcIn,
+            ),
+          ),
+        ),
+        suffixIcon: SizedBox(),
         border: InputBorder.none,
         errorBorder: InputBorder.none,
         focusedBorder: InputBorder.none,

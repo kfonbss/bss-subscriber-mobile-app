@@ -1,5 +1,6 @@
-import 'package:equatable/equatable.dart';
 import 'package:kfon_subscriber/features/auth/domain/entity/auth_entity.dart';
+import 'package:kfon_subscriber/features/profile/domain/entity/profile_entity.dart';
+import 'package:equatable/equatable.dart';
 
 abstract class AuthState extends Equatable {
   const AuthState();
@@ -18,6 +19,19 @@ class AuthLoading extends AuthState {
 
 class Authenticated extends AuthState {
   const Authenticated();
+}
+
+class LoadSelectedTenantSuccess extends AuthState {
+  final String tenantName;
+  final String tenantId;
+
+  const LoadSelectedTenantSuccess({
+    required this.tenantName,
+    required this.tenantId,
+  });
+
+  @override
+  List<Object?> get props => [tenantName, tenantId];
 }
 
 class Unauthenticated extends AuthState {
@@ -60,6 +74,32 @@ class OtpSendError extends AuthState {
   List<Object?> get props => [errorMessage];
 }
 
+/// Emitted when a *resend* succeeds on the login-OTP screen. Deliberately
+/// separate from [LoginSuccess] — LoginPage listens for LoginSuccess to
+/// navigate to the OTP screen, and LoginPage is still mounted underneath
+/// OtpVerificationPage, so reusing LoginSuccess for resend re-triggered
+/// that navigation and pushed a duplicate OtpVerificationPage.
+class OtpResendSuccess extends AuthState {
+  final AuthEntity user;
+
+  const OtpResendSuccess({required this.user});
+
+  @override
+  List<Object?> get props => [user];
+}
+
+/// Emitted when a *resend* succeeds on the forgot-password OTP screen.
+/// Deliberately separate from [OtpSent] for the same reason as
+/// [OtpResendSuccess] above — ForgotPasswordPage listens for OtpSent.
+class ForgotPasswordOtpResent extends AuthState {
+  final String mobileNumber;
+
+  const ForgotPasswordOtpResent({required this.mobileNumber});
+
+  @override
+  List<Object?> get props => [mobileNumber];
+}
+
 class OtpVerified extends AuthState {
   const OtpVerified();
 }
@@ -94,15 +134,6 @@ class LogoutLoading extends AuthState {
   const LogoutLoading();
 }
 
-class LoadSelectedTenantSuccess extends AuthState {
-  final String tenantName;
-  final String tenantId;
-
-  const LoadSelectedTenantSuccess({required this.tenantName,required this.tenantId});
-
-  @override
-  List<Object?> get props => [tenantName,tenantId];
-}
 class LogoutSuccess extends AuthState {
   const LogoutSuccess();
 }

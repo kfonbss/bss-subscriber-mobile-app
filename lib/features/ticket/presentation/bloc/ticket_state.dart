@@ -78,28 +78,34 @@ class TicketMasterDataState extends TicketState with EquatableMixin {
     return TicketMasterDataState(
       subjects: subjects ?? this.subjects,
       subjectsLoading: subjectsLoading ?? this.subjectsLoading,
-      subjectsError: subjectsError == _unset
-          ? this.subjectsError
-          : subjectsError as String?,
+      subjectsError:
+          subjectsError == _unset
+              ? this.subjectsError
+              : subjectsError as String?,
       categories: categories ?? this.categories,
       categoriesLoading: categoriesLoading ?? this.categoriesLoading,
-      categoriesError: categoriesError == _unset
-          ? this.categoriesError
-          : categoriesError as String?,
+      categoriesError:
+          categoriesError == _unset
+              ? this.categoriesError
+              : categoriesError as String?,
       priorities: priorities ?? this.priorities,
       prioritiesLoading: prioritiesLoading ?? this.prioritiesLoading,
-      prioritiesError: prioritiesError == _unset
-          ? this.prioritiesError
-          : prioritiesError as String?,
-      selectedSubject: selectedSubject == _unset
-          ? this.selectedSubject
-          : selectedSubject as SubjectEntity?,
-      selectedCategory: selectedCategory == _unset
-          ? this.selectedCategory
-          : selectedCategory as TicketCategoryEntity?,
-      customerTypeId: customerTypeId == _unset
-          ? this.customerTypeId
-          : customerTypeId as String?,
+      prioritiesError:
+          prioritiesError == _unset
+              ? this.prioritiesError
+              : prioritiesError as String?,
+      selectedSubject:
+          selectedSubject == _unset
+              ? this.selectedSubject
+              : selectedSubject as SubjectEntity?,
+      selectedCategory:
+          selectedCategory == _unset
+              ? this.selectedCategory
+              : selectedCategory as TicketCategoryEntity?,
+      customerTypeId:
+          customerTypeId == _unset
+              ? this.customerTypeId
+              : customerTypeId as String?,
       fileUiEpoch: fileUiEpoch ?? this.fileUiEpoch,
     );
   }
@@ -184,4 +190,15 @@ class OnError extends TicketState {
   final TicketsListResponseEntity? previousData;
 
   const OnError({required this.errorMessage, this.previousData});
+}
+
+class RatingSubmitting extends TicketState {
+  const RatingSubmitting();
+}
+
+class RatingSubmitted extends TicketState {
+  final int rating;
+  final String comment;
+
+  const RatingSubmitted({required this.rating, required this.comment});
 }
