@@ -17,7 +17,6 @@ abstract class ChangePlanRepository {
     GetAllPackagesParams params,
   );
 
-
   Future<Either<Failure, PaginatedPackagesEntity>> getSeasonalPackages({
     required int page,
     required int size,
@@ -30,7 +29,7 @@ abstract class ChangePlanRepository {
 
     String? subscriptionType,
     String? packageType,
-    String? search
+    String? search,
   });
 
   Future<Either<Failure, RechargeChangePlanResponseEntity>> rechargeChangePlan(
@@ -47,8 +46,8 @@ abstract class ChangePlanRepository {
 
   Future<Either<Failure, List<PaymentGatewayEntity>>> getPaymentGateways();
   Future<Either<Failure, List<DiscountDetailsEntity>>> getSubscriberDiscounts(
-      List<SubscriberDiscountRequestParams> params,
-      );
+    List<SubscriberDiscountRequestParams> params,
+  );
 
   Future<Either<Failure, PackageTabEntity>> getPackageTabs({
     required String subscriberId,

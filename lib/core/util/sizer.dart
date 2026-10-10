@@ -136,4 +136,3 @@ extension SizerExt on num {
   /// Example: `16.sp`
   double get sp => Sizer.getSp(this);
 }
-

@@ -126,7 +126,7 @@ class PackageDetailsModel {
     validity: validity,
     totalVolumeGb: totalVolumeGb,
     activeAddOns: activeAddOns.map((e) => e.toEntity()).toList(),
-    packageInfoEntity:  packageInfoModel.toEntity(),
+    packageInfoEntity: packageInfoModel.toEntity(),
   );
 }
 

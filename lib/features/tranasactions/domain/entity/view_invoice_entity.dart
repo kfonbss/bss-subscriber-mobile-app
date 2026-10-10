@@ -15,6 +15,6 @@ class ViewInvoiceEntity {
     required this.contentType,
     required this.sizeBytes,
     required this.expirySeconds,
-    required this.url
+    required this.url,
   });
 }

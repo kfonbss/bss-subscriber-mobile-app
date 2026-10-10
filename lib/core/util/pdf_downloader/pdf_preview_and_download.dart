@@ -72,10 +72,7 @@ class _PdfPreviewAndDownloadState extends State<PdfPreviewAndDownload> {
       }
     } catch (e) {
       if (!mounted) return;
-      _dialogUtil.showCustomSnackbar(
-        context: context,
-        content: e.toString(),
-      );
+      _dialogUtil.showCustomSnackbar(context: context, content: e.toString());
     } finally {
       if (mounted) {
         setState(() => isDownloading = false);

@@ -8,12 +8,13 @@ class DashedLinePainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    var paint = Paint()
-      ..color = color
-      ..strokeWidth = strokeWidth
-      ..strokeCap = StrokeCap.butt;
+    var paint =
+        Paint()
+          ..color = color
+          ..strokeWidth = strokeWidth
+          ..strokeCap = StrokeCap.butt;
 
-    const double dashWidth = 5;  // Length of the dash segment
+    const double dashWidth = 5; // Length of the dash segment
     const double dashSpace = 4; // Space between segments
     double currentX = 0;
 

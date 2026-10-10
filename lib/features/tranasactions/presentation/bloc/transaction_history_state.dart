@@ -1,11 +1,16 @@
 import 'package:equatable/equatable.dart';
 import 'package:kfon_subscriber/features/tranasactions/domain/entity/transaction_entity.dart';
+import 'package:kfon_subscriber/features/tranasactions/domain/entity/transaction_filter.dart';
 
 abstract class TransactionHistoryState extends Equatable {
-  const TransactionHistoryState();
+  /// Filter the state was produced with, so the filter bar stays in sync in
+  /// every state (loading / loaded / error).
+  final TransactionFilter filter;
+
+  const TransactionHistoryState({this.filter = TransactionFilter.none});
 
   @override
-  List<Object?> get props => [];
+  List<Object?> get props => [filter];
 }
 
 class TransactionHistoryInitial extends TransactionHistoryState {
@@ -14,7 +19,7 @@ class TransactionHistoryInitial extends TransactionHistoryState {
 
 /// State while first page is loading.
 class TransactionHistoryLoading extends TransactionHistoryState {
-  const TransactionHistoryLoading();
+  const TransactionHistoryLoading({super.filter});
 }
 
 /// State when transactions are loaded (supports pagination).
@@ -34,6 +39,7 @@ class TransactionHistoryLoaded extends TransactionHistoryState {
     this.isLoadingMore = false,
     required this.currentPage,
     this.paginationError,
+    super.filter,
   });
 
   // Sentinel used so copyWith can explicitly clear paginationError to null.
@@ -51,14 +57,17 @@ class TransactionHistoryLoaded extends TransactionHistoryState {
       hasReachedMax: hasReachedMax ?? this.hasReachedMax,
       isLoadingMore: isLoadingMore ?? this.isLoadingMore,
       currentPage: currentPage ?? this.currentPage,
-      paginationError: identical(paginationError, _clear)
-          ? this.paginationError
-          : paginationError as String?,
+      paginationError:
+          identical(paginationError, _clear)
+              ? this.paginationError
+              : paginationError as String?,
+      filter: filter,
     );
   }
 
   @override
   List<Object?> get props => [
+    filter,
     transactions,
     hasReachedMax,
     isLoadingMore,
@@ -71,8 +80,8 @@ class TransactionHistoryLoaded extends TransactionHistoryState {
 class TransactionHistoryError extends TransactionHistoryState {
   final String message;
 
-  const TransactionHistoryError({required this.message});
+  const TransactionHistoryError({required this.message, super.filter});
 
   @override
-  List<Object?> get props => [message];
+  List<Object?> get props => [filter, message];
 }

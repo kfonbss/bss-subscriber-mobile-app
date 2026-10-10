@@ -32,5 +32,13 @@ class GetAllPackagesParams extends Equatable {
   }
 
   @override
-  List<Object?> get props => [subscriberId, search, type, speedMbps, ott,page,size];
+  List<Object?> get props => [
+    subscriberId,
+    search,
+    type,
+    speedMbps,
+    ott,
+    page,
+    size,
+  ];
 }

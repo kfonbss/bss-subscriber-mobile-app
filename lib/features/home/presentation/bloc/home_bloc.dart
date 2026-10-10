@@ -63,7 +63,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
             //         .where((package) => package.id != event.packageId)
             //         .take(2)
             //         .toList(),
-            packageEntities: packages.content
+            packageEntities: packages.content,
           ),
         ),
       );

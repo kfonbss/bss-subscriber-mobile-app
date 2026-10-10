@@ -7,7 +7,6 @@ abstract class PackageDetailsEvent extends Equatable {
   List<Object?> get props => [];
 }
 
-
 class GetActivePackageDetails extends PackageDetailsEvent {
   final String subscriberUuid;
 

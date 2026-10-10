@@ -61,12 +61,13 @@ class _TenantRecoloredImageState extends State<TenantRecoloredImage> {
     final target = AppColor.kPrimaryColor;
     if (target == _target && _image != null) return;
     _target = target;
-    _image = target == TenantRecoloredImage.sourceColor
-        ? null // artwork already matches, draw it as-is
-        : _cache.putIfAbsent(
-            '${widget.assetName}|${target.toARGB32()}',
-            () => _loadRecolored(widget.assetName, target),
-          );
+    _image =
+        target == TenantRecoloredImage.sourceColor
+            ? null // artwork already matches, draw it as-is
+            : _cache.putIfAbsent(
+              '${widget.assetName}|${target.toARGB32()}',
+              () => _loadRecolored(widget.assetName, target),
+            );
   }
 
   @override
@@ -98,7 +99,9 @@ class _TenantRecoloredImageState extends State<TenantRecoloredImage> {
   }
 }
 
-final RegExp _embeddedPng = RegExp(r'data:image/png;base64,([A-Za-z0-9+/=\s]+)');
+final RegExp _embeddedPng = RegExp(
+  r'data:image/png;base64,([A-Za-z0-9+/=\s]+)',
+);
 
 Future<ui.Image?> _loadRecolored(String assetName, Color target) async {
   final svg = await rootBundle.loadString(assetName);
@@ -169,9 +172,7 @@ Uint8List _recolorPixels(_RecolorJob job) {
 /// Piecewise-linear map of [v] with 0→0, [from]→[to], 1→1.
 double _remap(double v, double from, double to) {
   if (from <= 0 || from >= 1) return v;
-  return v <= from
-      ? v / from * to
-      : to + (v - from) / (1 - from) * (1 - to);
+  return v <= from ? v / from * to : to + (v - from) / (1 - from) * (1 - to);
 }
 
 class _Hsl {
@@ -207,17 +208,29 @@ class _Hsl {
     final m = l - c / 2;
     double r, g, b;
     if (h < 60) {
-      r = c; g = x; b = 0;
+      r = c;
+      g = x;
+      b = 0;
     } else if (h < 120) {
-      r = x; g = c; b = 0;
+      r = x;
+      g = c;
+      b = 0;
     } else if (h < 180) {
-      r = 0; g = c; b = x;
+      r = 0;
+      g = c;
+      b = x;
     } else if (h < 240) {
-      r = 0; g = x; b = c;
+      r = 0;
+      g = x;
+      b = c;
     } else if (h < 300) {
-      r = x; g = 0; b = c;
+      r = x;
+      g = 0;
+      b = c;
     } else {
-      r = c; g = 0; b = x;
+      r = c;
+      g = 0;
+      b = x;
     }
     int to8(double v) => ((v + m) * 255).round().clamp(0, 255);
     return [to8(r), to8(g), to8(b)];

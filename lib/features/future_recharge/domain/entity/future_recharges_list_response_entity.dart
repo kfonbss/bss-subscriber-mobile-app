@@ -21,13 +21,13 @@ class FutureRechargePageInfoEntity {
   });
 
   const FutureRechargePageInfoEntity.initial()
-      : totalPages = 0,
-        totalElements = 0,
-        pageNumber = 0,
-        pageSize = 0,
-        isFirst = true,
-        isLast = true,
-        isEmpty = true;
+    : totalPages = 0,
+      totalElements = 0,
+      pageNumber = 0,
+      pageSize = 0,
+      isFirst = true,
+      isLast = true,
+      isEmpty = true;
 }
 
 class FutureRechargesListResponseEntity {

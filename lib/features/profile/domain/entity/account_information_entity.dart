@@ -18,7 +18,14 @@ class PersonalInfo extends Equatable {
   });
 
   @override
-  List<Object?> get props => [subscriberId, username, name, mobileNo, address,email];
+  List<Object?> get props => [
+    subscriberId,
+    username,
+    name,
+    mobileNo,
+    address,
+    email,
+  ];
 }
 
 class AccountInfo extends Equatable {

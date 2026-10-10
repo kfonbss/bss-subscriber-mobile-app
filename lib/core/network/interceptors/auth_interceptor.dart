@@ -31,6 +31,10 @@ class AuthInterceptor extends Interceptor {
     ApiUrls.verifyOTPURL,
     ApiUrls.resetForgotPasswordURL,
     ApiUrls.refreshTokenURL,
+    // Home enquiry: OTP send/verify, then save (the form is used before login).
+    ApiUrls.enquiryOtpSendURL,
+    ApiUrls.enquiryOtpVerifyURL,
+    ApiUrls.subscriptionEnquiryFormURL,
   ];
 
   @override
@@ -39,8 +43,14 @@ class AuthInterceptor extends Interceptor {
     RequestInterceptorHandler handler,
   ) async {
     final tenantId = await PreferenceUtils.getTenantId();
-    options.headers['X-Tenant-ID'] = '$tenantId';
-    final isPublicEndpoint = _publicEndpoints.contains(options.path);
+    // Keep a tenant header the request already set (e.g. the enquiry form's
+    // selected circle); otherwise use the saved tenant.
+    if (!options.headers.containsKey('X-Tenant-ID')) {
+      options.headers['X-Tenant-ID'] = '$tenantId';
+    }
+    final isPublicEndpoint =
+        _publicEndpoints.contains(options.path) ||
+        options.path.startsWith(ApiUrls.customerEnquiryByMobileBase);
 
     try {
       if (!isPublicEndpoint) {

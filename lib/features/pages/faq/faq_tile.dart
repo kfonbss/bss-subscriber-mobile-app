@@ -43,7 +43,12 @@ class _FaqTileState extends State<FaqTile> {
         color: Colors.white,
         borderRadius: BorderRadius.all(Radius.circular(12)),
       ),
-      padding: EdgeInsets.only(left: 10.w, right: 14.w, top: 13.h, bottom: 13.h),
+      padding: EdgeInsets.only(
+        left: 10.w,
+        right: 14.w,
+        top: 13.h,
+        bottom: 13.h,
+      ),
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [

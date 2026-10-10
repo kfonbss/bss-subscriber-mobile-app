@@ -37,7 +37,10 @@ class HomeShimmer extends StatelessWidget {
     ],
   );
   static final List<Widget> _statsItems = [
-    _statsItem, _statsItem, _statsItem, _statsItem,
+    _statsItem,
+    _statsItem,
+    _statsItem,
+    _statsItem,
   ];
 
   static final _planShimmerItem = Padding(
@@ -45,7 +48,10 @@ class HomeShimmer extends StatelessWidget {
     child: ShimmerBox(width: double.infinity, height: 100.h),
   );
   static final List<Widget> _planShimmerItems = [
-    _planShimmerItem, _planShimmerItem, _planShimmerItem, _planShimmerItem,
+    _planShimmerItem,
+    _planShimmerItem,
+    _planShimmerItem,
+    _planShimmerItem,
   ];
 
   @override
@@ -200,11 +206,7 @@ class HomeShimmer extends StatelessWidget {
                 mainAxisAlignment: MainAxisAlignment.spaceBetween,
                 children: [
                   ShimmerBox(width: 100.w, height: 16.h),
-                  ShimmerBox(
-                    width: 60.w,
-                    height: 14.h,
-                    borderRadius: _radius4,
-                  ),
+                  ShimmerBox(width: 60.w, height: 14.h, borderRadius: _radius4),
                 ],
               ),
             ),

@@ -21,9 +21,10 @@ class NoDataFound extends StatelessWidget {
       builder: (context, constraints) {
         // Inside a scroll view / sliver the height is unbounded, so fall back
         // to a fraction of the screen instead of an infinite image.
-        final availableHeight = constraints.hasBoundedHeight
-            ? constraints.maxHeight
-            : MediaQuery.sizeOf(context).height * 0.6;
+        final availableHeight =
+            constraints.hasBoundedHeight
+                ? constraints.maxHeight
+                : MediaQuery.sizeOf(context).height * 0.6;
         return Padding(
           padding: const EdgeInsets.symmetric(horizontal: 50),
           child: Center(
@@ -38,7 +39,7 @@ class NoDataFound extends StatelessWidget {
                 Text(
                   errorMessage,
                   style: TextStyle(
-                    color: textColor??Colors.black,
+                    color: textColor ?? Colors.black,
                     fontSize: 14,
                   ),
                 ),

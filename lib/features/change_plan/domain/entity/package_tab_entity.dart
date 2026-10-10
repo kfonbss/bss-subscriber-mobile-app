@@ -25,9 +25,5 @@ class EligibilityEntity {
   final List<String>? serviceTypes;
   final String? reason;
 
-  const EligibilityEntity({
-    this.eligible,
-    this.serviceTypes,
-    this.reason,
-  });
+  const EligibilityEntity({this.eligible, this.serviceTypes, this.reason});
 }

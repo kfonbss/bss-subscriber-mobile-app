@@ -57,7 +57,10 @@ class HelpOptionCard extends StatelessWidget {
                 height: 32.h,
                 width: 32.w,
                 fit: BoxFit.contain,
-                colorFilter: ColorFilter.mode(AppColor.kPrimaryColor, BlendMode.srcIn),
+                colorFilter: ColorFilter.mode(
+                  AppColor.kPrimaryColor,
+                  BlendMode.srcIn,
+                ),
               ),
             ),
             SizedBox(height: 11.h),

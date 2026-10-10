@@ -46,5 +46,5 @@ class RechargeChangePlanRedirectEntity extends Equatable {
   });
 
   @override
-  List<Object?> get props => [type, actionUrl, method, params,orderId];
+  List<Object?> get props => [type, actionUrl, method, params, orderId];
 }

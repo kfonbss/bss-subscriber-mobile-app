@@ -43,9 +43,8 @@ class AttachmentUploadField extends StatelessWidget {
       validator: validator,
       builder: (state) {
         final hasError = state.hasError;
-        final color = hasError
-            ? AppColor.kAttachmentErrorRed
-            : AppColor.kPrimaryColor;
+        final color =
+            hasError ? AppColor.kAttachmentErrorRed : AppColor.kPrimaryColor;
 
         return Column(
           crossAxisAlignment: CrossAxisAlignment.start,
@@ -144,18 +143,19 @@ class DashedBorderPainter extends CustomPainter {
 
   @override
   void paint(Canvas canvas, Size size) {
-    final paint = Paint()
-      ..color = color
-      ..strokeWidth = strokeWidth
-      ..style = PaintingStyle.stroke;
+    final paint =
+        Paint()
+          ..color = color
+          ..strokeWidth = strokeWidth
+          ..style = PaintingStyle.stroke;
 
-    final path = Path()
-      ..addRRect(
-        RRect.fromRectAndRadius(
-          Rect.fromLTWH(0, 0, size.width, size.height),
-          Radius.circular(borderRadius),
-        ),
-      );
+    final path =
+        Path()..addRRect(
+          RRect.fromRectAndRadius(
+            Rect.fromLTWH(0, 0, size.width, size.height),
+            Radius.circular(borderRadius),
+          ),
+        );
 
     final dashPath = _dashPath(path, dashWidth, dashSpace);
     canvas.drawPath(dashPath, paint);

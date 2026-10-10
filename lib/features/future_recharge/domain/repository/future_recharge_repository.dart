@@ -5,6 +5,7 @@ import 'package:dartz/dartz.dart';
 
 abstract class FutureRechargeRepository {
   Future<Either<Failure, FutureRechargesListResponseEntity>> getRechargesList(
-    GetFutureRechargesListParams params,bool isFutureRecharge
+    GetFutureRechargesListParams params,
+    bool isFutureRecharge,
   );
 }

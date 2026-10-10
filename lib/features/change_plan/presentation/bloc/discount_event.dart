@@ -74,6 +74,7 @@ class GetSeasonalId extends DiscountEvent {
 class ResetTopUpState extends DiscountEvent {
   const ResetTopUpState();
 }
+
 class FetchRechargePaymentStatus extends DiscountEvent {
   final String orderId;
 

@@ -46,9 +46,8 @@ class ChangePlanState extends Equatable {
   PackageInfoEntity? get selectedPackage {
     if (selectedPackageId == null) return null;
     for (final tabState in tabStates.values) {
-      final match = tabState.packages
-          .where((p) => p.id == selectedPackageId)
-          .firstOrNull;
+      final match =
+          tabState.packages.where((p) => p.id == selectedPackageId).firstOrNull;
       if (match != null) return match;
     }
     return null;
@@ -99,5 +98,4 @@ class ChangePlanState extends Equatable {
     orderId,
     paymentStatusEntity,
   ];
-
 }

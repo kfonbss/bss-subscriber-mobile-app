@@ -3,7 +3,8 @@ import 'package:kfon_subscriber/features/active_package_details/domain/repositor
 import 'package:kfon_subscriber/features/active_package_details/presentation/bloc/package_details_event.dart';
 import 'package:kfon_subscriber/features/active_package_details/presentation/bloc/package_details_state.dart';
 
-class PackageDetailsBloc extends Bloc<PackageDetailsEvent, PackageDetailsState> {
+class PackageDetailsBloc
+    extends Bloc<PackageDetailsEvent, PackageDetailsState> {
   final PackageDetailsRepository repository;
 
   PackageDetailsBloc({required this.repository}) : super(const Initial()) {

@@ -111,10 +111,8 @@ class _InfoCard extends StatelessWidget {
 
   const _InfoCard({required this.title, required this.subtitle});
 
-  static final double _containerSize =
-      Sizer.isTablet ? 53.0 * 1.2 : 53.w;
-  static final double _iconSize =
-      Sizer.isTablet ? 18.0 * 1.2 : 18.w;
+  static final double _containerSize = Sizer.isTablet ? 53.0 * 1.2 : 53.w;
+  static final double _iconSize = Sizer.isTablet ? 18.0 * 1.2 : 18.w;
   static final _cardDecoration = BoxDecoration(
     color: Colors.white,
     borderRadius: BorderRadius.all(Radius.circular(12.w)),
@@ -123,11 +121,10 @@ class _InfoCard extends StatelessWidget {
     ),
   );
   // kPrimaryColor(0xFF1095C5) @ 5%: 0x0D1095C5
-  static get _iconBgDecoration => BoxDecoration(
-    color: AppColor.kPrimary5,
-    shape: BoxShape.circle,
-  );
-  static get _iconColorFilter => ColorFilter.mode(AppColor.kPrimaryColor, BlendMode.srcIn);
+  static get _iconBgDecoration =>
+      BoxDecoration(color: AppColor.kPrimary5, shape: BoxShape.circle);
+  static get _iconColorFilter =>
+      ColorFilter.mode(AppColor.kPrimaryColor, BlendMode.srcIn);
   static final _titleStyle = TextStyle(
     fontFamily: 'GeneralSans',
     color: AppColor.kTextSecondaryDark,

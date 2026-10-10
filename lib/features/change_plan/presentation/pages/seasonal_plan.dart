@@ -1,4 +1,4 @@
-﻿import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/repository/change_plan_repository.dart';
 import 'package:kfon_subscriber/features/change_plan/package_entity_mapper.dart';
@@ -163,7 +163,8 @@ class _SeasonalPlanViewState extends State<_SeasonalPlanView> {
               padding: const EdgeInsets.symmetric(horizontal: 16),
               alignment: Alignment.center,
               decoration: BoxDecoration(
-                color: active ? AppColor.kTabActiveBackground : Colors.transparent,
+                color:
+                    active ? AppColor.kTabActiveBackground : Colors.transparent,
                 borderRadius: BorderRadius.circular(8),
                 border:
                     active ? Border.all(color: AppColor.kDaysLeftYellow) : null,

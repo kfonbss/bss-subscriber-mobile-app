@@ -1,12 +1,12 @@
 import 'package:equatable/equatable.dart';
 
 class PaymentGatewayEntity extends Equatable {
-  final String  id;
-  final int     masterId;
-  final String  code;
-  final String  name;
-  final String  icon;
-  final bool    isActive;
+  final String id;
+  final int masterId;
+  final String code;
+  final String name;
+  final String icon;
+  final bool isActive;
 
   const PaymentGatewayEntity({
     required this.id,
@@ -18,5 +18,5 @@ class PaymentGatewayEntity extends Equatable {
   });
 
   @override
-  List<Object?> get props => [id, masterId, code,icon, name, isActive];
+  List<Object?> get props => [id, masterId, code, icon, name, isActive];
 }

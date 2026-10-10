@@ -8,6 +8,6 @@ import 'package:kfon_subscriber/features/home/domain/entity/home_entity.dart';
 abstract class HomeRepository {
   Future<Either<Failure, HomeEntity>> getHomePageData();
   Future<Either<Failure, PackageNewEntity>> getPackages(
-      GetAllPackagesParams params,
-      );
+    GetAllPackagesParams params,
+  );
 }

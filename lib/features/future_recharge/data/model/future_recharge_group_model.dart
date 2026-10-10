@@ -14,13 +14,18 @@ class FutureRechargeGroupModel {
 
   factory FutureRechargeGroupModel.fromJson(Map<String, dynamic> json) {
     return FutureRechargeGroupModel(
-      date: json['date'] != null
-          ? DateTime.parse(json['date'] as String)
-          : DateTime.now(),
+      date:
+          json['date'] != null
+              ? DateTime.parse(json['date'] as String)
+              : DateTime.now(),
       count: json['count'] as int? ?? 0,
-      recharges: (json['recharges'] as List<dynamic>? ?? [])
-          .map((e) => FutureRechargeItemModel.fromJson(e as Map<String, dynamic>))
-          .toList(),
+      recharges:
+          (json['recharges'] as List<dynamic>? ?? [])
+              .map(
+                (e) =>
+                    FutureRechargeItemModel.fromJson(e as Map<String, dynamic>),
+              )
+              .toList(),
     );
   }
 

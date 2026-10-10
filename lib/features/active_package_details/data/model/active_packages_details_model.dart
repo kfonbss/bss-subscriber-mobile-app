@@ -61,8 +61,8 @@ class ActivePackagesDetailsModel extends ActivePackagesDetailsEntity {
       activeUntil: DateTime.parse(json['activeUntil'] as String),
       renewalFee: (json['renewalFee'] as num).toDouble(),
       totalPackageCount: json['totalPackageCount'] as int,
-      availableVolumeGb: json['availableVolumeGb'] ??0,
-      totalVolumeGb: json['totalVolumeGb']??0,
+      availableVolumeGb: json['availableVolumeGb'] ?? 0,
+      totalVolumeGb: json['totalVolumeGb'] ?? 0,
       activeAddOns:
           (json['activeAddOns'] as List<dynamic>)
               .map((e) => AdOnModel.fromJson(e as Map<String, dynamic>))

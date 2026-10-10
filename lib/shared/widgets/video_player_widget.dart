@@ -83,7 +83,11 @@ class _VideoPlayerWidgetState extends State<VideoPlayerWidget> {
         child: Column(
           mainAxisAlignment: MainAxisAlignment.center,
           children: [
-            const Icon(Icons.error_outline, color: AppColor.kFailedRed, size: 48),
+            const Icon(
+              Icons.error_outline,
+              color: AppColor.kFailedRed,
+              size: 48,
+            ),
             SizedBox(height: 16.h),
             Text(
               context.bssSubL10n.errorLoadingVideo,

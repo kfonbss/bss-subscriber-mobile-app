@@ -1,4 +1,4 @@
-﻿import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/features/change_plan/seasonal_plan_api_filters.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:flutter/material.dart';
@@ -19,7 +19,8 @@ class SeasonalPlanFilterSheet extends StatefulWidget {
   });
 
   @override
-  State<SeasonalPlanFilterSheet> createState() => _SeasonalPlanFilterSheetState();
+  State<SeasonalPlanFilterSheet> createState() =>
+      _SeasonalPlanFilterSheetState();
 }
 
 class _SeasonalPlanFilterSheetState extends State<SeasonalPlanFilterSheet> {

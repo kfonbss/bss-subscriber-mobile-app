@@ -1,4 +1,3 @@
-
 import 'package:kfon_subscriber/features/change_plan/data/models/package_new_model.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entity.dart';
 
@@ -114,18 +113,20 @@ class SeasonalPackageModel {
         _optionalDouble(json['originalAmount']) ??
         _optionalDouble(json['mrp']) ??
         _optionalDouble(json['originalPrice']);
-    final discountFromSeasonal = seasonalDiscount == null
-        ? null
-        : (_optionalDouble(seasonalDiscount['discountAmount']) ??
-            _optionalDouble(seasonalDiscount['amount']) ??
-            _optionalDouble(seasonalDiscount['discount']) ??
-            _optionalDouble(seasonalDiscount['discountValue']) ??
-            _optionalDouble(seasonalDiscount['value']));
+    final discountFromSeasonal =
+        seasonalDiscount == null
+            ? null
+            : (_optionalDouble(seasonalDiscount['discountAmount']) ??
+                _optionalDouble(seasonalDiscount['amount']) ??
+                _optionalDouble(seasonalDiscount['discount']) ??
+                _optionalDouble(seasonalDiscount['discountValue']) ??
+                _optionalDouble(seasonalDiscount['value']));
     final rootDiscount = _optionalDouble(json['discountAmount']);
     final saved = _optionalDouble(json['savedAmount']);
-    final discountAmount = (rootDiscount != null && rootDiscount > 0)
-        ? rootDiscount
-        : (discountFromSeasonal != null && discountFromSeasonal > 0)
+    final discountAmount =
+        (rootDiscount != null && rootDiscount > 0)
+            ? rootDiscount
+            : (discountFromSeasonal != null && discountFromSeasonal > 0)
             ? discountFromSeasonal
             : (saved != null && saved > 0 ? saved : null);
 
@@ -140,14 +141,16 @@ class SeasonalPackageModel {
     }
 
     final planTypeLabel = json['planTypeName']?.toString().trim();
-    final planTypeResolved = planTypeLabel != null && planTypeLabel.isNotEmpty
-        ? planTypeLabel
-        : (planTypeMap?['name']?.toString() ?? '');
+    final planTypeResolved =
+        planTypeLabel != null && planTypeLabel.isNotEmpty
+            ? planTypeLabel
+            : (planTypeMap?['name']?.toString() ?? '');
 
     return SeasonalPackageModel(
       packageId: json['id']?.toString() ?? '',
       packageName: json['packageName']?.toString() ?? '',
-      price: (json['amount'] as num?)?.toDouble() ??
+      price:
+          (json['amount'] as num?)?.toDouble() ??
           (json['renewalFee'] as num?)?.toDouble() ??
           0,
       speed: _speedLabel(json),
@@ -163,7 +166,8 @@ class SeasonalPackageModel {
       packageType: PackageTypeModel.fromJson(
         json['packageType'] as Map<String, dynamic>? ?? {},
       ),
-      subscriptionType: _nameOrString(json['subscriberProfile']) ??
+      subscriptionType:
+          _nameOrString(json['subscriberProfile']) ??
           json['subscriberCategory']?.toString() ??
           _nameOrString(json['subscriptionType']),
       listPrice: listPrice,

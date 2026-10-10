@@ -8,6 +8,7 @@ import 'package:kfon_subscriber/features/change_plan/presentation/bloc/discount_
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter_plus/webview_flutter_plus.dart';
+
 /// Result of payment from WebView
 
 /// Simple Payment WebView page that loads a URL.
@@ -49,8 +50,7 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
     }
   }
 
-
-// 👇 print POST request
+  // 👇 print POST request
   void _printPostRequest(String actionUrl, Map<String, String> params) {
     debugPrint('═' * 60);
     debugPrint('📤 POST REQUEST');
@@ -63,7 +63,9 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
     // also print as curl
     final curlBuffer = StringBuffer();
     curlBuffer.write("curl -X POST '$actionUrl'");
-    curlBuffer.write(" \\\n  -H 'Content-Type: application/x-www-form-urlencoded'");
+    curlBuffer.write(
+      " \\\n  -H 'Content-Type: application/x-www-form-urlencoded'",
+    );
     for (final entry in params.entries) {
       curlBuffer.write(" \\\n  --data-urlencode '${entry.key}=${entry.value}'");
     }
@@ -71,11 +73,12 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
     _printChunked(curlBuffer.toString());
     debugPrint('═' * 60);
   }
-// 👇 print page HTML content after load
+
+  // 👇 print page HTML content after load
   Future<void> _printPageContent() async {
     try {
       final title = await _controller.getTitle();
-      final url   = await _controller.currentUrl();
+      final url = await _controller.currentUrl();
 
       debugPrint('═' * 60);
       debugPrint('📥 PAGE RESPONSE');
@@ -94,7 +97,7 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
     }
   }
 
-// 👇 chunked print to avoid Flutter log truncation
+  // 👇 chunked print to avoid Flutter log truncation
   void _printChunked(String text) {
     const chunkSize = 800;
     for (int i = 0; i < text.length; i += chunkSize) {
@@ -116,9 +119,10 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
       final mid = params['mid'];
       final orderId = params['orderId'] ?? widget.redirectEntity.orderId;
       final isStaging = params['staging']?.toLowerCase() == 'true';
-      final host = isStaging
-          ? 'securestage.paytmpayments.com'
-          : 'securegw.paytmpayments.com';
+      final host =
+          isStaging
+              ? 'securestage.paytmpayments.com'
+              : 'securegw.paytmpayments.com';
       if (mid != null &&
           mid.isNotEmpty &&
           orderId != null &&
@@ -148,7 +152,9 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
           _printPageContent(); // 👈 print page content
         },
         onNavigationRequest: (NavigationRequest request) {
-          debugPrint('🔀 Navigation Request: ${request.url}'); // 👈 print navigation
+          debugPrint(
+            '🔀 Navigation Request: ${request.url}',
+          ); // 👈 print navigation
           // UPI / app links (upi://, intent://, tez://, phonepe://…) can't
           // load in a WebView — hand them to the installed app.
           final uri = Uri.tryParse(request.url);
@@ -176,7 +182,7 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
         },
         onHttpError: (HttpResponseError error) {
           debugPrint('❌ HTTP Error:');
-          debugPrint('   URL:    ${error.request?.uri}');    // 👈 uri not url
+          debugPrint('   URL:    ${error.request?.uri}'); // 👈 uri not url
           debugPrint('   Status: ${error.response?.statusCode}');
         },
       ),
@@ -199,8 +205,8 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
       // explicitly instead.
       debugPrint(
         '❌ No actionUrl available for redirect type '
-            '"${widget.redirectEntity.type}" and no fallback could be built '
-            'from params: $params',
+        '"${widget.redirectEntity.type}" and no fallback could be built '
+        'from params: $params',
       );
       _showInitError();
       return;
@@ -211,10 +217,10 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
 
     final inputFields = params.entries
         .map((entry) {
-      final key = entry.key;
-      final value = entry.value.replaceAll('"', '&quot;');
-      return '<input type="hidden" name="$key" value="$value" />';
-    })
+          final key = entry.key;
+          final value = entry.value.replaceAll('"', '&quot;');
+          return '<input type="hidden" name="$key" value="$value" />';
+        })
         .join('\n');
 
     final html = '''
@@ -356,8 +362,10 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
     if (url.contains(_failureUrlPattern)) return RechargeStatus.paymentFailed;
 
     final path = url.toLowerCase();
-    if (path.contains('success') || path.contains('complete')) return RechargeStatus.paymentSuccess;
-    if (path.contains('fail') || path.contains('error')) return RechargeStatus.paymentFailed;
+    if (path.contains('success') || path.contains('complete'))
+      return RechargeStatus.paymentSuccess;
+    if (path.contains('fail') || path.contains('error'))
+      return RechargeStatus.paymentFailed;
     if (path.contains('cancel')) return RechargeStatus.paymentCancelled;
 
     return null;
@@ -376,20 +384,21 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
 
     final shouldCancel = await showDialog<bool>(
       context: context,
-      builder: (context) => AlertDialog(
-        title: Text(l10n.cancelPaymentTitle),
-        content: Text(l10n.cancelPaymentMessage),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.pop(context, false),
-            child: Text(l10n.no),
+      builder:
+          (context) => AlertDialog(
+            title: Text(l10n.cancelPaymentTitle),
+            content: Text(l10n.cancelPaymentMessage),
+            actions: [
+              TextButton(
+                onPressed: () => Navigator.pop(context, false),
+                child: Text(l10n.no),
+              ),
+              TextButton(
+                onPressed: () => Navigator.pop(context, true),
+                child: Text(l10n.yes),
+              ),
+            ],
           ),
-          TextButton(
-            onPressed: () => Navigator.pop(context, true),
-            child: Text(l10n.yes),
-          ),
-        ],
-      ),
     );
 
     if (shouldCancel == true && mounted) {
@@ -412,7 +421,7 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
           foregroundColor: Colors.white,
           title: Text(
             l10n.payment,
-            style:  TextStyle(
+            style: TextStyle(
               fontSize: 16.sp,
               fontWeight: FontWeight.w600,
               fontFamily: 'GeneralSans',

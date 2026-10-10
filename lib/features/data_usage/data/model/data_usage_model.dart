@@ -152,12 +152,18 @@ class SubscriberDataUsageResponseModel {
   factory SubscriberDataUsageResponseModel.fromJson(Map<String, dynamic> json) {
     return SubscriberDataUsageResponseModel(
       period: json['period'] as String? ?? '',
-      dataUsage: json['dataUsage'] != null
-          ? DataUsageModel.fromJson(json['dataUsage'] as Map<String, dynamic>)
-          : null,
-      activeSession: json['activeSession'] != null
-          ? SessionModel.fromJson(json['activeSession'] as Map<String, dynamic>)
-          : null,
+      dataUsage:
+          json['dataUsage'] != null
+              ? DataUsageModel.fromJson(
+                json['dataUsage'] as Map<String, dynamic>,
+              )
+              : null,
+      activeSession:
+          json['activeSession'] != null
+              ? SessionModel.fromJson(
+                json['activeSession'] as Map<String, dynamic>,
+              )
+              : null,
       sessionHistory:
           (json['sessionHistory'] as List<dynamic>?)
               ?.map((e) => SessionModel.fromJson(e as Map<String, dynamic>))
