@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:kfon_subscriber/core/constant/app_brand.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/util/preference_util.dart';
@@ -44,7 +45,7 @@ class _IntroScreenPageState extends State<IntroScreenPage> {
                 index: 0,
                 imageName: AppAssets.introOne,
                 heading: context.bssSubL10n.stayConnectedAlways,
-                description: context.bssSubL10n.experienceLightningFast,
+                description: context.bssSubL10n.experienceLightningFast(AppBrand.appName),
                 nextButtonCallback:
                     () => _pageController.animateToPage(
                       1,
@@ -57,7 +58,7 @@ class _IntroScreenPageState extends State<IntroScreenPage> {
                 index: 1,
                 imageName: AppAssets.introTwo,
                 heading: context.bssSubL10n.bridgingDigitalDivide,
-                description: context.bssSubL10n.bssEmpowersCitizen,
+                description: context.bssSubL10n.appEmpowersCitizen(AppBrand.appName),
                 nextButtonCallback:
                     () => _pageController.animateToPage(
                       2,

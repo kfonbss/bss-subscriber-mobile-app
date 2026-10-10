@@ -1,10 +1,12 @@
 import 'package:flutter/material.dart';
+import 'package:kfon_subscriber/core/constant/app_brand.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/security_settings_page.dart';
 import 'package:kfon_subscriber/l10n/bss_sub_localizations.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
+import 'package:kfon_subscriber/shared/widgets/common_bottom_sheet.dart';
 import 'package:kfon_subscriber/shared/widgets/common_password_text_field.dart';
 import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
@@ -37,7 +39,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   // Does not use `this` — static to avoid instance closure allocation.
   static String _getLabel(PasswordChangeEnum type, BssSubLocalizations l10n) {
     return switch (type) {
-      PasswordChangeEnum.bss => l10n.changeBssPortalPassword,
+      PasswordChangeEnum.bss => l10n.changeAppPortalPassword(AppBrand.appName),
       PasswordChangeEnum.internet => l10n.changeInternetPassword,
       PasswordChangeEnum.ssid => l10n.changeSsidPassword,
       PasswordChangeEnum.wifi => l10n.changeWifiPassword,
@@ -128,17 +130,9 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
   }
 
   Future<void> _passwordChanged(BssSubLocalizations l10n) async {
-    showModalBottomSheet<void>(
+    showAppModalBottomSheet<void>(
       context: context,
-      isScrollControlled: false,
-      clipBehavior: Clip.antiAliasWithSaveLayer,
-      shape: const RoundedRectangleBorder(
-        borderRadius: BorderRadius.only(
-          topLeft: Radius.circular(20),
-          topRight: Radius.circular(20),
-        ),
-      ),
-      backgroundColor: Colors.white,
+      topRadius: 20,
       builder: (BuildContext context) {
         // Design: 438-tall sheet — image 56 from top, button 20 from the
         // sides, text 28 from the sides, 50 below the button.

@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
-import 'package:kfon_subscriber/core/constant/app_brand.dart';
 import 'package:kfon_subscriber/core/constant/app_styles.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
@@ -30,8 +29,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final _usernameTextFieldController = TextEditingController(); //9114676354
-  final _passwordTextFieldController = TextEditingController(); //pass1234
+  final _usernameTextFieldController = TextEditingController(text: 'ld.ajithrshivan123'); //9114676354
+  final _passwordTextFieldController = TextEditingController(text: 'Pass@123'); //pass1234
   final DialogUtil _dialogUtil = DialogUtil();
   String tenantName = '';
   String tenantId = '';
@@ -176,6 +175,7 @@ class _LoginPageState extends State<LoginPage> {
                                       (v) => Validators.validateRequired(
                                         v,
                                         fieldName: context.bssSubL10n.username,
+                                        l10n: context.bssSubL10n,
                                       ),
                                 ),
                               ),
@@ -196,7 +196,11 @@ class _LoginPageState extends State<LoginPage> {
                                   textEditingController:
                                       _passwordTextFieldController,
                                   hintText: context.bssSubL10n.enterPassword,
-                                  validator: Validators.validatePassword,
+                                  validator:
+                                      (v) => Validators.validatePassword(
+                                        v,
+                                        l10n: context.bssSubL10n,
+                                      ),
                                 ),
                               ),
                             ],

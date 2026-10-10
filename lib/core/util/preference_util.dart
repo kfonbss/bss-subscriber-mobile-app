@@ -12,6 +12,15 @@ class PreferenceUtils {
   static const _keyTenantId = 'tenantId';
   static const _keyTenantName = 'tenantName';
   static const _introScreenStatus = 'introScreenStatus';
+  static const _keyLanguageCode = 'languageCode';
+
+  /// App language chosen on the language page ('en' / 'hi'); null = device language.
+  static Future<String?> getLanguageCode() async =>
+      await _storage.read(key: _keyLanguageCode);
+
+  static Future<void> setLanguageCode(String code) async =>
+      await _storage.write(key: _keyLanguageCode, value: code);
+
 
   static Future<String?> getAccessToken() async =>
       await _storage.read(key: _keyAccessToken);

@@ -4,6 +4,7 @@ import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/tenant_recolored_image.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 
 class RetryWidget extends StatelessWidget {
   final Color? buttonColor;
@@ -46,15 +47,16 @@ class RetryWidget extends StatelessWidget {
                 SizedBox(height: 16.h),
                 SizedBox(
                   width: constraints.maxWidth - 50.h,
-                  child: ElevatedButton(
-                    onPressed: onRetry,
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: textColor ?? AppColor.kPrimaryColor,
-                      foregroundColor: textColor != null
+                  child: PrimaryButton(
+                    label: context.bssSubL10n.retry,
+                    isLoading: false,
+                    borderRadius: 10,
+                    textStyle: TextStyle(
+                      color: textColor != null
                           ? AppColor.kPrimaryColor
                           : Colors.white,
                     ),
-                    child: Text(context.bssSubL10n.retry),
+                    onClicked: onRetry,
                   ),
                 ),
               ],

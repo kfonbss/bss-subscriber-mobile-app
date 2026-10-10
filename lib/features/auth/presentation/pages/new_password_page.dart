@@ -108,7 +108,11 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                             child: LoginPasswordTextField(
                               textEditingController: _newPasswordController,
                               hintText: context.bssSubL10n.enterNewPassword,
-                              validator: Validators.validatePassword,
+                              validator:
+                                  (v) => Validators.validatePassword(
+                                    v,
+                                    l10n: context.bssSubL10n,
+                                  ),
                             ),
                           ),
                           const Divider(
@@ -127,6 +131,7 @@ class _NewPasswordPageState extends State<NewPasswordPage> {
                                   (value) => Validators.validateConfirmPassword(
                                     value,
                                     _newPasswordController.text,
+                                    l10n: context.bssSubL10n,
                                   ),
                             ),
                           ),

@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 
 enum TransactionStatus { pending, success, fail }
 
@@ -54,7 +55,7 @@ class StatusBadge extends StatelessWidget {
   Widget build(BuildContext context) {
     final label = switch (status) {
       TransactionStatus.pending => 'Pending',
-      TransactionStatus.success => 'Success',
+      TransactionStatus.success => context.bssSubL10n.successMessage,
       TransactionStatus.fail => 'Fail',
     };
 

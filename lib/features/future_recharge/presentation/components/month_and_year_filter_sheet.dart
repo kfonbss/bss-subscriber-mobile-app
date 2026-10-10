@@ -2,6 +2,9 @@ import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
+import 'package:kfon_subscriber/shared/widgets/common_bottom_sheet.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
+import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
 
 enum FilterType { month, year }
 
@@ -26,10 +29,8 @@ class MonthAndYearFilterSheet extends StatefulWidget {
         required void Function(DateTime? month, int? year) onApply,
         required void Function() onClear,
       }) {
-    return showModalBottomSheet(
-      context:            context,
-      isScrollControlled: true,
-      backgroundColor:    Colors.transparent,
+    return showAppModalBottomSheet(
+      context: context,
       builder: (_) => MonthAndYearFilterSheet(
         selectedMonth: selectedMonth,
         selectedYear:  selectedYear,
@@ -207,51 +208,43 @@ class _MonthAndYearFilterSheetState extends State<MonthAndYearFilterSheet> {
               // buttons
               Row(
                 children: [
-                  OutlinedButton(
-                    style: OutlinedButton.styleFrom(
-                      side:  BorderSide(color: AppColor.kPrimaryColor),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    onPressed: () => setState(() {
-                      _selectedMonth = null;
-                      _selectedYear  = null;
-                      widget.onClear();
-                    }),
-                    child: Text(
-                      context.bssSubL10n.clear,
-                      style: TextStyle(
+                  Expanded(
+                    child: SecondaryButton(
+                      label: context.bssSubL10n.clear,
+                      borderRadius: 10,
+                      backgroundColor: Colors.transparent,
+                      borderColor: AppColor.kPrimaryColor,
+                      foregroundColor: AppColor.kPrimaryColor,
+                      textStyle: TextStyle(
                         fontSize:   13.sp,
                         color:      AppColor.kPrimaryColor,
                         fontFamily: 'GeneralSans',
                       ),
+                      onClicked: () => setState(() {
+                        _selectedMonth = null;
+                        _selectedYear  = null;
+                        widget.onClear();
+                      }),
                     ),
                   ),
                   SizedBox(width: 8.w),
-                  ElevatedButton(
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColor.kPrimaryColor,
-                      foregroundColor: Colors.white,
-                      elevation:       0,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(10),
-                      ),
-                    ),
-                    onPressed: () {
-                      Navigator.pop(context);
-                      // 👇 only pass active tab's value — never both
-                      widget.onApply(
-                        _tab == FilterType.month ? _selectedMonth : null,
-                        _tab == FilterType.year  ? _selectedYear  : null,
-                      );
-                    },
-                    child: Text(
-                      context.bssSubL10n.apply,
-                      style: TextStyle(
+                  Expanded(
+                    child: PrimaryButton(
+                      label: context.bssSubL10n.apply,
+                      isLoading: false,
+                      borderRadius: 10,
+                      textStyle: TextStyle(
                         fontSize:   13.sp,
                         fontFamily: 'GeneralSans',
                       ),
+                      onClicked: () {
+                        Navigator.pop(context);
+                        // 👇 only pass active tab's value — never both
+                        widget.onApply(
+                          _tab == FilterType.month ? _selectedMonth : null,
+                          _tab == FilterType.year  ? _selectedYear  : null,
+                        );
+                      },
                     ),
                   ),
                 ],

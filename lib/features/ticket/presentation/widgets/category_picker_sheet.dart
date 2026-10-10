@@ -9,6 +9,7 @@ import 'package:kfon_subscriber/shared/widgets/shimmer/list_shimmers.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 
 class CategoryPickerSheet extends StatefulWidget {
   final String? selectedCategoryId;
@@ -103,11 +104,13 @@ class _CategoryPickerSheetState extends State<CategoryPickerSheet> {
                         ),
                       ),
                       SizedBox(height: 16.h),
-                      ElevatedButton(
-                        onPressed: () {
+                      PrimaryButton(
+                        label: context.bssSubL10n.retry,
+                        isLoading: false,
+                        borderRadius: 10,
+                        onClicked: () {
                           widget.ticketBloc.add(const LoadCategories());
                         },
-                        child: Text(context.bssSubL10n.retry),
                       ),
                     ],
                   ),

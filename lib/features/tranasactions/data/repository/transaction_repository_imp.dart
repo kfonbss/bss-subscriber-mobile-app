@@ -5,18 +5,18 @@ import 'package:kfon_subscriber/core/network/dio_client.dart';
 import 'package:kfon_subscriber/features/tranasactions/data/model/transaction_model.dart';
 import 'package:kfon_subscriber/features/tranasactions/domain/entity/transaction_entity.dart';
 import 'package:kfon_subscriber/features/tranasactions/domain/repository/transaction_repository.dart';
+import 'package:kfon_subscriber/service_locator.dart';
 
 class TransactionRepositoryImp extends TransactionRepository {
-  final DioClient _client;
 
-  TransactionRepositoryImp({required DioClient client}) : _client = client;
+  TransactionRepositoryImp();
 
   @override
   Future<Either<Failure, TransactionPageEntity>> getTransactions({
     required int page,
     required int size,
   }) async {
-    final response = await _client.get(
+    final response = await sl<DioClient>().get(
       ApiUrls.rechargeTransactionsURL,
       queryParameters: {'page': page, 'size': size},
     );

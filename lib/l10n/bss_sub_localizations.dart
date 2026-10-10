@@ -6,6 +6,7 @@ import 'package:flutter_localizations/flutter_localizations.dart';
 import 'package:intl/intl.dart' as intl;
 
 import 'bss_sub_localizations_en.dart';
+import 'bss_sub_localizations_hi.dart';
 
 // ignore_for_file: type=lint
 
@@ -92,7 +93,10 @@ abstract class BssSubLocalizations {
       ];
 
   /// A list of this localizations delegate's supported locales.
-  static const List<Locale> supportedLocales = <Locale>[Locale('en')];
+  static const List<Locale> supportedLocales = <Locale>[
+    Locale('en'),
+    Locale('hi'),
+  ];
 
   /// No description provided for @otpSentMessage.
   ///
@@ -133,8 +137,8 @@ abstract class BssSubLocalizations {
   /// No description provided for @experienceLightningFast.
   ///
   /// In en, this message translates to:
-  /// **'Experience lightning-fast internet with BSS\'s reliable fiber network, keeping you online anytime, anywhere.'**
-  String get experienceLightningFast;
+  /// **'Experience lightning-fast internet with {appName}\'s reliable fiber network, keeping you online anytime, anywhere.'**
+  String experienceLightningFast(String appName);
 
   /// No description provided for @bridgingDigitalDivide.
   ///
@@ -142,11 +146,11 @@ abstract class BssSubLocalizations {
   /// **'Bridging the Digital Divide'**
   String get bridgingDigitalDivide;
 
-  /// No description provided for @bssEmpowersCitizen.
+  /// No description provided for @appEmpowersCitizen.
   ///
   /// In en, this message translates to:
-  /// **'BSS empowers every citizen with affordable internet, supporting education, business, and government services.'**
-  String get bssEmpowersCitizen;
+  /// **'{appName} empowers every citizen with affordable internet, supporting education, business, and government services.'**
+  String appEmpowersCitizen(String appName);
 
   /// No description provided for @internetWorksForYou.
   ///
@@ -898,17 +902,17 @@ abstract class BssSubLocalizations {
   /// **'Order Amount'**
   String get orderAmount;
 
-  /// No description provided for @bssReference.
+  /// No description provided for @appReference.
   ///
   /// In en, this message translates to:
-  /// **'BSS Reference'**
-  String get bssReference;
+  /// **'{appName} Reference'**
+  String appReference(String appName);
 
-  /// No description provided for @bssStatus.
+  /// No description provided for @appStatus.
   ///
   /// In en, this message translates to:
-  /// **'BSS Status'**
-  String get bssStatus;
+  /// **'{appName} Status'**
+  String appStatus(String appName);
 
   /// No description provided for @txnReference.
   ///
@@ -940,11 +944,11 @@ abstract class BssSubLocalizations {
   /// **'No transactions found'**
   String get noTransactionsFound;
 
-  /// No description provided for @bssNo.
+  /// No description provided for @appNo.
   ///
   /// In en, this message translates to:
-  /// **'BSS No'**
-  String get bssNo;
+  /// **'{appName} No'**
+  String appNo(String appName);
 
   /// No description provided for @package.
   ///
@@ -1144,11 +1148,23 @@ abstract class BssSubLocalizations {
   /// **'Chat with AI'**
   String get chatwithAI;
 
-  /// No description provided for @aboutApp.
+  /// No description provided for @aboutBrand.
   ///
   /// In en, this message translates to:
-  /// **'About App'**
-  String get aboutApp;
+  /// **'About {brandName}'**
+  String aboutBrand(Object brandName);
+
+  /// No description provided for @notifications.
+  ///
+  /// In en, this message translates to:
+  /// **'Notifications'**
+  String get notifications;
+
+  /// No description provided for @youDontHaveAnyNotificationsYet.
+  ///
+  /// In en, this message translates to:
+  /// **'You don\'t have any notifications yet.'**
+  String get youDontHaveAnyNotificationsYet;
 
   /// No description provided for @appInformation.
   ///
@@ -1198,23 +1214,17 @@ abstract class BssSubLocalizations {
   /// **'Contact Us'**
   String get contactUs;
 
-  /// No description provided for @aboutBss.
+  /// No description provided for @aboutApp.
   ///
   /// In en, this message translates to:
-  /// **'About BSS'**
-  String get aboutBss;
+  /// **'About App'**
+  String get aboutApp;
 
-  /// No description provided for @bss.
-  ///
-  /// In en, this message translates to:
-  /// **'BSS'**
-  String get bss;
-
-  /// No description provided for @bssDescription.
+  /// No description provided for @appDescription.
   ///
   /// In en, this message translates to:
   /// **'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting'**
-  String get bssDescription;
+  String get appDescription;
 
   /// No description provided for @mission.
   ///
@@ -1294,11 +1304,11 @@ abstract class BssSubLocalizations {
   /// **'Security Settings'**
   String get securitySettings;
 
-  /// No description provided for @changeBssPortalPassword.
+  /// No description provided for @changeAppPortalPassword.
   ///
   /// In en, this message translates to:
-  /// **'Change BSS Portal Password'**
-  String get changeBssPortalPassword;
+  /// **'Change {appName} Portal Password'**
+  String changeAppPortalPassword(String appName);
 
   /// No description provided for @changeInternetPassword.
   ///
@@ -1383,6 +1393,12 @@ abstract class BssSubLocalizations {
   /// In en, this message translates to:
   /// **'Login Now'**
   String get loginNow;
+
+  /// No description provided for @changePassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Change Password'**
+  String get changePassword;
 
   /// No description provided for @language.
   ///
@@ -2296,11 +2312,11 @@ abstract class BssSubLocalizations {
   /// **'Date : '**
   String get dateLabel;
 
-  /// No description provided for @introducingBssApp.
+  /// No description provided for @introducingApp.
   ///
   /// In en, this message translates to:
   /// **'Introducing {appName}'**
-  String introducingBssApp(Object appName);
+  String introducingApp(String appName);
 
   /// No description provided for @getStarted.
   ///
@@ -2659,8 +2675,8 @@ abstract class BssSubLocalizations {
   /// No description provided for @declarationConsent.
   ///
   /// In en, this message translates to:
-  /// **'I hereby give my consent to receive calls, texts, WhatsApp and emails regarding updates, newsletters, and other important information from or on behalf of BSS at the mobile number provided above.'**
-  String get declarationConsent;
+  /// **'I hereby give my consent to receive calls, texts, WhatsApp and emails regarding updates, newsletters, and other important information from or on behalf of {appName} at the mobile number provided above.'**
+  String declarationConsent(String appName);
 
   /// No description provided for @darkFibreEnquiry.
   ///
@@ -4407,6 +4423,180 @@ abstract class BssSubLocalizations {
   /// In en, this message translates to:
   /// **'Rating submitted successfully'**
   String get ratingSubmitted;
+
+  /// No description provided for @fieldIsRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'{fieldName} is required'**
+  String fieldIsRequired(String fieldName);
+
+  /// No description provided for @pleaseEnterMobileNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter mobile number'**
+  String get pleaseEnterMobileNumber;
+
+  /// No description provided for @pleaseEnterValidMobileNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter valid 10-digit mobile number'**
+  String get pleaseEnterValidMobileNumber;
+
+  /// No description provided for @pleaseEnterPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter password'**
+  String get pleaseEnterPassword;
+
+  /// No description provided for @passwordMinLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 6 characters'**
+  String get passwordMinLength;
+
+  /// No description provided for @pleaseEnterEmailAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter email address'**
+  String get pleaseEnterEmailAddress;
+
+  /// No description provided for @pleaseEnterValidEmailAddress.
+  ///
+  /// In en, this message translates to:
+  /// **'Please enter a valid email address'**
+  String get pleaseEnterValidEmailAddress;
+
+  /// No description provided for @pleaseConfirmPassword.
+  ///
+  /// In en, this message translates to:
+  /// **'Please confirm your password'**
+  String get pleaseConfirmPassword;
+
+  /// No description provided for @noInternetConnection.
+  ///
+  /// In en, this message translates to:
+  /// **'No internet connection'**
+  String get noInternetConnection;
+
+  /// No description provided for @cacheErrorOccurred.
+  ///
+  /// In en, this message translates to:
+  /// **'Cache error occurred'**
+  String get cacheErrorOccurred;
+
+  /// No description provided for @requestTimedOut.
+  ///
+  /// In en, this message translates to:
+  /// **'Request timed out'**
+  String get requestTimedOut;
+
+  /// No description provided for @anUnexpectedErrorOccurred.
+  ///
+  /// In en, this message translates to:
+  /// **'An unexpected error occurred'**
+  String get anUnexpectedErrorOccurred;
+
+  /// No description provided for @connectionTimeoutPleaseTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Connection timeout, please try again.'**
+  String get connectionTimeoutPleaseTryAgain;
+
+  /// No description provided for @sendTimeoutPleaseCheckInternet.
+  ///
+  /// In en, this message translates to:
+  /// **'Send timeout, please check your internet.'**
+  String get sendTimeoutPleaseCheckInternet;
+
+  /// No description provided for @receiveTimeoutPleaseTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Receive timeout, please try again.'**
+  String get receiveTimeoutPleaseTryAgain;
+
+  /// No description provided for @requestWasCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Request was cancelled.'**
+  String get requestWasCancelled;
+
+  /// No description provided for @unknownErrorOccurred.
+  ///
+  /// In en, this message translates to:
+  /// **'Unknown error occurred'**
+  String get unknownErrorOccurred;
+
+  /// No description provided for @noResponseFromServer.
+  ///
+  /// In en, this message translates to:
+  /// **'No response from server'**
+  String get noResponseFromServer;
+
+  /// No description provided for @anErrorOccurred.
+  ///
+  /// In en, this message translates to:
+  /// **'An error occurred.'**
+  String get anErrorOccurred;
+
+  /// No description provided for @downloadSuccessful.
+  ///
+  /// In en, this message translates to:
+  /// **'Download successful'**
+  String get downloadSuccessful;
+
+  /// No description provided for @downloadFailedWithStatus.
+  ///
+  /// In en, this message translates to:
+  /// **'Download failed with status {status}'**
+  String downloadFailedWithStatus(String status);
+
+  /// No description provided for @failedToSavePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to save PDF: {error}'**
+  String failedToSavePdf(String error);
+
+  /// No description provided for @failedToLoadPreview.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed to load preview'**
+  String get failedToLoadPreview;
+
+  /// No description provided for @noAccessContactSupport.
+  ///
+  /// In en, this message translates to:
+  /// **'You do not have access to this app. Please contact support.'**
+  String get noAccessContactSupport;
+
+  /// No description provided for @invalidResponse.
+  ///
+  /// In en, this message translates to:
+  /// **'Invalid response'**
+  String get invalidResponse;
+
+  /// No description provided for @fileUrlNotFound.
+  ///
+  /// In en, this message translates to:
+  /// **'File URL not found'**
+  String get fileUrlNotFound;
+
+  /// No description provided for @customerTypeCouldNotBeResolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Customer type could not be resolved. Please try again.'**
+  String get customerTypeCouldNotBeResolved;
+
+  /// No description provided for @selectedFileNotAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Selected file is not available'**
+  String get selectedFileNotAvailable;
+
+  /// No description provided for @fileUploadSucceededNoId.
+  ///
+  /// In en, this message translates to:
+  /// **'File upload succeeded but no fileId returned'**
+  String get fileUploadSucceededNoId;
 }
 
 class _BssSubLocalizationsDelegate
@@ -4422,7 +4612,7 @@ class _BssSubLocalizationsDelegate
 
   @override
   bool isSupported(Locale locale) =>
-      <String>['en'].contains(locale.languageCode);
+      <String>['en', 'hi'].contains(locale.languageCode);
 
   @override
   bool shouldReload(_BssSubLocalizationsDelegate old) => false;
@@ -4433,6 +4623,8 @@ BssSubLocalizations lookupBssSubLocalizations(Locale locale) {
   switch (locale.languageCode) {
     case 'en':
       return BssSubLocalizationsEn();
+    case 'hi':
+      return BssSubLocalizationsHi();
   }
 
   throw FlutterError(

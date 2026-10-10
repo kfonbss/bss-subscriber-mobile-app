@@ -19,6 +19,7 @@ import 'package:kfon_subscriber/shared/widgets/shimmer/shimmer_base.dart';
 import 'package:kfon_subscriber/shared/widgets/shimmer/shimmer_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 
 class SeasonalPlanPage extends StatelessWidget {
   final String subscriberUuid;
@@ -171,7 +172,7 @@ class _SeasonalPlanViewState extends State<_SeasonalPlanView> {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Text(
-                    t.displayName,
+                    t.localizedName(context),
                     style: TextStyle(
                       fontSize: 13.sp,
                       fontWeight: active ? FontWeight.w500 : FontWeight.w400,
@@ -521,8 +522,18 @@ class _SeasonalPlanViewState extends State<_SeasonalPlanView> {
 
               child: BlocBuilder<SeasonalPlanBloc, SeasonalPlanState>(
                 builder: (context, state) {
-                  return ElevatedButton(
-                    onPressed:
+                  return PrimaryButton(
+                    label: l10n.changePackage,
+                    isLoading: false,
+                    borderRadius: 16,
+                    height: 52.h,
+                    textStyle: TextStyle(
+                      fontFamily: 'General Sans',
+                      fontSize: 14.sp,
+                      fontWeight: FontWeight.w600,
+                      height: 1.3.h,
+                    ),
+                    onClicked:
                         state.selectedPackage == null
                             ? null
                             : () {
@@ -542,27 +553,6 @@ class _SeasonalPlanViewState extends State<_SeasonalPlanView> {
                                 ),
                               );
                             },
-
-                    style: ElevatedButton.styleFrom(
-                      backgroundColor: AppColor.kPrimaryColor,
-                      foregroundColor: Colors.white,
-                      padding: const EdgeInsets.symmetric(vertical: 16),
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.circular(16),
-                      ),
-                      elevation: 0,
-                    ),
-
-                    child: Text(
-                      l10n.changePackage,
-
-                      style: TextStyle(
-                        fontFamily: 'General Sans',
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w600,
-                        height: 1.3.h,
-                      ),
-                    ),
                   );
                 },
               ),

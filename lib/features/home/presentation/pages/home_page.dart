@@ -5,6 +5,8 @@ import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
 import 'package:kfon_subscriber/features/autopay/presentation/pages/autopay_page.dart';
+import 'package:kfon_subscriber/features/notfication/presentation/widgets/notification_bell_button.dart';
+import 'package:kfon_subscriber/shared/widgets/common_text_button.dart';
 import 'package:kfon_subscriber/shared/widgets/retry_widget.dart';
 import 'package:kfon_subscriber/shared/widgets/tenant_svg_color_mapper.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
@@ -66,54 +68,80 @@ class _HomePageState extends State<HomePage> {
     );
   }
 
+  // Design: blue header is 276 tall; the expanded bar covers the first 220.
+  double get _headerHeight => 276.h;
+  double get _barHeight => 220.h;
+
+  Widget _headerBackground() {
+    return SvgPicture(
+      SvgAssetLoader(
+        AppAssets.homeBackground,
+        colorMapper: TenantSvgColorMapper(),
+      ),
+      width: double.infinity,
+      height: _headerHeight,
+      fit: BoxFit.fitWidth,
+    );
+  }
+
+  /// Collapsing toolbar. [flexibleSpace] is the expanded header (background +
+  /// wallet card); without it the bar is just the plain pinned toolbar.
+  SliverAppBar _buildSliverAppBar(
+    BuildContext context, {
+    Widget? flexibleSpace,
+  }) {
+    return SliverAppBar(
+      pinned: true,
+      automaticallyImplyLeading: false,
+      backgroundColor: AppColor.kPrimaryColor,
+      surfaceTintColor: Colors.transparent,
+      // Design: logo 20 below the status bar, wallet label 14 below it.
+      toolbarHeight: 82.h,
+      // Design: header content ends at y=220 (card top); status bar is 44.
+      expandedHeight: flexibleSpace == null ? null : 176.h,
+      flexibleSpace: flexibleSpace,
+      // Design: logo at x=21; icons centred on the logo (y=88), the last one
+      // centred 40 from the right edge.
+      titleSpacing: 21.w,
+      actionsPadding: EdgeInsets.only(right: 21.w, top: 6.h),
+      actions: [
+        NotificationBellButton(
+          iconAsset: AppAssets.notificationWhite,
+          iconSize: AppDimensions.kActionButtonSize,
+        ),
+        InkWell(
+          onTap: () => _dialogUtil.showLogoutDialog(context),
+          borderRadius: BorderRadius.circular(20),
+          child: Padding(
+            padding: EdgeInsets.all(8.w),
+            child: SvgPicture.asset(
+              AppAssets.logout,
+              width: Sizer.isTablet ? 24.0.w : 22.0,
+              height: Sizer.isTablet ? 24.0.h : 22.0,
+              colorFilter: const ColorFilter.mode(
+                Colors.white,
+                BlendMode.srcIn,
+              ),
+            ),
+          ),
+        ),
+      ],
+      title: Padding(
+        padding: EdgeInsets.only(top: 6.h),
+        child: Image.asset(
+          AppAssets.kLogo,
+          width: 77.w,
+          height: 48.h,
+          fit: BoxFit.contain,
+        ),
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor.kMainBackgroundColor,
-      appBar: AppBar(
-        automaticallyImplyLeading: false,
-        backgroundColor: AppColor.kPrimaryColor,
-        // Design: logo 20 below the status bar, wallet label 14 below it.
-        toolbarHeight: 82.h,
-        actionsPadding: const EdgeInsets.only(right: 15),
-        actions: [
-          IconButton(
-            onPressed:
-                () => Navigator.pushNamed(context, AppRoutes.notificationPage),
-            icon: Image.asset(
-              AppAssets.notificationWhite,
-              width: AppDimensions.kActionButtonSize,
-              height: AppDimensions.kActionButtonSize,
-              fit: BoxFit.cover,
-            ),
-          ),
-          InkWell(
-            onTap: () => _dialogUtil.showLogoutDialog(context),
-            borderRadius: BorderRadius.circular(20),
-            child: Padding(
-              padding: EdgeInsets.all(8.w),
-              child: SvgPicture.asset(
-                AppAssets.logout,
-                width: Sizer.isTablet ? 24.0.w : 22.0,
-                height: Sizer.isTablet ? 24.0.h : 22.0,
-                colorFilter: const ColorFilter.mode(
-                  Colors.white,
-                  BlendMode.srcIn,
-                ),
-              ),
-            ),
-          ),
-        ],
-        title: Padding(
-          padding: EdgeInsets.only(top: 6.h),
-          child: Image.asset(
-            AppAssets.kLogo,
-            width: 77.w,
-            height: 48.h,
-            fit: BoxFit.contain,
-          ),
-        ),
-      ),
       body: BlocListener<HomeBloc, HomeState>(
         bloc: bloc,
         listenWhen:
@@ -139,9 +167,17 @@ class _HomePageState extends State<HomePage> {
               (prev, curr) => curr is GetDataSuccess || curr is GetDataFailure,
           builder: (context, state) {
             if (state is GetDataFailure) {
-              return RetryWidget(
-                errorMessage: state.errorMessage,
-                onRetry: () => bloc.add(const GetHomeData(loadPackage: true)),
+              return CustomScrollView(
+                slivers: [
+                  _buildSliverAppBar(context),
+                  SliverFillRemaining(
+                    child: RetryWidget(
+                      errorMessage: state.errorMessage,
+                      onRetry:
+                          () => bloc.add(const GetHomeData(loadPackage: true)),
+                    ),
+                  ),
+                ],
               );
             }
             if (state is GetDataSuccess) {
@@ -149,114 +185,154 @@ class _HomePageState extends State<HomePage> {
               final PackageDetailsEntity? pkg = home.packageDetails;
               final String subscriberId = home.subscriberId;
               final String packageId = pkg?.packageId ?? '';
-              return SingleChildScrollView(
-                child: Stack(
-                  children: [
-                    SizedBox(
-                      // Blue header ends at 276 in the design.
-                      height: 150.h,
-                      child: ClipRRect(
-                        borderRadius: const BorderRadius.only(
-                          bottomLeft: Radius.circular(30.0),
-                          bottomRight: Radius.circular(30.0),
-                        ),
-                        child: SvgPicture(
-                          SvgAssetLoader(
-                            AppAssets.homeBackground,
-                            colorMapper: TenantSvgColorMapper(),
+              return CustomScrollView(
+                slivers: [
+                  _buildSliverAppBar(
+                    context,
+                    flexibleSpace: FlexibleSpaceBar(
+                      collapseMode: CollapseMode.pin,
+                      background: Stack(
+                        children: [
+                          // Top part of the 276-tall blue header; the rest is
+                          // drawn behind the combo card below.
+                          Positioned.fill(
+                            child: ClipRect(
+                              child: OverflowBox(
+                                alignment: Alignment.topCenter,
+                                minHeight: _headerHeight,
+                                maxHeight: _headerHeight,
+                                child: _headerBackground(),
+                              ),
+                            ),
                           ),
-                          width: double.infinity,
-                          fit: BoxFit.fitWidth,
-                        ),
+                          Positioned(
+                            left: 0,
+                            right: 0,
+                            bottom: 0,
+                            child: _WalletCard(home: home),
+                          ),
+                        ],
                       ),
                     ),
-                    Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
+                  ),
+                  SliverToBoxAdapter(
+                    child: Stack(
                       children: [
-                        _WalletCard(home: home),
-                        if (pkg != null)
-                          _ComboCard(pkg: pkg, subscriberId: subscriberId),
-                        SizedBox(height: 20.h),
-                        _QuickActions(
-                          onRechargeTap:
-                              () => _showRechargeSheet(
-                                context,
-                                PackageInfoEntity(
-                                  id: packageId,
-                                  packageName: pkg!.packageName,
-                                  freeValidity: 0,
-                                  initialFreeValidity: 0,
-                                  renewalFee: pkg.renewalFee,
-                                  allocatedVolume: pkg.availableVolumeGb,
-                                  fallbackSpeed: '0UL',
-                                  subPackageCount: 0,
-                                  renewPeriod: pkg.validity,
-                                  speedInKbps: pkg.speedMbps * 1024.toInt(),
-                                  createCorrespondingTermPlan:
-                                      pkg
-                                          .packageInfoEntity
-                                          .createCorrespondingTermPlan,
-                                  speedProfile:
-                                      pkg.packageInfoEntity.speedProfile,
-                                  status: pkg.packageInfoEntity.status,
-                                  fbSpeedInKbps:
-                                      pkg.packageInfoEntity.fbSpeedInKbps,
-                                  editable: pkg.packageInfoEntity.editable,
-                                  amount: pkg.packageInfoEntity.amount,
-                                  originalAmount:
-                                      pkg.packageInfoEntity.originalAmount,
-                                  discountAmount:
-                                      pkg.packageInfoEntity.discountAmount,
-                                  savedAmount:
-                                      pkg.packageInfoEntity.savedAmount,
-                                  speed: pkg.packageInfoEntity.speed,
-                                  validity: pkg.packageInfoEntity.validity,
-                                  volumeType: pkg.packageInfoEntity.volumeType,
-                                  volumeValue:
-                                      pkg.packageInfoEntity.volumeValue,
-                                  planTypeName:
-                                      pkg.packageInfoEntity.planTypeName,
-                                  packageType:
-                                      pkg.packageInfoEntity.packageType,
-                                ),
-                              ),
-                          onTransactionsTap:
-                              () => Navigator.pushNamed(
-                                context,
-                                AppRoutes.transactionHistoryPage,
-                              ),
-                          onInvoiceTap:
-                              () => Navigator.pushNamed(
-                                context,
-                                AppRoutes.invoiceListPage,
-                              ),
+                        // Rest of the blue header (Figma: ends at 276, combo
+                        // card starts at 220), so the card overlaps it.
+                        Positioned(
+                          top: 0,
+                          left: 0,
+                          right: 0,
+                          height: _headerHeight - _barHeight,
+                          child: ClipRRect(
+                            borderRadius: const BorderRadius.only(
+                              bottomLeft: Radius.circular(30.0),
+                              bottomRight: Radius.circular(30.0),
+                            ),
+                            child: OverflowBox(
+                              alignment: Alignment.bottomCenter,
+                              minHeight: _headerHeight,
+                              maxHeight: _headerHeight,
+                              child: _headerBackground(),
+                            ),
+                          ),
                         ),
-                        SizedBox(height: 32.h),
-                        BlocBuilder<HomeBloc, HomeState>(
-                          bloc: bloc,
-                          buildWhen: (prev, curr) => curr is GetPlansSuccess,
-                          builder: (BuildContext context, HomeState state) {
-                            return state is GetPlansSuccess &&
-                                    state.packageEntities.isNotEmpty
-                                ? _PlanChangeSection(
-                                  subscriberUuid: subscriberId,
-                                  currentPackageId: packageId,
-                                  name: home.firstName,
-                                  plans: state.packageEntities,
-                                )
-                                : const SizedBox.shrink();
-                          },
+                        Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          children: [
+                            if (pkg != null)
+                              _ComboCard(pkg: pkg, subscriberId: subscriberId),
+                            SizedBox(height: 20.h),
+                            _QuickActions(
+                              onRechargeTap:
+                                  () => _showRechargeSheet(
+                                    context,
+                                    PackageInfoEntity(
+                                      id: packageId,
+                                      packageName: pkg!.packageName,
+                                      freeValidity: 0,
+                                      initialFreeValidity: 0,
+                                      renewalFee: pkg.renewalFee,
+                                      allocatedVolume: pkg.availableVolumeGb,
+                                      fallbackSpeed: '0UL',
+                                      subPackageCount: 0,
+                                      renewPeriod: pkg.validity,
+                                      speedInKbps: pkg.speedMbps * 1024.toInt(),
+                                      createCorrespondingTermPlan:
+                                          pkg
+                                              .packageInfoEntity
+                                              .createCorrespondingTermPlan,
+                                      speedProfile:
+                                          pkg.packageInfoEntity.speedProfile,
+                                      status: pkg.packageInfoEntity.status,
+                                      fbSpeedInKbps:
+                                          pkg.packageInfoEntity.fbSpeedInKbps,
+                                      editable: pkg.packageInfoEntity.editable,
+                                      amount: pkg.packageInfoEntity.amount,
+                                      originalAmount:
+                                          pkg.packageInfoEntity.originalAmount,
+                                      discountAmount:
+                                          pkg.packageInfoEntity.discountAmount,
+                                      savedAmount:
+                                          pkg.packageInfoEntity.savedAmount,
+                                      speed: pkg.packageInfoEntity.speed,
+                                      validity: pkg.packageInfoEntity.validity,
+                                      volumeType:
+                                          pkg.packageInfoEntity.volumeType,
+                                      volumeValue:
+                                          pkg.packageInfoEntity.volumeValue,
+                                      planTypeName:
+                                          pkg.packageInfoEntity.planTypeName,
+                                      packageType:
+                                          pkg.packageInfoEntity.packageType,
+                                    ),
+                                  ),
+                              onTransactionsTap:
+                                  () => Navigator.pushNamed(
+                                    context,
+                                    AppRoutes.transactionHistoryPage,
+                                  ),
+                              onInvoiceTap:
+                                  () => Navigator.pushNamed(
+                                    context,
+                                    AppRoutes.invoiceListPage,
+                                  ),
+                            ),
+                            SizedBox(height: 32.h),
+                            BlocBuilder<HomeBloc, HomeState>(
+                              bloc: bloc,
+                              buildWhen:
+                                  (prev, curr) => curr is GetPlansSuccess,
+                              builder: (BuildContext context, HomeState state) {
+                                return state is GetPlansSuccess &&
+                                        state.packageEntities.isNotEmpty
+                                    ? _PlanChangeSection(
+                                      subscriberUuid: subscriberId,
+                                      currentPackageId: packageId,
+                                      name: home.firstName,
+                                      plans: state.packageEntities,
+                                    )
+                                    : const SizedBox.shrink();
+                              },
+                            ),
+                            SizedBox(height: 32.h),
+                            const _ServicesSection(),
+                            SizedBox(height: 80.h),
+                          ],
                         ),
-                        SizedBox(height: 32.h),
-                        const _ServicesSection(),
-                        SizedBox(height: 80.h),
                       ],
                     ),
-                  ],
-                ),
+                  ),
+                ],
               );
             }
-            return const HomeShimmer();
+            return CustomScrollView(
+              slivers: [
+                _buildSliverAppBar(context),
+                const SliverFillRemaining(child: HomeShimmer()),
+              ],
+            );
           },
         ),
       ),
@@ -310,6 +386,8 @@ class _WalletCard extends StatelessWidget {
       padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 20.h),
       child: Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        // Design: Auto Pay button top (152) lines up with the balance row.
+        crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
@@ -324,30 +402,35 @@ class _WalletCard extends StatelessWidget {
               ),
             ],
           ),
-          InkWell(
-            onTap:
-                () => Navigator.push(
-                  context,
-                  MaterialPageRoute<void>(builder: (_) => const AutopayPage()),
+          Padding(
+            padding: EdgeInsets.only(top: 26.h),
+            child: InkWell(
+              onTap:
+                  () => Navigator.push(
+                    context,
+                    MaterialPageRoute<void>(
+                      builder: (_) => const AutopayPage(),
+                    ),
+                  ),
+              child: Container(
+                height: 28.h,
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                alignment: Alignment.center,
+                decoration: ShapeDecoration(
+                  color: AppColor.kAutopayButtonColor,
+                  shape: RoundedRectangleBorder(
+                    borderRadius: BorderRadius.circular(50),
+                  ),
                 ),
-            child: Container(
-              height: 28.h,
-              padding: EdgeInsets.symmetric(horizontal: 16.w),
-              alignment: Alignment.center,
-              decoration: ShapeDecoration(
-                color: AppColor.kAutopayButtonColor,
-                shape: RoundedRectangleBorder(
-                  borderRadius: BorderRadius.circular(50),
-                ),
-              ),
-              child: Text(
-                context.bssSubL10n.autoPay,
-                style: TextStyle(
-                  color: AppColor.kTextSecondaryDark,
-                  fontSize: 12.sp,
-                  fontFamily: 'GeneralSans',
-                  fontWeight: FontWeight.w600,
-                  height: 1.30,
+                child: Text(
+                  context.bssSubL10n.autoPay,
+                  style: TextStyle(
+                    color: AppColor.kTextSecondaryDark,
+                    fontSize: 12.sp,
+                    fontFamily: 'GeneralSans',
+                    fontWeight: FontWeight.w600,
+                    height: 1.30,
+                  ),
                 ),
               ),
             ),
@@ -357,6 +440,15 @@ class _WalletCard extends StatelessWidget {
     );
   }
 }
+
+// Design: outlined button labels are GeneralSans Medium 12 / 1.3 (the shared
+// SecondaryButton defaults to 16).
+final _buttonLabelStyle = TextStyle(
+  fontSize: 12.sp,
+  fontFamily: 'GeneralSans',
+  fontWeight: FontWeight.w500,
+  height: 1.3,
+);
 
 // ─── Combo Card ──────────────────────────────────────────────────────────────
 
@@ -438,7 +530,7 @@ class _ComboCard extends StatelessWidget {
                         color: Colors.white,
                       ),
                     ),
-                    SizedBox(width: 12.w),
+                    SizedBox(width: 8.w),
                     Expanded(
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
@@ -470,7 +562,7 @@ class _ComboCard extends StatelessWidget {
           ),
           SizedBox(height: 16.h),
           Container(
-            padding: EdgeInsets.symmetric(horizontal: 16.w),
+            padding: EdgeInsets.symmetric(horizontal: 12.w),
             height: 50.h,
             decoration: const ShapeDecoration(
               color: AppColor.kSecondaryBackgroundColor,
@@ -478,8 +570,10 @@ class _ComboCard extends StatelessWidget {
                 borderRadius: BorderRadius.all(Radius.circular(12)),
               ),
             ),
+            // Design: stats left-aligned, 22 apart.
             child: Row(
-              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              mainAxisAlignment: MainAxisAlignment.start,
+              spacing: 22.w,
               children: [
                 _Stat(label: context.bssSubL10n.amount, value: amountStr),
                 _Stat(label: context.bssSubL10n.speed, value: speedStr),
@@ -495,6 +589,8 @@ class _ComboCard extends StatelessWidget {
               children: [
                 Expanded(
                   child: SecondaryButton(
+                    borderRadius: 10,
+                    textStyle: _buttonLabelStyle,
                     label: context.bssSubL10n.packsActive(
                       pkg.packageInfoEntity.subPackageCount.toString(),
                     ),
@@ -688,8 +784,10 @@ class _QuickActionsState extends State<_QuickActions> {
                           boxShadow: _actionShadow,
                         ),
                         child: Column(
-                          mainAxisAlignment: MainAxisAlignment.center,
+                          // Design: circle starts 13 below the tile top.
+                          mainAxisAlignment: MainAxisAlignment.start,
                           children: [
+                            SizedBox(height: 13.h),
                             Container(
                               width: 46.w,
                               height: 46.w,
@@ -757,13 +855,7 @@ class _PlanChangeSection extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Text(context.bssSubL10n.planChange, style: _headingStyle),
-              TextButton(
-                // No internal padding, so the 32 gap below matches the design.
-                style: TextButton.styleFrom(
-                  padding: EdgeInsets.zero,
-                  minimumSize: Size.zero,
-                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-                ),
+              CommonTextButton(
                 onPressed:
                     () => Navigator.push(
                       context,
@@ -791,7 +883,8 @@ class _PlanChangeSection extends StatelessWidget {
             ],
           ),
         ),
-        SizedBox(height: 32.h),
+        // Design: cards start 40 below the title top (title row is 22 tall).
+        SizedBox(height: 18.h),
         Column(
           spacing: 16.h,
           children: [
@@ -920,6 +1013,8 @@ class _PlanCard extends StatelessWidget {
                 height: 32.h,
                 width: 145.w,
                 child: SecondaryButton(
+                  borderRadius: 10,
+                  textStyle: _buttonLabelStyle,
                   label: context.bssSubL10n.choosePlan,
                   onClicked:
                       () => Navigator.push(
@@ -1006,6 +1101,9 @@ class _ServicesSectionState extends State<_ServicesSection> {
           padding: EdgeInsets.symmetric(horizontal: 20.w),
           // Design: 158×116 cards, 19 apart horizontally, 16 vertically.
           child: GridView.builder(
+            // Without an explicit padding the grid adds the status-bar inset
+            // on top (the Scaffold no longer has an appBar to consume it).
+            padding: EdgeInsets.zero,
             shrinkWrap: true,
             physics: const NeverScrollableScrollPhysics(),
             gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
@@ -1050,25 +1148,30 @@ class _ServiceCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(14),
+      padding: EdgeInsets.all(12.w),
       decoration: _decoration,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(title, style: _titleStyle),
           const Spacer(),
+          // Design: icon 32 at the row top, arrow 24 sits 10 lower.
           Row(
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            crossAxisAlignment: CrossAxisAlignment.start,
             children: [
               SvgPicture(
                 SvgAssetLoader(icon, colorMapper: TenantSvgColorMapper()),
                 height: 32.w,
                 width: 32.w,
               ),
-              Icon(
-                Icons.arrow_forward,
-                color: AppColor.kTextFiledHintColor,
-                size: 24.sp,
+              Padding(
+                padding: EdgeInsets.only(top: 10.h),
+                child: Icon(
+                  Icons.arrow_forward,
+                  color: AppColor.kTextFiledHintColor,
+                  size: 24.sp,
+                ),
               ),
             ],
           ),

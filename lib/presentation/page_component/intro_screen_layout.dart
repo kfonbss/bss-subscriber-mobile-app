@@ -5,6 +5,7 @@ import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/white_button.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/preference_util.dart';
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
@@ -69,7 +70,7 @@ class IntroScreenLayout extends StatelessWidget {
                         ),
                       ),
                       Text(
-                        l10n.introducingBssApp('${AppBrand.appName} app'),
+                        l10n.introducingApp(AppBrand.appName),
                         style: TextStyle(
                           fontFamily: 'GeneralSans',
                           fontWeight: FontWeight.w400,
@@ -109,35 +110,24 @@ class IntroScreenLayout extends StatelessWidget {
                 spacing: 15.w,
                 children: [
                   Expanded(
-                    child: FilledButton(
-                      // Skip: mark the intro as seen so it isn't shown again.
-                      onPressed: () {
+                    child: PrimaryButton(
+                      label: l10n.signIn,
+                      isLoading: false,
+                      borderRadius: 50,
+                      height: 52.h,
+                      textStyle: TextStyle(
+                        fontFamily: 'GeneralSans',
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w600,
+                        height: 1.30,
+                      ),
+                      onClicked: () {
                         PreferenceUtils.setIntroScreenStatus(false);
                         Navigator.pushReplacementNamed(
                           context,
                           AppRoutes.login,
                         );
                       },
-                      style: FilledButton.styleFrom(
-                        elevation: 0,
-                        minimumSize: Size(double.infinity, 52.h),
-                        fixedSize: Size(double.infinity, 52.h),
-                        backgroundColor: AppColor.kIntroAccent,
-                        foregroundColor: Colors.white,
-                        padding: EdgeInsets.zero,
-                        shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(50),
-                        ),
-                      ),
-                      child: Text(
-                        l10n.signIn,
-                        style: TextStyle(
-                          fontFamily: 'GeneralSans',
-                          fontSize: 14.sp,
-                          fontWeight: FontWeight.w600,
-                          height: 1.30,
-                        ),
-                      ),
                     ),
                   ),
                   Expanded(

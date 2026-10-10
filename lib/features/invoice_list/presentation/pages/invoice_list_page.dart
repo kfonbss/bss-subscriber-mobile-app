@@ -14,6 +14,7 @@ import 'package:kfon_subscriber/service_locator.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
 import 'package:kfon_subscriber/shared/widgets/no_data_found.dart';
 import 'package:kfon_subscriber/shared/widgets/retry_widget.dart';
+import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
 import 'package:kfon_subscriber/shared/widgets/shimmer/list_shimmers.dart';
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
 
@@ -231,17 +232,7 @@ class _InvoiceCard extends StatelessWidget {
     height: 1.30,
   );
 
-  // Design: 32 tall, 1px primary border, radius 10, 10 side padding.
-  static ButtonStyle get _downloadStyle => OutlinedButton.styleFrom(
-    side: BorderSide(color: AppColor.kPrimaryColor, width: 1),
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(10)),
-    ),
-    minimumSize: Size(0, 32.h),
-    fixedSize: Size.fromHeight(32.h),
-    padding: EdgeInsets.symmetric(horizontal: 10.w),
-    tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-  );
+
 
   @override
   Widget build(BuildContext context) {
@@ -314,10 +305,13 @@ class _InvoiceCard extends StatelessWidget {
           ),
 
           // ── Download button ──
-          OutlinedButton(
-            onPressed: onDownload,
-            style: _downloadStyle,
-            child: Text(l10n.download, style: _downloadLabelStyle),
+          SecondaryButton(
+            label: l10n.download,
+            borderRadius: 10,
+            height: 32.h,
+            width: 80.w,
+            textStyle: _downloadLabelStyle,
+            onClicked: onDownload,
           ),
         ],
       ),

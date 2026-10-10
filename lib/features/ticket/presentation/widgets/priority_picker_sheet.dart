@@ -9,6 +9,7 @@ import 'package:kfon_subscriber/shared/widgets/common_radio_button.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 
 class PriorityPickerSheet extends StatefulWidget {
   final String? selectedPriority;
@@ -104,11 +105,13 @@ class _PriorityPickerSheetState extends State<PriorityPickerSheet> {
                         ),
                       ),
                       SizedBox(height: 16.h),
-                      ElevatedButton(
-                        onPressed: () {
+                      PrimaryButton(
+                        label: context.bssSubL10n.retry,
+                        isLoading: false,
+                        borderRadius: 10,
+                        onClicked: () {
                           widget.ticketBloc.add(const LoadPriorities());
                         },
-                        child: Text(context.bssSubL10n.retry),
                       ),
                     ],
                   ),

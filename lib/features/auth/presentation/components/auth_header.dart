@@ -85,7 +85,7 @@ class AuthHeader extends StatelessWidget {
       children: [
         SizedBox(height: topSpacing ?? _topSpacing),
         Sizer.isTablet
-            ? Image.asset(AppAssets.kLogo, width: 150.0, fit: BoxFit.fitWidth)
+            ? Image.asset(AppAssets.kLogo, width: 150.0.w, fit: BoxFit.fitWidth)
             : Image.asset(
               AppAssets.kLogo,
               width: 77.w,

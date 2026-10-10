@@ -11,6 +11,7 @@ import 'package:kfon_subscriber/features/autopay/presentation/bloc/autopay_state
 import 'package:kfon_subscriber/features/autopay/presentation/widgets/autopay_widgets.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/common_bottom_sheet.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 
 /// "Remove from auto-pay?" confirmation. "Yes, remove" revokes the mandate;
 /// the sheet closes itself once the revoke succeeds.
@@ -91,43 +92,12 @@ class AutopayRemoveBottomSheet extends StatelessWidget {
               SizedBox(height: 20.h),
               AutopayPlanSummaryCard(details: details),
               SizedBox(height: 24.h),
-              SizedBox(
-                width: double.infinity,
-                height: 52.h,
-                child: FilledButton(
-                  onPressed:
-                      isRevoking
-                          ? null
-                          : () => context.read<AutopayBloc>().add(
-                            const RevokeAutopay(),
-                          ),
-                  style: FilledButton.styleFrom(
-                    backgroundColor: AppColor.kErrorRed,
-                    disabledBackgroundColor: AppColor.kErrorRed.withValues(
-                      alpha: 0.6,
-                    ),
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(12),
-                    ),
-                  ),
-                  child:
-                      isRevoking
-                          ? SizedBox(
-                            width: 22.w,
-                            height: 22.w,
-                            child: const CircularProgressIndicator(
-                              color: Colors.white,
-                              strokeWidth: 2.5,
-                            ),
-                          )
-                          : Text(
-                            l10n.yesRemove,
-                            style: autopayText(
-                              14,
-                              FontWeight.w500,
-                              Colors.white,
-                            ),
-                          ),
+              PrimaryButton(
+                label: l10n.yesRemove,
+                isLoading: isRevoking,
+                borderRadius: 12,
+                onClicked: () => context.read<AutopayBloc>().add(
+                  const RevokeAutopay(),
                 ),
               ),
               SizedBox(height: 8.h),

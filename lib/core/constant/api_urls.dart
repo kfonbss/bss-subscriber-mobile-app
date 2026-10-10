@@ -99,7 +99,11 @@ class ApiUrls {
   /// TODO(rating): placeholder — replace with the real rating endpoint.
   static String rateTicketURL(String ticketUuid) =>
       '$submitTicketURL/$ticketUuid/rating';
-
+  static String get getNotificationsURL =>
+      '$userRoleMapingService/v1/notifications';static String get notificationUnreadCountURL =>
+      '$userRoleMapingService/v1/notifications/unread-count';
+  static String get notificationReadAllURL =>
+      '$userRoleMapingService/v1/notifications/read-all';
   /// File Storage: Get view URL by file ID (GET)
   static String fileViewUrlByFileId(String fileId) =>
       '$fileStorageService/$fileId/view-url';

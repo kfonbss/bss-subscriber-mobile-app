@@ -5,16 +5,15 @@ import 'package:kfon_subscriber/core/network/dio_client.dart';
 import 'package:kfon_subscriber/features/autopay/data/model/autopay_model.dart';
 import 'package:kfon_subscriber/features/autopay/domain/entity/autopay_entity.dart';
 import 'package:kfon_subscriber/features/autopay/domain/repository/autopay_repository.dart';
+import 'package:kfon_subscriber/service_locator.dart';
 
 class AutopayRepositoryImp extends AutopayRepository {
-  final DioClient _client;
-
-  AutopayRepositoryImp({required DioClient client}) : _client = client;
+  AutopayRepositoryImp();
 
   @override
   Future<Either<Failure, AutopayStatus>> getStatus() async {
     try {
-      final response = await _client.get(ApiUrls.upiMandateStatus);
+      final response = await sl<DioClient>().get(ApiUrls.upiMandateStatus);
       if (!response.isSuccess) return Left(response.failure);
       return Right(parseAutopayStatus(response.data));
     } catch (e) {
@@ -25,7 +24,7 @@ class AutopayRepositoryImp extends AutopayRepository {
   @override
   Future<Either<Failure, AutopayQuoteEntity>> getQuote() async {
     try {
-      final response = await _client.get(ApiUrls.upiMandateQuote);
+      final response = await sl<DioClient>().get(ApiUrls.upiMandateQuote);
       if (!response.isSuccess) return Left(response.failure);
       final data = response.data;
       if (data is! Map<String, dynamic>) {
@@ -40,7 +39,7 @@ class AutopayRepositoryImp extends AutopayRepository {
   @override
   Future<Either<Failure, String>> initiate({required String upiId}) async {
     try {
-      final response = await _client.post(
+      final response = await sl<DioClient>().post(
         ApiUrls.upiMandateInitiate,
         data: {'upiId': upiId},
       );
@@ -54,7 +53,7 @@ class AutopayRepositoryImp extends AutopayRepository {
   @override
   Future<Either<Failure, String>> revoke() async {
     try {
-      final response = await _client.post(ApiUrls.upiMandateRevoke);
+      final response = await sl<DioClient>().post(ApiUrls.upiMandateRevoke);
       if (!response.isSuccess) return Left(response.failure);
       return Right(response.message);
     } catch (e) {

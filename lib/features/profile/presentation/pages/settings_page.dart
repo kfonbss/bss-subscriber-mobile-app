@@ -1,10 +1,11 @@
 
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:kfon_subscriber/core/constant/app_brand.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/about_app_page.dart';
-import 'package:kfon_subscriber/features/profile/presentation/pages/about_kfon_page.dart';
+import 'package:kfon_subscriber/features/profile/presentation/pages/about_page.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/app_update_check_page.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/language_selection_page.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/notification_settings_page.dart';
@@ -73,12 +74,12 @@ class SettingsPage extends StatelessWidget {
                     ),
                   ),
                   _SettingsItem(
-                    title: l10n.aboutBss,
+                    title: l10n.aboutBrand(AppBrand.appName),
                     iconPath: AppAssets.aboutKfon,
                     onTap: () => Navigator.push(
                       context,
                       MaterialPageRoute(
-                        builder: (context) => const AboutKfonPage(),
+                        builder: (context) => const AboutPage(),
                       ),
                     ),
                   ),

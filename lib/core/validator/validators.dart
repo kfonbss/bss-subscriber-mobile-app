@@ -1,34 +1,46 @@
+import 'package:kfon_subscriber/l10n/bss_sub_localizations.dart';
+
 class Validators {
   /// Validates that a field is not empty
   static String? validateRequired(
     String? value, {
     String fieldName = 'This field',
+    BssSubLocalizations? l10n,
   }) {
     if (value == null || value.trim().isEmpty) {
-      return '${fieldName.replaceAll('*', '').trim()} is required';
+      final cleanFieldName = fieldName.replaceAll('*', '').trim();
+      return l10n?.fieldIsRequired(cleanFieldName) ??
+          '$cleanFieldName is required';
     }
     return null;
   }
+
   /// Generic max length validator (character count matches [String.length] as sent to APIs)
   static String? validateMaxLength(
-      String? value,
-      int maxLength, {
-        String fieldName = 'This field',
-      }) {
+    String? value,
+    int maxLength, {
+    String fieldName = 'This field',
+    BssSubLocalizations? l10n,
+  }) {
     if (value == null || value.isEmpty) {
       return null;
     }
 
     if (value.length > maxLength) {
-      return '${fieldName.replaceAll('*', '').trim()} must be at most $maxLength characters';
+      final cleanFieldName = fieldName.replaceAll('*', '').trim();
+      return '$cleanFieldName must be at most $maxLength characters';
     }
 
     return null;
   }
+
   /// Validates mobile number (10 digits)
-  static String? validateMobileNumber(String? value) {
+  static String? validateMobileNumber(
+    String? value, {
+    BssSubLocalizations? l10n,
+  }) {
     if (value == null || value.trim().isEmpty) {
-      return 'Please enter mobile number';
+      return l10n?.pleaseEnterMobileNumber ?? 'Please enter mobile number';
     }
 
     final trimmedValue = value.trim();
@@ -40,20 +52,25 @@ class Validators {
 
     // Check if it's exactly 10 digits
     if (trimmedValue.length != 10) {
-      return 'Please enter valid 10-digit mobile number';
+      return l10n?.pleaseEnterValidMobileNumber ??
+          'Please enter valid 10-digit mobile number';
     }
 
     return null;
   }
 
   /// Validates password (minimum 6 characters)
-  static String? validatePassword(String? value) {
+  static String? validatePassword(
+    String? value, {
+    BssSubLocalizations? l10n,
+  }) {
     if (value == null || value.trim().isEmpty) {
-      return 'Please enter password';
+      return l10n?.pleaseEnterPassword ?? 'Please enter password';
     }
 
     if (value.trim().length < 6) {
-      return 'Password must be at least 6 characters';
+      return l10n?.passwordMinLength ??
+          'Password must be at least 6 characters';
     }
 
     return null;
@@ -64,22 +81,27 @@ class Validators {
     String? value,
     int minLength, {
     String fieldName = 'This field',
+    BssSubLocalizations? l10n,
   }) {
     if (value == null || value.trim().isEmpty) {
       return null; // Allow empty, use validateRequired if you need to enforce presence
     }
 
     if (value.trim().length < minLength) {
-      return '${fieldName.replaceAll('*', '').trim()} must be at least $minLength characters';
+      final cleanFieldName = fieldName.replaceAll('*', '').trim();
+      return '$cleanFieldName must be at least $minLength characters';
     }
 
     return null;
   }
 
   /// Validates email format
-  static String? validateEmail(String? value) {
+  static String? validateEmail(
+    String? value, {
+    BssSubLocalizations? l10n,
+  }) {
     if (value == null || value.trim().isEmpty) {
-      return 'Please enter email address';
+      return l10n?.pleaseEnterEmailAddress ?? 'Please enter email address';
     }
 
     final emailRegex = RegExp(
@@ -87,7 +109,8 @@ class Validators {
     );
 
     if (!emailRegex.hasMatch(value.trim())) {
-      return 'Please enter a valid email address';
+      return l10n?.pleaseEnterValidEmailAddress ??
+          'Please enter a valid email address';
     }
 
     return null;
@@ -96,10 +119,11 @@ class Validators {
   /// Validates that confirm password matches the original password
   static String? validateConfirmPassword(
     String? value,
-    String originalPassword,
-  ) {
+    String originalPassword, {
+    BssSubLocalizations? l10n,
+  }) {
     if (value == null || value.trim().isEmpty) {
-      return 'Please confirm your password';
+      return l10n?.pleaseConfirmPassword ?? 'Please confirm your password';
     }
 
     if (value != originalPassword) {
@@ -108,5 +132,4 @@ class Validators {
 
     return null;
   }
-
 }

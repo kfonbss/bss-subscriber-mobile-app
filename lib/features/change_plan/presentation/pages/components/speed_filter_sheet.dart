@@ -3,6 +3,8 @@ import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/l10n/bss_sub_localizations.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
+import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
 
 class SpeedFilterSheet extends StatefulWidget {
   final int? currentSpeed;
@@ -22,20 +24,6 @@ class _SpeedFilterSheetState extends State<SpeedFilterSheet> {
   static const _dragHandleDecoration = BoxDecoration(
     color: AppColor.kDragHandleGrey,
     borderRadius: BorderRadius.all(Radius.circular(2)),
-  );
-  static get _cancelButtonStyle => OutlinedButton.styleFrom(
-    side: BorderSide(color: AppColor.kPrimaryColor),
-    padding: const EdgeInsets.symmetric(vertical: 14),
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(12)),
-    ),
-  );
-  static get _applyButtonStyle => ElevatedButton.styleFrom(
-    backgroundColor: AppColor.kPrimaryColor,
-    padding: const EdgeInsets.symmetric(vertical: 14),
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(12)),
-    ),
   );
 
   @override
@@ -101,27 +89,25 @@ class _SpeedFilterSheetState extends State<SpeedFilterSheet> {
           Row(
             children: [
               Expanded(
-                child: OutlinedButton(
-                  onPressed: () => Navigator.pop(context),
-                  style: _cancelButtonStyle,
-                  child: Text(
-                    l10n.cancel,
-                    style: TextStyle(color: AppColor.kPrimaryColor),
-                  ),
+                child: SecondaryButton(
+                  label: l10n.cancel,
+                  borderRadius: 12,
+                  backgroundColor: Colors.transparent,
+                  borderColor: AppColor.kPrimaryColor,
+                  foregroundColor: AppColor.kPrimaryColor,
+                  onClicked: () => Navigator.pop(context),
                 ),
               ),
               SizedBox(width: 12.w),
               Expanded(
-                child: ElevatedButton(
-                  onPressed: () {
+                child: PrimaryButton(
+                  label: l10n.search,
+                  borderRadius: 12,
+                  isLoading: false,
+                  onClicked: () {
                     Navigator.pop(context);
                     widget.onApply(_selectedSpeed);
                   },
-                  style: _applyButtonStyle,
-                  child: Text(
-                    l10n.search,
-                    style: const TextStyle(color: Colors.white),
-                  ),
                 ),
               ),
             ],

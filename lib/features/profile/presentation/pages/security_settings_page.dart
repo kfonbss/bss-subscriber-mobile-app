@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:kfon_subscriber/core/constant/app_brand.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/change_password_page.dart';
@@ -12,12 +13,13 @@ class SecuritySettingsPage extends StatelessWidget {
 
   const SecuritySettingsPage({super.key, required this.types});
 
-  static String _getLabel(PasswordChangeEnum type) {
+  static String _getLabel(PasswordChangeEnum type, BuildContext context) {
+    final l10n = context.bssSubL10n;
     return switch (type) {
-      PasswordChangeEnum.bss      => 'Change BSS Portal Password',
-      PasswordChangeEnum.internet => 'Change Internet Password',
-      PasswordChangeEnum.ssid     => 'Change SSID Password',
-      PasswordChangeEnum.wifi     => 'Change WiFi Password',
+      PasswordChangeEnum.bss      => l10n.changeAppPortalPassword(AppBrand.appName),
+      PasswordChangeEnum.internet => l10n.changeInternetPassword,
+      PasswordChangeEnum.ssid     => l10n.changeSsidPassword,
+      PasswordChangeEnum.wifi     => l10n.changeWifiPassword,
     };
   }
 
@@ -32,7 +34,7 @@ class SecuritySettingsPage extends StatelessWidget {
           children: types
               .map(
                 (type) => _SecurityItem(
-                  label: _getLabel(type),
+                  label: _getLabel(type, context),
                   onTap: () => Navigator.push(
                     context,
                     MaterialPageRoute(

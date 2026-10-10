@@ -7,15 +7,15 @@ import 'package:kfon_subscriber/features/profile/data/model/profile_model.dart';
 import 'package:kfon_subscriber/features/profile/domain/entity/account_information_entity.dart';
 import 'package:kfon_subscriber/features/profile/domain/entity/profile_entity.dart';
 import 'package:kfon_subscriber/features/profile/domain/repository/profile_repository.dart';
+import 'package:kfon_subscriber/service_locator.dart';
 
 class ProfileRepositoryImp extends ProfileRepository {
-  final DioClient _client;
 
-  ProfileRepositoryImp({required DioClient client}) : _client = client;
+  ProfileRepositoryImp();
 
   @override
   Future<Either<Failure, ProfileEntity>> getProfile() async {
-    final response = await _client.get(ApiUrls.profileURL);
+    final response = await sl<DioClient>().get(ApiUrls.profileURL);
     if (response.isSuccess) {
       final profile = ProfileModel.fromJson(response.data);
       return Right(profile);
@@ -26,7 +26,7 @@ class ProfileRepositoryImp extends ProfileRepository {
 
   @override
   Future<Either<Failure, AccountInformationEntity>> getAccountInformation() async {
-    final response = await _client.get(ApiUrls.accountInformationURL);
+    final response = await sl<DioClient>().get(ApiUrls.accountInformationURL);
     if (response.isSuccess) {
       final accountInfo = AccountInformationModel.fromJson(response.data);
       return Right(accountInfo);

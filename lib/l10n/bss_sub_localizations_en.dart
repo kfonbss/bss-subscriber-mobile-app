@@ -30,15 +30,17 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get stayConnectedAlways => 'Stay Connected, Always';
 
   @override
-  String get experienceLightningFast =>
-      'Experience lightning-fast internet with BSS\'s reliable fiber network, keeping you online anytime, anywhere.';
+  String experienceLightningFast(String appName) {
+    return 'Experience lightning-fast internet with $appName\'s reliable fiber network, keeping you online anytime, anywhere.';
+  }
 
   @override
   String get bridgingDigitalDivide => 'Bridging the Digital Divide';
 
   @override
-  String get bssEmpowersCitizen =>
-      'BSS empowers every citizen with affordable internet, supporting education, business, and government services.';
+  String appEmpowersCitizen(String appName) {
+    return '$appName empowers every citizen with affordable internet, supporting education, business, and government services.';
+  }
 
   @override
   String get internetWorksForYou => 'Internet That Works for You';
@@ -452,10 +454,14 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get orderAmount => 'Order Amount';
 
   @override
-  String get bssReference => 'BSS Reference';
+  String appReference(String appName) {
+    return '$appName Reference';
+  }
 
   @override
-  String get bssStatus => 'BSS Status';
+  String appStatus(String appName) {
+    return '$appName Status';
+  }
 
   @override
   String get txnReference => 'Txn. Reference';
@@ -473,7 +479,9 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get noTransactionsFound => 'No transactions found';
 
   @override
-  String get bssNo => 'BSS No';
+  String appNo(String appName) {
+    return '$appName No';
+  }
 
   @override
   String get package => 'Package';
@@ -583,7 +591,16 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get chatwithAI => 'Chat with AI';
 
   @override
-  String get aboutApp => 'About App';
+  String aboutBrand(Object brandName) {
+    return 'About $brandName';
+  }
+
+  @override
+  String get notifications => 'Notifications';
+
+  @override
+  String get youDontHaveAnyNotificationsYet =>
+      'You don\'t have any notifications yet.';
 
   @override
   String get appInformation => 'App Information';
@@ -610,13 +627,10 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get contactUs => 'Contact Us';
 
   @override
-  String get aboutBss => 'About BSS';
+  String get aboutApp => 'About App';
 
   @override
-  String get bss => 'BSS';
-
-  @override
-  String get bssDescription =>
+  String get appDescription =>
       'Lorem Ipsum is simply dummy text of the printing and typesetting industry. Lorem Ipsum has been the industry\'s standard dummy text ever since the 1500s, when an unknown printer took a galley of type and scrambled it to make a type specimen book. It has survived not only five centuries, but also the leap into electronic typesetting';
 
   @override
@@ -664,7 +678,9 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get securitySettings => 'Security Settings';
 
   @override
-  String get changeBssPortalPassword => 'Change BSS Portal Password';
+  String changeAppPortalPassword(String appName) {
+    return 'Change $appName Portal Password';
+  }
 
   @override
   String get changeInternetPassword => 'Change Internet Password';
@@ -709,6 +725,9 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
 
   @override
   String get loginNow => 'Login Now';
+
+  @override
+  String get changePassword => 'Change Password';
 
   @override
   String get language => 'Language';
@@ -1200,7 +1219,7 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get dateLabel => 'Date : ';
 
   @override
-  String introducingBssApp(Object appName) {
+  String introducingApp(String appName) {
     return 'Introducing $appName';
   }
 
@@ -1387,8 +1406,9 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get enterReferralCode => 'Enter Referral Code';
 
   @override
-  String get declarationConsent =>
-      'I hereby give my consent to receive calls, texts, WhatsApp and emails regarding updates, newsletters, and other important information from or on behalf of BSS at the mobile number provided above.';
+  String declarationConsent(String appName) {
+    return 'I hereby give my consent to receive calls, texts, WhatsApp and emails regarding updates, newsletters, and other important information from or on behalf of $appName at the mobile number provided above.';
+  }
 
   @override
   String get darkFibreEnquiry => 'Dark Fibre Enquiry';
@@ -2336,4 +2356,105 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
 
   @override
   String get ratingSubmitted => 'Rating submitted successfully';
+
+  @override
+  String fieldIsRequired(String fieldName) {
+    return '$fieldName is required';
+  }
+
+  @override
+  String get pleaseEnterMobileNumber => 'Please enter mobile number';
+
+  @override
+  String get pleaseEnterValidMobileNumber =>
+      'Please enter valid 10-digit mobile number';
+
+  @override
+  String get pleaseEnterPassword => 'Please enter password';
+
+  @override
+  String get passwordMinLength => 'Password must be at least 6 characters';
+
+  @override
+  String get pleaseEnterEmailAddress => 'Please enter email address';
+
+  @override
+  String get pleaseEnterValidEmailAddress =>
+      'Please enter a valid email address';
+
+  @override
+  String get pleaseConfirmPassword => 'Please confirm your password';
+
+  @override
+  String get noInternetConnection => 'No internet connection';
+
+  @override
+  String get cacheErrorOccurred => 'Cache error occurred';
+
+  @override
+  String get requestTimedOut => 'Request timed out';
+
+  @override
+  String get anUnexpectedErrorOccurred => 'An unexpected error occurred';
+
+  @override
+  String get connectionTimeoutPleaseTryAgain =>
+      'Connection timeout, please try again.';
+
+  @override
+  String get sendTimeoutPleaseCheckInternet =>
+      'Send timeout, please check your internet.';
+
+  @override
+  String get receiveTimeoutPleaseTryAgain =>
+      'Receive timeout, please try again.';
+
+  @override
+  String get requestWasCancelled => 'Request was cancelled.';
+
+  @override
+  String get unknownErrorOccurred => 'Unknown error occurred';
+
+  @override
+  String get noResponseFromServer => 'No response from server';
+
+  @override
+  String get anErrorOccurred => 'An error occurred.';
+
+  @override
+  String get downloadSuccessful => 'Download successful';
+
+  @override
+  String downloadFailedWithStatus(String status) {
+    return 'Download failed with status $status';
+  }
+
+  @override
+  String failedToSavePdf(String error) {
+    return 'Failed to save PDF: $error';
+  }
+
+  @override
+  String get failedToLoadPreview => 'Failed to load preview';
+
+  @override
+  String get noAccessContactSupport =>
+      'You do not have access to this app. Please contact support.';
+
+  @override
+  String get invalidResponse => 'Invalid response';
+
+  @override
+  String get fileUrlNotFound => 'File URL not found';
+
+  @override
+  String get customerTypeCouldNotBeResolved =>
+      'Customer type could not be resolved. Please try again.';
+
+  @override
+  String get selectedFileNotAvailable => 'Selected file is not available';
+
+  @override
+  String get fileUploadSucceededNoId =>
+      'File upload succeeded but no fileId returned';
 }

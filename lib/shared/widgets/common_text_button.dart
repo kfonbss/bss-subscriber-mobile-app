@@ -2,9 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 
 class CommonTextButton extends StatelessWidget {
-  final String label;
+  final Widget child;
   final VoidCallback onPressed;
-  const CommonTextButton({super.key,required this.label,required this.onPressed});
+  final EdgeInsetsGeometry? padding;
+
+  const CommonTextButton({
+    super.key,
+    required this.child,
+    required this.onPressed,
+    this.padding,
+  });
 
   @override
   Widget build(BuildContext context) {
@@ -12,12 +19,11 @@ class CommonTextButton extends StatelessWidget {
       onPressed: onPressed,
       style: TextButton.styleFrom(
         foregroundColor: AppColor.kPrimaryColor,
-        padding: EdgeInsets.zero,
+        padding: padding ?? EdgeInsets.zero,
         minimumSize: Size.zero,
         tapTargetSize: MaterialTapTargetSize.shrinkWrap,
-        textStyle: const TextStyle(fontSize: 15), // Text style
       ),
-      child: Text(label,),
+      child: child,
     );
   }
 }
