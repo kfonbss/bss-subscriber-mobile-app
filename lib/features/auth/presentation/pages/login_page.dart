@@ -282,11 +282,12 @@ class _LoginPageState extends State<LoginPage> {
                   child: Padding(
                     padding: EdgeInsets.symmetric(
                       horizontal: 24.w, // Proportional scaling
+
                       // LNP Enquiry bottom → screen bottom: 45 in the design.
-                      vertical: Sizer.isTablet ? 32.h : 45.h,
                     ),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
+                      spacing: 11,
                       children: [
                         SecondaryButton(
                           label: context.bssSubL10n.enquiryForms,

@@ -2476,4 +2476,31 @@ class BssSubLocalizationsHi extends BssSubLocalizations {
   @override
   String get fileUploadSucceededNoId =>
       'फ़ाइल अपलोड सफल रहा लेकिन कोई फ़ाइल आईडी प्राप्त नहीं हुई';
+
+  @override
+  String get txnStatusSuccess => 'सफलता';
+
+  @override
+  String get txnStatusFailed => 'विफल';
+
+  @override
+  String get txnStatusPending => 'लंबित';
+
+  @override
+  String get txnStatusInitiated => 'प्रारंभ किया गया';
+
+  @override
+  String get txnStatusCancelled => 'रद्द किया गया';
+
+  @override
+  String get txnStatusRefunded => 'वापस किया गया';
+
+  @override
+  String get allTransactions => 'सभी लेन-देन';
+
+  @override
+  String get last30Days => 'पिछले 30 दिन';
+
+  @override
+  String get customDate => 'कस्टम तिथि';
 }

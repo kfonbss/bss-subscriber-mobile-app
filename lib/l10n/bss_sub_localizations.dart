@@ -4639,6 +4639,60 @@ abstract class BssSubLocalizations {
   /// In en, this message translates to:
   /// **'File upload succeeded but no fileId returned'**
   String get fileUploadSucceededNoId;
+
+  /// No description provided for @txnStatusSuccess.
+  ///
+  /// In en, this message translates to:
+  /// **'Success'**
+  String get txnStatusSuccess;
+
+  /// No description provided for @txnStatusFailed.
+  ///
+  /// In en, this message translates to:
+  /// **'Failed'**
+  String get txnStatusFailed;
+
+  /// No description provided for @txnStatusPending.
+  ///
+  /// In en, this message translates to:
+  /// **'Pending'**
+  String get txnStatusPending;
+
+  /// No description provided for @txnStatusInitiated.
+  ///
+  /// In en, this message translates to:
+  /// **'Initiated'**
+  String get txnStatusInitiated;
+
+  /// No description provided for @txnStatusCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Cancelled'**
+  String get txnStatusCancelled;
+
+  /// No description provided for @txnStatusRefunded.
+  ///
+  /// In en, this message translates to:
+  /// **'Refunded'**
+  String get txnStatusRefunded;
+
+  /// No description provided for @allTransactions.
+  ///
+  /// In en, this message translates to:
+  /// **'All Transactions'**
+  String get allTransactions;
+
+  /// No description provided for @last30Days.
+  ///
+  /// In en, this message translates to:
+  /// **'Last 30 Days'**
+  String get last30Days;
+
+  /// No description provided for @customDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Custom Date'**
+  String get customDate;
 }
 
 class _BssSubLocalizationsDelegate

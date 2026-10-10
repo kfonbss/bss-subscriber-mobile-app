@@ -1144,5 +1144,14 @@
   "fileUrlNotFound": "फ़ाइल URL नहीं मिला",
   "customerTypeCouldNotBeResolved": "ग्राहक प्रकार का समाधान नहीं हो सका। कृपया पुनः प्रयास करें।",
   "selectedFileNotAvailable": "चयनित फ़ाइल उपलब्ध नहीं है",
-  "fileUploadSucceededNoId": "फ़ाइल अपलोड सफल रहा लेकिन कोई फ़ाइल आईडी प्राप्त नहीं हुई"
+  "fileUploadSucceededNoId": "फ़ाइल अपलोड सफल रहा लेकिन कोई फ़ाइल आईडी प्राप्त नहीं हुई",
+  "txnStatusSuccess": "सफलता",
+  "txnStatusFailed": "विफल",
+  "txnStatusPending": "लंबित",
+  "txnStatusInitiated": "प्रारंभ किया गया",
+  "txnStatusCancelled": "रद्द किया गया",
+  "txnStatusRefunded": "वापस किया गया",
+  "allTransactions": "सभी लेन-देन",
+  "last30Days": "पिछले 30 दिन",
+  "customDate": "कस्टम तिथि"
 }

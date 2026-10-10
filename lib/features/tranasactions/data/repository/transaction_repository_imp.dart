@@ -7,11 +7,11 @@ import 'package:kfon_subscriber/features/tranasactions/data/model/transaction_mo
 import 'package:kfon_subscriber/features/tranasactions/domain/entity/transaction_entity.dart';
 import 'package:kfon_subscriber/features/tranasactions/domain/entity/transaction_filter.dart';
 import 'package:kfon_subscriber/features/tranasactions/domain/repository/transaction_repository.dart';
+import 'package:kfon_subscriber/service_locator.dart';
 
 class TransactionRepositoryImp extends TransactionRepository {
-  final DioClient _client;
 
-  TransactionRepositoryImp({required DioClient client}) : _client = client;
+  TransactionRepositoryImp();
 
   @override
   Future<Either<Failure, TransactionPageEntity>> getTransactions({
@@ -31,7 +31,7 @@ class TransactionRepositoryImp extends TransactionRepository {
         'toDate': dateFormat.format(filter.toDate!),
       },
     };
-    final response = await _client.get(
+    final response = await sl<DioClient>().get(
       ApiUrls.rechargeTransactionsURL,
       queryParameters: queryParameters,
     );

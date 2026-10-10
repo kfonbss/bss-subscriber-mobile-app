@@ -2483,4 +2483,31 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   @override
   String get fileUploadSucceededNoId =>
       'File upload succeeded but no fileId returned';
+
+  @override
+  String get txnStatusSuccess => 'Success';
+
+  @override
+  String get txnStatusFailed => 'Failed';
+
+  @override
+  String get txnStatusPending => 'Pending';
+
+  @override
+  String get txnStatusInitiated => 'Initiated';
+
+  @override
+  String get txnStatusCancelled => 'Cancelled';
+
+  @override
+  String get txnStatusRefunded => 'Refunded';
+
+  @override
+  String get allTransactions => 'All Transactions';
+
+  @override
+  String get last30Days => 'Last 30 Days';
+
+  @override
+  String get customDate => 'Custom Date';
 }

@@ -26,7 +26,7 @@ class HomeBloc extends Bloc<HomeEvent, HomeState> {
         (homeEntity) async {
           await PreferenceUtils.setUserDetails(
             userId: homeEntity.subscriberId,
-            userName: homeEntity.firstName,
+            userName: homeEntity.username,
           );
           emit(
             GetDataSuccess(

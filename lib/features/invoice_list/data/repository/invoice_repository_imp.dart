@@ -7,18 +7,18 @@ import 'package:kfon_subscriber/core/network/dio_client.dart';
 import 'package:kfon_subscriber/features/invoice_list/data/model/invoice_model.dart';
 import 'package:kfon_subscriber/features/invoice_list/domain/entity/invoice_entity.dart';
 import 'package:kfon_subscriber/features/invoice_list/domain/repository/invoice_repository.dart';
+import 'package:kfon_subscriber/service_locator.dart';
 
 class InvoiceRepositoryImp extends InvoiceRepository {
-  final DioClient _client;
 
-  InvoiceRepositoryImp({required DioClient client}) : _client = client;
+  InvoiceRepositoryImp();
 
   @override
   Future<Either<Failure, InvoicePageEntity>> getInvoices({
     required int page,
     required int size,
   }) async {
-    final response = await _client.get(
+    final response = await sl<DioClient>().get(
       ApiUrls.invoicesURL,
       queryParameters: {'page': page, 'size': size},
     );
@@ -37,7 +37,7 @@ class InvoiceRepositoryImp extends InvoiceRepository {
     String fileId,
   ) async {
     try {
-      final response = await _client.get(ApiUrls.fileViewUrlByFileId(fileId));
+      final response = await sl<DioClient>().get(ApiUrls.fileViewUrlByFileId(fileId));
 
       if (response.isSuccess) {
         final data = response.data;
@@ -63,7 +63,7 @@ class InvoiceRepositoryImp extends InvoiceRepository {
     String fileId,
   ) async {
     try {
-      final response = await _client.get(
+      final response = await sl<DioClient>().get(
         ApiUrls.fileDownloadUrlByFileId(fileId),
       );
 

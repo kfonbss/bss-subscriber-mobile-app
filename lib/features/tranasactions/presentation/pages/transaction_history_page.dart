@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:intl/intl.dart';
+import 'package:kfon_subscriber/core/constant/app_brand.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/pdf_downloader/pdf_preview_and_download.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
@@ -976,7 +977,7 @@ class _TransactionCard extends StatelessWidget {
             children: [
               SizedBox(
                 width: 109.w,
-                child: _LabelValue(label: l10n.bssNo, value: bssNo),
+                child: _LabelValue(label: l10n.appNo(AppBrand.appName), value: bssNo),
               ),
               SizedBox(width: 24.w),
               Expanded(

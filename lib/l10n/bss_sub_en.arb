@@ -1104,5 +1104,14 @@
   "fileUrlNotFound": "File URL not found",
   "customerTypeCouldNotBeResolved": "Customer type could not be resolved. Please try again.",
   "selectedFileNotAvailable": "Selected file is not available",
-  "fileUploadSucceededNoId": "File upload succeeded but no fileId returned"
+  "fileUploadSucceededNoId": "File upload succeeded but no fileId returned",
+  "txnStatusSuccess": "Success",
+  "txnStatusFailed": "Failed",
+  "txnStatusPending": "Pending",
+  "txnStatusInitiated": "Initiated",
+  "txnStatusCancelled": "Cancelled",
+  "txnStatusRefunded": "Refunded",
+  "allTransactions": "All Transactions",
+  "last30Days": "Last 30 Days",
+  "customDate": "Custom Date"
 }
