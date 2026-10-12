@@ -66,8 +66,8 @@ class SecondaryButton extends StatelessWidget {
           borderRadius: BorderRadius.circular(borderRadius),
         ),
         elevation: 0,
-        minimumSize: Size(width ?? double.infinity, height ?? 52.h),
-        fixedSize: Size(width ?? double.infinity, height ?? 52.h),
+        minimumSize: Size(width ?? 0, height ?? 52.h),
+        fixedSize: width != null ? Size(width!, height ?? 52.h) : null,
         backgroundColor: backgroundColor ?? Colors.white,
         foregroundColor:
             foregroundColor ?? borderColor ?? AppColor.kPrimaryColor,

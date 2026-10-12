@@ -127,171 +127,160 @@ class _LoginPageState extends State<LoginPage> {
           body: Stack(
             children: [
               Positioned.fill(child: LoginBackground()),
-              Center(
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth:
-                        Sizer.isTablet
-                            ? 600.0
-                            : double.infinity, // Wider form for tablet
-                  ),
-                  child: Column(
-                    children: [
-                      AuthHeader(
-                        description: '',
-                        topSpacing: 74.h,
-                        bottomSpacing: 24.h,
-                      ),
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 24.h),
-                        child: BlocBuilder<AuthBloc, AuthState>(
-                          buildWhen:
-                              (previous, current) =>
-                                  current is LoadSelectedTenantSuccess,
-                          builder: (context, state) {
-                            if (state is LoadSelectedTenantSuccess) {
-                              tenantName = state.tenantName;
-                              tenantId = state.tenantId;
-                              return SelectedTenantCard(
-                                circleName: tenantName,
-                                onEdit:
+              Column(
+                mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                children: [
+                  Expanded(
+                    child: Column(
+                      children: [
+                        AuthHeader(
+                          description: '',
+                          topSpacing: 74.h,
+                          bottomSpacing: 24.h,
+                        ),
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(24.w, 0, 24.w, 24.h),
+                          child: BlocBuilder<AuthBloc, AuthState>(
+                            buildWhen:
+                                (previous, current) =>
+                                    current is LoadSelectedTenantSuccess,
+                            builder: (context, state) {
+                              if (state is LoadSelectedTenantSuccess) {
+                                tenantName = state.tenantName;
+                                tenantId = state.tenantId;
+                                return SelectedTenantCard(
+                                  circleName: tenantName,
+                                  onEdit:
+                                      () => Navigator.pushNamed(
+                                        context,
+                                        AppRoutes.tenant,
+                                      ),
+                                );
+                              }
+                              return ShimmerBox(
+                                width: double.infinity,
+                                height: 60.h,
+                              );
+                            },
+                          ),
+                        ),
+                        Form(
+                          key: _formKey,
+                          child: Container(
+                            margin: EdgeInsets.symmetric(
+                              horizontal: 24.w, // Proportional scaling
+                            ),
+                            decoration: BoxDecoration(
+                              color: Colors.white,
+                              boxShadow: AppStyles.boxShadowForWhite,
+                              borderRadius: BorderRadius.circular(10.0),
+                            ),
+                            child: Column(
+                              children: [
+                                Padding(
+                                  padding: EdgeInsets.symmetric(
+                                    horizontal: 14.w, // Proportional scaling
+                                    vertical: 4.h, // 48 field + 8 = 56 row
+                                  ),
+                                  child: LoginTextField(
+                                    hintText:
+                                        context.bssSubL10n.enterUsername,
+                                    textEditingController:
+                                        _usernameTextFieldController,
+                                    textInputType: TextInputType.text,
+                                    textCapitalization: TextCapitalization.none,
+                                    validator:
+                                        (v) => Validators.validateRequired(
+                                          v,
+                                          fieldName:
+                                              context.bssSubL10n.username,
+                                        ),
+                                  ),
+                                ),
+                                Divider(
+                                  color: AppColor.kFieldBorder,
+                                  thickness: 1,
+                                  height: 1.h,
+                                ),
+                                Padding(
+                                  padding: EdgeInsets.only(
+                                    left: 14.w, // Proportional scaling
+                                    top: 4.h,
+                                    bottom: 4.h,
+                                  ),
+                                  child: LoginPasswordTextField(
+                                    textEditingController:
+                                        _passwordTextFieldController,
+                                    hintText:
+                                        context.bssSubL10n.enterPassword,
+                                    validator: Validators.validatePassword,
+                                  ),
+                                ),
+                              ],
+                            ),
+                          ),
+                        ),
+                        Padding(
+                          padding: EdgeInsets.fromLTRB(
+                            24.w,
+                            16.h,
+                            24.w,
+                            28.h,
+                          ),
+                          child: Row(
+                            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                            children: [
+                              Expanded(
+                                child: RememberMe(
+                                  onChanged: (value) => rememberMe = value,
+                                ),
+                              ),
+                              CommonTextButton(
+                                label: context.bssSubL10n.forgotPassword,
+                                onPressed:
                                     () => Navigator.pushNamed(
                                       context,
-                                      AppRoutes.tenant,
+                                      AppRoutes.forgotPassword,
                                     ),
-                              );
-                            }
-                            return ShimmerBox(
-                              width: double.infinity,
-                              height: 60.h,
-                            );
-                          },
-                        ),
-                      ),
-                      Form(
-                        key: _formKey,
-                        child: Container(
-                          margin: EdgeInsets.symmetric(
-                            horizontal: 24.w, // Proportional scaling
-                          ),
-                          decoration: BoxDecoration(
-                            color: Colors.white,
-                            boxShadow: AppStyles.boxShadowForWhite,
-                            borderRadius: BorderRadius.circular(10.0),
-                          ),
-                          child: Column(
-                            children: [
-                              Padding(
-                                padding: EdgeInsets.symmetric(
-                                  horizontal: 14.w, // Proportional scaling
-                                  vertical: 4.h, // 48 field + 8 = 56 row
-                                ),
-                                child: LoginTextField(
-                                  hintText: context.bssSubL10n.enterUsername,
-                                  textEditingController:
-                                      _usernameTextFieldController,
-                                  textInputType: TextInputType.text,
-                                  textCapitalization: TextCapitalization.none,
-                                  validator:
-                                      (v) => Validators.validateRequired(
-                                        v,
-                                        fieldName: context.bssSubL10n.username,
-                                      ),
-                                ),
-                              ),
-                              Divider(
-                                color: AppColor.kFieldBorder,
-                                thickness: 1,
-                                height: 1.h,
-                              ),
-                              Padding(
-                                padding: EdgeInsets.only(
-                                  left: 14.w, // Proportional scaling
-                                  top: 4.h,
-                                  bottom: 4.h,
-                                ),
-                                child: LoginPasswordTextField(
-                                  textEditingController:
-                                      _passwordTextFieldController,
-                                  hintText: context.bssSubL10n.enterPassword,
-                                  validator: Validators.validatePassword,
+                                textStyle: TextStyle(
+                                  fontSize: 14.0.sp,
+                                  fontWeight: FontWeight.w500,
+                                  color: Colors.white,
+                                  fontFamily: 'General Sans',
+                                  height: 1.30.h,
                                 ),
                               ),
                             ],
                           ),
                         ),
-                      ),
-                      Padding(
-                        // Checkbox row → Sign In: 48 in the login design.
-                        padding: EdgeInsets.fromLTRB(24.w, 16.h, 24.w, 48.h),
-                        child: Row(
-                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                          children: [
-                            Expanded(
-                              child: RememberMe(
-                                onChanged: (value) => rememberMe = value,
-                              ),
-                            ),
-                            CommonTextButton(
-                              label: context.bssSubL10n.forgotPassword,
-                              onPressed:
-                                  () => Navigator.pushNamed(
-                                    context,
-                                    AppRoutes.forgotPassword,
-                                  ),
-                              textStyle: TextStyle(
-                                fontSize: 14.0.sp,
-                                fontWeight: FontWeight.w500,
-                                color: Colors.white,
-                                fontFamily: 'General Sans',
-                                height: 1.30.h,
-                              ),
-                            ),
-                          ],
+                        Padding(
+                          padding: EdgeInsets.symmetric(
+                            horizontal: 24.w, // Proportional scaling
+                          ),
+                          child: BlocBuilder<AuthBloc, AuthState>(
+                            builder: (context, state) {
+                              return WhiteButton(
+                                isLoading: state is AuthLoading,
+                                label: context.bssSubL10n.signIn,
+                                borderRadius: 10,
+                                textColor: AppColor.kPrimaryColor,
+                                onClicked: () => _doLogin(),
+                                //Navigator.pushNamed(context, AppRoutes.mainPage),
+                              );
+                            },
+                          ),
                         ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.symmetric(
-                          horizontal: 24.w, // Proportional scaling
-                        ),
-                        child: BlocBuilder<AuthBloc, AuthState>(
-                          builder: (context, state) {
-                            return WhiteButton(
-                              isLoading: state is AuthLoading,
-                              label: context.bssSubL10n.signIn,
-                              borderRadius: 10,
-                              textColor: AppColor.kPrimaryColor,
-                              onClicked: () => _doLogin(),
-                              //Navigator.pushNamed(context, AppRoutes.mainPage),
-                            );
-                          },
-                        ),
-                      ),
-                    ],
-                  ),
-                ),
-              ),
-              Align(
-                alignment: Alignment.bottomCenter,
-                child: ConstrainedBox(
-                  constraints: BoxConstraints(
-                    maxWidth:
-                        Sizer.isTablet
-                            ? 600.0
-                            : double.infinity, // Match form width
-                  ),
-                  child: Padding(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 24.w, // Proportional scaling
-
-                      // LNP Enquiry bottom → screen bottom: 45 in the design.
+                      ],
                     ),
+                  ),
+                  Padding(
+                    padding: EdgeInsets.fromLTRB(24.w, 0.h, 24.w, 30.h),
                     child: Column(
                       mainAxisSize: MainAxisSize.min,
-                      spacing: 11,
+                      crossAxisAlignment: CrossAxisAlignment.stretch,
                       children: [
                         SecondaryButton(
-                          label: context.bssSubL10n.enquiryForms,
+                          label: context.bssSubL10n.lnpEnquiry,
                           borderRadius: 10,
                           backgroundColor: AppColor.kPrimaryColor,
                           borderColor: Colors.white,
@@ -308,13 +297,10 @@ class _LoginPageState extends State<LoginPage> {
                             height: 1.30.h,
                           ),
                         ),
+                        SizedBox(height: 11.h),
                         Container(
                           height: 30.h,
-                          margin: EdgeInsets.only(
-                            bottom: 50,
-                            left: 100,
-                            right: 100,
-                          ),
+                          margin: EdgeInsets.symmetric(horizontal: 100),
                           decoration: BoxDecoration(
                             color: Colors.white,
                             borderRadius: BorderRadius.all(Radius.circular(23)),
@@ -333,7 +319,7 @@ class _LoginPageState extends State<LoginPage> {
                       ],
                     ),
                   ),
-                ),
+                ],
               ),
             ],
           ),
