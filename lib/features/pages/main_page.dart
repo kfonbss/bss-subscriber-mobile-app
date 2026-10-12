@@ -1,4 +1,8 @@
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kfon_subscriber/core/rating/rating_prompt_coordinator.dart';
+import 'package:kfon_subscriber/features/home/presentation/bloc/home_bloc.dart';
+import 'package:kfon_subscriber/features/home/presentation/bloc/home_state.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/features/home/presentation/pages/home_page.dart';
 import 'package:kfon_subscriber/features/pages/chat_page.dart';
@@ -90,7 +94,16 @@ class _MainPageState extends State<MainPage> {
     return Scaffold(
       backgroundColor: AppColor.kMainBackgroundColor,
       bottomNavigationBar: TabBarMaterialWidget(
-        onChangedTab: (i) => _currentIndex.value = i,
+        onChangedTab: (i) {
+          _currentIndex.value = i;
+          // Returning to Home is a calm point to ask for feedback.
+          if (i == 0) {
+            RatingPromptCoordinator.maybeShow(
+              context,
+              isBusy: () => context.read<HomeBloc>().state is HomeLoading,
+            );
+          }
+        },
       ),
       floatingActionButton: DecoratedBox(
         decoration: const BoxDecoration(

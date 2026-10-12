@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/features/feedback/presentation/widgets/app_feedback_sheet.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
 
@@ -69,6 +70,11 @@ class AboutAppPage extends StatelessWidget {
                         onTap: () {
                           // TODO: Navigate to Contact Us page or open contact options
                         },
+                      ),
+                      _AppInfoItem(
+                        title: l10n.giveFeedback,
+                        isTappable: true,
+                        onTap: () => showAppFeedbackSheet(context),
                       ),
                     ],
                   ),

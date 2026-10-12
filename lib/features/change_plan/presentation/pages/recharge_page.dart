@@ -899,6 +899,7 @@ class _RechargePageState extends State<RechargePage> {
                   label: l10n.apply,
                   borderRadius: 12,
                   height: 36.h,
+                  width: 72.w,
                   isLoading: isProcessing,
                   loaderSize: 14,
                   backgroundColor: AppColor.kPrimary5,

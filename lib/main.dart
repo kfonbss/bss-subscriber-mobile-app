@@ -6,6 +6,7 @@ import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:kfon_subscriber/core/constant/app_brand.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/routes/navigator_key.dart';
+import 'package:kfon_subscriber/core/rating/rating_eligibility_manager.dart';
 import 'package:kfon_subscriber/core/util/app_locale.dart';
 import 'package:kfon_subscriber/core/util/preference_util.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
@@ -54,6 +55,7 @@ Future<void> main() async {
   final tenantId = await PreferenceUtils.getTenantId() ?? '';
   AppBrand.setTenant(tenantId);
   await AppLocale.load();
+  await RatingEligibilityManager.instance.init();
   runApp(MyApp(showIntro: showIntro, tenantId: tenantId));
 }
 
@@ -152,6 +154,7 @@ class _MyAppState extends State<MyApp> {
       ),
     );
   }
+
   void _onLocaleChanged() {
     if (mounted) setState(() {});
   }

@@ -4406,6 +4406,18 @@ abstract class BssSubLocalizations {
   /// **'How satisfied are you with how this ticket was handled?'**
   String get rateTicketSubtitle;
 
+  /// No description provided for @rateAppSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'How satisfied are you with your experience using the app?'**
+  String get rateAppSubtitle;
+
+  /// No description provided for @giveFeedback.
+  ///
+  /// In en, this message translates to:
+  /// **'Give Feedback'**
+  String get giveFeedback;
+
   /// No description provided for @ratingVeryPoor.
   ///
   /// In en, this message translates to:

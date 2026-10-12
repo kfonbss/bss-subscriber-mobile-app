@@ -14,6 +14,7 @@ class PreferenceUtils {
   static const _keyLanguageCode = 'languageCode';
   static const _keyUsername = 'userName';
   static const _keyPassword = 'password';
+  static const _keyRatingTracking = 'ratingTracking';
   static Future<void> saveLoginCredentials(
       String userName,
       String password,
@@ -127,6 +128,14 @@ class PreferenceUtils {
       await _storage.write(key: _keyMobileNumber, value: mobileNumber);
   static Future<String?> getMobileNumber() async =>
       await _storage.read(key: _keyMobileNumber);
+
+  /// Usage tracking for the automatic feedback prompt (JSON). Deliberately not
+  /// removed by [clearAll], so logging out does not reset eligibility.
+  static Future<String?> getRatingTracking() async =>
+      await _storage.read(key: _keyRatingTracking);
+
+  static Future<void> setRatingTracking(String json) async =>
+      await _storage.write(key: _keyRatingTracking, value: json);
 
   static Future<void> clearAll(bool clearLogin) async{
     await Future.wait([

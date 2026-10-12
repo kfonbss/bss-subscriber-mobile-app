@@ -190,7 +190,8 @@ class _LoginPageState extends State<LoginPage> {
                                   hintText: context.bssSubL10n.enterUsername,
                                   textEditingController:
                                       _usernameTextFieldController,
-                                  textInputType: TextInputType.number,
+                                  textInputType: TextInputType.text,
+                                  textCapitalization: TextCapitalization.none,
                                   validator:
                                       (v) => Validators.validateRequired(
                                         v,

@@ -1051,6 +1051,8 @@
   "ticketTypeLabel": "Type",
   "rateYourExperience": "Rate your experience",
   "rateTicketSubtitle": "How satisfied are you with how this ticket was handled?",
+  "rateAppSubtitle": "How satisfied are you with your experience using the app?",
+  "giveFeedback": "Give Feedback",
   "ratingVeryPoor": "Very poor",
   "ratingPoor": "Poor",
   "ratingAverage": "Average",

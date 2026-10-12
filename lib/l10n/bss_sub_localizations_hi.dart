@@ -2346,6 +2346,12 @@ class BssSubLocalizationsHi extends BssSubLocalizations {
   String get rateTicketSubtitle => 'आप समाधान से कितने संतुष्ट हैं?';
 
   @override
+  String get rateAppSubtitle => 'ऐप का उपयोग करने का आपका अनुभव कैसा रहा?';
+
+  @override
+  String get giveFeedback => 'फीडबैक दें';
+
+  @override
   String get ratingVeryPoor => 'बहुत खराब';
 
   @override

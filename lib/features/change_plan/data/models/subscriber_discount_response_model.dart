@@ -117,7 +117,7 @@ class SubscriberDiscountModel {
       walletBalance: (json['walletBalance'] as num?)?.toDouble() ?? 0,
       walletAmount: (json['walletAmount'] as num?)?.toDouble() ?? 0,
       gatewayAmount: (json['gatewayAmount'] as num?)?.toDouble() ?? 0,
-      walletEligible: json['walletEligible'] as bool? ?? false,
+      walletEligible: true, //json['walletEligible'] as bool? ?? false,
     );
   }
 

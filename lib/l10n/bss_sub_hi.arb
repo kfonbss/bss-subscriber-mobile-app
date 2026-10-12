@@ -1092,6 +1092,8 @@
   "ticketTypeLabel": "प्रकार",
   "rateYourExperience": "अपने अनुभव को रेट करें",
   "rateTicketSubtitle": "आप समाधान से कितने संतुष्ट हैं?",
+  "rateAppSubtitle": "ऐप का उपयोग करने का आपका अनुभव कैसा रहा?",
+  "giveFeedback": "फीडबैक दें",
   "ratingVeryPoor": "बहुत खराब",
   "ratingPoor": "खराब",
   "ratingAverage": "औसत",

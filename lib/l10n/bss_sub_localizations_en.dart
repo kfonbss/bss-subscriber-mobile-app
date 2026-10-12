@@ -2353,6 +2353,13 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
       'How satisfied are you with how this ticket was handled?';
 
   @override
+  String get rateAppSubtitle =>
+      'How satisfied are you with your experience using the app?';
+
+  @override
+  String get giveFeedback => 'Give Feedback';
+
+  @override
   String get ratingVeryPoor => 'Very poor';
 
   @override
