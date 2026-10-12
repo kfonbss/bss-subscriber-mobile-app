@@ -1,3 +1,6 @@
+import 'dart:async';
+import 'dart:math';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
@@ -11,8 +14,60 @@ import 'package:syncfusion_flutter_gauges/gauges.dart';
 import '../../../../shared/widgets/primary_button.dart' show PrimaryButton;
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
 
-class SpeedTestPage extends StatelessWidget {
+class SpeedTestPage extends StatefulWidget {
   const SpeedTestPage({super.key});
+
+  @override
+  State<SpeedTestPage> createState() => _SpeedTestPageState();
+}
+
+class _SpeedTestPageState extends State<SpeedTestPage> {
+  // Dummy speed-test state (no live test service is wired yet).
+  static const _tickInterval = Duration(milliseconds: 100);
+  static const _totalTicks = 50;
+  final _random = Random();
+  Timer? _timer;
+  bool _isRunning = false;
+  double _gaugeSpeed = 80;
+  int _upload = 30;
+  int _download = 30;
+  int _ping = 30;
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    super.dispose();
+  }
+
+  void _startSpeedTest() {
+    if (_isRunning) return;
+    final target = 40 + _random.nextInt(81).toDouble();
+    var tick = 0;
+    setState(() {
+      _isRunning = true;
+      _gaugeSpeed = 0;
+    });
+    _timer = Timer.periodic(_tickInterval, (timer) {
+      tick++;
+      if (tick >= _totalTicks) {
+        timer.cancel();
+        if (!mounted) return;
+        setState(() {
+          _isRunning = false;
+          _gaugeSpeed = target;
+          _download = target.round();
+          _upload = (target * (0.5 + _random.nextDouble() * 0.4)).round();
+          _ping = 5 + _random.nextInt(40);
+        });
+        return;
+      }
+      final progress = tick / _totalTicks;
+      final jitter = (_random.nextDouble() - 0.5) * 20;
+      setState(() {
+        _gaugeSpeed = (target * sin(progress * pi / 2) + jitter).clamp(0, 140);
+      });
+    });
+  }
 
   // ── Static decorations ───────────────────────────────────────────────────────
   static const _resultsCardDecoration = BoxDecoration(
@@ -22,16 +77,32 @@ class SpeedTestPage extends StatelessWidget {
     ),
     borderRadius: BorderRadius.all(Radius.circular(12)),
   );
-  // Design: server card 335 wide at y=134.
-  static const _serverCardPadding = EdgeInsets.only(
-    left: 20,
-    right: 20,
-    top: 134,
-  );
+  // Header and server card heights; the card is centred on the header's
+  // bottom edge (half inside the header, half below it).
+  static final _headerHeight = 191.h;
+  static final _serverCardHeight = 70.h;
+  // The artwork is 191 tall but its blue fill ends at 180 (see the SVG).
+  static final _headerEdge = _headerHeight * 180 / 191;
+
+  // Gauge scale labels, evenly spaced along the arc (axis runs 0..8).
+  static const _scaleLabels = [0, 10, 20, 40, 60, 80, 100, 120, 140];
+
+  /// Maps a real speed to its position on the evenly spaced label scale.
+  static double _speedToScale(double speed) {
+    if (speed <= _scaleLabels.first) return 0;
+    for (var i = 1; i < _scaleLabels.length; i++) {
+      if (speed <= _scaleLabels[i]) {
+        final lo = _scaleLabels[i - 1];
+        return (i - 1) + (speed - lo) / (_scaleLabels[i] - lo);
+      }
+    }
+    return (_scaleLabels.length - 1).toDouble();
+  }
 
   @override
   Widget build(BuildContext context) {
     final l10n = context.bssSubL10n;
+    final gaugeValue = _speedToScale(_gaugeSpeed);
     // Design: button ends 32 above the home indicator.
     final bottomInset = MediaQuery.paddingOf(context).bottom;
 
@@ -46,10 +117,11 @@ class SpeedTestPage extends StatelessWidget {
         children: [
           Stack(
             alignment: Alignment.topCenter,
+            clipBehavior: Clip.none,
             children: <Widget>[
               SizedBox(
                 width: double.infinity,
-                height: 191.h,
+                height: _headerHeight,
                 child: SvgPicture(
                   SvgAssetLoader(
                     AppAssets.speedTestBackground,
@@ -59,7 +131,11 @@ class SpeedTestPage extends StatelessWidget {
                 ),
               ),
               Padding(
-                padding: _serverCardPadding,
+                padding: EdgeInsets.only(
+                  left: 20,
+                  right: 20,
+                  top: _headerEdge - _serverCardHeight / 2,
+                ),
                 child: Card(
                   // No default 4 margin, so the card is the full 335 wide.
                   margin: EdgeInsets.zero,
@@ -69,7 +145,7 @@ class SpeedTestPage extends StatelessWidget {
                   color: Colors.white,
                   elevation: 4.0,
                   child: Container(
-                    height: 70.h,
+                    height: _serverCardHeight,
                     padding: const EdgeInsets.all(16),
                     child: Row(
                       mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -77,7 +153,7 @@ class SpeedTestPage extends StatelessWidget {
                       children: [
                         _ServerLocItem(
                           heading: l10n.server,
-                          data: 'Kfon.in',
+                          data: 'railwire.in',
                           icon: AppAssets.glob,
                         ),
                         _ServerLocItem(
@@ -94,13 +170,24 @@ class SpeedTestPage extends StatelessWidget {
           ),
           Expanded(
             child: Padding(
-              padding: const EdgeInsets.symmetric(horizontal: 20),
+              padding: EdgeInsets.fromLTRB(
+                20,
+                _serverCardHeight / 2 - (_headerHeight - _headerEdge),
+                20,
+                0,
+              ),
               child: SfRadialGauge(
                 axes: <RadialAxis>[
                   RadialAxis(
                     minimum: 0,
-                    maximum: 140,
-                    interval: 10,
+                    maximum: 8,
+                    interval: 1,
+                    onLabelCreated: (args) {
+                      final i = double.tryParse(args.text)?.round();
+                      if (i != null && i >= 0 && i < _scaleLabels.length) {
+                        args.text = '${_scaleLabels[i]}';
+                      }
+                    },
                     showLabels: true,
                     showTicks: false,
                     startAngle: 150,
@@ -112,7 +199,7 @@ class SpeedTestPage extends StatelessWidget {
                           color: AppColor.kFailedRed,
                           borderWidth: 10,
                         ),
-                        value: 80,
+                        value: gaugeValue,
                         needleColor: AppColor.kPrimaryColor,
                         knobStyle: KnobStyle(
                           color: AppColor.kPrimaryColor,
@@ -126,7 +213,7 @@ class SpeedTestPage extends StatelessWidget {
                         ),
                       ),
                       RangePointer(
-                        value: 80,
+                        value: gaugeValue,
                         cornerStyle: CornerStyle.bothCurve,
                         width: 0.2.w,
                         color: AppColor.kPrimaryColor,
@@ -162,20 +249,26 @@ class SpeedTestPage extends StatelessWidget {
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
                   crossAxisAlignment: CrossAxisAlignment.center,
                   children: [
-                    _SpeedResultItem(
-                      heading: l10n.uploadSpeed,
-                      data: '0 MB/s',
-                      icon: AppAssets.upload,
+                    Flexible(
+                      child: _SpeedResultItem(
+                        heading: l10n.uploadSpeed,
+                        data: '$_upload MB/s',
+                        icon: AppAssets.upload,
+                      ),
                     ),
-                    _SpeedResultItem(
-                      heading: l10n.downloadSpeed,
-                      data: '0 MB/s',
-                      icon: AppAssets.download,
+                    Flexible(
+                      child: _SpeedResultItem(
+                        heading: l10n.downloadSpeed,
+                        data: '$_download MB/s',
+                        icon: AppAssets.download,
+                      ),
                     ),
-                    _SpeedResultItem(
-                      heading: l10n.ping,
-                      data: '0 MB/s',
-                      icon: AppAssets.ping,
+                    Flexible(
+                      child: _SpeedResultItem(
+                        heading: l10n.ping,
+                        data: '$_ping ms',
+                        icon: AppAssets.ping,
+                      ),
                     ),
                   ],
                 ),
@@ -183,17 +276,20 @@ class SpeedTestPage extends StatelessWidget {
               // Design: results card ends at 596, button at 694–746.
               Padding(
                 padding: EdgeInsets.fromLTRB(20, 98.h, 20, 32.h + bottomInset),
-                child: PrimaryButton(
-                  label: l10n.startSpeedTest,
-                  isLoading: false,
-                  onClicked: () {},
-                  borderRadius: 10,
-                  height: 52.h,
-                  textStyle: TextStyle(
-                    fontSize: 14.sp,
-                    fontFamily: 'GeneralSans',
-                    fontWeight: FontWeight.w600,
-                    height: 1.3,
+                child: SizedBox(
+                  width: double.infinity,
+                  child: PrimaryButton(
+                    label: l10n.startSpeedTest,
+                    isLoading: _isRunning,
+                    onClicked: _startSpeedTest,
+                    borderRadius: 10,
+                    height: 52.h,
+                    textStyle: TextStyle(
+                      fontSize: 14.sp,
+                      fontFamily: 'GeneralSans',
+                      fontWeight: FontWeight.w600,
+                      height: 1.3,
+                    ),
                   ),
                 ),
               ),
@@ -301,28 +397,31 @@ class _SpeedResultItem extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     // Design: 24 icon, text 8 after it, no gap between label and value.
-    return Row(
-      crossAxisAlignment: CrossAxisAlignment.center,
-      spacing: 8,
-      children: [
-        SvgPicture.asset(
-          icon,
-          height: 24.h,
-          width: 24.w,
-          colorFilter: ColorFilter.mode(
-            AppColor.kPrimaryColor,
-            BlendMode.srcIn,
+    return FittedBox(
+      fit: BoxFit.scaleDown,
+      child: Row(
+        crossAxisAlignment: CrossAxisAlignment.center,
+        spacing: 8,
+        children: [
+          SvgPicture.asset(
+            icon,
+            height: 24.h,
+            width: 24.w,
+            colorFilter: ColorFilter.mode(
+              AppColor.kPrimaryColor,
+              BlendMode.srcIn,
+            ),
           ),
-        ),
-        Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          mainAxisSize: MainAxisSize.min,
-          children: [
-            Text(heading, style: _headingStyle),
-            Text(data, style: _dataStyle),
-          ],
-        ),
-      ],
+          Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisSize: MainAxisSize.min,
+            children: [
+              Text(heading, style: _headingStyle),
+              Text(data, style: _dataStyle),
+            ],
+          ),
+        ],
+      ),
     );
   }
 }

@@ -254,26 +254,34 @@ class _RechargePageState extends State<RechargePage> {
                             _buildTermsAndConditions(),
                             SizedBox(height: 8.h),
                             _buildAgreeCheckbox(),
+                            SizedBox(height: 24.h),
+                            SizedBox(
+                              width: double.infinity,
+                              child: PrimaryButton(
+                                label: l10n.proceedToPay,
+                                isLoading:
+                                    state.status ==
+                                    RechargeStatus.paymentRedirectLoading,
+                                // Enabled only after a payment method (wallet
+                                // or gateway) is selected and the terms are
+                                // accepted.
+                                onClicked:
+                                    _canProceed(discount)
+                                        ? () => _onProceedToPay(
+                                          state,
+                                          calculatedFinalAmount,
+                                          seasonalId,
+                                        )
+                                        : null,
+                              ),
+                            ),
+                            // Keeps the button clear of the system
+                            // navigation bar / home indicator.
+                            SizedBox(
+                              height:
+                                  16.h + MediaQuery.of(context).padding.bottom,
+                            ),
                           ],
-                        ),
-                      ),
-                      Padding(
-                        padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 16.h),
-                        child: PrimaryButton(
-                          label: l10n.proceedToPay,
-                          isLoading:
-                              state.status ==
-                              RechargeStatus.paymentRedirectLoading,
-                          // Enabled only after a payment method (wallet or
-                          // gateway) is selected and the terms are accepted.
-                          onClicked:
-                              _canProceed(discount)
-                                  ? () => _onProceedToPay(
-                                    state,
-                                    calculatedFinalAmount,
-                                    seasonalId,
-                                  )
-                                  : null,
                         ),
                       ),
                     ],
@@ -1156,13 +1164,22 @@ class _RechargePageState extends State<RechargePage> {
                 child: Row(
                   crossAxisAlignment: CrossAxisAlignment.stretch,
                   children: [
-                    Expanded(child: _buildGatewayCard(gateways[i])),
-                    SizedBox(width: 12.w),
+                    // Gap is padding (not a SizedBox) so IntrinsicHeight
+                    // measures text wrapping at the real card width.
                     Expanded(
-                      child:
-                          i + 1 < gateways.length
-                              ? _buildGatewayCard(gateways[i + 1])
-                              : const SizedBox.shrink(),
+                      child: Padding(
+                        padding: EdgeInsets.only(right: 6.w),
+                        child: _buildGatewayCard(gateways[i]),
+                      ),
+                    ),
+                    Expanded(
+                      child: Padding(
+                        padding: EdgeInsets.only(left: 6.w),
+                        child:
+                            i + 1 < gateways.length
+                                ? _buildGatewayCard(gateways[i + 1])
+                                : const SizedBox.shrink(),
+                      ),
                     ),
                   ],
                 ),

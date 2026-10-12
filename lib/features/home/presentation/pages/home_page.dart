@@ -583,7 +583,12 @@ class _ComboCard extends StatelessWidget {
                 _Stat(label: context.bssSubL10n.amount, value: amountStr),
                 _Stat(label: context.bssSubL10n.speed, value: speedStr),
                 _Stat(label: context.bssSubL10n.fpu, value: pkg.packageType),
-                _Stat(label: context.bssSubL10n.usage, value: usageStr),
+                Flexible(
+                  child: _Stat(
+                    label: context.bssSubL10n.usage,
+                    value: usageStr,
+                  ),
+                ),
               ],
             ),
           ),
@@ -686,7 +691,12 @@ class _Stat extends StatelessWidget {
           ),
         ),
         SizedBox(height: 2.h),
-        Text(value, style: _valueStyle),
+        Text(
+          value,
+          style: _valueStyle,
+          maxLines: 1,
+          overflow: TextOverflow.ellipsis,
+        ),
       ],
     );
   }
@@ -967,6 +977,7 @@ class _PlanCard extends StatelessWidget {
           ),
           SizedBox(height: 12.h),
           Container(
+            width: double.infinity,
             height: 41.h,
             padding: EdgeInsets.symmetric(horizontal: 12.w),
             decoration: const ShapeDecoration(
@@ -976,35 +987,51 @@ class _PlanCard extends StatelessWidget {
               ),
             ),
             // Design: stats left-aligned, 32 apart.
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.start,
-              spacing: 32.w,
-              children: [
-                _Stat(
-                  label: context.bssSubL10n.data,
-                  value: context.bssSubL10n.valueInGb(
-                    '${plan.allocatedVolume}',
+            // Scales down only when the values are too wide to fit.
+            child: LayoutBuilder(
+              builder:
+                  (context, constraints) => FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: ConstrainedBox(
+                      constraints: BoxConstraints(
+                        minWidth: constraints.maxWidth,
+                      ),
+                      child: Row(
+                        mainAxisSize: MainAxisSize.max,
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        spacing: 32.w,
+                        children: [
+                          _Stat(
+                            label: context.bssSubL10n.data,
+                            value: context.bssSubL10n.valueInGb(
+                              '${plan.allocatedVolume}',
+                            ),
+                            labelSize: 8,
+                          ),
+                          _Stat(
+                            label: context.bssSubL10n.speed,
+                            value: context.bssSubL10n.mbps(
+                              (plan.speedInKbps / 1024).round(),
+                            ),
+                            labelSize: 8,
+                          ),
+                          _Stat(
+                            label: context.bssSubL10n.fpu,
+                            value: plan.packageType.name,
+                            labelSize: 8,
+                          ),
+                          _Stat(
+                            label: context.bssSubL10n.validity,
+                            value: context.bssSubL10n.daysValue(
+                              '${plan.renewPeriod}',
+                            ),
+                            labelSize: 8,
+                          ),
+                        ],
+                      ),
+                    ),
                   ),
-                  labelSize: 8,
-                ),
-                _Stat(
-                  label: context.bssSubL10n.speed,
-                  value: context.bssSubL10n.mbps(
-                    (plan.speedInKbps / 1024).round(),
-                  ),
-                  labelSize: 8,
-                ),
-                _Stat(
-                  label: context.bssSubL10n.fpu,
-                  value: plan.packageType.name,
-                  labelSize: 8,
-                ),
-                _Stat(
-                  label: context.bssSubL10n.validity,
-                  value: context.bssSubL10n.daysValue('${plan.renewPeriod}'),
-                  labelSize: 8,
-                ),
-              ],
             ),
           ),
           SizedBox(height: 12.h),
@@ -1012,7 +1039,10 @@ class _PlanCard extends StatelessWidget {
             mainAxisAlignment: MainAxisAlignment.spaceBetween,
             children: [
               Container(
-                padding: EdgeInsets.symmetric(horizontal: 10.w, vertical: 4.h),
+                // Same height as the Choose Plan button so bottoms align.
+                height: 32.h,
+                alignment: Alignment.center,
+                padding: EdgeInsets.symmetric(horizontal: 10.w),
                 decoration: _priceDecoration,
                 child: Text('₹ ${plan.renewalFee}', style: _priceStyle),
               ),

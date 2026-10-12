@@ -721,6 +721,42 @@ class _DateFilterSheetState extends State<_DateFilterSheet> {
       firstDate: DateTime(2000),
       lastDate: _today,
       initialDateRange: _customRange,
+      builder: (context, child) {
+        final primary = AppColor.kPrimaryColor;
+        final base = Theme.of(context);
+        return Theme(
+          data: base.copyWith(
+            colorScheme: base.colorScheme.copyWith(
+              primary: primary,
+              onPrimary: Colors.white,
+              surface: Colors.white,
+              onSurface: AppColor.kTextSecondaryDark,
+            ),
+            datePickerTheme: DatePickerThemeData(
+              backgroundColor: Colors.white,
+              surfaceTintColor: Colors.transparent,
+              headerBackgroundColor: primary,
+              headerForegroundColor: Colors.white,
+              rangeSelectionBackgroundColor: AppColor.kPrimary15,
+              rangePickerHeaderBackgroundColor: primary,
+              rangePickerHeaderForegroundColor: Colors.white,
+              rangePickerBackgroundColor: Colors.white,
+              rangePickerSurfaceTintColor: Colors.transparent,
+              dividerColor: AppColor.kinputFiledLightBorder,
+            ),
+            textButtonTheme: TextButtonThemeData(
+              style: TextButton.styleFrom(
+                foregroundColor: primary,
+                textStyle: const TextStyle(
+                  fontFamily: 'GeneralSans',
+                  fontWeight: FontWeight.w600,
+                ),
+              ),
+            ),
+          ),
+          child: child!,
+        );
+      },
     );
     if (!mounted || picked == null) return;
     setState(() {

@@ -433,42 +433,47 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
             onPressed: _onClose,
           ),
         ),
-        body: Stack(
-          children: [
-            if (_isInitialized && _initError == null)
-              WebViewWidget(controller: _controller),
-            if (_initError != null)
-              Center(
-                child: Padding(
-                  padding: EdgeInsets.symmetric(horizontal: 32.w),
-                  child: Column(
-                    mainAxisSize: MainAxisSize.min,
-                    children: [
-                      Icon(
-                        Icons.error_outline_rounded,
-                        size: 48.sp,
-                        color: AppColor.kSuspendedStatusText,
-                      ),
-                      SizedBox(height: 12.h),
-                      Text(
-                        _initError!,
-                        textAlign: TextAlign.center,
-                        style: TextStyle(
-                          fontSize: 14.sp,
-                          fontFamily: 'GeneralSans',
-                          fontWeight: FontWeight.w500,
-                          color: AppColor.kTextSecondaryDark,
+        body: SafeArea(
+          top: false,
+          child: Stack(
+            children: [
+              if (_isInitialized && _initError == null)
+                WebViewWidget(controller: _controller),
+              if (_initError != null)
+                Center(
+                  child: Padding(
+                    padding: EdgeInsets.symmetric(horizontal: 32.w),
+                    child: Column(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Icon(
+                          Icons.error_outline_rounded,
+                          size: 48.sp,
+                          color: AppColor.kSuspendedStatusText,
                         ),
-                      ),
-                    ],
+                        SizedBox(height: 12.h),
+                        Text(
+                          _initError!,
+                          textAlign: TextAlign.center,
+                          style: TextStyle(
+                            fontSize: 14.sp,
+                            fontFamily: 'GeneralSans',
+                            fontWeight: FontWeight.w500,
+                            color: AppColor.kTextSecondaryDark,
+                          ),
+                        ),
+                      ],
+                    ),
+                  ),
+                )
+              else if (_isLoading || !_isInitialized)
+                Center(
+                  child: CircularProgressIndicator(
+                    color: AppColor.kPrimaryColor,
                   ),
                 ),
-              )
-            else if (_isLoading || !_isInitialized)
-              Center(
-                child: CircularProgressIndicator(color: AppColor.kPrimaryColor),
-              ),
-          ],
+            ],
+          ),
         ),
       ),
     );

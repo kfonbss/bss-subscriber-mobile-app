@@ -31,6 +31,11 @@ import 'features/auth/domain/repository/auth_repository.dart';
 final sl = GetIt.instance;
 
 void setUpServiceLocator() {
+  // main() runs again in the same process when the activity is recreated
+  // (e.g. reopening after a back-press exit). GetIt would throw on the
+  // duplicate registrations and leave the native splash stuck.
+  if (sl.isRegistered<DioClient>()) return;
+
   // DioClient is needed immediately — keep eager
   sl.registerSingleton<DioClient>(DioClient());
 

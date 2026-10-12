@@ -47,6 +47,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
   late List<TicketMovementEntity> _movements;
   String? _lastAddedNote;
   bool _hasNewNotes = false;
+  double get attachmentIconSize => 24;
 
   /// Files picked for the in-flight add-note request; tied to the new movement id on success.
   List<PlatformFile>? _pendingNoteFiles;
@@ -102,7 +103,6 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
     return DateFormat('EEE, dd-MM-yyyy  hh:mm a').format(dateTime);
   }
 
-
   List<TicketAttachmentEntity> _attachmentsFromPlatformFiles(
     List<PlatformFile> files,
   ) {
@@ -130,23 +130,25 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
     }
     return out;
   }
+
   List<TicketMovementEntity> _sortedMovements() {
-    final indexed = _movements.asMap().entries.toList()
-      ..sort((a, b) {
-        final left = a.value.createdDate;
-        final right = b.value.createdDate;
-        if (left != null && right != null) {
-          final byDate = left.compareTo(right);
-          if (byDate != 0) return byDate;
-        } else if (left == null && right != null) {
-          return 1;
-        } else if (left != null && right == null) {
-          return -1;
-        }
-        return a.key.compareTo(b.key);
-      });
+    final indexed =
+        _movements.asMap().entries.toList()..sort((a, b) {
+          final left = a.value.createdDate;
+          final right = b.value.createdDate;
+          if (left != null && right != null) {
+            final byDate = left.compareTo(right);
+            if (byDate != 0) return byDate;
+          } else if (left == null && right != null) {
+            return 1;
+          } else if (left != null && right == null) {
+            return -1;
+          }
+          return a.key.compareTo(b.key);
+        });
     return indexed.map((entry) => entry.value).toList();
   }
+
   @override
   Widget build(BuildContext context) {
     final List<TicketMessage> messages = [];
@@ -341,7 +343,8 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                       // Title
                       Expanded(
                         child: Text(
-                          widget.ticket.subject?.name ?? context.bssSubL10n.noSubject,
+                          widget.ticket.subject?.name ??
+                              context.bssSubL10n.noSubject,
                           style: TextStyle(
                             color: AppColor.kTextSecondaryDark,
                             fontSize: 14.sp,
@@ -435,26 +438,9 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
       child: Row(
         crossAxisAlignment: CrossAxisAlignment.center,
         children: [
-          // Number Badge
-          Container(
-            width: 17.w,
-            height: 17.h,
-            alignment: Alignment.center,
-            decoration: BoxDecoration(
-              color: const Color(0xFFF97316),
-              borderRadius: BorderRadius.circular(4),
-            ),
-            child: Text(
-              message.number,
-              style: GoogleFonts.manrope(
-                color: Colors.white,
-                fontSize: 12.sp,
-                fontWeight: FontWeight.w600,
-                height: 1.0,
-              ),
-            ),
-          ),
-          SizedBox(width: 10.w), // Gap configuration
+          // Gutter for the number badge; the badge itself is drawn beside the
+          // message text so it centres on it, however many lines it wraps to.
+          SizedBox(width: 27.w),
           // Content
           Expanded(
             child: Column(
@@ -536,14 +522,47 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                 SizedBox(height: 20.h),
 
                 // Message Text
-                Text(
-                  message.message,
-                  style: GoogleFonts.figtree(
-                    color: const Color(0xFF232F50),
-                    fontSize: 12.sp,
-                    fontWeight: FontWeight.w400,
-                    height: 2.0, // 12 * 2.0 = 24px line height
-                  ),
+                Stack(
+                  clipBehavior: Clip.none,
+                  children: [
+                    Positioned(
+                      left: -27.w,
+                      top: 0,
+                      bottom: 0,
+                      child: Center(
+                        child: Container(
+                          width: 17.w,
+                          height: 17.h,
+                          alignment: Alignment.center,
+                          decoration: BoxDecoration(
+                            color: const Color(0xFFF97316),
+                            borderRadius: BorderRadius.circular(4),
+                          ),
+                          child: Text(
+                            message.number,
+                            style: GoogleFonts.manrope(
+                              color: Colors.white,
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w600,
+                              height: 1.0,
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(
+                      width: double.infinity,
+                      child: Text(
+                        message.message,
+                        style: GoogleFonts.figtree(
+                          color: const Color(0xFF232F50),
+                          fontSize: 12.sp,
+                          fontWeight: FontWeight.w400,
+                          height: 2.0, // 12 * 2.0 = 24px line height
+                        ),
+                      ),
+                    ),
+                  ],
                 ),
                 SizedBox(height: 20.h),
 
@@ -590,8 +609,8 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
 
                               Widget chip = Container(
                                 margin: const EdgeInsets.only(right: 8),
-                                width: 24.w,
-                                height: 24.h,
+                                width: attachmentIconSize.w,
+                                height: attachmentIconSize.h,
                                 decoration: BoxDecoration(
                                   border: Border.all(
                                     color: AppColor.kPrimaryColor,
@@ -663,7 +682,8 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                                         builder:
                                             (context) => FilePreviewPage(
                                               files: files,
-                                              title: context.bssSubL10n.labelPreviews(label),
+                                              title: context.bssSubL10n
+                                                  .labelPreviews(label),
                                               fileName: label,
                                               fileExtension: '',
                                             ),
@@ -701,7 +721,10 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                         ),
                       ),
 
-                    if (message.attachments.isEmpty) const Spacer(),
+                    if (message.attachments.isEmpty)
+                      Expanded(
+                        child: SizedBox(height: (attachmentIconSize + 25).h),
+                      ),
 
                     // Status Badge
                     Container(

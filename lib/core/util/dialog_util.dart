@@ -1,3 +1,5 @@
+import 'dart:async';
+
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
@@ -192,6 +194,62 @@ class DialogUtil {
     );
   }
 
+  static OverlayEntry? _toastEntry;
+  static Timer? _toastTimer;
+
+  /// Short text toast on the root overlay (no Scaffold/SnackBar). Only one is
+  /// shown at a time; a new call replaces the current one.
+  void showToast({
+    required BuildContext context,
+    required String message,
+    Duration duration = const Duration(seconds: 2),
+  }) {
+    final overlay = Overlay.maybeOf(context, rootOverlay: true);
+    if (overlay == null) return;
+    _toastTimer?.cancel();
+    _toastEntry?.remove();
+    final entry = OverlayEntry(
+      builder:
+          (ctx) => Positioned(
+            left: 24.w,
+            right: 24.w,
+            bottom: MediaQuery.of(ctx).padding.bottom + 96.h,
+            child: IgnorePointer(
+              child: Center(
+                child: Material(
+                  color: Colors.transparent,
+                  child: Container(
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.w,
+                      vertical: 10.h,
+                    ),
+                    decoration: BoxDecoration(
+                      color: AppColor.kNearBlack.withValues(alpha: 0.9),
+                      borderRadius: BorderRadius.circular(24),
+                    ),
+                    child: Text(
+                      message,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        color: Colors.white,
+                        fontSize: 14.sp,
+                        fontWeight: FontWeight.w500,
+                      ),
+                    ),
+                  ),
+                ),
+              ),
+            ),
+          ),
+    );
+    _toastEntry = entry;
+    overlay.insert(entry);
+    _toastTimer = Timer(duration, () {
+      entry.remove();
+      if (_toastEntry == entry) _toastEntry = null;
+    });
+  }
+
   void showCustomSnackbar({
     required BuildContext context,
     required String content,
@@ -201,18 +259,17 @@ class DialogUtil {
     final theme = Theme.of(context);
     final Color accentColor =
         backgroundColor ??
-            (isError ? AppColor.kFailedRed : AppColor.kPrimaryColor);
-    final Color themedBorderColor =
-    (isError ? AppColor.kFailedRed : AppColor.kPrimaryColor).withValues(
-      alpha: 0.45,
-    );
-    final Color themedShadowColor =
-    (isError ? AppColor.kFailedRed : AppColor.kPrimaryColor).withValues(
-      alpha: 0.16,
-    );
-    final IconData leadingIcon = isError
-        ? Icons.error_outline_rounded
-        : Icons.info_outline_rounded;
+        (isError ? AppColor.kFailedRed : AppColor.kPrimaryColor);
+    final Color themedBorderColor = (isError
+            ? AppColor.kFailedRed
+            : AppColor.kPrimaryColor)
+        .withValues(alpha: 0.45);
+    final Color themedShadowColor = (isError
+            ? AppColor.kFailedRed
+            : AppColor.kPrimaryColor)
+        .withValues(alpha: 0.16);
+    final IconData leadingIcon =
+        isError ? Icons.error_outline_rounded : Icons.info_outline_rounded;
 
     ScaffoldMessenger.of(context)
       ..hideCurrentSnackBar()
@@ -280,14 +337,14 @@ class DialogUtil {
     showModalBottomSheet(
       context: context,
       useRootNavigator: true,
-      backgroundColor: context.isTablet
-          ? Colors.transparent
-          : AppColor.kMainBackgroundColor,
+      backgroundColor:
+          context.isTablet ? Colors.transparent : AppColor.kMainBackgroundColor,
       isScrollControlled: true,
       shape: RoundedRectangleBorder(
-        borderRadius: context.isTablet
-            ? BorderRadius.circular(24.w)
-            : const BorderRadius.vertical(top: Radius.circular(30)),
+        borderRadius:
+            context.isTablet
+                ? BorderRadius.circular(24.w)
+                : const BorderRadius.vertical(top: Radius.circular(30)),
       ),
       builder: (BuildContext context) {
         final l10n = context.bssSubL10n;
@@ -315,7 +372,7 @@ class DialogUtil {
                 right: horizontalPadding,
                 top: topPadding,
                 bottom:
-                bottomPadding + MediaQuery.of(context).viewInsets.bottom,
+                    bottomPadding + MediaQuery.of(context).viewInsets.bottom,
               ),
               child: Column(
                 mainAxisSize: MainAxisSize.min,
@@ -371,7 +428,7 @@ class DialogUtil {
                                 rootNavigator: true,
                               ).pushNamedAndRemoveUntil(
                                 AppRoutes.login,
-                                    (route) => false,
+                                (route) => false,
                               );
                             } else if (state is LogoutFailure) {
                               DialogUtil().showCustomSnackbar(
@@ -397,9 +454,8 @@ class DialogUtil {
                               },
                               textStyle: TextStyle(
                                 fontFamily: 'General Sans',
-                                fontSize: context.isTablet
-                                    ? 14.0.sp * 1.2
-                                    : 14.sp,
+                                fontSize:
+                                    context.isTablet ? 14.0.sp * 1.2 : 14.sp,
                                 fontWeight: FontWeight.w600,
                                 height: 1.2999999523162842.h,
                                 letterSpacing: 0,
@@ -409,20 +465,22 @@ class DialogUtil {
                         ),
                       ),
                       SizedBox(height: gapBetweenButtons),
-                      // White fill, no outline, dark label — as it was.
-                      SecondaryButton(
-                        label: l10n.cancel,
-                        borderRadius: 10,
-                        height: buttonHeight,
-                        borderColor: Colors.transparent,
-                        foregroundColor: const Color.fromRGBO(0, 0, 0, 0.8),
-                        onClicked: () => Navigator.of(context).pop(),
-                        textStyle: TextStyle(
-                          fontFamily: 'General Sans',
-                          fontSize: context.isTablet ? 14.0.sp * 1.2 : 14.sp,
-                          fontWeight: FontWeight.w600,
-                          height: 1.2999999523162842.h,
-                          letterSpacing: 0,
+                      // White fill, thin primary outline, primary label
+                      // (SecondaryButton defaults).
+                      SizedBox(
+                        width: double.infinity,
+                        child: SecondaryButton(
+                          label: l10n.cancel,
+                          borderRadius: 10,
+                          height: buttonHeight,
+                          onClicked: () => Navigator.of(context).pop(),
+                          textStyle: TextStyle(
+                            fontFamily: 'General Sans',
+                            fontSize: context.isTablet ? 14.0.sp * 1.2 : 14.sp,
+                            fontWeight: FontWeight.w600,
+                            height: 1.2999999523162842.h,
+                            letterSpacing: 0,
+                          ),
                         ),
                       ),
                     ],

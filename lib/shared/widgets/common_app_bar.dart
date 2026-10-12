@@ -127,9 +127,14 @@ class CommonAppBar extends StatelessWidget {
                 .toList() ??
             [],
       ),
-      body: Padding(
-        padding: const EdgeInsets.only(top: kAppBarToContentSpacing),
-        child: body,
+      // Bottom-only: the AppBar already handles the status bar. Keeps the
+      // content clear of the system navigation bar / home indicator.
+      body: SafeArea(
+        top: false,
+        child: Padding(
+          padding: const EdgeInsets.only(top: kAppBarToContentSpacing),
+          child: body,
+        ),
       ),
       floatingActionButton: floatingActionButton,
     );

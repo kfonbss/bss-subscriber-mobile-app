@@ -98,7 +98,10 @@ class _ProfilePageState extends State<ProfilePage> {
           context.read<ProfileBloc>().add(const FetchProfileRequested());
         },
         child: ListView(
-          padding: EdgeInsets.symmetric(horizontal: 20.w),
+          // Bottom space keeps the last item (Logout) clear of the main
+          // page's docked floating button; the system inset is already
+          // handled by the bottom bar / SafeArea above this list.
+          padding: EdgeInsets.fromLTRB(20.w, 0, 20.w, 72.h),
           children: [
             // ── Profile Header (from BLoC) ──
             BlocBuilder<ProfileBloc, ProfileState>(

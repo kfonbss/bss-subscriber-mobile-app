@@ -438,7 +438,7 @@ class _SeasonalPlanViewState extends State<_SeasonalPlanView> {
                       padding: EdgeInsets.only(
                         left: 16,
                         right: 10,
-                        bottom: MediaQuery.viewPaddingOf(context).bottom + 90,
+                        bottom: 90,
                       ),
 
                       itemCount:
@@ -505,7 +505,7 @@ class _SeasonalPlanViewState extends State<_SeasonalPlanView> {
                 16,
                 16,
                 16,
-                MediaQuery.viewPaddingOf(context).bottom + 16,
+                16,
               ),
 
               decoration: BoxDecoration(

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/core/rating/rating_prompt_coordinator.dart';
 import 'package:kfon_subscriber/features/home/presentation/bloc/home_bloc.dart';
@@ -15,6 +16,7 @@ import 'package:kfon_subscriber/shared/widgets/common_bottom_sheet.dart';
 import 'package:kfon_subscriber/shared/widgets/help_option_card.dart';
 import 'package:kfon_subscriber/shared/widgets/tabbar_material_widget.dart';
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
+import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
@@ -43,6 +45,25 @@ class MainPage extends StatefulWidget {
 
 class _MainPageState extends State<MainPage> {
   final _currentIndex = ValueNotifier<int>(0);
+
+  // Double-back-to-exit (Home tab only).
+  static const _exitWindow = Duration(seconds: 2);
+  DateTime? _lastBackPress;
+
+  void _onHomeBack() {
+    final now = DateTime.now();
+    final last = _lastBackPress;
+    if (last != null && now.difference(last) <= _exitWindow) {
+      SystemNavigator.pop();
+      return;
+    }
+    _lastBackPress = now;
+    DialogUtil().showToast(
+      context: context,
+      message: 'Press back again to exit',
+      duration: _exitWindow,
+    );
+  }
 
   static const _pages = <Widget>[
     HomePage(),
@@ -91,6 +112,23 @@ class _MainPageState extends State<MainPage> {
 
   @override
   Widget build(BuildContext context) {
+    return ValueListenableBuilder<int>(
+      valueListenable: _currentIndex,
+      // On Home the first back press is consumed here; other tabs keep the
+      // default back behaviour.
+      builder:
+          (_, index, child) => PopScope(
+            canPop: index != 0,
+            onPopInvokedWithResult: (didPop, _) {
+              if (!didPop) _onHomeBack();
+            },
+            child: child!,
+          ),
+      child: _buildScaffold(context),
+    );
+  }
+
+  Widget _buildScaffold(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor.kMainBackgroundColor,
       bottomNavigationBar: TabBarMaterialWidget(
