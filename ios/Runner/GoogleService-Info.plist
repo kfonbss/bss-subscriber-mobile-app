@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>API_KEY</key>
+	<string>AIzaSyCGdB2FOZjpqgAIhg96JCm1X8ovehE89PA</string>
+	<key>GCM_SENDER_ID</key>
+	<string>74267830461</string>
+	<key>PLIST_VERSION</key>
+	<string>1</string>
+	<key>BUNDLE_ID</key>
+	<string>com.railtel.railwire.subscriber</string>
+	<key>PROJECT_ID</key>
+	<string>bss---subscriber</string>
+	<key>STORAGE_BUCKET</key>
+	<string>bss---subscriber.firebasestorage.app</string>
+	<key>IS_ADS_ENABLED</key>
+	<false></false>
+	<key>IS_ANALYTICS_ENABLED</key>
+	<false></false>
+	<key>IS_APPINVITE_ENABLED</key>
+	<true></true>
+	<key>IS_GCM_ENABLED</key>
+	<true></true>
+	<key>IS_SIGNIN_ENABLED</key>
+	<true></true>
+	<key>GOOGLE_APP_ID</key>
+	<string>1:74267830461:ios:6105379dc9521fc1bdefd4</string>
+</dict>
+</plist>

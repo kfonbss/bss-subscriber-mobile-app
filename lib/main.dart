@@ -1,9 +1,11 @@
+import 'package:firebase_core/firebase_core.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:kfon_subscriber/core/constant/app_brand.dart';
+import 'package:kfon_subscriber/core/notification/push_notification_service.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/routes/navigator_key.dart';
 import 'package:kfon_subscriber/core/rating/rating_eligibility_manager.dart';
@@ -35,10 +37,12 @@ import 'package:kfon_subscriber/l10n/bss_sub_localizations.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 
 import 'features/auth/domain/repository/auth_repository.dart';
+import 'firebase_options.dart';
 import 'features/auth/presentation/bloc/auth_state.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
+  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
   FlutterNativeSplash.preserve(
     widgetsBinding: WidgetsFlutterBinding.ensureInitialized(),
   );
@@ -53,6 +57,11 @@ Future<void> main() async {
   AppBrand.setTenant(tenantId);
   await AppLocale.load();
   await RatingEligibilityManager.instance.init();
+  try {
+    await PushNotificationService.instance.init();
+  } catch (e) {
+    debugPrint('Push notification setup failed: $e');
+  }
   runApp(MyApp(showIntro: showIntro, tenantId: tenantId));
 }
 

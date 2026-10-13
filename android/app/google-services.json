@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "74267830461",
+    "project_id": "bss---subscriber",
+    "storage_bucket": "bss---subscriber.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:74267830461:android:6de52c14ea39f678bdefd4",
+        "android_client_info": {
+          "package_name": "com.railtel.railwire.subscriber"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyA7c-CCc6cSuhiXiDErHa8l8PojImVLV48"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
