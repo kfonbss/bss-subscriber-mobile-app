@@ -15,8 +15,8 @@ import 'package:kfon_subscriber/features/data_usage/presentation/bloc/data_usage
 import 'package:kfon_subscriber/features/data_usage/presentation/bloc/data_usage_state.dart';
 import 'package:kfon_subscriber/features/data_usage/presentation/pages/restart_modem_page.dart';
 import 'package:kfon_subscriber/features/data_usage/presentation/pages/session_history_detail_page.dart';
+import 'package:kfon_subscriber/features/pages/package_info_card.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
-import 'package:kfon_subscriber/presentation/page_component/package_info_card.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
 import 'package:kfon_subscriber/shared/widgets/no_data_found.dart';
 import 'package:kfon_subscriber/shared/widgets/retry_widget.dart';

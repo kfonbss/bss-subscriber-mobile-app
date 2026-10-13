@@ -4646,6 +4646,36 @@ abstract class BssSubLocalizations {
   /// **'Please check your connection, restart your router, or contact our support team for assistance.'**
   String get pleaseCheckYourConnectionRestartYourRouter;
 
+  /// No description provided for @instant.
+  ///
+  /// In en, this message translates to:
+  /// **'Instant'**
+  String get instant;
+
+  /// No description provided for @high.
+  ///
+  /// In en, this message translates to:
+  /// **'High'**
+  String get high;
+
+  /// No description provided for @medium.
+  ///
+  /// In en, this message translates to:
+  /// **'Medium'**
+  String get medium;
+
+  /// No description provided for @low.
+  ///
+  /// In en, this message translates to:
+  /// **'Low'**
+  String get low;
+
+  /// No description provided for @resolved.
+  ///
+  /// In en, this message translates to:
+  /// **'Resolved'**
+  String get resolved;
+
   /// No description provided for @payments.
   ///
   /// In en, this message translates to:

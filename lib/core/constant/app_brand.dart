@@ -11,6 +11,8 @@ class AppBrand {
     _currentTenantId = tenantId;
   }
 
+  static bool get isRailWire => appName == 'RailWire';
+
   static bool get isLd => isLdTenant(_currentTenantId);
 
   /// Whether a tenant has already been chosen (and saved) on this device.

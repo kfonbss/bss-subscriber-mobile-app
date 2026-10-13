@@ -7,8 +7,8 @@ import 'package:kfon_subscriber/features/active_package_details/domain/repositor
 import 'package:kfon_subscriber/features/active_package_details/presentation/bloc/package_details_bloc.dart';
 import 'package:kfon_subscriber/features/active_package_details/presentation/bloc/package_details_event.dart';
 import 'package:kfon_subscriber/features/active_package_details/presentation/bloc/package_details_state.dart';
+import 'package:kfon_subscriber/features/pages/package_info_card.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
-import 'package:kfon_subscriber/presentation/page_component/package_info_card.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
 import 'package:kfon_subscriber/shared/widgets/shimmer/shimmer_base.dart';
 import 'package:kfon_subscriber/shared/widgets/shimmer/shimmer_box.dart';

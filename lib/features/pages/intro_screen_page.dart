@@ -5,7 +5,7 @@ import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/util/preference_util.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
-import 'package:kfon_subscriber/presentation/page_component/intro_screen_layout.dart';
+import 'package:kfon_subscriber/features/pages/intro_screen_layout.dart';
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
 
 class IntroScreenPage extends StatefulWidget {
