@@ -87,6 +87,44 @@ class _SpeedTestPageState extends State<SpeedTestPage> {
   // Gauge scale labels, evenly spaced along the arc (axis runs 0..8).
   static const _scaleLabels = [0, 10, 20, 40, 60, 80, 100, 120, 140];
 
+  // Gauge geometry: arc spans 150°..390° (clockwise from 3 o'clock) and is
+  // 0.2 of the radius thick. Labels keep a fixed gap inside the arc.
+  static const _gaugeStartAngle = 150.0;
+  static const _gaugeEndAngle = 390.0;
+  static const _gaugeArcThickness = 0.2;
+  static const _labelGap = 0.06;
+
+  static const _gaugeLabelStyle = TextStyle(
+    color: Colors.black,
+    fontSize: 14,
+    fontWeight: FontWeight.w500,
+    fontFamily: 'GeneralSans',
+  );
+
+  /// Scale labels drawn as annotations. Syncfusion centres its own labels on
+  /// a fixed radius, so wide labels (100–140) end up closer to the arc than
+  /// narrow ones (0–20). Here each label is anchored by the edge facing the
+  /// arc instead, giving the same visual gap all the way round.
+  static final List<GaugeAnnotation> _scaleAnnotations = [
+    for (var i = 0; i < _scaleLabels.length; i++)
+      () {
+        final angle =
+            _gaugeStartAngle +
+            i * (_gaugeEndAngle - _gaugeStartAngle) / (_scaleLabels.length - 1);
+        final radians = angle * pi / 180;
+        return GaugeAnnotation(
+          angle: angle,
+          positionFactor: 1 - _gaugeArcThickness - _labelGap,
+          // Shift the label inward by half its own size along the radius,
+          // so its outer edge (not its centre) sits on the label circle.
+          widget: FractionalTranslation(
+            translation: Offset(-cos(radians) / 2, -sin(radians) / 2),
+            child: Text('${_scaleLabels[i]}', style: _gaugeLabelStyle),
+          ),
+        );
+      }(),
+  ];
+
   /// Maps a real speed to its position on the evenly spaced label scale.
   static double _speedToScale(double speed) {
     if (speed <= _scaleLabels.first) return 0;
@@ -182,17 +220,14 @@ class _SpeedTestPageState extends State<SpeedTestPage> {
                     minimum: 0,
                     maximum: 8,
                     interval: 1,
-                    onLabelCreated: (args) {
-                      final i = double.tryParse(args.text)?.round();
-                      if (i != null && i >= 0 && i < _scaleLabels.length) {
-                        args.text = '${_scaleLabels[i]}';
-                      }
-                    },
-                    showLabels: true,
+                    // Labels are drawn by _scaleAnnotations (edge-anchored
+                    // for an even gap to the arc, 140 included).
+                    showLabels: false,
                     showTicks: false,
-                    startAngle: 150,
-                    endAngle: 390,
+                    startAngle: _gaugeStartAngle,
+                    endAngle: _gaugeEndAngle,
                     canScaleToFit: true,
+                    annotations: _scaleAnnotations,
                     pointers: <GaugePointer>[
                       NeedlePointer(
                         tailStyle: TailStyle(
@@ -215,19 +250,15 @@ class _SpeedTestPageState extends State<SpeedTestPage> {
                       RangePointer(
                         value: gaugeValue,
                         cornerStyle: CornerStyle.bothCurve,
-                        width: 0.2.w,
+                        // Same factor as the axis line so the progress
+                        // arc and track are equally thick.
+                        width: _gaugeArcThickness,
                         color: AppColor.kPrimaryColor,
                         sizeUnit: GaugeSizeUnit.factor,
                       ),
                     ],
-                    axisLabelStyle: GaugeTextStyle(
-                      color: Colors.black,
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      fontFamily: 'GeneralSans',
-                    ),
                     axisLineStyle: AxisLineStyle(
-                      thickness: 0.2,
+                      thickness: _gaugeArcThickness,
                       cornerStyle: CornerStyle.bothCurve,
                       color: Colors.white,
                       thicknessUnit: GaugeSizeUnit.factor,
@@ -240,10 +271,15 @@ class _SpeedTestPageState extends State<SpeedTestPage> {
           Column(
             children: [
               // Design: 68 tall, content 16 inside, #EAEAEA border.
+              // minHeight (not a fixed height) so large text scales grow
+              // the card instead of clipping it.
               Container(
-                height: 68.h,
+                constraints: BoxConstraints(minHeight: 68.h),
                 margin: const EdgeInsets.symmetric(horizontal: 20),
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                padding: const EdgeInsets.symmetric(
+                  horizontal: 16,
+                  vertical: 12,
+                ),
                 decoration: _resultsCardDecoration,
                 child: Row(
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -385,10 +421,10 @@ class _SpeedResultItem extends StatelessWidget {
     fontWeight: FontWeight.w400,
   );
 
-  // fontSize: 16 is a literal — const-constructible TextStyle.
-  static const _dataStyle = TextStyle(
+  // Scaled like the heading so both lines keep the same proportion.
+  static final _dataStyle = TextStyle(
     color: AppColor.kTextSecondaryDark,
-    fontSize: 16,
+    fontSize: 16.sp,
     fontWeight: FontWeight.w600,
     height: 1.30,
     fontFamily: 'GeneralSans',
@@ -396,7 +432,7 @@ class _SpeedResultItem extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Design: 24 icon, text 8 after it, no gap between label and value.
+    // Design: 24 icon, text 8 after it, small gap between label and value.
     return FittedBox(
       fit: BoxFit.scaleDown,
       child: Row(
@@ -405,7 +441,8 @@ class _SpeedResultItem extends StatelessWidget {
         children: [
           SvgPicture.asset(
             icon,
-            height: 24.h,
+            // Square box so the icon is the same size on every screen.
+            height: 24.w,
             width: 24.w,
             colorFilter: ColorFilter.mode(
               AppColor.kPrimaryColor,
@@ -415,9 +452,10 @@ class _SpeedResultItem extends StatelessWidget {
           Column(
             crossAxisAlignment: CrossAxisAlignment.start,
             mainAxisSize: MainAxisSize.min,
+            spacing: 2,
             children: [
-              Text(heading, style: _headingStyle),
-              Text(data, style: _dataStyle),
+              Text(heading, style: _headingStyle, maxLines: 1),
+              Text(data, style: _dataStyle, maxLines: 1),
             ],
           ),
         ],
