@@ -2490,6 +2490,21 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
       'Please check your connection, restart your router, or contact our support team for assistance.';
 
   @override
+  String get instant => 'Instant';
+
+  @override
+  String get high => 'High';
+
+  @override
+  String get medium => 'Medium';
+
+  @override
+  String get low => 'Low';
+
+  @override
+  String get resolved => 'Resolved';
+
+  @override
   String get payments => 'Payments';
 
   @override

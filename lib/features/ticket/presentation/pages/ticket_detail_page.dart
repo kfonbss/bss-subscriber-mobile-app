@@ -97,10 +97,14 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
     if (status.isEmpty) return '';
     return status[0].toUpperCase() + status.substring(1).toLowerCase();
   }
-
-  String _formatDateTime(DateTime? dateTime) {
+  String _formatDate(DateTime? dateTime) {
     if (dateTime == null) return '';
-    return DateFormat('EEE, dd-MM-yyyy  hh:mm a').format(dateTime);
+    return DateFormat('EEE ,dd-MM-yyyy').format(dateTime);
+  }
+
+  String _formatTime(DateTime? dateTime) {
+    if (dateTime == null) return '';
+    return DateFormat('hh:mm a').format(dateTime);
   }
 
   List<TicketAttachmentEntity> _attachmentsFromPlatformFiles(
@@ -240,16 +244,16 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
       messages.add(
         TicketMessage(
           number: number,
-          senderName: movement.assignedFromName ?? 'Support',
+          senderName: movement.assignedFromName ?? context.bssSubL10n.support,
           senderRole:
-              movement.assignedFromDesignation ??
+          movement.assignedFromDesignation ??
               movement.assignedFromSeatName ??
               AppBrand.appName,
-          dateTime: _formatDateTime(movement.createdDate),
+          date: _formatDate(movement.createdDate),
+          time: _formatTime(movement.createdDate),
           message: movement.note ?? '',
           attachments: movementAttachments,
           status: movement.status,
-          isMe: isMe,
         ),
       );
     }
@@ -482,6 +486,8 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           Text(
+                            maxLines: 1,
+                            overflow: TextOverflow.ellipsis,
                             message.senderName,
                             style: TextStyle(
                               color: AppColor.kPrimaryColor,
@@ -505,16 +511,23 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                     ),
 
                     // Date Time
-                    Expanded(
-                      flex: 0,
-                      child: Text(
-                        message.dateTime,
-                        style: TextStyle(
-                          color: Color(0xFF232F4F),
-                          fontSize: 8.sp,
-                          fontWeight: FontWeight.w600,
-                          fontFamily: 'GeneralSans',
-                        ),
+                    Text(
+                      message.date,
+                      style: TextStyle(
+                        color: AppColor.kNavyBlue,
+                        fontSize: 8.sp,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'General Sans',
+                      ),
+                    ),
+                    SizedBox(width: 8.w),
+                    Text(
+                      message.time,
+                      style: TextStyle(
+                        color: AppColor.kNavyBlue,
+                        fontSize: 10.sp,
+                        fontWeight: FontWeight.w600,
+                        fontFamily: 'General Sans',
                       ),
                     ),
                   ],
@@ -530,21 +543,19 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                       top: 0,
                       bottom: 0,
                       child: Center(
-                        child: Container(
-                          width: 17.w,
-                          height: 17.h,
+                        child:  Container(
+                          width: 24.w,
+                          height: 24.h,
                           alignment: Alignment.center,
-                          decoration: BoxDecoration(
-                            color: const Color(0xFFF97316),
-                            borderRadius: BorderRadius.circular(4),
-                          ),
+                          decoration: BoxDecoration(borderRadius: BorderRadius.circular(4)),
                           child: Text(
                             message.number,
-                            style: GoogleFonts.manrope(
-                              color: Colors.white,
+                            style: TextStyle(
+                              color: Colors.black,
                               fontSize: 12.sp,
                               fontWeight: FontWeight.w600,
-                              height: 1.0,
+                              fontFamily: 'General Sans',
+                              height: 1.0.h,
                             ),
                           ),
                         ),
@@ -564,7 +575,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                     ),
                   ],
                 ),
-                SizedBox(height: 20.h),
+                SizedBox(height: 10.h),
 
                 // Attachments + status: one line when it fits; Wrap only reflows on overflow
                 Row(
@@ -723,7 +734,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
 
                     if (message.attachments.isEmpty)
                       Expanded(
-                        child: SizedBox(height: (attachmentIconSize + 25).h),
+                        child: Spacer(),
                       ),
 
                     // Status Badge
@@ -863,25 +874,24 @@ class _GstinDetailItem extends StatelessWidget {
   }
 }
 
-// Model for ticket messages
 class TicketMessage {
   final String number;
   final String senderName;
   final String senderRole;
-  final String dateTime;
+  final String date;
+  final String time;
   final String message;
   final List<TicketAttachmentEntity> attachments;
   final String status;
-  final bool isMe;
 
   TicketMessage({
     required this.number,
     required this.senderName,
     required this.senderRole,
-    required this.dateTime,
+    required this.date,
+    required this.time,
     required this.message,
     required this.attachments,
     required this.status,
-    required this.isMe, // useful for styling if needed
   });
 }

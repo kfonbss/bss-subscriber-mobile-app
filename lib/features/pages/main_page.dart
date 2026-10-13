@@ -187,7 +187,7 @@ class _MainPageState extends State<MainPage> {
           padding: const EdgeInsets.fromLTRB(20, 0, 20, 20),
           child: Column(
             mainAxisSize: MainAxisSize.min,
-            crossAxisAlignment: CrossAxisAlignment.center,
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               // Title and Subtitle — inlined; no redundant Column wrapper
               Text(

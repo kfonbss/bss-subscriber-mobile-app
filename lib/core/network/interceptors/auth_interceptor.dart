@@ -1,12 +1,13 @@
 import 'dart:async';
 
 import 'package:dio/dio.dart';
-import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/constant/api_urls.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/routes/navigator_key.dart';
+import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/core/util/preference_util.dart';
 import 'package:kfon_subscriber/features/auth/domain/repository/auth_repository.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 
 /// Interceptor that handles authentication token management
@@ -14,6 +15,7 @@ import 'package:kfon_subscriber/service_locator.dart';
 class AuthInterceptor extends Interceptor {
   bool _isRefreshing = false;
   Completer<void>? _refreshCompleter;
+  bool _isSessionExpiredDialogShowing = false;
 
   /// Cached repository — resolved lazily to avoid circular dependency
   /// (DioClient → AuthInterceptor → AuthRepository → DioClient).
@@ -152,11 +154,37 @@ class AuthInterceptor extends Interceptor {
   /// Handles refresh failure by clearing all tokens and redirecting to login
   Future<void> _handleRefreshFailure() async {
     await PreferenceUtils.clearAll(false);
-    WidgetsBinding.instance.addPostFrameCallback((_) {
-      navigatorKey.currentState?.pushNamedAndRemoveUntil(
-        AppRoutes.login,
-        (route) => false,
-      );
-    });
+    _showSessionExpiredDialog();
+  }
+  void _showSessionExpiredDialog() {
+    if (_isSessionExpiredDialogShowing) return;
+
+    final ctx = navigatorKey.currentContext;
+    if (ctx == null) {
+      // No context available yet (e.g. failure happens before the app's
+      // first frame) — fall back to navigating straight to login rather
+      // than silently doing nothing.
+      _goToLogin();
+      return;
+    }
+
+    _isSessionExpiredDialogShowing = true;
+    DialogUtil().showOKWithAction(
+      context: ctx,
+      content: appL10n.yourSessionHasExpiredPleaseLogIn,
+      onConfirmation: () {
+        _isSessionExpiredDialogShowing = false;
+        navigatorKey.currentState?.pop(); // close the dialog
+        _goToLogin();
+      },
+    );
+  }
+
+  void _goToLogin() {
+    // Navigate to login and clear navigation stack
+    navigatorKey.currentState?.pushNamedAndRemoveUntil(
+      AppRoutes.login,
+          (route) => false,
+    );
   }
 }

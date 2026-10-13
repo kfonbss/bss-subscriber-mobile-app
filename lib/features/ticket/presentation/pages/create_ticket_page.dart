@@ -402,6 +402,7 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
         title: l10n.createTicket,
         body: SafeArea(
           child: Column(
+            crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               Expanded(
                 child: SingleChildScrollView(
@@ -1144,7 +1145,7 @@ class _CreateTicketPageState extends State<CreateTicketPage> {
                             FormField<List<PlatformFile>>(
                               builder: (state) {
                                 return Column(
-                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  crossAxisAlignment: CrossAxisAlignment.stretch,
                                   children: [
                                     AttachmentUploadField(
                                       label: l10n.attachments,

@@ -2484,6 +2484,21 @@ class BssSubLocalizationsHi extends BssSubLocalizations {
       'कृपया अपना कनेक्शन जांचें, अपना राउटर रीस्टार्ट करें, या सहायता के लिए हमारी सपोर्ट टीम से संपर्क करें।';
 
   @override
+  String get instant => 'तत्काल';
+
+  @override
+  String get high => 'उच्च';
+
+  @override
+  String get medium => 'मध्यम';
+
+  @override
+  String get low => 'निम्न';
+
+  @override
+  String get resolved => 'हल किया गया';
+
+  @override
   String get payments => 'भुगतान';
 
   @override

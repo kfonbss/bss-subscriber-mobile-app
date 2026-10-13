@@ -344,26 +344,26 @@ class _TicketCard extends StatelessWidget {
   Color _getPriorityColor() {
     switch (ticket.priority) {
       case TicketPriority.instant:
-        return AppColor.kUrgentRed; // Red
+        return AppColor.kUrgentRed;
       case TicketPriority.high:
-        return AppColor.kPriorityHigh; // Orange
+        return AppColor.kPriorityHigh;
       case TicketPriority.medium:
-        return AppColor.kPriorityMedium; // Yellow/Amber
+        return AppColor.kPriorityMedium;
       case TicketPriority.low:
-        return AppColor.kPriorityLow; // Green
+        return AppColor.kPriorityLow;
     }
   }
 
-  String _getPriorityText(BuildContext context) {
+  String _getPriorityText() {
     switch (ticket.priority) {
       case TicketPriority.instant:
-        return context.bssSubL10n.priorityInstant;
+        return appL10n.instant;
       case TicketPriority.high:
-        return context.bssSubL10n.priorityHigh;
+        return appL10n.high;
       case TicketPriority.medium:
-        return context.bssSubL10n.priorityMedium;
+        return appL10n.medium;
       case TicketPriority.low:
-        return context.bssSubL10n.priorityLow;
+        return appL10n.low;
     }
   }
 
@@ -371,11 +371,11 @@ class _TicketCard extends StatelessWidget {
   Color _getStatusColor() {
     switch (ticket.status) {
       case TicketStatus.open:
-        return AppColor.kTicketOpenBlue; // Teal/Blue
+        return AppColor.kTicketOpenBlue;
       case TicketStatus.progress:
-        return AppColor.kTicketProgressOrange; // Orange
+        return AppColor.kTicketProgressOrange;
       case TicketStatus.closed:
-        return AppColor.kTicketClosedGreen; // Green
+        return AppColor.kTicketClosedGreen;
       case TicketStatus.resolved:
         return AppColor.kPrimaryColor; // Primary Color
     }
@@ -391,20 +391,25 @@ class _TicketCard extends StatelessWidget {
       case TicketStatus.closed:
         return l10n.closed;
       case TicketStatus.resolved:
-        return l10n.statusResolved;
+        return l10n.resolved;
     }
   }
 
   @override
   Widget build(BuildContext context) {
-    // Design: white, radius 12, 16 blur black @ 6%, no offset; 15 side /
-    // 16 vertical padding.
     return Container(
-      padding: EdgeInsets.symmetric(horizontal: 15.w, vertical: 16.h),
-      decoration: const BoxDecoration(
-        color: Colors.white,
-        borderRadius: BorderRadius.all(Radius.circular(12)),
-        boxShadow: [BoxShadow(color: AppColor.kCardShadow, blurRadius: 16)],
+      // height: 140.h, // Let it be flexible
+      padding: EdgeInsets.fromLTRB(15.w, 16.h, 15.w, 15.h),
+      decoration: BoxDecoration(
+        color: AppColor.kWhite,
+        borderRadius: BorderRadius.circular(12),
+        boxShadow: const [
+          BoxShadow(
+            color: AppColor.kCardShadow,
+            blurRadius: 16,
+            offset: Offset.zero,
+          ),
+        ],
       ),
       child: Column(
         children: [
@@ -412,19 +417,19 @@ class _TicketCard extends StatelessWidget {
           Row(
             crossAxisAlignment: CrossAxisAlignment.start,
             children: [
-              // Icon — Design: 38 circle, 20 icon.
+              // Icon
               Container(
                 width: 38.w,
-                height: 38.w,
+                height: 38.h,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
                   color: AppColor.kIconBackground,
                 ),
                 child: Center(
                   child: SvgPicture.asset(
-                    AppAssets.ticket,
+                    'assets/icons/ticket.svg',
                     width: 20.w,
-                    height: 20.w,
+                    height: 20.h,
                     colorFilter: ColorFilter.mode(
                       AppColor.kPrimaryColor,
                       BlendMode.srcIn,
@@ -432,7 +437,6 @@ class _TicketCard extends StatelessWidget {
                   ),
                 ),
               ),
-              // Design: text starts 69 from the card edge (15 + 38 + 16).
               SizedBox(width: 16.w),
               // Content
               Expanded(
@@ -445,8 +449,8 @@ class _TicketCard extends StatelessWidget {
                         color: AppColor.kTextSecondaryDark,
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w500,
-                        fontFamily: 'GeneralSans',
-                        height: 1.30,
+                        fontFamily: 'General Sans',
+                        height: 1.3.h,
                       ),
                     ),
                     SizedBox(height: 3.h),
@@ -456,8 +460,8 @@ class _TicketCard extends StatelessWidget {
                         color: AppColor.kTextSecondaryDark,
                         fontSize: 11.sp,
                         fontWeight: FontWeight.w400,
-                        fontFamily: 'GeneralSans',
-                        height: 1.30,
+                        fontFamily: 'General Sans',
+                        height: 1.3.h,
                       ),
                     ),
                     SizedBox(height: 3.h),
@@ -467,8 +471,8 @@ class _TicketCard extends StatelessWidget {
                         color: AppColor.kHintGrey,
                         fontSize: 10.sp,
                         fontWeight: FontWeight.w500,
-                        fontFamily: 'GeneralSans',
-                        height: 1.30,
+                        fontFamily: 'General Sans',
+                        height: 1.3.h,
                       ),
                     ),
                   ],
@@ -476,10 +480,9 @@ class _TicketCard extends StatelessWidget {
               ),
             ],
           ),
-          // Design: 15 above the divider, 12 below.
           SizedBox(height: 15.h),
-          Divider(height: 1, color: AppColor.kSecondaryBackgroundColor),
-          SizedBox(height: 12.h),
+          Divider(height: 1.h, color: AppColor.kSecondaryBackgroundColor),
+          SizedBox(height: 15.h),
 
           // Bottom Section
           Row(
@@ -490,26 +493,28 @@ class _TicketCard extends StatelessWidget {
                 children: [
                   Text(
                     context.bssSubL10n.priority,
-                    // Design: 10 w400 #707070, 5 before the badge.
                     style: TextStyle(
-                      color: AppColor.kLabelGrey,
+                      color: AppColor.kTextSecondary,
                       fontSize: 10.sp,
+                      fontFamily: 'General Sans',
                       fontWeight: FontWeight.w400,
-                      fontFamily: 'GeneralSans',
-                      height: 1.30,
+                      height: 1.3.h,
                     ),
                   ),
                   SizedBox(width: 5.w),
                   Container(
                     height: 24.h,
-                    padding: const EdgeInsets.symmetric(
-                      horizontal: 16,
-                      vertical: 2,
+                    padding: EdgeInsets.symmetric(
+                      horizontal: 16.w,
+                      vertical: 2.h,
                     ),
                     decoration: ShapeDecoration(
-                      color: _getPriorityColor().withOpacity(0.1),
+                      color: _getPriorityColor().withValues(alpha: 0.1),
                       shape: RoundedRectangleBorder(
-                        side: BorderSide(width: 1, color: _getPriorityColor()),
+                        side: BorderSide(
+                          width: 1.w,
+                          color: _getPriorityColor(),
+                        ),
                         borderRadius: BorderRadius.circular(35),
                       ),
                       shadows: [
@@ -528,7 +533,7 @@ class _TicketCard extends StatelessWidget {
                       children: [
                         Container(
                           width: 6.w,
-                          height: 6.w,
+                          height: 6.h,
                           decoration: ShapeDecoration(
                             color: _getPriorityColor(),
                             shape: const OvalBorder(),
@@ -536,12 +541,13 @@ class _TicketCard extends StatelessWidget {
                         ),
                         SizedBox(width: 5.w),
                         Text(
-                          _getPriorityText(context),
+                          _getPriorityText(),
                           style: TextStyle(
+                            fontFamily: 'General Sans',
                             color: _getPriorityColor(),
-                            fontSize: 12,
-                            fontFamily: 'GeneralSans',
+                            fontSize: 12.sp,
                             fontWeight: FontWeight.w500,
+                            height: 1.h,
                           ),
                         ),
                       ],
@@ -552,38 +558,37 @@ class _TicketCard extends StatelessWidget {
 
               // Status
               Container(
-                height: 28.h,
-                padding: const EdgeInsets.symmetric(horizontal: 16),
+                height: 18.h,
+                alignment: Alignment.center,
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
                 decoration: ShapeDecoration(
-                  color: _getStatusColor().withOpacity(0.1),
+                  color: _getStatusColor().withValues(alpha: 0.1),
                   shape: RoundedRectangleBorder(
-                    side: BorderSide(width: 1, color: _getStatusColor()),
-                    borderRadius: BorderRadius.circular(8),
+                    side: BorderSide(width: 1.w, color: _getStatusColor()),
+                    borderRadius: BorderRadius.circular(100),
                   ),
-                  shadows: [
+                  shadows: const [
                     BoxShadow(
                       color: AppColor.kCardShadowDark,
                       blurRadius: 3.80,
-                      offset: const Offset(0, 4),
+                      offset: Offset(0, 4),
                       spreadRadius: 0,
                     ),
                   ],
                 ),
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  mainAxisAlignment: MainAxisAlignment.center,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Text(
-                      _getStatusText(context),
-                      style: TextStyle(
-                        color: _getStatusColor(),
-                        fontSize: 12,
-                        fontWeight: FontWeight.w500,
-                        fontFamily: 'GeneralSans',
-                      ),
-                    ),
-                  ],
+                // No Center wrapper: the font's leading would push the glyphs
+                // off-centre inside the fixed height. height: 1.h collapses the
+                // line box to the glyph box so the container centres it.
+                child: Text(
+                  _getStatusText(context).toUpperCase(),
+                  textAlign: TextAlign.center,
+                  style: TextStyle(
+                    fontFamily: 'General Sans',
+                    color: _getStatusColor(),
+                    fontSize: 14.sp,
+                    fontWeight: FontWeight.w500,
+                    height: 1.h,
+                  ),
                 ),
               ),
             ],

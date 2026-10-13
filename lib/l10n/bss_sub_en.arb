@@ -1107,6 +1107,13 @@
   "myInternetSpeedIsSlowWhatShould": "My internet speed is slow. What should I do?",
   "pleaseCheckYourConnectionRestartYourRouter": "Please check your connection, restart your router, or contact our support team for assistance.",
 
+
+  "instant": "Instant",
+  "high": "High",
+  "medium": "Medium",
+  "low": "Low",
+  "resolved": "Resolved",
+
   "payments": "Payments",
   "failedToLoadPreview": "Failed to load preview",
   "noAccessContactSupport": "You do not have access to this app. Please contact support.",
