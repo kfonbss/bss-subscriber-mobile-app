@@ -91,6 +91,7 @@ class _EnableAutopayViewState extends State<EnableAutopayView> {
     final eligible = widget.quote.eligible;
 
     return Column(
+      crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
         Expanded(
           child: ListView(

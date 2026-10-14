@@ -40,6 +40,14 @@ abstract class ChangePlanRepository {
     String orderId,
   );
 
+  /// Reports a successful Razorpay SDK payment ([razorpayResponse] holds
+  /// razorpay_payment_id / razorpay_order_id / razorpay_signature) so the
+  /// backend can verify it and complete [orderId].
+  Future<Either<Failure, void>> notifyRazorpayPayment({
+    required String orderId,
+    required Map<String, String> razorpayResponse,
+  });
+
   Future<Either<Failure, SeasonalDiscountEntity>> getSeasonalDiscount(
     String packageId,
   );

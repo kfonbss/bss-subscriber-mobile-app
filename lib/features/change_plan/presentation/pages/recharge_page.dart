@@ -15,8 +15,8 @@ import 'package:kfon_subscriber/features/change_plan/domain/repository/change_pl
 import 'package:kfon_subscriber/features/change_plan/presentation/bloc/discount_bloc.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/bloc/discount_event.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/bloc/discount_state.dart';
-import 'package:kfon_subscriber/features/change_plan/presentation/pages/components/razorpay_checkout.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/pages/payment_webview_page.dart';
+import 'package:kfon_subscriber/features/change_plan/presentation/pages/components/razorpay_checkout.dart';
 import 'package:kfon_subscriber/features/home/presentation/bloc/home_bloc.dart';
 import 'package:kfon_subscriber/features/home/presentation/bloc/home_event.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
@@ -26,6 +26,8 @@ import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
 import 'package:kfon_subscriber/shared/widgets/retry_widget.dart';
 import 'package:kfon_subscriber/shared/widgets/shimmer/list_shimmers.dart';
+import 'package:kfon_subscriber/shared/widgets/shimmer/shimmer_base.dart';
+import 'package:kfon_subscriber/shared/widgets/shimmer/shimmer_box.dart';
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
 
 class RechargePage extends StatefulWidget {
@@ -45,15 +47,13 @@ class RechargePage extends StatefulWidget {
 }
 
 class _RechargePageState extends State<RechargePage> {
-  String? _appliedReferralCode;
   late TextEditingController _referralController;
   late DiscountBloc _discountBloc;
 
-  /// Selected online gateway name ('' = none).
-  String _selectedGateway = '';
-  bool _useWallet = false;
-  bool _agreedToTerms = false;
   final DialogUtil _dialogUtil = DialogUtil();
+
+  /// True while the "verifying payment" loader dialog is on screen.
+  bool _verifyingDialogOpen = false;
 
   static const _backdropColor = AppColor.kBlack50;
   static const _dialogContainerDecoration = BoxDecoration(
@@ -61,13 +61,6 @@ class _RechargePageState extends State<RechargePage> {
     borderRadius: BorderRadius.all(Radius.circular(20)),
   );
 
-  // ElevatedButton.styleFrom() is not const — computed once as static final.
-  static get _dialogButtonStyle => ElevatedButton.styleFrom(
-    backgroundColor: AppColor.kPrimaryColor,
-    shape: const RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(8)),
-    ),
-  );
   static final _dashedPainter = DashedLinePainter(
     color: AppColor.kBlack10,
     strokeWidth: 1,
@@ -129,6 +122,14 @@ class _RechargePageState extends State<RechargePage> {
     return BlocConsumer<DiscountBloc, DiscountState>(
       bloc: _discountBloc,
       listener: (context, state) {
+        // Payment-status check after the gateway: block the page with a
+        // loader until the backend confirms (it polls for a few seconds).
+        if (state.status == RechargeStatus.paymentVerifying) {
+          _showVerifyingDialog(context);
+          return;
+        }
+        _closeVerifyingDialog(context);
+
         if (state.status == RechargeStatus.seasonalIDSuccess) {
           _discountBloc.add(
             FetchTopUpDiscount(
@@ -141,29 +142,33 @@ class _RechargePageState extends State<RechargePage> {
         } else if (state.status == RechargeStatus.paymentRedirectSuccess &&
             state.redirectEntity != null) {
           final redirect = state.redirectEntity!;
-          // Razorpay uses its native SDK (net banking can't open in a
-          // WebView); other gateways post a form in PaymentWebViewPage.
-          final Future<RechargeStatus?> payment =
-              RazorpayCheckout.supports(redirect)
-                  ? RazorpayCheckout.open(redirect)
-                  : Navigator.push<RechargeStatus>(
-                    context,
-                    MaterialPageRoute(
-                      builder:
-                          (context) =>
-                              PaymentWebViewPage(redirectEntity: redirect),
-                    ),
-                  );
-          payment.then((result) {
+          // PaymentWebViewPage opens the Razorpay SDK, or posts the
+          // gateway form in a WebView for the others.
+          final Future<PaymentOutcome?> payment =
+              Navigator.push<PaymentOutcome>(
+                context,
+                MaterialPageRoute(
+                  builder:
+                      (context) => PaymentWebViewPage(redirectEntity: redirect),
+                ),
+              );
+          payment.then((outcome) {
+            final result = outcome?.status;
             if (!context.mounted) return;
             if (result == RechargeStatus.paymentSuccess) {
               if (state.orderId != null) {
                 _discountBloc.add(
-                  FetchRechargePaymentStatus(orderId: state.orderId!),
+                  FetchRechargePaymentStatus(
+                    orderId: state.orderId!,
+                    razorpayResponse: outcome?.razorpayResponse ?? const {},
+                  ),
                 );
               }
             } else if (result == RechargeStatus.paymentFailed) {
-              _showTopUpFailDialog(state.discountDetail!.finalAmount, context);
+              _showTopUpFailDialog(
+                state.discountDetail?.finalAmount ?? widget.package.renewalFee,
+                context,
+              );
             } else if (result == RechargeStatus.paymentCancelled) {
               _dialogUtil.showCustomSnackbar(
                 context: context,
@@ -174,15 +179,25 @@ class _RechargePageState extends State<RechargePage> {
           });
         } else if (state.status == RechargeStatus.paymentSuccess &&
             state.paymentStatusEntity != null) {
-          context.read<HomeBloc>().add(const GetHomeData(loadPackage: false));
+          // loadPackage: true also reloads the plan list, which depends on the
+          // (now changed) current package.
+          context.read<HomeBloc>().add(const GetHomeData(loadPackage: true));
           _showTopUpSuccessDialog(
             context,
             amount: state.paymentStatusEntity!.amount,
             txnId: state.paymentStatusEntity!.txnId,
           );
+        } else if (state.status == RechargeStatus.paymentDeclined) {
+          // Gateway payment reported FAILED by the backend's status check.
+          _showTopUpFailDialog(
+            state.paymentStatusEntity?.amount ??
+                state.discountDetail?.finalAmount ??
+                widget.package.renewalFee,
+            context,
+          );
         } else if (state.status == RechargeStatus.walletRechargeSuccess) {
           // Wallet payments complete immediately — no gateway, no txn id.
-          context.read<HomeBloc>().add(const GetHomeData(loadPackage: false));
+          context.read<HomeBloc>().add(const GetHomeData(loadPackage: true));
           _showTopUpSuccessDialog(
             context,
             amount:
@@ -241,6 +256,7 @@ class _RechargePageState extends State<RechargePage> {
                               state.status ==
                                   RechargeStatus.referralCodeLoading,
                               seasonalId,
+                              state,
                             ),
                             SizedBox(height: 20.h),
                             _buildPaymentGateways(
@@ -253,7 +269,7 @@ class _RechargePageState extends State<RechargePage> {
                             SizedBox(height: 24.h),
                             _buildTermsAndConditions(),
                             SizedBox(height: 8.h),
-                            _buildAgreeCheckbox(),
+                            _buildAgreeCheckbox(state),
                             SizedBox(height: 24.h),
                             SizedBox(
                               width: double.infinity,
@@ -261,12 +277,14 @@ class _RechargePageState extends State<RechargePage> {
                                 label: l10n.proceedToPay,
                                 isLoading:
                                     state.status ==
-                                    RechargeStatus.paymentRedirectLoading,
+                                        RechargeStatus.paymentRedirectLoading ||
+                                    state.status ==
+                                        RechargeStatus.paymentVerifying,
                                 // Enabled only after a payment method (wallet
                                 // or gateway) is selected and the terms are
                                 // accepted.
                                 onClicked:
-                                    _canProceed(discount)
+                                    _canProceed(discount, state)
                                         ? () => _onProceedToPay(
                                           state,
                                           calculatedFinalAmount,
@@ -301,15 +319,17 @@ class _RechargePageState extends State<RechargePage> {
 
   /// Wallet counts as selected only while it still covers the amount
   /// (a referral code can change the total after it was picked).
-  bool _isWalletSelected(DiscountDetailsEntity? discount) =>
-      _useWallet && _isWalletSufficient(discount);
+  bool _isWalletSelected(
+    DiscountDetailsEntity? discount,
+    DiscountState state,
+  ) => state.useWallet && _isWalletSufficient(discount);
 
   /// Exactly one payment method (wallet or gateway) is selected and the
   /// terms are accepted.
-  bool _canProceed(DiscountDetailsEntity? discount) =>
+  bool _canProceed(DiscountDetailsEntity? discount, DiscountState state) =>
       discount != null &&
-      _agreedToTerms &&
-      (_isWalletSelected(discount) || _selectedGateway.isNotEmpty);
+      state.agreedToTerms &&
+      (_isWalletSelected(discount, state) || state.selectedGateway.isNotEmpty);
 
   void _onProceedToPay(
     DiscountState state,
@@ -317,19 +337,19 @@ class _RechargePageState extends State<RechargePage> {
     String? seasonalId,
   ) {
     final discount = state.discountDetail;
-    if (discount == null || !_canProceed(discount)) return;
-    final useWallet = _isWalletSelected(discount);
+    if (discount == null || !_canProceed(discount, state)) return;
+    final useWallet = _isWalletSelected(discount, state);
 
     _discountBloc.add(
       RechargeChangePlan(
         params: RechargeChangePlanParams(
           packageId: widget.package.id,
-          gateway: useWallet ? null : _selectedGateway.toUpperCase(),
+          gateway: useWallet ? null : state.selectedGateway.toUpperCase(),
           amount: calculatedFinalAmount,
           durationDays: widget.package.renewPeriod,
           expectedFinalAmount: calculatedFinalAmount,
           seasonId: seasonalId,
-          referral: _appliedReferralCode != null,
+          referral: state.appliedReferralCode != null,
           useWallet: useWallet,
           changePlan: widget.isChangePlan,
         ),
@@ -516,7 +536,7 @@ class _RechargePageState extends State<RechargePage> {
                           ),
                           SizedBox(height: 5.h),
                           Text(
-                            '$speed Mbps',
+                            l10n.mbpsValue('$speed'),
                             textAlign: TextAlign.right,
                             style: _textStyle(
                               12,
@@ -836,10 +856,11 @@ class _RechargePageState extends State<RechargePage> {
     DiscountDetailsEntity? discount,
     bool isProcessing,
     String? seasonalId,
+    DiscountState state,
   ) {
     final l10n = context.bssSubL10n;
     final bool isApplied =
-        _appliedReferralCode != null &&
+        state.appliedReferralCode != null &&
         discount != null &&
         discount.appliedRules.any(
           (r) =>
@@ -922,7 +943,12 @@ class _RechargePageState extends State<RechargePage> {
                   onClicked: () {
                     FocusScope.of(context).unfocus();
                     final code = _referralController.text.trim();
-                    setState(() => _appliedReferralCode = code);
+                    _discountBloc.add(
+                      UpdateRechargeUi(
+                        appliedReferralCode: code,
+                        updateReferralCode: true,
+                      ),
+                    );
                     _discountBloc.add(
                       FetchTopUpDiscount(
                         packageId: widget.package.id,
@@ -964,10 +990,13 @@ class _RechargePageState extends State<RechargePage> {
                   ),
                   GestureDetector(
                     onTap: () {
-                      setState(() {
-                        _appliedReferralCode = null;
-                        _referralController.clear();
-                      });
+                      _discountBloc.add(
+                        const UpdateRechargeUi(
+                          appliedReferralCode: null,
+                          updateReferralCode: true,
+                        ),
+                      );
+                      _referralController.clear();
                       _discountBloc.add(
                         FetchTopUpDiscount(
                           packageId: widget.package.id,
@@ -1025,7 +1054,7 @@ class _RechargePageState extends State<RechargePage> {
         if (walletAvailable) ...[
           _sectionLabel(l10n.walletCaps),
           SizedBox(height: 6.h),
-          _buildWalletOption(discount!.walletBalance ?? 0, finalAmount),
+          _buildWalletOption(discount!.walletBalance ?? 0, finalAmount, state),
           SizedBox(height: 16.h),
           _sectionLabel(l10n.orPayViaGateway),
           SizedBox(height: 6.h),
@@ -1052,10 +1081,14 @@ class _RechargePageState extends State<RechargePage> {
     );
   }
 
-  Widget _buildWalletOption(double walletBalance, double finalAmount) {
+  Widget _buildWalletOption(
+    double walletBalance,
+    double finalAmount,
+    DiscountState state,
+  ) {
     final l10n = context.bssSubL10n;
     final sufficient = walletBalance >= finalAmount;
-    final isSelected = _useWallet && sufficient;
+    final isSelected = state.useWallet && sufficient;
 
     return _selectableCard(
       isSelected: isSelected,
@@ -1063,10 +1096,9 @@ class _RechargePageState extends State<RechargePage> {
       // A wallet that can't cover the amount can't be chosen.
       onTap:
           sufficient
-              ? () => setState(() {
-                _useWallet = true;
-                _selectedGateway = '';
-              })
+              ? () => _discountBloc.add(
+                const UpdateRechargeUi(useWallet: true, selectedGateway: ''),
+              )
               : null,
       child: Row(
         children: [
@@ -1141,9 +1173,41 @@ class _RechargePageState extends State<RechargePage> {
     switch (state.gatewayStatus) {
       case GatewayStatus.initial:
       case GatewayStatus.loading:
-        return Padding(
-          padding: EdgeInsets.symmetric(vertical: 24.h),
-          child: const Center(child: CircularProgressIndicator()),
+        return AppShimmer(
+          child: Column(
+            children: [
+              for (var i = 0; i < 2; i += 2) ...[
+                if (i > 0) SizedBox(height: 12.h),
+                IntrinsicHeight(
+                  child: Row(
+                    crossAxisAlignment: CrossAxisAlignment.stretch,
+                    children: [
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.only(right: 6.w),
+                          child: ShimmerBox(
+                            width: double.infinity,
+                            height: 110.h,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                      ),
+                      Expanded(
+                        child: Padding(
+                          padding: EdgeInsets.only(left: 6.w),
+                          child: ShimmerBox(
+                            width: double.infinity,
+                            height: 110.h,
+                            borderRadius: BorderRadius.circular(16),
+                          ),
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+              ],
+            ],
+          ),
         );
       case GatewayStatus.error:
         return SizedBox(
@@ -1169,7 +1233,7 @@ class _RechargePageState extends State<RechargePage> {
                     Expanded(
                       child: Padding(
                         padding: EdgeInsets.only(right: 6.w),
-                        child: _buildGatewayCard(gateways[i]),
+                        child: _buildGatewayCard(gateways[i], state),
                       ),
                     ),
                     Expanded(
@@ -1177,7 +1241,7 @@ class _RechargePageState extends State<RechargePage> {
                         padding: EdgeInsets.only(left: 6.w),
                         child:
                             i + 1 < gateways.length
-                                ? _buildGatewayCard(gateways[i + 1])
+                                ? _buildGatewayCard(gateways[i + 1], state)
                                 : const SizedBox.shrink(),
                       ),
                     ),
@@ -1190,47 +1254,50 @@ class _RechargePageState extends State<RechargePage> {
     }
   }
 
-  Widget _buildGatewayCard(PaymentGatewayEntity gateway) {
-    final isSelected = _selectedGateway == gateway.name;
+  Widget _buildGatewayCard(PaymentGatewayEntity gateway, DiscountState state) {
+    final isSelected = state.selectedGateway == gateway.name;
     final description = _gatewayDescription(gateway);
 
     return _selectableCard(
       isSelected: isSelected,
       // Only one method can be used: picking a gateway clears the wallet.
       onTap:
-          () => setState(() {
-            _selectedGateway = gateway.name;
-            _useWallet = false;
-          }),
-      // Design: radio on top, logo (24, py 4) 8 below it, name 2 below logo.
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          _radio(isSelected),
-          SizedBox(height: 12.h),
-          _gatewayLogo(gateway),
-          SizedBox(height: 6.h),
-          Text(
-            gateway.name,
-            style: _textStyle(
-              14,
-              FontWeight.w600,
-              AppColor.kTextSecondaryDark,
-              height: 1.3,
-            ),
+          () => _discountBloc.add(
+            UpdateRechargeUi(selectedGateway: gateway.name, useWallet: false),
           ),
-          // Design uses Plus Jakarta Sans Medium 8 / line 16.5.
-          if (description != null)
+      // Design: radio on top, logo (24, py 4) 8 below it, name 2 below logo.
+      child: SingleChildScrollView(
+        physics: const NeverScrollableScrollPhysics(),
+        child: Column(
+          crossAxisAlignment: CrossAxisAlignment.start,
+          mainAxisSize: MainAxisSize.min,
+          children: [
+            _radio(isSelected),
+            SizedBox(height: 12.h),
+            _gatewayLogo(gateway),
+            SizedBox(height: 6.h),
             Text(
-              description,
-              style: GoogleFonts.plusJakartaSans(
-                fontSize: 8.sp,
-                fontWeight: FontWeight.w500,
-                color: AppColor.kSlate500,
-                height: 16.5 / 8,
+              gateway.name,
+              style: _textStyle(
+                14,
+                FontWeight.w600,
+                AppColor.kTextSecondaryDark,
+                height: 1.3,
               ),
             ),
-        ],
+            // Design uses Plus Jakarta Sans Medium 8 / line 16.5.
+            if (description != null)
+              Text(
+                description,
+                style: GoogleFonts.plusJakartaSans(
+                  fontSize: 8.sp,
+                  fontWeight: FontWeight.w500,
+                  color: AppColor.kSlate500,
+                  height: 16.5 / 8,
+                ),
+              ),
+          ],
+        ),
       ),
     );
   }
@@ -1445,10 +1512,13 @@ class _RechargePageState extends State<RechargePage> {
     );
   }
 
-  Widget _buildAgreeCheckbox() {
+  Widget _buildAgreeCheckbox(DiscountState state) {
     final primary = AppColor.kPrimaryColor;
     return InkWell(
-      onTap: () => setState(() => _agreedToTerms = !_agreedToTerms),
+      onTap:
+          () => _discountBloc.add(
+            UpdateRechargeUi(agreedToTerms: !state.agreedToTerms),
+          ),
       borderRadius: BorderRadius.circular(6),
       child: Padding(
         padding: EdgeInsets.fromLTRB(3.w, 3.h, 0, 3.h),
@@ -1459,14 +1529,14 @@ class _RechargePageState extends State<RechargePage> {
               width: 18.w,
               height: 18.w,
               decoration: BoxDecoration(
-                color: _agreedToTerms ? primary : Colors.white,
+                color: state.agreedToTerms ? primary : Colors.white,
                 border: Border.all(
-                  color: _agreedToTerms ? primary : AppColor.kSlate300,
+                  color: state.agreedToTerms ? primary : AppColor.kSlate300,
                 ),
                 borderRadius: BorderRadius.circular(4),
               ),
               child:
-                  _agreedToTerms
+                  state.agreedToTerms
                       ? Icon(Icons.check, size: 16.sp, color: Colors.white)
                       : null,
             ),
@@ -1490,6 +1560,29 @@ class _RechargePageState extends State<RechargePage> {
 
   void _backToMainPage(BuildContext context) {
     Navigator.of(context).popUntil((route) => route.isFirst);
+  }
+
+  void _showVerifyingDialog(BuildContext context) {
+    if (_verifyingDialogOpen) return;
+    _verifyingDialogOpen = true;
+    showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      barrierColor: _backdropColor,
+      builder:
+          (_) => PopScope(
+            canPop: false,
+            child: Center(
+              child: CircularProgressIndicator(color: AppColor.kPrimaryColor),
+            ),
+          ),
+    );
+  }
+
+  void _closeVerifyingDialog(BuildContext context) {
+    if (!_verifyingDialogOpen) return;
+    _verifyingDialogOpen = false;
+    Navigator.of(context, rootNavigator: true).pop();
   }
 
   /// [txnId] is null for wallet payments, which have no gateway transaction.

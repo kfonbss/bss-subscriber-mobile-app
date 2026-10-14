@@ -1,10 +1,14 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kfon_subscriber/core/constant/app_brand.dart';
+import 'package:kfon_subscriber/core/constant/mis_constant.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:kfon_subscriber/core/rating/rating_prompt_coordinator.dart';
 import 'package:kfon_subscriber/features/home/presentation/bloc/home_bloc.dart';
 import 'package:kfon_subscriber/features/home/presentation/bloc/home_state.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/features/home/presentation/components/callback_confirmation_sheet.dart';
 import 'package:kfon_subscriber/features/home/presentation/pages/home_page.dart';
 import 'package:kfon_subscriber/features/pages/chat_page.dart';
 import 'package:kfon_subscriber/features/pages/faq/faq_page.dart';
@@ -60,7 +64,7 @@ class _MainPageState extends State<MainPage> {
     _lastBackPress = now;
     DialogUtil().showToast(
       context: context,
-      message: 'Press back again to exit',
+      message: context.bssSubL10n.pressBackAgainToExit,
       duration: _exitWindow,
     );
   }
@@ -249,7 +253,7 @@ class _MainPageState extends State<MainPage> {
                       containerWidth: 98.w,
                       onTap: () {
                         Navigator.pop(sheetContext);
-                        _showCallbackConfirmation(context);
+                        showCallbackConfirmation(context);
                       },
                     ),
                   ),
@@ -283,9 +287,15 @@ class _MainPageState extends State<MainPage> {
                 borderRadius: 10,
                 height: 52.h,
                 textStyle: _filledButtonLabelStyle,
-                onClicked: () {
+                onClicked: () async {
                   Navigator.pop(sheetContext);
-                  // TODO: Implement talk to agent functionality
+                  final phoneNumber = AppBrand.isRailWire
+                      ? MisConstant.kRailWireTalkAgent
+                      : MisConstant.kKfonTalkAgent;
+                  final uri = Uri(scheme: 'tel', path: phoneNumber);
+                  if (await canLaunchUrl(uri)) {
+                    await launchUrl(uri, mode: LaunchMode.externalApplication);
+                  }
                 },
               ),
             ],
@@ -301,70 +311,4 @@ class _MainPageState extends State<MainPage> {
     );
   }
 
-  void _showCallbackConfirmation(BuildContext context) {
-    showAppModalBottomSheet<void>(
-      context: context,
-      builder: (BuildContext ctx) {
-        return Padding(
-          padding: const EdgeInsets.symmetric(horizontal: 20),
-          child: Column(
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              // Title
-              Text(context.bssSubL10n.callBack, style: _callbackTitleStyle),
-              SizedBox(height: 24.h),
-              // Message
-              Text(
-                context.bssSubL10n.confirmCallBackRequest,
-                textAlign: TextAlign.center,
-                style: _callbackBodyStyle,
-              ),
-              SizedBox(height: 30.h),
-              // Buttons — two fixed 158 buttons + 21 gap (337) overflowed the
-              // 335 left by the 20 side padding, so they share the width.
-              Row(
-                children: [
-                  // Cancel Button
-                  Expanded(
-                    child: SecondaryButton(
-                      label: context.bssSubL10n.cancel,
-                      borderRadius: 10,
-                      height: 52.h,
-                      backgroundColor: Colors.white,
-                      borderColor: AppColor.kPrimaryColor,
-                      foregroundColor: AppColor.kPrimaryColor,
-                      textStyle: _buttonLabelStyle,
-                      onClicked: () => Navigator.pop(ctx),
-                    ),
-                  ),
-                  SizedBox(width: 21.w),
-                  // Yes Button
-                  Expanded(
-                    child: PrimaryButton(
-                      label: context.bssSubL10n.yes,
-                      isLoading: false,
-                      borderRadius: 10,
-                      height: 52.h,
-                      textStyle: _filledButtonLabelStyle,
-                      onClicked: () {
-                        Navigator.pop(ctx);
-                        // TODO: Implement callback request creation
-                      },
-                    ),
-                  ),
-                ],
-              ),
-              // Home Indicator
-              Container(
-                margin: const EdgeInsets.only(top: 32, bottom: 8),
-                width: 140.w,
-                height: 5.h,
-                decoration: _homeIndicatorDecoration,
-              ),
-            ],
-          ),
-        );
-      },
-    );
-  }
 }

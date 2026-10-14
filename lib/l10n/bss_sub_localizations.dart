@@ -4646,6 +4646,36 @@ abstract class BssSubLocalizations {
   /// **'Please check your connection, restart your router, or contact our support team for assistance.'**
   String get pleaseCheckYourConnectionRestartYourRouter;
 
+  /// No description provided for @updateAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Available'**
+  String get updateAvailable;
+
+  /// No description provided for @updateNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Update Now'**
+  String get updateNow;
+
+  /// No description provided for @checkingForUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking for update...'**
+  String get checkingForUpdate;
+
+  /// No description provided for @pleaseWait.
+  ///
+  /// In en, this message translates to:
+  /// **'Please wait...'**
+  String get pleaseWait;
+
+  /// No description provided for @yourAppIsUpToDateWeWillNotifyYouWhenANewVersionIsAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'Your app is up to date. We will notify you when a new version is available.'**
+  String get yourAppIsUpToDateWeWillNotifyYouWhenANewVersionIsAvailable;
+
   /// No description provided for @instant.
   ///
   /// In en, this message translates to:
@@ -4675,6 +4705,12 @@ abstract class BssSubLocalizations {
   /// In en, this message translates to:
   /// **'Resolved'**
   String get resolved;
+
+  /// No description provided for @version.
+  ///
+  /// In en, this message translates to:
+  /// **'Version {version}'**
+  String version(String version);
 
   /// No description provided for @payments.
   ///
@@ -4777,6 +4813,120 @@ abstract class BssSubLocalizations {
   /// In en, this message translates to:
   /// **'Custom Date'**
   String get customDate;
+
+  /// No description provided for @pdfSavedToDownloads.
+  ///
+  /// In en, this message translates to:
+  /// **'PDF saved to Downloads'**
+  String get pdfSavedToDownloads;
+
+  /// No description provided for @invoicePdf.
+  ///
+  /// In en, this message translates to:
+  /// **'Invoice PDF'**
+  String get invoicePdf;
+
+  /// No description provided for @thisField.
+  ///
+  /// In en, this message translates to:
+  /// **'This field'**
+  String get thisField;
+
+  /// No description provided for @fieldMaxLength.
+  ///
+  /// In en, this message translates to:
+  /// **'{fieldName} must be at most {maxLength} characters'**
+  String fieldMaxLength(String fieldName, int maxLength);
+
+  /// No description provided for @fieldMinLength.
+  ///
+  /// In en, this message translates to:
+  /// **'{fieldName} must be at least {minLength} characters'**
+  String fieldMinLength(String fieldName, int minLength);
+
+  /// No description provided for @mobileNumberOnlyDigits.
+  ///
+  /// In en, this message translates to:
+  /// **'Mobile number must contain only digits'**
+  String get mobileNumberOnlyDigits;
+
+  /// No description provided for @passwordsDoNotMatch.
+  ///
+  /// In en, this message translates to:
+  /// **'Passwords do not match'**
+  String get passwordsDoNotMatch;
+
+  /// No description provided for @pressBackAgainToExit.
+  ///
+  /// In en, this message translates to:
+  /// **'Press back again to exit'**
+  String get pressBackAgainToExit;
+
+  /// No description provided for @newVersionAvailableToUpdate.
+  ///
+  /// In en, this message translates to:
+  /// **'A new version is available to update.'**
+  String get newVersionAvailableToUpdate;
+
+  /// No description provided for @checkingForUpdatesOnPlayStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Checking for updates on Google Play Store...'**
+  String get checkingForUpdatesOnPlayStore;
+
+  /// No description provided for @newUpdateReadyForDownload.
+  ///
+  /// In en, this message translates to:
+  /// **'A new update is ready for download.'**
+  String get newUpdateReadyForDownload;
+
+  /// No description provided for @unableToReachServerWeb.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to reach the server. This may be a CORS issue when running on web.'**
+  String get unableToReachServerWeb;
+
+  /// No description provided for @mbpsValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{speed} Mbps'**
+  String mbpsValue(String speed);
+
+  /// No description provided for @mbPerSecond.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} MB/s'**
+  String mbPerSecond(String value);
+
+  /// No description provided for @msValue.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} ms'**
+  String msValue(String value);
+
+  /// No description provided for @unableToCheckForUpdates.
+  ///
+  /// In en, this message translates to:
+  /// **'Unable to check for updates. Please install the app from Google Play to get updates.'**
+  String get unableToCheckForUpdates;
+
+  /// No description provided for @updateCancelled.
+  ///
+  /// In en, this message translates to:
+  /// **'Update cancelled'**
+  String get updateCancelled;
+
+  /// No description provided for @updateFailedTryAgain.
+  ///
+  /// In en, this message translates to:
+  /// **'Update failed. Please try again.'**
+  String get updateFailedTryAgain;
+
+  /// No description provided for @updatesViaAppStore.
+  ///
+  /// In en, this message translates to:
+  /// **'Updates for this app are available on the App Store.'**
+  String get updatesViaAppStore;
 }
 
 class _BssSubLocalizationsDelegate

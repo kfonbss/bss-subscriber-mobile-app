@@ -313,8 +313,6 @@ class DialogUtil {
                         ),
                         child: Text(
                           content,
-                          maxLines: 2,
-                          overflow: TextOverflow.ellipsis,
                           style: theme.textTheme.bodyMedium?.copyWith(
                             color: const Color(0xFF2F3447),
                             fontWeight: FontWeight.w500,

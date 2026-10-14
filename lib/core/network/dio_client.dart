@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/core/constant/api_urls.dart';
 import 'package:kfon_subscriber/core/network/api_response.dart';
 import 'package:kfon_subscriber/core/network/interceptors/auth_interceptor.dart';
@@ -163,7 +164,7 @@ class DioClient {
       // Treat any 2xx status as success instead of trying to parse a body.
       final statusCode = response.statusCode ?? 0;
       if (statusCode >= 200 && statusCode < 300) {
-        return APIResponse(message: 'Download successful', error: '');
+        return APIResponse(message: appL10n.downloadSuccessful, error: '');
       }
       return APIResponse(
         message: '',

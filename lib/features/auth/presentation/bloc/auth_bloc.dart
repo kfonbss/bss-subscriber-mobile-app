@@ -219,10 +219,7 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
         final response = result.fold((l) => null, (r) => r)!;
         if (response.userRole == null || response.userRole != UserRole.sub) {
           emit(
-            const OtpVerificationFailed(
-              errorMessage:
-                  'You do not have access to this app. Please contact support.',
-            ),
+            OtpVerificationFailed(errorMessage: appL10n.noAccessContactSupport),
           );
           return;
         }

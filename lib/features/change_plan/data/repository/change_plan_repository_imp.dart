@@ -93,6 +93,25 @@ class ChangePlanRepositoryImp extends ChangePlanRepository {
   }
 
   @override
+  Future<Either<Failure, void>> notifyRazorpayPayment({
+    required String orderId,
+    required Map<String, String> razorpayResponse,
+  }) async {
+    // Same request the web portal sends (tenant comes from the X-Tenant-ID
+    // header added by the auth interceptor).
+    final response = await sl<DioClient>().post(
+      ApiUrls.razorpayRechargeCallbackURL,
+      data: {
+        'orderId': orderId,
+        'razorpayOrderId': razorpayResponse['razorpay_order_id'],
+        'razorpayPaymentId': razorpayResponse['razorpay_payment_id'],
+        'razorpaySignature': razorpayResponse['razorpay_signature'],
+      },
+    );
+    return response.isSuccess ? const Right(null) : Left(response.failure);
+  }
+
+  @override
   Future<Either<Failure, RechargePaymentStatusEntity>> getRechargePaymentStatus(
     String orderId,
   ) async {

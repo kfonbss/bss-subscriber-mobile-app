@@ -44,4 +44,14 @@ class HomeRepositoryImp extends HomeRepository {
       return Left(response.failure);
     }
   }
+
+  @override
+  Future<Either<Failure, void>> requestCallback() async {
+    final response = await sl<DioClient>().post(ApiUrls.callbackURL, data: {});
+    if (response.isSuccess) {
+      return const Right(null);
+    } else {
+      return Left(response.failure);
+    }
+  }
 }

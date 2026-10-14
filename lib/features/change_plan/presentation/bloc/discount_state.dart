@@ -15,8 +15,14 @@ enum RechargeStatus {
 
   /// Recharge completed without a gateway (paid from wallet).
   walletRechargeSuccess,
+
+  /// Gateway reported success; waiting for the backend to confirm the order.
+  paymentVerifying,
   paymentSuccess,
   paymentFailed,
+
+  /// The backend reported the gateway payment as FAILED (status check).
+  paymentDeclined,
   paymentCancelled,
   error,
 }
@@ -41,6 +47,10 @@ class DiscountState extends Equatable {
   final RechargePaymentStatusEntity? paymentStatusEntity;
   final GatewayStatus gatewayStatus;
   final List<PaymentGatewayEntity> gateways;
+  final String? appliedReferralCode;
+  final bool useWallet;
+  final String selectedGateway;
+  final bool agreedToTerms;
 
   const DiscountState({
     this.status = RechargeStatus.initial,
@@ -60,6 +70,10 @@ class DiscountState extends Equatable {
     this.paymentStatusEntity,
     this.gatewayStatus = GatewayStatus.initial,
     this.gateways = const [],
+    this.appliedReferralCode,
+    this.useWallet = false,
+    this.selectedGateway = '',
+    this.agreedToTerms = false,
   });
 
   DiscountState copyWith({
@@ -81,6 +95,11 @@ class DiscountState extends Equatable {
     RechargePaymentStatusEntity? paymentStatusEntity,
     GatewayStatus? gatewayStatus,
     List<PaymentGatewayEntity>? gateways,
+    String? appliedReferralCode,
+    bool clearReferralCode = false,
+    bool? useWallet,
+    String? selectedGateway,
+    bool? agreedToTerms,
   }) {
     return DiscountState(
       status: status ?? this.status,
@@ -102,6 +121,13 @@ class DiscountState extends Equatable {
       paymentStatusEntity: paymentStatusEntity ?? this.paymentStatusEntity,
       gatewayStatus: gatewayStatus ?? this.gatewayStatus,
       gateways: gateways ?? this.gateways,
+      appliedReferralCode:
+          clearReferralCode
+              ? null
+              : (appliedReferralCode ?? this.appliedReferralCode),
+      useWallet: useWallet ?? this.useWallet,
+      selectedGateway: selectedGateway ?? this.selectedGateway,
+      agreedToTerms: agreedToTerms ?? this.agreedToTerms,
     );
   }
 
@@ -120,5 +146,9 @@ class DiscountState extends Equatable {
     discountDetail,
     gatewayStatus,
     gateways,
+    appliedReferralCode,
+    useWallet,
+    selectedGateway,
+    agreedToTerms,
   ];
 }

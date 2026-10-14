@@ -1,4 +1,5 @@
 import 'package:dio/dio.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:flutter/foundation.dart';
 import 'package:kfon_subscriber/core/error/failure.dart';
 
@@ -76,41 +77,37 @@ class APIResponse {
     switch (error.type) {
       case DioExceptionType.connectionTimeout:
         return (
-          message: 'Connection timeout, please try again.',
-          failure: const TimeoutFailure(
-            'Connection timeout, please try again.',
-          ),
+          message: appL10n.connectionTimeoutPleaseTryAgain,
+          failure: TimeoutFailure(appL10n.connectionTimeoutPleaseTryAgain),
         );
       case DioExceptionType.sendTimeout:
         return (
-          message: 'Send timeout, please check your internet.',
-          failure: const TimeoutFailure(
-            'Send timeout, please check your internet.',
-          ),
+          message: appL10n.sendTimeoutPleaseCheckInternet,
+          failure: TimeoutFailure(appL10n.sendTimeoutPleaseCheckInternet),
         );
       case DioExceptionType.receiveTimeout:
         return (
-          message: 'Receive timeout, please try again.',
-          failure: const TimeoutFailure('Receive timeout, please try again.'),
+          message: appL10n.receiveTimeoutPleaseTryAgain,
+          failure: TimeoutFailure(appL10n.receiveTimeoutPleaseTryAgain),
         );
       case DioExceptionType.badResponse:
         final result = _handleServerError(error.response);
         return (message: result.message, failure: result.failure);
       case DioExceptionType.cancel:
         return (
-          message: 'Request was cancelled.',
-          failure: const ServerFailure('Request was cancelled.'),
+          message: appL10n.requestWasCancelled,
+          failure: ServerFailure(appL10n.requestWasCancelled),
         );
       case DioExceptionType.connectionError:
         final message =
             kIsWeb
-                ? 'Unable to reach the server. This may be a CORS issue when running on web.'
-                : 'No internet connection.';
-        return (message: message, failure: const NetworkFailure());
+                ? appL10n.unableToReachServerWeb
+                : appL10n.noInternetConnection;
+        return (message: message, failure: NetworkFailure(message));
       default:
         return (
-          message: 'Unknown error occurred',
-          failure: const UnknownFailure(),
+          message: appL10n.unknownErrorOccurred,
+          failure: UnknownFailure(appL10n.unknownErrorOccurred),
         );
     }
   }
@@ -120,8 +117,8 @@ class APIResponse {
   ) {
     if (response == null) {
       return (
-        message: 'No response from server',
-        failure: const ServerFailure('No response from server'),
+        message: appL10n.noResponseFromServer,
+        failure: ServerFailure(appL10n.noResponseFromServer),
       );
     }
 

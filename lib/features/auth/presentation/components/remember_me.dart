@@ -26,9 +26,10 @@ class _RememberMeState extends State<RememberMe> {
 
   Future<void> _loadUserName() async {
     final username = await PreferenceUtils.getUsername();
+    final password = await PreferenceUtils.getPassword();
     if (!mounted) return;
     setState(() {
-      _rememberMe = username == null ? false : true;
+      _rememberMe = (username == null || password == null) ? false : true;
     });
   }
 

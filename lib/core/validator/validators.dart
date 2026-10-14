@@ -1,16 +1,18 @@
 import 'package:kfon_subscriber/l10n/bss_sub_localizations.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 
 class Validators {
   /// Validates that a field is not empty
   static String? validateRequired(
     String? value, {
-    String fieldName = 'This field',
+    String? fieldName,
     BssSubLocalizations? l10n,
   }) {
+    final strings = l10n ?? appL10n;
     if (value == null || value.trim().isEmpty) {
-      final cleanFieldName = fieldName.replaceAll('*', '').trim();
-      return l10n?.fieldIsRequired(cleanFieldName) ??
-          '$cleanFieldName is required';
+      final cleanFieldName =
+          (fieldName ?? strings.thisField).replaceAll('*', '').trim();
+      return strings.fieldIsRequired(cleanFieldName);
     }
     return null;
   }
@@ -19,16 +21,18 @@ class Validators {
   static String? validateMaxLength(
     String? value,
     int maxLength, {
-    String fieldName = 'This field',
+    String? fieldName,
     BssSubLocalizations? l10n,
   }) {
+    final strings = l10n ?? appL10n;
     if (value == null || value.isEmpty) {
       return null;
     }
 
     if (value.length > maxLength) {
-      final cleanFieldName = fieldName.replaceAll('*', '').trim();
-      return '$cleanFieldName must be at most $maxLength characters';
+      final cleanFieldName =
+          (fieldName ?? strings.thisField).replaceAll('*', '').trim();
+      return strings.fieldMaxLength(cleanFieldName, maxLength);
     }
 
     return null;
@@ -39,38 +43,35 @@ class Validators {
     String? value, {
     BssSubLocalizations? l10n,
   }) {
+    final strings = l10n ?? appL10n;
     if (value == null || value.trim().isEmpty) {
-      return l10n?.pleaseEnterMobileNumber ?? 'Please enter mobile number';
+      return strings.pleaseEnterMobileNumber;
     }
 
     final trimmedValue = value.trim();
 
     // Check if it contains only digits
     if (!RegExp(r'^\d+$').hasMatch(trimmedValue)) {
-      return 'Mobile number must contain only digits';
+      return strings.mobileNumberOnlyDigits;
     }
 
     // Check if it's exactly 10 digits
     if (trimmedValue.length != 10) {
-      return l10n?.pleaseEnterValidMobileNumber ??
-          'Please enter valid 10-digit mobile number';
+      return strings.pleaseEnterValidMobileNumber;
     }
 
     return null;
   }
 
   /// Validates password (minimum 6 characters)
-  static String? validatePassword(
-    String? value, {
-    BssSubLocalizations? l10n,
-  }) {
+  static String? validatePassword(String? value, {BssSubLocalizations? l10n}) {
+    final strings = l10n ?? appL10n;
     if (value == null || value.trim().isEmpty) {
-      return l10n?.pleaseEnterPassword ?? 'Please enter password';
+      return strings.pleaseEnterPassword;
     }
 
     if (value.trim().length < 6) {
-      return l10n?.passwordMinLength ??
-          'Password must be at least 6 characters';
+      return strings.passwordMinLength;
     }
 
     return null;
@@ -80,28 +81,28 @@ class Validators {
   static String? validateMinLength(
     String? value,
     int minLength, {
-    String fieldName = 'This field',
+    String? fieldName,
     BssSubLocalizations? l10n,
   }) {
+    final strings = l10n ?? appL10n;
     if (value == null || value.trim().isEmpty) {
       return null; // Allow empty, use validateRequired if you need to enforce presence
     }
 
     if (value.trim().length < minLength) {
-      final cleanFieldName = fieldName.replaceAll('*', '').trim();
-      return '$cleanFieldName must be at least $minLength characters';
+      final cleanFieldName =
+          (fieldName ?? strings.thisField).replaceAll('*', '').trim();
+      return strings.fieldMinLength(cleanFieldName, minLength);
     }
 
     return null;
   }
 
   /// Validates email format
-  static String? validateEmail(
-    String? value, {
-    BssSubLocalizations? l10n,
-  }) {
+  static String? validateEmail(String? value, {BssSubLocalizations? l10n}) {
+    final strings = l10n ?? appL10n;
     if (value == null || value.trim().isEmpty) {
-      return l10n?.pleaseEnterEmailAddress ?? 'Please enter email address';
+      return strings.pleaseEnterEmailAddress;
     }
 
     final emailRegex = RegExp(
@@ -109,8 +110,7 @@ class Validators {
     );
 
     if (!emailRegex.hasMatch(value.trim())) {
-      return l10n?.pleaseEnterValidEmailAddress ??
-          'Please enter a valid email address';
+      return strings.pleaseEnterValidEmailAddress;
     }
 
     return null;
@@ -122,12 +122,13 @@ class Validators {
     String originalPassword, {
     BssSubLocalizations? l10n,
   }) {
+    final strings = l10n ?? appL10n;
     if (value == null || value.trim().isEmpty) {
-      return l10n?.pleaseConfirmPassword ?? 'Please confirm your password';
+      return strings.pleaseConfirmPassword;
     }
 
     if (value != originalPassword) {
-      return 'Passwords do not match';
+      return strings.passwordsDoNotMatch;
     }
 
     return null;

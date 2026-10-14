@@ -294,7 +294,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
             });
             _dialogUtil.showCustomSnackbar(
               context: context,
-              content: 'Note saved successfully',
+              content: context.bssSubL10n.noteSavedSuccessfully,
             );
           } else if (state is OnError) {
             _dialogUtil.showCustomSnackbar(
@@ -712,7 +712,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                               crossAxisAlignment: WrapCrossAlignment.center,
                               children: [
                                 buildAttachmentChip(
-                                  'Router Image',
+                                  context.bssSubL10n.routerImage,
                                   AppAssets.paperclip,
                                   images,
                                 ),
@@ -733,9 +733,7 @@ class _TicketDetailPageState extends State<TicketDetailPage> {
                       ),
 
                     if (message.attachments.isEmpty)
-                      Expanded(
-                        child: Spacer(),
-                      ),
+                      const Spacer(),
 
                     // Status Badge
                     Container(

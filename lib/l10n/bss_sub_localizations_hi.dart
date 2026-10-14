@@ -2484,6 +2484,22 @@ class BssSubLocalizationsHi extends BssSubLocalizations {
       'कृपया अपना कनेक्शन जांचें, अपना राउटर रीस्टार्ट करें, या सहायता के लिए हमारी सपोर्ट टीम से संपर्क करें।';
 
   @override
+  String get updateAvailable => 'अपडेट उपलब्ध है';
+
+  @override
+  String get updateNow => 'अभी अपडेट करें';
+
+  @override
+  String get checkingForUpdate => 'अपडेट के लिए जांच की जा रही है...';
+
+  @override
+  String get pleaseWait => 'कृपया प्रतीक्षा करें...';
+
+  @override
+  String get yourAppIsUpToDateWeWillNotifyYouWhenANewVersionIsAvailable =>
+      'आपका ऐप अद्यतन है। जब नया संस्करण उपलब्ध होगा तो हम आपको सूचित करेंगे।';
+
+  @override
   String get instant => 'तत्काल';
 
   @override
@@ -2497,6 +2513,11 @@ class BssSubLocalizationsHi extends BssSubLocalizations {
 
   @override
   String get resolved => 'हल किया गया';
+
+  @override
+  String version(String version) {
+    return 'संस्करण $version';
+  }
 
   @override
   String get payments => 'भुगतान';
@@ -2551,4 +2572,75 @@ class BssSubLocalizationsHi extends BssSubLocalizations {
 
   @override
   String get customDate => 'कस्टम तिथि';
+
+  @override
+  String get pdfSavedToDownloads => 'पीडीएफ डाउनलोड्स में सेव हो गई';
+
+  @override
+  String get invoicePdf => 'इनवॉइस पीडीएफ';
+
+  @override
+  String get thisField => 'यह फ़ील्ड';
+
+  @override
+  String fieldMaxLength(String fieldName, int maxLength) {
+    return '$fieldName अधिकतम $maxLength अक्षरों का होना चाहिए';
+  }
+
+  @override
+  String fieldMinLength(String fieldName, int minLength) {
+    return '$fieldName कम से कम $minLength अक्षरों का होना चाहिए';
+  }
+
+  @override
+  String get mobileNumberOnlyDigits => 'मोबाइल नंबर में केवल अंक होने चाहिए';
+
+  @override
+  String get passwordsDoNotMatch => 'पासवर्ड मेल नहीं खाते';
+
+  @override
+  String get pressBackAgainToExit => 'बाहर निकलने के लिए फिर से बैक दबाएँ';
+
+  @override
+  String get newVersionAvailableToUpdate => 'अपडेट के लिए नया वर्शन उपलब्ध है।';
+
+  @override
+  String get checkingForUpdatesOnPlayStore =>
+      'Google Play Store पर अपडेट की जाँच हो रही है...';
+
+  @override
+  String get newUpdateReadyForDownload => 'नया अपडेट डाउनलोड के लिए तैयार है।';
+
+  @override
+  String get unableToReachServerWeb =>
+      'सर्वर तक नहीं पहुँच सके। वेब पर चलाते समय यह CORS समस्या हो सकती है।';
+
+  @override
+  String mbpsValue(String speed) {
+    return '$speed Mbps';
+  }
+
+  @override
+  String mbPerSecond(String value) {
+    return '$value MB/s';
+  }
+
+  @override
+  String msValue(String value) {
+    return '$value ms';
+  }
+
+  @override
+  String get unableToCheckForUpdates =>
+      'अपडेट की जाँच नहीं हो सकी। अपडेट पाने के लिए कृपया ऐप Google Play से इंस्टॉल करें।';
+
+  @override
+  String get updateCancelled => 'अपडेट रद्द किया गया';
+
+  @override
+  String get updateFailedTryAgain =>
+      'अपडेट विफल रहा। कृपया फिर से प्रयास करें।';
+
+  @override
+  String get updatesViaAppStore => 'इस ऐप के अपडेट App Store पर उपलब्ध हैं।';
 }

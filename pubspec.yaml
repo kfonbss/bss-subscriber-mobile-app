@@ -36,6 +36,9 @@ dependencies:
   cupertino_icons: ^1.0.8
   flutter_svg: ^2.1.0
   webview_flutter_plus:
+  # Direct use of AndroidWebViewCookieManager (third-party cookies for the
+  # Atom checkout iframe); same version webview_flutter_plus already resolves.
+  webview_flutter_android: ^4.10.13
   flutter_bloc:
   equatable:
   dio:
@@ -69,6 +72,7 @@ dependencies:
   firebase_messaging: ^16.7.0
   flutter_local_notifications: ^20.1.0
   package_info_plus: ^8.1.2
+  in_app_update: ^4.2.2
 
 dependency_overrides:
   package_info_plus: ^8.1.2

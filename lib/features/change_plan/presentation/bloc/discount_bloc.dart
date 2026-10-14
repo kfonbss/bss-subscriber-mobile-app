@@ -1,7 +1,9 @@
+import 'package:flutter/foundation.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/core/util/preference_util.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/params/subscriber_discount_request_params.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/repository/change_plan_repository.dart';
+import 'package:kfon_subscriber/features/change_plan/domain/entity/payment_gateway_entity.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/bloc/discount_event.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/bloc/discount_state.dart';
 
@@ -15,7 +17,13 @@ class DiscountBloc extends Bloc<DiscountEvent, DiscountState> {
     on<RechargeChangePlan>(_onRechargeChangePlan);
     on<FetchRechargePaymentStatus>(_onFetchRechargePaymentStatus);
     on<LoadPaymentGateways>(_onLoadPaymentGateways);
+    on<UpdateRechargeUi>(_onUpdateRechargeUi);
   }
+  static bool _isSupportedGateway(PaymentGatewayEntity gateway) {
+    final key = '${gateway.code} ${gateway.name}'.toUpperCase();
+    return key.contains('RAZORPAY') || key.contains('ATOM');
+  }
+
   Future<void> _onLoadPaymentGateways(
     LoadPaymentGateways event,
     Emitter<DiscountState> emit,
@@ -31,9 +39,12 @@ class DiscountBloc extends Bloc<DiscountEvent, DiscountState> {
       final result = await repository.getPaymentGateways();
       result.fold(
         (failure) => emit(state.copyWith(gatewayStatus: GatewayStatus.error)),
+        // Only Razorpay (native SDK) and Atom (checkout in a WebView) are
+        // integrated in the app; hide any other gateway the API returns.
         (gateways) => emit(
           state.copyWith(
             gatewayStatus: GatewayStatus.loaded,
+            //  gateways: gateways.where(_isSupportedGateway).toList(),
             gateways: gateways,
           ),
         ),
@@ -185,27 +196,76 @@ class DiscountBloc extends Bloc<DiscountEvent, DiscountState> {
     }
   }
 
+  // Razorpay's native checkout reports success before the backend has
+  // confirmed the payment (webhook), and the plan is only changed after
+  // that. Poll while the order is still pending so the home page isn't
+  // refreshed with the old plan.
+  static const _pendingStatuses = {'PENDING', 'INITIATED', 'CREATED'};
+  static const _statusPollAttempts = 6;
+  static const _statusPollInterval = Duration(seconds: 2);
+
   Future<void> _onFetchRechargePaymentStatus(
     FetchRechargePaymentStatus event,
     Emitter<DiscountState> emit,
   ) async {
+    emit(state.copyWith(status: RechargeStatus.paymentVerifying));
     try {
-      final result = await repository.getRechargePaymentStatus(event.orderId);
+      // Razorpay's SDK has no server redirect: report the payment so the
+      // backend can verify it and complete the order. A failure here is only
+      // logged — the status check below still decides the result.
+      if (event.razorpayResponse.isNotEmpty) {
+        final callback = await repository.notifyRazorpayPayment(
+          orderId: event.orderId,
+          razorpayResponse: event.razorpayResponse,
+        );
+        callback.fold(
+          (failure) => debugPrint('❌ Razorpay callback failed: $failure'),
+          (_) => debugPrint('✅ Razorpay callback accepted'),
+        );
+      }
 
-      result.fold(
-        (failure) => emit(
-          state.copyWith(
-            status: RechargeStatus.error,
-            errorMessage: failure.toString(),
-          ),
-        ),
-        (entity) => emit(
-          state.copyWith(
-            status: RechargeStatus.paymentSuccess,
-            paymentStatusEntity: entity,
-          ),
-        ),
-      );
+      for (var attempt = 1; ; attempt++) {
+        final result = await repository.getRechargePaymentStatus(event.orderId);
+        final entity = result.fold((failure) {
+          emit(
+            state.copyWith(
+              status: RechargeStatus.error,
+              errorMessage: failure.toString(),
+            ),
+          );
+          return null;
+        }, (entity) => entity);
+        if (entity == null) return;
+        final paymentStatus = entity.paymentStatus.toUpperCase();
+        debugPrint(
+          '💳 Recharge status ${event.orderId} (attempt $attempt): '
+          '$paymentStatus',
+        );
+
+        if (paymentStatus == 'FAILED') {
+          emit(
+            state.copyWith(
+              status: RechargeStatus.paymentDeclined,
+              paymentStatusEntity: entity,
+            ),
+          );
+          return;
+        }
+        if (!_pendingStatuses.contains(paymentStatus) ||
+            attempt >= _statusPollAttempts) {
+          // SUCCESS (or still pending after the last attempt — the payment
+          // itself went through, so show success; the plan updates once the
+          // backend confirms it).
+          emit(
+            state.copyWith(
+              status: RechargeStatus.paymentSuccess,
+              paymentStatusEntity: entity,
+            ),
+          );
+          return;
+        }
+        await Future<void>.delayed(_statusPollInterval);
+      }
     } catch (e) {
       emit(
         state.copyWith(
@@ -214,5 +274,38 @@ class DiscountBloc extends Bloc<DiscountEvent, DiscountState> {
         ),
       );
     }
+  }
+
+  void _onUpdateRechargeUi(
+    UpdateRechargeUi event,
+    Emitter<DiscountState> emit,
+  ) {
+    // A one-shot result (gateway redirect, failure, …) must not stay as the
+    // current status: this emit would otherwise re-trigger the page listener
+    // with the same status and e.g. reopen the previous gateway's checkout
+    // when the user picks another one after a cancelled payment.
+    const oneShotStatuses = {
+      RechargeStatus.paymentRedirectSuccess,
+      RechargeStatus.paymentSuccess,
+      RechargeStatus.walletRechargeSuccess,
+      RechargeStatus.paymentFailed,
+      RechargeStatus.paymentDeclined,
+      RechargeStatus.paymentCancelled,
+      RechargeStatus.error,
+    };
+    emit(
+      state.copyWith(
+        status:
+            oneShotStatuses.contains(state.status)
+                ? RechargeStatus.orderSummerySuccess
+                : null,
+        appliedReferralCode: event.appliedReferralCode,
+        clearReferralCode:
+            event.updateReferralCode && event.appliedReferralCode == null,
+        useWallet: event.useWallet,
+        selectedGateway: event.selectedGateway,
+        agreedToTerms: event.agreedToTerms,
+      ),
+    );
   }
 }

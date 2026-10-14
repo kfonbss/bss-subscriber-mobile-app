@@ -15,6 +15,7 @@ class PreferenceUtils {
   static const _keyUsername = 'userName';
   static const _keyPassword = 'password';
   static const _keyRatingTracking = 'ratingTracking';
+
   static Future<void> saveLoginCredentials(
       String userName,
       String password,
@@ -148,6 +149,7 @@ class PreferenceUtils {
         _storage.delete(key: _keyUsername),
         _storage.delete(key: _keyPassword),
       ],
+
     ]);
 
 }

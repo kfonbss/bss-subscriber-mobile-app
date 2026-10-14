@@ -1,4 +1,5 @@
 import 'package:equatable/equatable.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 
 /// Base failure class for domain-level error handling
 /// All specific failure types should extend this class
@@ -26,12 +27,14 @@ class ServerFailure extends Failure {
 
 /// Network-related failures (no internet, timeout)
 class NetworkFailure extends Failure {
-  const NetworkFailure([super.message = 'No internet connection']);
+  NetworkFailure([String? message])
+    : super(message ?? appL10n.noInternetConnection);
 }
 
 /// Cache/Local storage failures
 class CacheFailure extends Failure {
-  const CacheFailure([super.message = 'Cache error occurred']);
+  CacheFailure([String? message])
+    : super(message ?? appL10n.cacheErrorOccurred);
 }
 
 /// Authentication failures (invalid credentials, token expired)
@@ -46,10 +49,11 @@ class ValidationFailure extends Failure {
 
 /// Timeout failures
 class TimeoutFailure extends Failure {
-  const TimeoutFailure([super.message = 'Request timed out']);
+  TimeoutFailure([String? message]) : super(message ?? appL10n.requestTimedOut);
 }
 
 /// Unknown/Unexpected failures
 class UnknownFailure extends Failure {
-  const UnknownFailure([super.message = 'An unexpected error occurred']);
+  UnknownFailure([String? message])
+    : super(message ?? appL10n.anUnexpectedErrorOccurred);
 }

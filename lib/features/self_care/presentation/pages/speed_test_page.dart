@@ -288,21 +288,21 @@ class _SpeedTestPageState extends State<SpeedTestPage> {
                     Flexible(
                       child: _SpeedResultItem(
                         heading: l10n.uploadSpeed,
-                        data: '$_upload MB/s',
+                        data: l10n.mbPerSecond('$_upload'),
                         icon: AppAssets.upload,
                       ),
                     ),
                     Flexible(
                       child: _SpeedResultItem(
                         heading: l10n.downloadSpeed,
-                        data: '$_download MB/s',
+                        data: l10n.mbPerSecond('$_download'),
                         icon: AppAssets.download,
                       ),
                     ),
                     Flexible(
                       child: _SpeedResultItem(
                         heading: l10n.ping,
-                        data: '$_ping ms',
+                        data: l10n.msValue('$_ping'),
                         icon: AppAssets.ping,
                       ),
                     ),

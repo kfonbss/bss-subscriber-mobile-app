@@ -63,6 +63,7 @@ class _LoginPageState extends State<LoginPage> {
   Future<void> _loadSavedCredentials() async {
     final username = await PreferenceUtils.getUsername();
     final password = await PreferenceUtils.getPassword();
+    if (username != null && password != null) rememberMe = true;
     if (mounted) {
       _usernameTextFieldController.text = username ?? '';
       _passwordTextFieldController.text = password ?? '';
@@ -83,7 +84,6 @@ class _LoginPageState extends State<LoginPage> {
 
     String username = _usernameTextFieldController.text.trim();
     String password = _passwordTextFieldController.text.trim();
-
     context.read<AuthBloc>().add(
       LoginRequested(
         username: username,

@@ -8,9 +8,10 @@ class AppColor {
 
   /// Primary colour for a given tenant code, without switching the app's
   /// current tenant (used to preview the colour on the tenant screen).
-  static Color primaryFor(String? tenantId) => AppBrand.isLdTenant(tenantId)
-      ? const Color(0xFF026DA7)
-      : const Color(0xFF8D0247);
+  static Color primaryFor(String? tenantId) =>
+      AppBrand.isLdTenant(tenantId)
+          ? const Color(0xFF026DA7)
+          : const Color(0xFF8D0247);
 
   /// Tenant screen background before any tenant is chosen.
   static const Color kTenantScreenBackground = Color(0xFF2D3142);

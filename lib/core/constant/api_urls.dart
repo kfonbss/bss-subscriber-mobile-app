@@ -59,6 +59,10 @@ class ApiUrls {
       '$billingFinanceService/web/payment/recharge/online';
   static String rechargePaymentStatus({required String orderId}) =>
       '$billingFinanceService/web/payment/recharge/status/$orderId';
+  // Razorpay native checkout has no server redirect, so the app reports the
+  // payment here after the SDK succeeds.
+  static const String razorpayRechargeCallbackURL =
+      '$billingFinanceService/payment/callback/razorpay/recharge';
 
   static String rechargeSeasonId =
       '$billingFinanceService/rule-engine/packages/seasonal-discount';
@@ -114,10 +118,12 @@ class ApiUrls {
   static String rateTicketURL(String ticketUuid) =>
       '$submitTicketURL/$ticketUuid/rating';
   static String get getNotificationsURL =>
-      '$userRoleMapingService/v1/notifications';static String get notificationUnreadCountURL =>
+      '$userRoleMapingService/v1/notifications';
+  static String get notificationUnreadCountURL =>
       '$userRoleMapingService/v1/notifications/unread-count';
   static String get notificationReadAllURL =>
       '$userRoleMapingService/v1/notifications/read-all';
+
   /// File Storage: Get view URL by file ID (GET)
   static String fileViewUrlByFileId(String fileId) =>
       '$fileStorageService/$fileId/view-url';
@@ -144,4 +150,6 @@ class ApiUrls {
       '$billingFinanceService/upi-mandate/initiate';
   static const String upiMandateRevoke =
       '$billingFinanceService/upi-mandate/revoke';
+  static String get callbackURL =>
+      '$subscriberManagementService/subscriber/callback';
 }

@@ -2490,6 +2490,22 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
       'Please check your connection, restart your router, or contact our support team for assistance.';
 
   @override
+  String get updateAvailable => 'Update Available';
+
+  @override
+  String get updateNow => 'Update Now';
+
+  @override
+  String get checkingForUpdate => 'Checking for update...';
+
+  @override
+  String get pleaseWait => 'Please wait...';
+
+  @override
+  String get yourAppIsUpToDateWeWillNotifyYouWhenANewVersionIsAvailable =>
+      'Your app is up to date. We will notify you when a new version is available.';
+
+  @override
   String get instant => 'Instant';
 
   @override
@@ -2503,6 +2519,11 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
 
   @override
   String get resolved => 'Resolved';
+
+  @override
+  String version(String version) {
+    return 'Version $version';
+  }
 
   @override
   String get payments => 'Payments';
@@ -2557,4 +2578,76 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
 
   @override
   String get customDate => 'Custom Date';
+
+  @override
+  String get pdfSavedToDownloads => 'PDF saved to Downloads';
+
+  @override
+  String get invoicePdf => 'Invoice PDF';
+
+  @override
+  String get thisField => 'This field';
+
+  @override
+  String fieldMaxLength(String fieldName, int maxLength) {
+    return '$fieldName must be at most $maxLength characters';
+  }
+
+  @override
+  String fieldMinLength(String fieldName, int minLength) {
+    return '$fieldName must be at least $minLength characters';
+  }
+
+  @override
+  String get mobileNumberOnlyDigits => 'Mobile number must contain only digits';
+
+  @override
+  String get passwordsDoNotMatch => 'Passwords do not match';
+
+  @override
+  String get pressBackAgainToExit => 'Press back again to exit';
+
+  @override
+  String get newVersionAvailableToUpdate =>
+      'A new version is available to update.';
+
+  @override
+  String get checkingForUpdatesOnPlayStore =>
+      'Checking for updates on Google Play Store...';
+
+  @override
+  String get newUpdateReadyForDownload => 'A new update is ready for download.';
+
+  @override
+  String get unableToReachServerWeb =>
+      'Unable to reach the server. This may be a CORS issue when running on web.';
+
+  @override
+  String mbpsValue(String speed) {
+    return '$speed Mbps';
+  }
+
+  @override
+  String mbPerSecond(String value) {
+    return '$value MB/s';
+  }
+
+  @override
+  String msValue(String value) {
+    return '$value ms';
+  }
+
+  @override
+  String get unableToCheckForUpdates =>
+      'Unable to check for updates. Please install the app from Google Play to get updates.';
+
+  @override
+  String get updateCancelled => 'Update cancelled';
+
+  @override
+  String get updateFailedTryAgain => 'Update failed. Please try again.';
+
+  @override
+  String get updatesViaAppStore =>
+      'Updates for this app are available on the App Store.';
 }

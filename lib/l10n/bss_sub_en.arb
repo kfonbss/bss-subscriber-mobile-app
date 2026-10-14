@@ -1107,12 +1107,25 @@
   "myInternetSpeedIsSlowWhatShould": "My internet speed is slow. What should I do?",
   "pleaseCheckYourConnectionRestartYourRouter": "Please check your connection, restart your router, or contact our support team for assistance.",
 
+  "updateAvailable": "Update Available",
+  "updateNow": "Update Now",
+  "checkingForUpdate": "Checking for update...",
+  "pleaseWait": "Please wait...",
+  "yourAppIsUpToDateWeWillNotifyYouWhenANewVersionIsAvailable": "Your app is up to date. We will notify you when a new version is available.",
 
   "instant": "Instant",
   "high": "High",
   "medium": "Medium",
   "low": "Low",
   "resolved": "Resolved",
+  "version": "Version {version}",
+  "@version": {
+    "placeholders": {
+      "version": {
+        "type": "String"
+      }
+    }
+  },
 
   "payments": "Payments",
   "failedToLoadPreview": "Failed to load preview",
@@ -1130,5 +1143,29 @@
   "txnStatusRefunded": "Refunded",
   "allTransactions": "All Transactions",
   "last30Days": "Last 30 Days",
-  "customDate": "Custom Date"
+  "customDate": "Custom Date",
+  "pdfSavedToDownloads": "PDF saved to Downloads",
+  "invoicePdf": "Invoice PDF",
+  "thisField": "This field",
+  "fieldMaxLength": "{fieldName} must be at most {maxLength} characters",
+  "@fieldMaxLength": {"placeholders":{"fieldName":{"type":"String"},"maxLength":{"type":"int"}}},
+  "fieldMinLength": "{fieldName} must be at least {minLength} characters",
+  "@fieldMinLength": {"placeholders":{"fieldName":{"type":"String"},"minLength":{"type":"int"}}},
+  "mobileNumberOnlyDigits": "Mobile number must contain only digits",
+  "passwordsDoNotMatch": "Passwords do not match",
+  "pressBackAgainToExit": "Press back again to exit",
+  "newVersionAvailableToUpdate": "A new version is available to update.",
+  "checkingForUpdatesOnPlayStore": "Checking for updates on Google Play Store...",
+  "newUpdateReadyForDownload": "A new update is ready for download.",
+  "unableToReachServerWeb": "Unable to reach the server. This may be a CORS issue when running on web.",
+  "mbpsValue": "{speed} Mbps",
+  "@mbpsValue": {"placeholders":{"speed":{"type":"String"}}},
+  "mbPerSecond": "{value} MB/s",
+  "@mbPerSecond": {"placeholders":{"value":{"type":"String"}}},
+  "msValue": "{value} ms",
+  "@msValue": {"placeholders":{"value":{"type":"String"}}},
+  "unableToCheckForUpdates": "Unable to check for updates. Please install the app from Google Play to get updates.",
+  "updateCancelled": "Update cancelled",
+  "updateFailedTryAgain": "Update failed. Please try again.",
+  "updatesViaAppStore": "Updates for this app are available on the App Store."
 }

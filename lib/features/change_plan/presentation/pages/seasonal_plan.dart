@@ -395,7 +395,7 @@ class _SeasonalPlanViewState extends State<_SeasonalPlanView> {
                     // ---------------------------------------------------------
 
                     if (state.status == SeasonalPlanStatus.loading) {
-                      return const ListShimmer();
+                      return ListShimmer(itemHeight: 150.h);
                     }
 
                     // ---------------------------------------------------------
@@ -435,11 +435,7 @@ class _SeasonalPlanViewState extends State<_SeasonalPlanView> {
                     return ListView.separated(
                       controller: _scrollController,
 
-                      padding: EdgeInsets.only(
-                        left: 16,
-                        right: 10,
-                        bottom: 90,
-                      ),
+                      padding: EdgeInsets.only(left: 16, right: 10, bottom: 90),
 
                       itemCount:
                           state.packages.length +
@@ -501,12 +497,7 @@ class _SeasonalPlanViewState extends State<_SeasonalPlanView> {
             child: Container(
               width: double.infinity,
 
-              padding: EdgeInsets.fromLTRB(
-                16,
-                16,
-                16,
-                16,
-              ),
+              padding: EdgeInsets.fromLTRB(16, 16, 16, 16),
 
               decoration: BoxDecoration(
                 gradient: LinearGradient(

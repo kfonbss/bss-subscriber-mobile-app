@@ -78,10 +78,17 @@ class ResetTopUpState extends DiscountEvent {
 class FetchRechargePaymentStatus extends DiscountEvent {
   final String orderId;
 
-  const FetchRechargePaymentStatus({required this.orderId});
+  /// Razorpay SDK success response, reported to the backend before the
+  /// status check. Empty for other gateways.
+  final Map<String, String> razorpayResponse;
+
+  const FetchRechargePaymentStatus({
+    required this.orderId,
+    this.razorpayResponse = const {},
+  });
 
   @override
-  List<Object?> get props => [orderId];
+  List<Object?> get props => [orderId, razorpayResponse];
 }
 
 class RechargeChangePlan extends DiscountEvent {
@@ -95,4 +102,29 @@ class RechargeChangePlan extends DiscountEvent {
 
 class LoadPaymentGateways extends DiscountEvent {
   const LoadPaymentGateways();
+}
+
+class UpdateRechargeUi extends DiscountEvent {
+  final String? appliedReferralCode;
+  final bool updateReferralCode;
+  final bool? useWallet;
+  final String? selectedGateway;
+  final bool? agreedToTerms;
+
+  const UpdateRechargeUi({
+    this.appliedReferralCode,
+    this.updateReferralCode = false,
+    this.useWallet,
+    this.selectedGateway,
+    this.agreedToTerms,
+  });
+
+  @override
+  List<Object?> get props => [
+    appliedReferralCode,
+    updateReferralCode,
+    useWallet,
+    selectedGateway,
+    agreedToTerms,
+  ];
 }

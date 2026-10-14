@@ -13,7 +13,7 @@ class PdfDownloadController {
   }
 
   void sharePdf(File file) {
-    Share.shareXFiles([XFile(file.path)], text: 'Invoice PDF');
+    Share.shareXFiles([XFile(file.path)], text: appL10n.invoicePdf);
   }
 
   Future<void> downloadPdf(BuildContext context, File file) async {
@@ -23,7 +23,7 @@ class PdfDownloadController {
       if (context.mounted) {
         DialogUtil().showCustomSnackbar(
           context: context,
-          content: 'PDF saved to Downloads',
+          content: context.bssSubL10n.pdfSavedToDownloads,
         );
       }
     } catch (e) {
@@ -45,7 +45,7 @@ class PdfDownloadController {
       if (context.mounted) {
         DialogUtil().showCustomSnackbar(
           context: context,
-          content: 'PDF saved to Downloads',
+          content: context.bssSubL10n.pdfSavedToDownloads,
         );
       }
     } catch (e) {

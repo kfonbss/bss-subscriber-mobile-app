@@ -1,4 +1,4 @@
-﻿import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/entity/package_entity.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:flutter/material.dart';
@@ -70,9 +70,10 @@ class SeasonalPlanTile extends StatelessWidget {
               boxShadow: const [
                 BoxShadow(color: Color(0x0F000000), blurRadius: 16),
               ],
-              border: isSelected
-                  ? Border.all(color: AppColor.kPrimaryColor, width: 1.w)
-                  : null,
+              border:
+                  isSelected
+                      ? Border.all(color: AppColor.kPrimaryColor, width: 1.w)
+                      : null,
             ),
             child: Column(
               children: [
@@ -160,10 +161,10 @@ class SeasonalPlanTile extends StatelessWidget {
                                       maxLines: 1,
                                       textAlign: TextAlign.center,
                                       textHeightBehavior:
-                                      const TextHeightBehavior(
-                                        applyHeightToFirstAscent: false,
-                                        applyHeightToLastDescent: false,
-                                      ),
+                                          const TextHeightBehavior(
+                                            applyHeightToFirstAscent: false,
+                                            applyHeightToLastDescent: false,
+                                          ),
                                       overflow: TextOverflow.ellipsis,
                                       style: GoogleFonts.dmSans(
                                         fontSize: 9.5.sp,
@@ -396,11 +397,12 @@ class SeasonalPlanTile extends StatelessWidget {
   }
 
   String _metaText(PackageEntity package) {
-    final parts = <String>[
-      package.packageType?.name.trim() ?? '',
-      package.planType.trim(),
-      package.subscriptionType?.trim() ?? '',
-    ].where((v) => v.isNotEmpty).map((v) => v.toUpperCase()).toList();
+    final parts =
+        <String>[
+          package.packageType?.name.trim() ?? '',
+          package.planType.trim(),
+          package.subscriptionType?.trim() ?? '',
+        ].where((v) => v.isNotEmpty).map((v) => v.toUpperCase()).toList();
 
     return parts.join(' · ');
   }
@@ -453,4 +455,3 @@ class SeasonalPlanTile extends StatelessWidget {
     return l10n.seasonDiscount;
   }
 }
-

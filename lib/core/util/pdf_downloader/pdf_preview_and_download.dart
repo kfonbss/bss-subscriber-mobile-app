@@ -177,9 +177,10 @@ class _PdfPreviewAndDownloadState extends State<PdfPreviewAndDownload> {
                       child: Padding(
                         padding: const EdgeInsets.fromLTRB(16.0, 16.0, 16.0, 0),
                         child: PrimaryButton(
-                          label: isDownloading
-                              ? context.bssSubL10n.downloading
-                              : context.bssSubL10n.downloadPdf,
+                          label:
+                              isDownloading
+                                  ? context.bssSubL10n.downloading
+                                  : context.bssSubL10n.downloadPdf,
                           isLoading: isDownloading,
                           borderRadius: 10,
                           textStyle: const TextStyle(
