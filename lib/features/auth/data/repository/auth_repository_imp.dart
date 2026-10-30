@@ -1,3 +1,4 @@
+import 'package:flutter/foundation.dart';
 import 'package:kfon_subscriber/core/error/failure.dart';
 import 'package:kfon_subscriber/core/network/api_response.dart';
 import 'package:kfon_subscriber/features/auth/data/model/verify_otp_model.dart';
@@ -140,7 +141,7 @@ class AuthRepositoryImp extends AuthRepository {
   Future<Either<Failure, VerifyOtpEntity>> refreshToken(
     String refreshToken,
   ) async {
-    print('authTest refreshApiTestTimies');
+    debugPrint('authTest refreshApiTestTimies');
     APIResponse response = await sl<DioClient>().post(
       ApiUrls.refreshTokenURL,
       data: {'refreshToken': refreshToken},

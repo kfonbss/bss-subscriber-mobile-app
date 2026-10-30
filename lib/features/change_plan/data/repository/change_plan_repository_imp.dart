@@ -250,6 +250,7 @@ class ChangePlanRepositoryImp extends ChangePlanRepository {
     try {
       final APIResponse response = await sl<DioClient>().get(
         ApiUrls.paymentGateways,
+        queryParameters: {'userType':'subscriber'}
       );
 
       if (response.isSuccess) {

@@ -62,9 +62,9 @@ class _MainPageState extends State<MainPage> {
       return;
     }
     _lastBackPress = now;
-    DialogUtil().showToast(
+    DialogUtil().showCustomSnackbar(
       context: context,
-      message: context.bssSubL10n.pressBackAgainToExit,
+      content: context.bssSubL10n.pressBackAgainToExit,
       duration: _exitWindow,
     );
   }

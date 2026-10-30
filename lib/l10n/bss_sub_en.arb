@@ -1167,5 +1167,8 @@
   "unableToCheckForUpdates": "Unable to check for updates. Please install the app from Google Play to get updates.",
   "updateCancelled": "Update cancelled",
   "updateFailedTryAgain": "Update failed. Please try again.",
-  "updatesViaAppStore": "Updates for this app are available on the App Store."
+  "updatesViaAppStore": "Updates for this app are available on the App Store.",
+  "sessionExpired": "Session Expired",
+  "login": "Login",
+  "insufficientBalance": "Insufficient Balance"
 }

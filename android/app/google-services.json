@@ -1,13 +1,13 @@
 {
   "project_info": {
-    "project_number": "74267830461",
-    "project_id": "bss---subscriber",
-    "storage_bucket": "bss---subscriber.firebasestorage.app"
+    "project_number": "294371912148",
+    "project_id": "kfon-f82b7",
+    "storage_bucket": "kfon-f82b7.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:74267830461:android:6de52c14ea39f678bdefd4",
+        "mobilesdk_app_id": "1:294371912148:android:d2333b8aa224bf880f4e41",
         "android_client_info": {
           "package_name": "com.railtel.railwire.subscriber"
         }
@@ -15,7 +15,26 @@
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyA7c-CCc6cSuhiXiDErHa8l8PojImVLV48"
+          "current_key": "AIzaSyD03Rglx_siGm9mI4_aYIYHHCsNudq8xAo"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:294371912148:android:f8b28e54164a3ede0f4e41",
+        "android_client_info": {
+          "package_name": "com.railwire.railwireanp"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyD03Rglx_siGm9mI4_aYIYHHCsNudq8xAo"
         }
       ],
       "services": {

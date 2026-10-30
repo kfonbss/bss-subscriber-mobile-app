@@ -2,7 +2,7 @@
 // ignore_for_file: type=lint
 import 'package:firebase_core/firebase_core.dart' show FirebaseOptions;
 import 'package:flutter/foundation.dart'
-    show defaultTargetPlatform, TargetPlatform;
+    show defaultTargetPlatform, kIsWeb, TargetPlatform;
 
 /// Default [FirebaseOptions] for use with your Firebase apps.
 ///
@@ -16,11 +16,26 @@ import 'package:flutter/foundation.dart'
 /// ```
 class DefaultFirebaseOptions {
   static FirebaseOptions get currentPlatform {
+    if (kIsWeb) {
+      return web;
+    }
     switch (defaultTargetPlatform) {
       case TargetPlatform.android:
         return android;
       case TargetPlatform.iOS:
         return ios;
+      case TargetPlatform.macOS:
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for macos - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
+      case TargetPlatform.windows:
+        return windows;
+      case TargetPlatform.linux:
+        throw UnsupportedError(
+          'DefaultFirebaseOptions have not been configured for linux - '
+          'you can reconfigure this by running the FlutterFire CLI again.',
+        );
       default:
         throw UnsupportedError(
           'DefaultFirebaseOptions are not supported for this platform.',
@@ -28,20 +43,38 @@ class DefaultFirebaseOptions {
     }
   }
 
+  static const FirebaseOptions web = FirebaseOptions(
+    apiKey: 'AIzaSyBW9jAHnnXz0SC0jYB5Jyolslxnjp_O8hU',
+    appId: '1:294371912148:web:8a4d74c96b37ba7a0f4e41',
+    messagingSenderId: '294371912148',
+    projectId: 'kfon-f82b7',
+    authDomain: 'kfon-f82b7.firebaseapp.com',
+    storageBucket: 'kfon-f82b7.firebasestorage.app',
+  );
+
   static const FirebaseOptions android = FirebaseOptions(
-    apiKey: 'AIzaSyA7c-CCc6cSuhiXiDErHa8l8PojImVLV48',
-    appId: '1:74267830461:android:6de52c14ea39f678bdefd4',
-    messagingSenderId: '74267830461',
-    projectId: 'bss---subscriber',
-    storageBucket: 'bss---subscriber.firebasestorage.app',
+    apiKey: 'AIzaSyD03Rglx_siGm9mI4_aYIYHHCsNudq8xAo',
+    appId: '1:294371912148:android:d2333b8aa224bf880f4e41',
+    messagingSenderId: '294371912148',
+    projectId: 'kfon-f82b7',
+    storageBucket: 'kfon-f82b7.firebasestorage.app',
   );
 
   static const FirebaseOptions ios = FirebaseOptions(
-    apiKey: 'AIzaSyCGdB2FOZjpqgAIhg96JCm1X8ovehE89PA',
-    appId: '1:74267830461:ios:6105379dc9521fc1bdefd4',
-    messagingSenderId: '74267830461',
-    projectId: 'bss---subscriber',
-    storageBucket: 'bss---subscriber.firebasestorage.app',
+    apiKey: 'AIzaSyCgwpjXzGwqA7CLkq4edrNLkMKKz-peWQo',
+    appId: '1:294371912148:ios:fa9b1ada2b6bb6cf0f4e41',
+    messagingSenderId: '294371912148',
+    projectId: 'kfon-f82b7',
+    storageBucket: 'kfon-f82b7.firebasestorage.app',
     iosBundleId: 'com.railtel.railwire.subscriber',
+  );
+
+  static const FirebaseOptions windows = FirebaseOptions(
+    apiKey: 'AIzaSyBW9jAHnnXz0SC0jYB5Jyolslxnjp_O8hU',
+    appId: '1:294371912148:web:81c2c16f4df19f470f4e41',
+    messagingSenderId: '294371912148',
+    projectId: 'kfon-f82b7',
+    authDomain: 'kfon-f82b7.firebaseapp.com',
+    storageBucket: 'kfon-f82b7.firebasestorage.app',
   );
 }

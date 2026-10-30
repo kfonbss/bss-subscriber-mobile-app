@@ -4927,6 +4927,24 @@ abstract class BssSubLocalizations {
   /// In en, this message translates to:
   /// **'Updates for this app are available on the App Store.'**
   String get updatesViaAppStore;
+
+  /// No description provided for @sessionExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Session Expired'**
+  String get sessionExpired;
+
+  /// No description provided for @login.
+  ///
+  /// In en, this message translates to:
+  /// **'Login'**
+  String get login;
+
+  /// No description provided for @insufficientBalance.
+  ///
+  /// In en, this message translates to:
+  /// **'Insufficient Balance'**
+  String get insufficientBalance;
 }
 
 class _BssSubLocalizationsDelegate

@@ -2,6 +2,7 @@ import 'dart:async';
 
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/util/extensions.dart';
@@ -12,242 +13,189 @@ import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_state.dart'
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/common_bottom_sheet.dart';
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
-import 'package:kfon_subscriber/shared/widgets/common_text_button.dart';
 import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
+import 'package:kfon_subscriber/shared/widgets/tenant_svg_color_mapper.dart';
 
 class DialogUtil {
-  final TextStyle _contentStyle = TextStyle(
-    color: Colors.black,
-    fontSize: 15.sp,
-  );
-  final TextStyle _positiveButtonStyle = TextStyle(
-    color: Colors.green.shade600,
-  );
-  final TextStyle _negativeButtonStyle = TextStyle(color: Colors.red);
-
   Widget get logo => Image.asset(AppAssets.kLogoAsset, height: 40.h);
 
-  showConfirmationAlert({
+   /// Session expired dialog: clock illustration, title, message and a
+  /// full-width Login button. Not dismissible.
+  Future<void> showSessionExpiredDialog({
     required BuildContext context,
-    required String content,
-    required VoidCallback onPositiveButtonClick,
-    required VoidCallback onNegativeButtonClick,
+    required VoidCallback onLogin,
   }) {
     final l10n = context.bssSubL10n;
-    Widget negativeButton = CommonTextButton(
-      label: l10n.no,
-      onPressed: onNegativeButtonClick,
-      textStyle: _negativeButtonStyle,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-    );
-    Widget positiveButton = CommonTextButton(
-      label: l10n.yes,
-      onPressed: onPositiveButtonClick,
-      textStyle: _positiveButtonStyle,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-    );
-
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      //title: Text(kAppName,style: _titleStyle),
-      icon: logo,
-      content: Text(content, style: _contentStyle),
-      actions: [negativeButton, positiveButton],
-      elevation: 5.0,
-      backgroundColor: Colors.white,
-    );
-
-    // show the dialog
-    return showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return PopScope(canPop: false, child: alert);
-      },
-    );
-  }
-
-  showConfirmationSheet({
-    required BuildContext context,
-    required String content,
-    String? title,
-    required VoidCallback onPositiveButtonClick,
-    VoidCallback? onNegativeButtonClick,
-  }) {
-    final l10n = context.bssSubL10n;
-    Widget negativeButton = SecondaryButton(
-      borderRadius: 8,
-      label: l10n.no,
-      onClicked: onNegativeButtonClick ?? () => Navigator.pop(context),
-      padding: EdgeInsets.symmetric(vertical: 14),
-    );
-    Widget positiveButton = PrimaryButton(
-      label: l10n.yes,
-      onClicked: onPositiveButtonClick,
-      padding: EdgeInsets.symmetric(vertical: 14.5),
-      borderRadius: 8,
-      isLoading: false,
-    );
-
-    Widget contentWidget = Padding(
-      padding: const EdgeInsets.all(16.0),
-      child: Column(
-        mainAxisSize: MainAxisSize.min,
-        children: [
-          if (title != null) ...[
-            Text(
-              title,
-              textAlign: TextAlign.center,
-              style: Theme.of(
-                context,
-              ).textTheme.titleLarge?.copyWith(fontWeight: FontWeight.w600),
-            ),
-            SizedBox(height: 8.h),
-          ],
-          SizedBox(height: 8.h),
-          Text(
-            content,
-            textAlign: TextAlign.center,
-            style: TextStyle(fontWeight: FontWeight.w500),
-          ),
-          SizedBox(height: 24.h),
-          Padding(
-            padding: EdgeInsets.symmetric(horizontal: 4),
-            child: Row(
-              mainAxisAlignment: MainAxisAlignment.end,
-              mainAxisSize: MainAxisSize.min,
-              children: [
-                Expanded(child: negativeButton),
-                SizedBox(width: 24.w),
-                Expanded(child: positiveButton),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
-
-    // show the dialog
-    return showAppModalBottomSheet<bool>(
-      context: context,
-      builder: (BuildContext context) {
-        return PopScope(canPop: false, child: contentWidget);
-      },
-    );
-  }
-
-  showOKWithAction({
-    required BuildContext context,
-    required String content,
-    required VoidCallback onConfirmation,
-  }) {
-    final l10n = context.bssSubL10n;
-    Widget positiveButton = CommonTextButton(
-      label: l10n.ok,
-      onPressed: onConfirmation,
-      textStyle: _positiveButtonStyle,
-      padding: const EdgeInsets.symmetric(horizontal: 12, vertical: 8),
-    );
-
-    // set up the AlertDialog
-    AlertDialog alert = AlertDialog(
-      icon: logo,
-      content: Text(content, style: _contentStyle),
-      actions: [positiveButton],
-      elevation: 5.0,
-      backgroundColor: Colors.white,
-    );
-
-    // show the dialog
-    return showDialog<bool>(
-      context: context,
-      barrierDismissible: false,
-      builder: (BuildContext context) {
-        return PopScope(canPop: false, child: alert);
-      },
-    );
-  }
-
-  showProgressIndicator(BuildContext context, String label) {
-    return showDialog<bool>(
+    return showDialog<void>(
       context: context,
       barrierDismissible: false,
       builder: (BuildContext context) {
         return PopScope(
           canPop: false,
-          child: AlertDialog(
-            contentPadding: EdgeInsets.all(20),
-            content: Row(
-              spacing: 15,
-              crossAxisAlignment: CrossAxisAlignment.center,
-              children: [
-                CircularProgressIndicator(color: AppColor.kPrimaryColor),
-                Text(label, style: _contentStyle),
-              ],
-            ),
-            elevation: 5.0,
+          child: Dialog(
             backgroundColor: Colors.white,
+            surfaceTintColor: Colors.transparent,
+            insetPadding: EdgeInsets.symmetric(horizontal: 30.w),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 360),
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 23.w, vertical: 40.h),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    SizedBox.square(
+                      dimension: 104.875.w,
+                      child: FittedBox(
+                        child: SvgPicture(
+                          SvgAssetLoader(
+                            AppAssets.logoutImage,
+                            colorMapper: TenantSvgColorMapper(
+                              extraColors: const {0xFF026DA7},
+                            ),
+                          ),
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 12.h),
+                    Text(
+                      l10n.sessionExpired,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'General Sans',
+                        color: AppColor.kTextSecondaryDark,
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w600,
+                        height: 1.5,
+                      ),
+                    ),
+                    SizedBox(height: 12.h),
+                    SizedBox(
+                      width: 203.w,
+                      child: Text(
+                        l10n.yourSessionHasExpiredPleaseLogIn,
+                        textAlign: TextAlign.center,
+                        style: TextStyle(
+                          fontFamily: 'General Sans',
+                          color: AppColor.kDarkBlue,
+                          fontSize: 13.sp,
+                          fontWeight: FontWeight.w500,
+                          height: 20 / 13,
+                        ),
+                      ),
+                    ),
+                    SizedBox(height: 20.h),
+                    PrimaryButton(
+                      label: l10n.login,
+                      isLoading: false,
+                      height: 52.h,
+                      borderRadius: 8,
+                      backgroundColor: AppColor.kPrimaryColor,
+                      onClicked: onLogin,
+                      textStyle: TextStyle(
+                        fontFamily: 'General Sans',
+                        color: Colors.white,
+                        fontSize: 16.sp,
+                        fontWeight: FontWeight.w600,
+                      ),
+                    ),
+                  ],
+                ),
+              ),
+            ),
           ),
         );
       },
     );
   }
 
-  static OverlayEntry? _toastEntry;
-  static Timer? _toastTimer;
-
-  /// Short text toast on the root overlay (no Scaffold/SnackBar). Only one is
-  /// shown at a time; a new call replaces the current one.
-  void showToast({
+  Future<void> showInsufficientBalanceDialog({
     required BuildContext context,
-    required String message,
-    Duration duration = const Duration(seconds: 2),
+    required String title,
+    required VoidCallback onRechargeWallet,
   }) {
-    final overlay = Overlay.maybeOf(context, rootOverlay: true);
-    if (overlay == null) return;
-    _toastTimer?.cancel();
-    _toastEntry?.remove();
-    final entry = OverlayEntry(
-      builder:
-          (ctx) => Positioned(
-            left: 24.w,
-            right: 24.w,
-            bottom: MediaQuery.of(ctx).padding.bottom + 96.h,
-            child: IgnorePointer(
-              child: Center(
-                child: Material(
-                  color: Colors.transparent,
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 16.w,
-                      vertical: 10.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColor.kNearBlack.withValues(alpha: 0.9),
-                      borderRadius: BorderRadius.circular(24),
-                    ),
-                    child: Text(
-                      message,
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        color: Colors.white,
-                        fontSize: 14.sp,
-                        fontWeight: FontWeight.w500,
+    final l10n = context.bssSubL10n;
+    final buttonTextStyle = TextStyle(
+      fontFamily: 'General Sans',
+      fontSize: 16.sp,
+      fontWeight: FontWeight.w600,
+    );
+    return showDialog<void>(
+      context: context,
+      barrierDismissible: false,
+      builder: (BuildContext context) {
+        return PopScope(
+          canPop: false,
+          child: Dialog(
+            backgroundColor: Colors.white,
+            surfaceTintColor: Colors.transparent,
+            insetPadding: EdgeInsets.symmetric(horizontal: 30.w),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(20),
+            ),
+            child: ConstrainedBox(
+              constraints: const BoxConstraints(maxWidth: 360),
+              child: Padding(
+                padding: EdgeInsets.all(24.w),
+                child: Column(
+                  mainAxisSize: MainAxisSize.min,
+                  crossAxisAlignment: CrossAxisAlignment.stretch,
+                  children: [
+                    // Design image keeps its own colours (no tenant mapping).
+                    Center(
+                      child: Image.asset(
+                        AppAssets.insufficientBalanceWarning,
+                        width: 75.w,
+                        height: 75.w,
+                        fit: BoxFit.cover,
                       ),
                     ),
-                  ),
+                    SizedBox(height: 20.h),
+                    Text(
+                      l10n.insufficientBalance,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'General Sans',
+                        color: AppColor.kTextSecondaryDark,
+                        fontSize: 18.sp,
+                        fontWeight: FontWeight.w600,
+                        height: 1.5,
+                      ),
+                    ),
+                    SizedBox(height: 7.h),
+                    Text(
+                      title,
+                      textAlign: TextAlign.center,
+                      style: TextStyle(
+                        fontFamily: 'General Sans',
+                        color: AppColor.kDarkBlue,
+                        fontSize: 13.sp,
+                        fontWeight: FontWeight.w500,
+                        height: 20 / 13,
+                      ),
+                    ),
+                    SizedBox(height: 20.h),
+                    PrimaryButton(
+                      label: l10n.ok,
+                      isLoading: false,
+                      height: 52.h,
+                      borderRadius: 8,
+                      backgroundColor: AppColor.kPrimaryColor,
+                      onClicked: onRechargeWallet,
+                      textStyle: buttonTextStyle.copyWith(color: Colors.white),
+                    ),
+                  ],
                 ),
               ),
             ),
           ),
+        );
+      },
     );
-    _toastEntry = entry;
-    overlay.insert(entry);
-    _toastTimer = Timer(duration, () {
-      entry.remove();
-      if (_toastEntry == entry) _toastEntry = null;
-    });
   }
 
   void showCustomSnackbar({
@@ -255,6 +203,7 @@ class DialogUtil {
     required String content,
     Color? backgroundColor,
     bool isError = false,
+    Duration? duration,
   }) {
     final theme = Theme.of(context);
     final Color accentColor =
@@ -325,31 +274,32 @@ class DialogUtil {
               ),
             ),
           ),
-          duration: const Duration(seconds: 3),
+          duration: duration ?? const Duration(seconds: 3),
         ),
       );
   }
 
   /// Shows a common logout confirmation dialog
   void showLogoutDialog(BuildContext context) {
-    showModalBottomSheet(
+    // Calculate responsive sizes for tablet
+    final handleWidth = context.isTablet ? 42.0 * 1.2 : 42.w;
+    final handleHeight = context.isTablet ? 6.0 * 1.2 : 6.h;
+    final handleTopMargin = context.isTablet ? 19.0 * 1.2 : 19.h;
+    // Design: content starts 53 from the sheet top.
+    final topPadding = context.isTablet ? 53.0 * 1.2 : 53.h;
+
+    showAppModalBottomSheet(
       context: context,
       useRootNavigator: true,
-      backgroundColor:
-          context.isTablet ? Colors.transparent : AppColor.kMainBackgroundColor,
-      isScrollControlled: true,
-      shape: RoundedRectangleBorder(
-        borderRadius:
-            context.isTablet
-                ? BorderRadius.circular(24.w)
-                : const BorderRadius.vertical(top: Radius.circular(30)),
+      topRadius: 30,
+      dragHandleColor: const Color(0xFFE1E1E4),
+      dragHandleSize: Size(handleWidth, handleHeight),
+      dragHandlePadding: EdgeInsets.only(
+        top: handleTopMargin,
+        bottom: topPadding - handleTopMargin - handleHeight,
       ),
       builder: (BuildContext context) {
         final l10n = context.bssSubL10n;
-        // Calculate responsive sizes for tablet
-        final handleWidth = context.isTablet ? 42.0 * 1.2 : 42.w;
-        final handleHeight = context.isTablet ? 6.0 * 1.2 : 6.h;
-        final topPadding = context.isTablet ? 53.0 * 1.2 : 53.h;
         final horizontalPadding = context.isTablet ? 20.0 * 1.2 : 20.w;
         // Design: 56 below Cancel incl. the 34 home indicator (SafeArea).
         final bottomPadding = context.isTablet ? 30.0 * 1.2 : 22.h;
@@ -359,16 +309,15 @@ class DialogUtil {
         final gapBetweenTitleDesc = context.isTablet ? 8.0 * 1.2 : 8.h;
         final gapBeforeButtons = context.isTablet ? 40.0 * 1.2 : 40.h;
         final gapBetweenButtons = context.isTablet ? 12.0 * 1.2 : 12.h;
-        final handleTopMargin = context.isTablet ? 19.0 * 1.2 : 19.h;
         final maxWidth = context.isTablet ? 500.0 : double.infinity;
 
-        Widget content = Stack(
-          children: [
-            Padding(
+        return Center(
+          child: ConstrainedBox(
+            constraints: BoxConstraints(maxWidth: maxWidth),
+            child: Padding(
               padding: EdgeInsets.only(
                 left: horizontalPadding,
                 right: horizontalPadding,
-                top: topPadding,
                 bottom:
                     bottomPadding + MediaQuery.of(context).viewInsets.bottom,
               ),
@@ -486,45 +435,8 @@ class DialogUtil {
                 ],
               ),
             ),
-            Positioned(
-              top: handleTopMargin,
-              left: 0,
-              right: 0,
-              child: Center(
-                child: Container(
-                  width: handleWidth,
-                  height: handleHeight,
-                  decoration: BoxDecoration(
-                    color: const Color(0xFFE1E1E4),
-                    borderRadius: BorderRadius.circular(100),
-                  ),
-                ),
-              ),
-            ),
-          ],
+          ),
         );
-
-        if (context.isTablet) {
-          return SafeArea(
-            top: false,
-            child: Align(
-              alignment: Alignment.bottomCenter,
-              child: Container(
-                constraints: BoxConstraints(
-                  maxWidth: maxWidth,
-                  maxHeight: MediaQuery.of(context).size.height * 0.6,
-                ),
-                decoration: BoxDecoration(
-                  color: AppColor.kMainBackgroundColor,
-                  borderRadius: BorderRadius.circular(24.w),
-                ),
-                child: content,
-              ),
-            ),
-          );
-        }
-
-        return SafeArea(top: false, child: content);
       },
     );
   }

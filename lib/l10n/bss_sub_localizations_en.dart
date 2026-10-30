@@ -2650,4 +2650,13 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   @override
   String get updatesViaAppStore =>
       'Updates for this app are available on the App Store.';
+
+  @override
+  String get sessionExpired => 'Session Expired';
+
+  @override
+  String get login => 'Login';
+
+  @override
+  String get insufficientBalance => 'Insufficient Balance';
 }

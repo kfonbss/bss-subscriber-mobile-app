@@ -32,7 +32,7 @@ class NotificationBloc extends Bloc<NotificationEvent, NotificationState> {
       emit(NotificationLoaded(notifications: notifications));
 
       // Mark notifications as read after successfully
-      // fetching and displaying the notification list.
+      // fetching and displaying the serices list.
       try {
         await repository.markAllAsRead();
       } catch (_) {

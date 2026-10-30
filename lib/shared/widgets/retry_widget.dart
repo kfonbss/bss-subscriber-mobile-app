@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
+import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
 import 'package:kfon_subscriber/shared/widgets/tenant_recolored_image.dart';
 import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 
@@ -47,15 +48,23 @@ class RetryWidget extends StatelessWidget {
                 SizedBox(height: 16.h),
                 SizedBox(
                   width: constraints.maxWidth - 50.h,
-                  child: PrimaryButton(
+                  // On a coloured surface the caller passes [textColor]; the
+                  // button then inverts, so it is a secondary button there and
+                  // the plain primary one everywhere else.
+                  child: textColor == null
+                      ? PrimaryButton(
                     label: context.bssSubL10n.retry,
                     isLoading: false,
                     borderRadius: 10,
-                    textStyle: TextStyle(
-                      color: textColor != null
-                          ? AppColor.kPrimaryColor
-                          : Colors.white,
-                    ),
+                    height: 44.h,
+                    onClicked: onRetry,
+                  )
+                      : SecondaryButton(
+                    label: context.bssSubL10n.retry,
+                    borderRadius: 10,
+                    height: 44.h,
+                    backgroundColor: textColor,
+                    borderColor: AppColor.kPrimaryColor,
                     onClicked: onRetry,
                   ),
                 ),

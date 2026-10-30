@@ -19,10 +19,6 @@ class DiscountBloc extends Bloc<DiscountEvent, DiscountState> {
     on<LoadPaymentGateways>(_onLoadPaymentGateways);
     on<UpdateRechargeUi>(_onUpdateRechargeUi);
   }
-  static bool _isSupportedGateway(PaymentGatewayEntity gateway) {
-    final key = '${gateway.code} ${gateway.name}'.toUpperCase();
-    return key.contains('RAZORPAY') || key.contains('ATOM');
-  }
 
   Future<void> _onLoadPaymentGateways(
     LoadPaymentGateways event,
@@ -39,12 +35,10 @@ class DiscountBloc extends Bloc<DiscountEvent, DiscountState> {
       final result = await repository.getPaymentGateways();
       result.fold(
         (failure) => emit(state.copyWith(gatewayStatus: GatewayStatus.error)),
-        // Only Razorpay (native SDK) and Atom (checkout in a WebView) are
-        // integrated in the app; hide any other gateway the API returns.
+
         (gateways) => emit(
           state.copyWith(
             gatewayStatus: GatewayStatus.loaded,
-            //  gateways: gateways.where(_isSupportedGateway).toList(),
             gateways: gateways,
           ),
         ),

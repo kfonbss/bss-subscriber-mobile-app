@@ -2643,4 +2643,13 @@ class BssSubLocalizationsHi extends BssSubLocalizations {
 
   @override
   String get updatesViaAppStore => 'इस ऐप के अपडेट App Store पर उपलब्ध हैं।';
+
+  @override
+  String get sessionExpired => 'सत्र समाप्त हो गया';
+
+  @override
+  String get login => 'लॉग इन करें';
+
+  @override
+  String get insufficientBalance => 'अपर्याप्त बैलेंस';
 }

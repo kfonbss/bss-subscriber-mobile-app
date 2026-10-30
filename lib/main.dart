@@ -5,10 +5,10 @@ import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
 import 'package:kfon_subscriber/core/constant/app_brand.dart';
-import 'package:kfon_subscriber/core/notification/push_notification_service.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/routes/navigator_key.dart';
 import 'package:kfon_subscriber/core/rating/rating_eligibility_manager.dart';
+import 'package:kfon_subscriber/core/serices/fcm_service.dart';
 import 'package:kfon_subscriber/core/util/app_locale.dart';
 import 'package:kfon_subscriber/core/util/preference_util.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
@@ -36,13 +36,16 @@ import 'package:kfon_subscriber/features/tranasactions/presentation/pages/transa
 import 'package:kfon_subscriber/l10n/bss_sub_localizations.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 
+import 'core/constant/constant_colors.dart';
 import 'features/auth/domain/repository/auth_repository.dart';
-import 'firebase_options.dart';
 import 'features/auth/presentation/bloc/auth_state.dart';
+import 'firebase_options.dart';
 
 Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
-  await Firebase.initializeApp(options: DefaultFirebaseOptions.currentPlatform);
+  await Firebase.initializeApp(
+    options: DefaultFirebaseOptions.currentPlatform,
+  );
   FlutterNativeSplash.preserve(
     widgetsBinding: WidgetsFlutterBinding.ensureInitialized(),
   );
@@ -57,11 +60,6 @@ Future<void> main() async {
   AppBrand.setTenant(tenantId);
   await AppLocale.load();
   await RatingEligibilityManager.instance.init();
-  try {
-    await PushNotificationService.instance.init();
-  } catch (e) {
-    debugPrint('Push notification setup failed: $e');
-  }
   runApp(MyApp(showIntro: showIntro, tenantId: tenantId));
 }
 
@@ -84,6 +82,7 @@ class _MyAppState extends State<MyApp> {
   @override
   void initState() {
     super.initState();
+    FCMService.instance.initialize();
     _profileBloc = ProfileBloc(repository: sl<ProfileRepository>());
     _homeBloc = HomeBloc(repository: sl<HomeRepository>());
     _authBloc.add(const CheckAuthStatus());
@@ -144,8 +143,11 @@ class _MyAppState extends State<MyApp> {
             FlutterNativeSplash.remove();
           },
           builder: (context, state) {
-            // Flow: tenant → intro (first launch) → login. The tenant comes
-            // first because the intro uses the tenant's primary colour.
+            if (state is AuthInitial) {
+              return const Scaffold(
+                backgroundColor: AppColor.kMainBackgroundColor,
+              );
+            }
             if (state is Authenticated) {
               return MainPage();
             } else if (widget.tenantId.isEmpty) {

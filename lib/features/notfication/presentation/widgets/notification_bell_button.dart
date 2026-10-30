@@ -6,9 +6,9 @@ import 'package:kfon_subscriber/service_locator.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 
-/// Bell icon that opens the notification page and shows the unread count
+/// Bell icon that opens the serices page and shows the unread count
 /// as a badge. The count is fetched on build and again after returning
-/// from the notification page (which marks everything as read).
+/// from the serices page (which marks everything as read).
 class NotificationBellButton extends StatefulWidget {
   final String iconAsset;
   final double iconSize;

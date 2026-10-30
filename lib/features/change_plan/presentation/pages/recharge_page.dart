@@ -311,21 +311,28 @@ class _RechargePageState extends State<RechargePage> {
 
   // ── Actions ────────────────────────────────────────────────────────────────
 
+  bool _isWalletAvailable(DiscountDetailsEntity? discount) =>
+      discount?.walletEligible ?? false;
+
   /// The wallet can pay the full amount on its own.
   bool _isWalletSufficient(DiscountDetailsEntity? discount) =>
-      discount != null &&
-      (discount.walletEligible ?? false) &&
-      (discount.walletBalance ?? 0) >= discount.finalAmount;
+      _isWalletAvailable(discount) &&
+      (discount!.walletBalance ?? 0) >= discount.finalAmount;
 
-  /// Wallet counts as selected only while it still covers the amount
-  /// (a referral code can change the total after it was picked).
   bool _isWalletSelected(
     DiscountDetailsEntity? discount,
     DiscountState state,
-  ) => state.useWallet && _isWalletSufficient(discount);
+  ) => state.useWallet && _isWalletAvailable(discount);
 
-  /// Exactly one payment method (wallet or gateway) is selected and the
-  /// terms are accepted.
+  /// A sufficient wallet pays alone, so a gateway picked alongside it (before
+  /// a referral code lowered the total) is ignored.
+  bool _isGatewayInUse(DiscountDetailsEntity? discount, DiscountState state) =>
+      state.selectedGateway.isNotEmpty &&
+      !(_isWalletSelected(discount, state) && _isWalletSufficient(discount));
+
+  /// A payment method is selected and the terms are accepted. Wallet alone
+  /// with an insufficient balance is allowed here; Proceed then explains why
+  /// a gateway is needed.
   bool _canProceed(DiscountDetailsEntity? discount, DiscountState state) =>
       discount != null &&
       state.agreedToTerms &&
@@ -339,12 +346,28 @@ class _RechargePageState extends State<RechargePage> {
     final discount = state.discountDetail;
     if (discount == null || !_canProceed(discount, state)) return;
     final useWallet = _isWalletSelected(discount, state);
+    final useGateway = _isGatewayInUse(discount, state);
+
+    // Wallet can't cover the amount and no gateway to pay the rest.
+    if (useWallet && !useGateway && !_isWalletSufficient(discount)) {
+      _dialogUtil.showInsufficientBalanceDialog(
+        context: context,
+        title: context.bssSubL10n.insufficientWalletBalance(
+          (calculatedFinalAmount - (discount.walletBalance ?? 0))
+              .toStringAsFixed(2),
+        ),
+        onRechargeWallet: () => Navigator.of(context).pop(),
+      );
+      return;
+    }
 
     _discountBloc.add(
       RechargeChangePlan(
         params: RechargeChangePlanParams(
           packageId: widget.package.id,
-          gateway: useWallet ? null : state.selectedGateway.toUpperCase(),
+          // Wallet + gateway: the wallet balance is used first and the
+          // gateway pays the rest.
+          gateway: useGateway ? state.selectedGateway.toUpperCase() : null,
           amount: calculatedFinalAmount,
           durationDays: widget.package.renewPeriod,
           expectedFinalAmount: calculatedFinalAmount,
@@ -1088,18 +1111,19 @@ class _RechargePageState extends State<RechargePage> {
   ) {
     final l10n = context.bssSubL10n;
     final sufficient = walletBalance >= finalAmount;
-    final isSelected = state.useWallet && sufficient;
+    final isSelected = state.useWallet;
 
     return _selectableCard(
       isSelected: isSelected,
-      // Only one method can be used: picking the wallet clears the gateway.
-      // A wallet that can't cover the amount can't be chosen.
+      // Sufficient: wallet or a gateway, so picking the wallet clears the
+      // gateway. Insufficient: wallet toggles on/off and can be combined
+      // with a gateway that pays the rest.
       onTap:
-          sufficient
-              ? () => _discountBloc.add(
-                const UpdateRechargeUi(useWallet: true, selectedGateway: ''),
-              )
-              : null,
+          () => _discountBloc.add(
+            sufficient
+                ? const UpdateRechargeUi(useWallet: true, selectedGateway: '')
+                : UpdateRechargeUi(useWallet: !isSelected),
+          ),
       child: Row(
         children: [
           _radio(isSelected),
@@ -1145,13 +1169,9 @@ class _RechargePageState extends State<RechargePage> {
             ),
           ),
           _pill(
-            color:
-                sufficient ? AppColor.kDiscountGreenBg : AppColor.kStatusFailBg,
+            color:AppColor.kDiscountGreenBg,
             border: Border.all(
-              color:
-                  sufficient
-                      ? AppColor.kSufficientBorder
-                      : AppColor.kStatusFailRed.withValues(alpha: 0.2),
+              color:AppColor.kSufficientBorder,
             ),
             padding: EdgeInsets.symmetric(horizontal: 9.w, vertical: 3.h),
             child: Text(
@@ -1255,15 +1275,21 @@ class _RechargePageState extends State<RechargePage> {
   }
 
   Widget _buildGatewayCard(PaymentGatewayEntity gateway, DiscountState state) {
-    final isSelected = state.selectedGateway == gateway.name;
-    final description = _gatewayDescription(gateway);
+    final discount = state.discountDetail;
+    final isSelected =
+        state.selectedGateway == gateway.name &&
+        _isGatewayInUse(discount, state);
 
     return _selectableCard(
       isSelected: isSelected,
-      // Only one method can be used: picking a gateway clears the wallet.
+      // Sufficient wallet: wallet or a gateway, so picking a gateway clears
+      // the wallet. Otherwise the wallet selection is kept.
       onTap:
           () => _discountBloc.add(
-            UpdateRechargeUi(selectedGateway: gateway.name, useWallet: false),
+            UpdateRechargeUi(
+              selectedGateway: gateway.name,
+              useWallet: _isWalletSufficient(discount) ? false : null,
+            ),
           ),
       // Design: radio on top, logo (24, py 4) 8 below it, name 2 below logo.
       child: SingleChildScrollView(
@@ -1274,7 +1300,12 @@ class _RechargePageState extends State<RechargePage> {
           children: [
             _radio(isSelected),
             SizedBox(height: 12.h),
-            _gatewayLogo(gateway),
+            Image.asset(
+              'assets/images/${gateway.name.toLowerCase()}.png',
+              height: 24.h,
+              fit: BoxFit.contain,
+              alignment: Alignment.centerLeft,
+            ),
             SizedBox(height: 6.h),
             Text(
               gateway.name,
@@ -1285,56 +1316,14 @@ class _RechargePageState extends State<RechargePage> {
                 height: 1.3,
               ),
             ),
-            // Design uses Plus Jakarta Sans Medium 8 / line 16.5.
-            if (description != null)
-              Text(
-                description,
-                style: GoogleFonts.plusJakartaSans(
-                  fontSize: 8.sp,
-                  fontWeight: FontWeight.w500,
-                  color: AppColor.kSlate500,
-                  height: 16.5 / 8,
-                ),
-              ),
           ],
         ),
       ),
     );
   }
 
-  String? _gatewayDescription(PaymentGatewayEntity gateway) {
-    final key = '${gateway.code} ${gateway.name}'.toLowerCase();
-    if (key.contains('atom')) return context.bssSubL10n.atomPayDescription;
-    if (key.contains('razor')) return context.bssSubL10n.razorpayDescription;
-    return null;
-  }
 
-  // Supports URLs from the API with a bundled-asset fallback by name.
-  Widget _gatewayLogo(PaymentGatewayEntity gateway) {
-    final fallback = Image.asset(
-      'assets/images/${gateway.name.toLowerCase()}.png',
-      height: 24.h,
-      fit: BoxFit.contain,
-      alignment: Alignment.centerLeft,
-      errorBuilder:
-          (_, __, ___) => Align(
-            alignment: Alignment.centerLeft,
-            child: Icon(
-              Icons.payment,
-              size: 24.sp,
-              color: AppColor.kDisabledGrey,
-            ),
-          ),
-    );
-    if (!gateway.icon.startsWith('http')) return fallback;
-    return Image.network(
-      gateway.icon,
-      height: 24.h,
-      fit: BoxFit.contain,
-      alignment: Alignment.centerLeft,
-      errorBuilder: (_, __, ___) => fallback,
-    );
-  }
+
 
   /// [onTap] null = option unavailable (shown dimmed, not tappable).
   Widget _selectableCard({

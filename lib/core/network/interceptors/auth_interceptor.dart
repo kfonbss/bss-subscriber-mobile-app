@@ -7,7 +7,6 @@ import 'package:kfon_subscriber/core/routes/navigator_key.dart';
 import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/core/util/preference_util.dart';
 import 'package:kfon_subscriber/features/auth/domain/repository/auth_repository.dart';
-import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 
 /// Interceptor that handles authentication token management
@@ -169,10 +168,9 @@ class AuthInterceptor extends Interceptor {
     }
 
     _isSessionExpiredDialogShowing = true;
-    DialogUtil().showOKWithAction(
+    DialogUtil().showSessionExpiredDialog(
       context: ctx,
-      content: appL10n.yourSessionHasExpiredPleaseLogIn,
-      onConfirmation: () {
+      onLogin: () {
         _isSessionExpiredDialogShowing = false;
         navigatorKey.currentState?.pop(); // close the dialog
         _goToLogin();

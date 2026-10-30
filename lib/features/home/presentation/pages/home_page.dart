@@ -250,49 +250,50 @@ class _HomePageState extends State<HomePage> {
                               _ComboCard(pkg: pkg, subscriberId: subscriberId),
                             SizedBox(height: 20.h),
                             _QuickActions(
-                              onRechargeTap:
-                                  () => _showRechargeSheet(
-                                    context,
-                                    PackageInfoEntity(
-                                      id: packageId,
-                                      packageName: pkg!.packageName,
-                                      freeValidity: 0,
-                                      initialFreeValidity: 0,
-                                      renewalFee: pkg.renewalFee,
-                                      allocatedVolume: pkg.availableVolumeGb,
-                                      fallbackSpeed: '0UL',
-                                      subPackageCount: 0,
-                                      renewPeriod: pkg.validity,
-                                      speedInKbps: pkg.speedMbps * 1024.toInt(),
-                                      createCorrespondingTermPlan:
-                                          pkg
-                                              .packageInfoEntity
-                                              .createCorrespondingTermPlan,
-                                      speedProfile:
-                                          pkg.packageInfoEntity.speedProfile,
-                                      status: pkg.packageInfoEntity.status,
-                                      fbSpeedInKbps:
-                                          pkg.packageInfoEntity.fbSpeedInKbps,
-                                      editable: pkg.packageInfoEntity.editable,
-                                      amount: pkg.packageInfoEntity.amount,
-                                      originalAmount:
-                                          pkg.packageInfoEntity.originalAmount,
-                                      discountAmount:
-                                          pkg.packageInfoEntity.discountAmount,
-                                      savedAmount:
-                                          pkg.packageInfoEntity.savedAmount,
-                                      speed: pkg.packageInfoEntity.speed,
-                                      validity: pkg.packageInfoEntity.validity,
-                                      volumeType:
-                                          pkg.packageInfoEntity.volumeType,
-                                      volumeValue:
-                                          pkg.packageInfoEntity.volumeValue,
-                                      planTypeName:
-                                          pkg.packageInfoEntity.planTypeName,
-                                      packageType:
-                                          pkg.packageInfoEntity.packageType,
-                                    ),
+                              onRechargeTap: () {
+                                _showRechargeSheet(
+                                  context,
+                                  PackageInfoEntity(
+                                    id: packageId,
+                                    packageName: pkg!.packageName,
+                                    freeValidity: 0,
+                                    initialFreeValidity: 0,
+                                    renewalFee: pkg.renewalFee,
+                                    allocatedVolume: pkg.availableVolumeGb,
+                                    fallbackSpeed: '0UL',
+                                    subPackageCount: 0,
+                                    renewPeriod: pkg.validity,
+                                    speedInKbps: pkg.speedMbps * 1024.toInt(),
+                                    createCorrespondingTermPlan:
+                                        pkg
+                                            .packageInfoEntity
+                                            .createCorrespondingTermPlan,
+                                    speedProfile:
+                                        pkg.packageInfoEntity.speedProfile,
+                                    status: pkg.packageInfoEntity.status,
+                                    fbSpeedInKbps:
+                                        pkg.packageInfoEntity.fbSpeedInKbps,
+                                    editable: pkg.packageInfoEntity.editable,
+                                    amount: pkg.packageInfoEntity.amount,
+                                    originalAmount:
+                                        pkg.packageInfoEntity.originalAmount,
+                                    discountAmount:
+                                        pkg.packageInfoEntity.discountAmount,
+                                    savedAmount:
+                                        pkg.packageInfoEntity.savedAmount,
+                                    speed: pkg.packageInfoEntity.speed,
+                                    validity: pkg.packageInfoEntity.validity,
+                                    volumeType:
+                                        pkg.packageInfoEntity.volumeType,
+                                    volumeValue:
+                                        pkg.packageInfoEntity.volumeValue,
+                                    planTypeName:
+                                        pkg.packageInfoEntity.planTypeName,
+                                    packageType:
+                                        pkg.packageInfoEntity.packageType,
                                   ),
+                                );
+                              },
                               onTransactionsTap:
                                   () => Navigator.pushNamed(
                                     context,
@@ -757,24 +758,27 @@ class _QuickActionsState extends State<_QuickActions> {
   void didChangeDependencies() {
     super.didChangeDependencies();
     final l10n = context.bssSubL10n;
+    // Callbacks read `widget` at tap time: the parent passes new closures
+    // (e.g. a new package id after a plan change) without recreating this
+    // state, so storing widget.onXxx here would keep the stale ones.
     _actions = [
       _ActionItem(
         label: l10n.recharge,
         color: AppColor.kQuickRecharge,
         icon: AppAssets.rechargeIcon,
-        onTap: widget.onRechargeTap,
+        onTap: () => widget.onRechargeTap(),
       ),
       _ActionItem(
         label: l10n.transactions,
         color: AppColor.kQuickTransactions,
         icon: AppAssets.moneyIcon,
-        onTap: widget.onTransactionsTap,
+        onTap: () => widget.onTransactionsTap(),
       ),
       _ActionItem(
         label: l10n.invoice,
         color: AppColor.kQuickInvoice,
         icon: AppAssets.invoiceIcon,
-        onTap: widget.onInvoiceTap,
+        onTap: () => widget.onInvoiceTap(),
       ),
     ];
   }

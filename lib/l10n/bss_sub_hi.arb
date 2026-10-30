@@ -1201,5 +1201,8 @@
   "unableToCheckForUpdates": "अपडेट की जाँच नहीं हो सकी। अपडेट पाने के लिए कृपया ऐप Google Play से इंस्टॉल करें।",
   "updateCancelled": "अपडेट रद्द किया गया",
   "updateFailedTryAgain": "अपडेट विफल रहा। कृपया फिर से प्रयास करें।",
-  "updatesViaAppStore": "इस ऐप के अपडेट App Store पर उपलब्ध हैं।"
+  "updatesViaAppStore": "इस ऐप के अपडेट App Store पर उपलब्ध हैं।",
+  "sessionExpired": "सत्र समाप्त हो गया",
+  "login": "लॉग इन करें",
+  "insufficientBalance": "अपर्याप्त बैलेंस"
 }

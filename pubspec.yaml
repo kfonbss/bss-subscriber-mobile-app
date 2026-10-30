@@ -68,9 +68,9 @@ dependencies:
   razorpay_flutter: ^1.4.7
   carousel_slider: ^5.1.2
   photo_view: ^0.15.0
-  firebase_core: ^4.15.0
-  firebase_messaging: ^16.7.0
-  flutter_local_notifications: ^20.1.0
+  firebase_core: ^3.12.1
+  firebase_messaging: ^15.2.4
+  flutter_local_notifications: ^18.0.1
   package_info_plus: ^8.1.2
   in_app_update: ^4.2.2
 

@@ -32,22 +32,8 @@ class LoginPage extends StatefulWidget {
 
 class _LoginPageState extends State<LoginPage> {
   final _formKey = GlobalKey<FormState>();
-  final _usernameTextFieldController = TextEditingController(
-    text: '6008426648',
-    //ld lnp '6008426648'
-    //qa lnp '2951432933'
-    //dev lnp '8453892290'
-    //qa agnp '6368189449'
-    //qa fe 'FE-Vinod',
-  );
-  final _passwordTextFieldController = TextEditingController(
-    text: 'Pass@123',
-    //ld lnp 'Pass@123',
-    //qa lnp 'Pass@1234',
-    //dev lnp 'Pass@123',
-    //qa agnp 'Pass@123',
-    //qa fe 'Pass@123',
-  );
+  final _usernameTextFieldController = TextEditingController();
+  final _passwordTextFieldController = TextEditingController();
   final DialogUtil _dialogUtil = DialogUtil();
   String tenantName = '';
   String tenantId = '';
@@ -118,7 +104,6 @@ class _LoginPageState extends State<LoginPage> {
                 'token': state.user.loginSessionToken,
               },
             );
-            // _showRoleSelectionDialog(context, state.user.mobileNumber);
           }
         },
         child: Scaffold(
