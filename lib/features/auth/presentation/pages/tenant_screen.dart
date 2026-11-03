@@ -327,6 +327,7 @@ class _TenantScreenState extends State<TenantScreen> {
                                       await PreferenceUtils.setTenant(
                                         tenant.code,
                                         tenant.name,
+                                        appUrl: tenant.appUrl,
                                       );
                                       AppBrand.setTenant(tenant.code);
                                       if (!context.mounted) return;

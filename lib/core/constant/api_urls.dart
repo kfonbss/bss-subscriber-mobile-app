@@ -1,7 +1,36 @@
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ApiUrls {
-  static String get baseURL => dotenv.env['BASE_URL'] ?? '';
+  /// Temporary development switch: true routes API calls through RailWire.
+  static const bool isRailwire = false;
+  static const String railwireBaseURL = 'https://apis.railwire.co.in/api/';
+  static const String railwireLoginURL = 'auth/login';
+  static const String railwireStateListURL = 'Newsubapp_api/state_list';
+  static const String railwireUserLoginURL = 'Newsubapp_api/userlogin';
+  static const String railwireSendLoginOtpURL = 'Newsubapp_api/sendotplogin';
+  static const String railwireVerifyLoginOtpURL =
+      'Newsubapp_api/verifyotplogin';
+  static const String railwireUserProfileURL = 'Newsubapp_api/userprofile';
+  static const String railwireCurrentPackageURL =
+      'Newsubapp_api/currentpackage';
+  static const String railwireShowSessionURL = 'Newsubapp_api/showsession';
+  static const String railwireInvoiceListURL = 'Newsubapp_api/invoicelist';
+  static const String railwireInvoicePdfURL = 'Newsubapp_api/invoicepdf';
+  static const String railwireRechargeHistoryURL =
+      'Newsubapp_api/recharge_history';
+  static const String railwireImageLogoURL = 'Newsubapp_api/imagelogo';
+  static const String railwireOpenTicketsURL = 'Newsubapp_api/sub_opentickets';
+  static const String railwireClosedTicketsURL =
+      'Newsubapp_api/sub_closedtickets';
+  static const String railwireTicketCommentsURL =
+      'Newsubapp_api/ticket_comments_history';
+  static const String railwireCreateTicketURL =
+      'Newsubapp_api/create_new_ticket';
+  static const String railwireCreateCommentURL =
+      'Newsubapp_api/create_new_comment';
+  static const String railwireTicketFeedbackURL = 'Newsubapp_api/feedback';
+  static String get baseURL =>
+      isRailwire ? railwireBaseURL : dotenv.env['BASE_URL'] ?? '';
   static const String subscriberManagementService =
       'bss-subscriber-management-service/api';
   static const String packageManagementService =

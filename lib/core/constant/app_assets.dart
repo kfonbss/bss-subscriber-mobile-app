@@ -74,7 +74,7 @@ class AppAssets {
   static const String filter = 'assets/icons/filter.svg';
   static const String lnpUserFilter = 'assets/icons/lnp_user_filter.svg';
   static const String logout = 'assets/icons/logout.svg';
-  static const String notification = 'assets/icons/serices.svg';
+  static const String notification = 'assets/icons/notification.svg';
   static const String wifi = 'assets/icons/wifi.svg';
   static const String totalLnps = 'assets/icons/total_lnps.svg';
   static const String totalSubscribers = 'assets/icons/total_subscribers.svg';
@@ -116,7 +116,7 @@ class AppAssets {
   static const String speedTestBackground =
       'assets/images/speed_test_background.svg';
   static const String document = 'assets/images/document.png';
-  static const String notificationWhite = 'assets/icons/serices.svg';
+  static const String notificationWhite = 'assets/icons/notification.svg';
   static const String introScreenBackground =
       'assets/images/intro_screen_background.svg';
   static const String headphone = 'assets/bottomNaviBarIcons/headphone.png';

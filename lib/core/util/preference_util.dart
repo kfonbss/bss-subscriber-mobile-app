@@ -15,6 +15,10 @@ class PreferenceUtils {
   static const _keyUsername = 'userName';
   static const _keyPassword = 'password';
   static const _keyRatingTracking = 'ratingTracking';
+  static const _keyRailwireToken = 'railwireToken';
+  static const _keyRailwireTokenExpiryAt = 'railwireTokenExpiryAt';
+  static const _keyRailwireUser = 'railwireUser';
+  static const _keyTenantAppUrl = 'tenantAppUrl';
 
   static Future<void> saveLoginCredentials(
       String userName,
@@ -60,10 +64,11 @@ class PreferenceUtils {
     return false;
   }
 
-  static Future<void> setTenant(String tenantId,String tenantName) async {
+  static Future<void> setTenant(String tenantId,String tenantName,{String? appUrl}) async {
     await Future.wait([
       _storage.write(key: _keyTenantId, value: tenantId),
-      _storage.write(key: _keyTenantName, value: tenantName)
+      _storage.write(key: _keyTenantName, value: tenantName),
+      if (appUrl != null) _storage.write(key: _keyTenantAppUrl, value: appUrl),
     ]);
   }
 
@@ -72,6 +77,9 @@ class PreferenceUtils {
 
   static Future<String?> getTenantName() async =>
       await _storage.read(key: _keyTenantName);
+
+  static Future<String?> getTenantAppUrl() async =>
+      await _storage.read(key: _keyTenantAppUrl);
 
   static Future<void> setIntroScreenStatus(bool status) async =>
       await _storage.write(key: _introScreenStatus, value: status.toString());
@@ -111,6 +119,39 @@ class PreferenceUtils {
     ]);
   }
 
+  /// RailWire service token. Kept apart from the user's tokens, so [clearAll]
+  /// leaves it in place. [expiryAt] is in milliseconds since epoch.
+  static Future<void> saveRailwireToken({
+    required String token,
+    required int expiryAt,
+  }) async {
+    await Future.wait([
+      _storage.write(key: _keyRailwireToken, value: token),
+      _storage.write(key: _keyRailwireTokenExpiryAt, value: expiryAt.toString()),
+    ]);
+  }
+
+  static Future<String?> getRailwireToken() async =>
+      await _storage.read(key: _keyRailwireToken);
+
+  /// Logged-in RailWire subscriber (JSON). RailWire has no user token, so this
+  /// is what marks the user as logged in. Removed by [clearAll].
+  static Future<void> setRailwireUser(String json) async =>
+      await _storage.write(key: _keyRailwireUser, value: json);
+
+  static Future<String?> getRailwireUser() async =>
+      await _storage.read(key: _keyRailwireUser);
+
+  /// Check if the RailWire token is expired or within buffer seconds of it
+  static Future<bool> isRailwireTokenExpired({int bufferSeconds = 300}) async {
+    final expiryStr = await _storage.read(key: _keyRailwireTokenExpiryAt);
+    final expiryAt = expiryStr != null ? int.tryParse(expiryStr) : null;
+    if (expiryAt == null) return true;
+
+    final now = DateTime.now().millisecondsSinceEpoch;
+    return now + bufferSeconds * 1000 >= expiryAt;
+  }
+
   static Future<void> setUserDetails({required String userId,required String userName}) async {
     await Future.wait([
       _storage.write(key: _keyUserId, value: userId),
@@ -145,6 +186,7 @@ class PreferenceUtils {
       _storage.delete(key: _keyTokenExpiryAt),
       _storage.delete(key: _keyUserId),
       _storage.delete(key: _keyMobileNumber),
+      _storage.delete(key: _keyRailwireUser),
       if (clearLogin) ...[
         _storage.delete(key: _keyUsername),
         _storage.delete(key: _keyPassword),

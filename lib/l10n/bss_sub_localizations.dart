@@ -4730,6 +4730,12 @@ abstract class BssSubLocalizations {
   /// **'You do not have access to this app. Please contact support.'**
   String get noAccessContactSupport;
 
+  /// No description provided for @accountBelongsToAnotherCircle.
+  ///
+  /// In en, this message translates to:
+  /// **'This account belongs to a different circle. Please select your circle and try again.'**
+  String get accountBelongsToAnotherCircle;
+
   /// No description provided for @invalidResponse.
   ///
   /// In en, this message translates to:

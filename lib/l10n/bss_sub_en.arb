@@ -1130,6 +1130,7 @@
   "payments": "Payments",
   "failedToLoadPreview": "Failed to load preview",
   "noAccessContactSupport": "You do not have access to this app. Please contact support.",
+  "accountBelongsToAnotherCircle": "This account belongs to a different circle. Please select your circle and try again.",
   "invalidResponse": "Invalid response",
   "fileUrlNotFound": "File URL not found",
   "customerTypeCouldNotBeResolved": "Customer type could not be resolved. Please try again.",

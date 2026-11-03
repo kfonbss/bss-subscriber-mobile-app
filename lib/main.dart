@@ -4,7 +4,9 @@ import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_native_splash/flutter_native_splash.dart';
+import 'package:kfon_subscriber/core/constant/api_urls.dart';
 import 'package:kfon_subscriber/core/constant/app_brand.dart';
+import 'package:kfon_subscriber/core/network/interceptors/railwire_auth_interceptor.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/routes/navigator_key.dart';
 import 'package:kfon_subscriber/core/rating/rating_eligibility_manager.dart';
@@ -55,6 +57,8 @@ Future<void> main() async {
     const SystemUiOverlayStyle(statusBarColor: Colors.transparent),
   );
   setUpServiceLocator();
+  // Not awaited, so a slow login can't hold the splash; requests share it.
+  if (ApiUrls.isRailwire) RailwireAuth.token().ignore();
   final showIntro = await PreferenceUtils.showIntroScreen();
   final tenantId = await PreferenceUtils.getTenantId() ?? '';
   AppBrand.setTenant(tenantId);

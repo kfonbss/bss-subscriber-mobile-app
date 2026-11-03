@@ -7,14 +7,18 @@ class TenantEntity extends Equatable {
   final String? nameInLocal;
   final bool isActive;
 
+  /// RailWire only: the state's URL from `state_list`.
+  final String? appUrl;
+
   const TenantEntity({
     required this.id,
     required this.code,
     required this.name,
     this.nameInLocal,
     required this.isActive,
+    this.appUrl,
   });
 
   @override
-  List<Object?> get props => [id, code, name, nameInLocal, isActive];
+  List<Object?> get props => [id, code, name, nameInLocal, isActive, appUrl];
 }

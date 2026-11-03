@@ -1,3 +1,4 @@
+import 'package:kfon_subscriber/core/constant/api_urls.dart';
 import 'package:kfon_subscriber/features/auth/data/model/verify_otp_model.dart';
 import 'package:kfon_subscriber/features/auth/domain/entity/verify_otp_entity.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
@@ -6,11 +7,13 @@ import 'package:kfon_subscriber/features/auth/domain/params/login_params.dart';
 import 'package:kfon_subscriber/features/auth/domain/params/reset_password_params.dart';
 import 'package:kfon_subscriber/features/auth/domain/params/verify_otp_params.dart';
 import 'package:kfon_subscriber/features/auth/domain/repository/auth_repository.dart';
+import 'package:kfon_subscriber/features/auth/domain/repository/railwire_auth_repository.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_event.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_state.dart';
 import 'package:kfon_subscriber/core/util/preference_util.dart';
 import 'package:kfon_subscriber/features/profile/domain/entity/profile_entity.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
+import 'package:kfon_subscriber/service_locator.dart';
 
 class AuthBloc extends Bloc<AuthEvent, AuthState> {
   final AuthRepository authRepository;
@@ -48,6 +51,15 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     try {
       final tenantId = await PreferenceUtils.getTenantId() ?? '';
+      if (ApiUrls.isRailwire) {
+        final user = await PreferenceUtils.getRailwireUser();
+        emit(
+          tenantId.isNotEmpty && user != null
+              ? const Authenticated()
+              : const Unauthenticated(),
+        );
+        return;
+      }
       final accessToken = await PreferenceUtils.getAccessToken();
       if (tenantId.isEmpty || accessToken == null || accessToken.isEmpty) {
         emit(const Unauthenticated());
@@ -73,6 +85,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     try {
       emit(const AuthLoading());
+
+      if (ApiUrls.isRailwire) return await _railwireLogin(event, emit);
 
       final loginParams = LoginParams(
         userName: event.username,
@@ -100,6 +114,65 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
     } catch (e) {
       emit(LoginFailure(errorMessage: e.toString()));
     }
+  }
+
+  Future<void> _railwireLogin(
+    LoginRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    final repository = sl<RailwireAuthRepository>();
+    final result = await repository.login(
+      username: event.username,
+      password: event.password,
+    );
+    if (result.isLeft()) {
+      final error = result.fold((l) => l, (r) => null)!;
+      emit(LoginFailure(errorMessage: error.toString()));
+      return;
+    }
+
+    event.rememberMe
+        ? await PreferenceUtils.saveLoginCredentials(
+          event.username,
+          event.password,
+        )
+        : await PreferenceUtils.clearLoginCredentials();
+
+    if (!RailwireAuthRepository.loginOtpEnabled) {
+      return emit(const RailwireLoginSuccess());
+    }
+
+    final otpResult = await repository.sendLoginOtp();
+    otpResult.fold(
+      (error) => emit(LoginFailure(errorMessage: error.toString())),
+      (mobile) => emit(LoginSuccess(user: _railwireOtpEntity(mobile))),
+    );
+  }
+
+  /// RailWire OTPs have no reference or session token; the OTP screen only
+  /// needs the number it was sent to.
+  AuthEntity _railwireOtpEntity(String mobile) =>
+      AuthEntity(otpRefId: '', mobile: mobile, loginSessionToken: '');
+
+  Future<void> _railwireResendOtp(Emitter<AuthState> emit) async {
+    final result = await sl<RailwireAuthRepository>().sendLoginOtp();
+    result.fold(
+      (error) => emit(OtpVerificationFailed(errorMessage: error.toString())),
+      (mobile) => emit(OtpResendSuccess(user: _railwireOtpEntity(mobile))),
+    );
+  }
+
+  Future<void> _railwireVerifyOtp(
+    VerifyOtpRequested event,
+    Emitter<AuthState> emit,
+  ) async {
+    final result = await sl<RailwireAuthRepository>().verifyLoginOtp(
+      event.otp,
+    );
+    result.fold(
+      (error) => emit(OtpVerificationFailed(errorMessage: error.message)),
+      (_) => emit(const OtpVerified()),
+    );
   }
 
   Future<void> _onLogoutRequested(
@@ -142,6 +215,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
 
   Future<void> _onResendOTP(ResendOTP event, Emitter<AuthState> emit) async {
     try {
+      if (ApiUrls.isRailwire) return await _railwireResendOtp(emit);
+
       final result = await authRepository.resendOTP(event.loginSessionToken);
 
       await result.fold(
@@ -195,6 +270,8 @@ class AuthBloc extends Bloc<AuthEvent, AuthState> {
   ) async {
     try {
       emit(const AuthLoading());
+
+      if (ApiUrls.isRailwire) return await _railwireVerifyOtp(event, emit);
 
       if (_authEntity == null) {
         emit(

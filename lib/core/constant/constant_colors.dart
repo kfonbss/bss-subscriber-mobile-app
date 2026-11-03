@@ -10,7 +10,7 @@ class AppColor {
   /// current tenant (used to preview the colour on the tenant screen).
   static Color primaryFor(String? tenantId) =>
       AppBrand.isLdTenant(tenantId)
-          ? const Color(0xFF026DA7)
+          ? const Color(0xFF26307A)
           : const Color(0xFF8D0247);
 
   /// Tenant screen background before any tenant is chosen.
@@ -104,8 +104,7 @@ class AppColor {
   // Intro screens (shown before a tenant is chosen)
   // The tenant is chosen before the intro, so these follow the tenant primary.
   static Color get kIntroBackground => kPrimaryColor;
-  // Lighter tint of the primary (LD: #009DE2 → ≈ #26ACE6, close to the
-  // original #27BDFF accent).
+  // Lighter tint of the primary (LD: #26307A → ≈ #474F8E).
   static Color get kIntroAccent =>
       Color.lerp(kPrimaryColor, const Color(0xFFFFFFFF), 0.15)!;
   static const Color kWhite30 = Color(0x4DFFFFFF); // white @ 30% opacity

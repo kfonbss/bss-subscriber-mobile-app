@@ -4,6 +4,10 @@ import 'package:dio/dio.dart';
 
 /// This interceptor is used to show request and response logs
 class LoggerInterceptor extends Interceptor {
+  /// Request `extra` flag: keeps bodies with credentials or personal data out
+  /// of the logs.
+  static const sensitiveKey = 'sensitive';
+
   @override
   void onError(DioException err, ErrorInterceptorHandler handler) {
     final options = err.requestOptions;
@@ -36,7 +40,7 @@ class LoggerInterceptor extends Interceptor {
     }
 
     // Log Request Body
-    if (options.data != null) {
+    if (options.data != null && options.extra[sensitiveKey] != true) {
       // Handle Form Data specifically if needed, but often toString() is enough or jsonEncode
       try {
         if (options.data is FormData) {
@@ -61,7 +65,9 @@ class LoggerInterceptor extends Interceptor {
     _log('✅ ${response.statusCode} ${options.method} ==> $requestPath');
 
     // Log Response Data
-    _log('Response Data: ${response.data}');
+    if (options.extra[sensitiveKey] != true) {
+      _log('Response Data: ${response.data}');
+    }
 
     handler.next(response);
   }

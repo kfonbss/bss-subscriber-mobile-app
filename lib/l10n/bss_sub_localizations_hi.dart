@@ -2530,6 +2530,10 @@ class BssSubLocalizationsHi extends BssSubLocalizations {
       'आपको इस ऐप तक पहुंच प्राप्त नहीं है। कृपया सहायता टीम से संपर्क करें।';
 
   @override
+  String get accountBelongsToAnotherCircle =>
+      'यह खाता किसी अन्य सर्कल का है। कृपया अपना सर्कल चुनकर पुनः प्रयास करें।';
+
+  @override
   String get invalidResponse => 'अमान्य प्रतिक्रिया';
 
   @override

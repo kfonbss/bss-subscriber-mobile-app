@@ -47,6 +47,11 @@ class LoginSuccess extends AuthState {
   List<Object?> get props => [user];
 }
 
+/// RailWire login finished without an OTP step; the user is already saved.
+class RailwireLoginSuccess extends AuthState {
+  const RailwireLoginSuccess();
+}
+
 class LoginFailure extends AuthState {
   final String errorMessage;
 

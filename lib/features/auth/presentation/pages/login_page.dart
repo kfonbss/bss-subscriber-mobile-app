@@ -1,5 +1,7 @@
+import 'package:flutter/foundation.dart';
 import 'package:kfon_subscriber/shared/widgets/common_text_button.dart';
 import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
+import 'package:kfon_subscriber/core/constant/api_urls.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/constant/app_styles.dart';
 import 'package:kfon_subscriber/core/util/preference_util.dart';
@@ -53,6 +55,11 @@ class _LoginPageState extends State<LoginPage> {
     if (mounted) {
       _usernameTextFieldController.text = username ?? '';
       _passwordTextFieldController.text = password ?? '';
+      // Temporary: RailWire test account, debug builds only.
+      if (ApiUrls.isRailwire && kDebugMode) {
+        _usernameTextFieldController.text = 'ka.matest2';
+        _passwordTextFieldController.text = 'matesttwo123';
+      }
     }
   }
 
@@ -95,6 +102,8 @@ class _LoginPageState extends State<LoginPage> {
               content: state.errorMessage,
               isError: true,
             );
+          } else if (state is RailwireLoginSuccess) {
+            Navigator.pushReplacementNamed(context, AppRoutes.mainPage);
           } else if (state is LoginSuccess) {
             Navigator.pushReplacementNamed(
               context,

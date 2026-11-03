@@ -2536,6 +2536,10 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
       'You do not have access to this app. Please contact support.';
 
   @override
+  String get accountBelongsToAnotherCircle =>
+      'This account belongs to a different circle. Please select your circle and try again.';
+
+  @override
   String get invalidResponse => 'Invalid response';
 
   @override

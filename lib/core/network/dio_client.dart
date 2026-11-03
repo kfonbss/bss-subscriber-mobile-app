@@ -1,9 +1,12 @@
+import 'dart:convert';
+
 import 'package:dio/dio.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/core/constant/api_urls.dart';
 import 'package:kfon_subscriber/core/network/api_response.dart';
 import 'package:kfon_subscriber/core/network/interceptors/auth_interceptor.dart';
 import 'package:kfon_subscriber/core/network/interceptors/logger_interceptor.dart';
+import 'package:kfon_subscriber/core/network/interceptors/railwire_auth_interceptor.dart';
 
 class DioClient {
   late final Dio _dio;
@@ -20,7 +23,10 @@ class DioClient {
           ),
         )
         ..interceptors.addAll([
-          AuthInterceptor(), // Add auth token and auto-refresh
+          if (ApiUrls.isRailwire)
+            RailwireAuthInterceptor()
+          else
+            AuthInterceptor(), // Add auth token and auto-refresh
           LoggerInterceptor(),
         ]);
 
@@ -44,6 +50,35 @@ class DioClient {
     } catch (e) {
       return APIResponse.fromError(e);
     }
+  }
+
+  // RAILWIRE GET METHOD
+  // RailWire sends JSON as text/html in its own shape, so it's decoded here
+  // rather than through [APIResponse]. Errors are left to the caller.
+  Future<Map<String, dynamic>> getRailwire(String url) async {
+    final Response<String> response = await _dio.get<String>(
+      url,
+      options: Options(responseType: ResponseType.plain),
+    );
+    return jsonDecode(response.data ?? '') as Map<String, dynamic>;
+  }
+
+  // RAILWIRE POST METHOD
+  Future<Map<String, dynamic>> postRailwire(
+    String url, {
+    dynamic data,
+    bool sensitive = false,
+  }) async {
+    final Response<String> response = await _dio.post<String>(
+      url,
+      data: data,
+      options: Options(
+        responseType: ResponseType.plain,
+        contentType: Headers.jsonContentType,
+        extra: {LoggerInterceptor.sensitiveKey: sensitive},
+      ),
+    );
+    return jsonDecode(response.data ?? '') as Map<String, dynamic>;
   }
 
   // POST METHOD

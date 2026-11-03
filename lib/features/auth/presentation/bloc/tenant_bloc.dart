@@ -1,3 +1,4 @@
+import 'package:kfon_subscriber/core/constant/api_urls.dart';
 import 'package:kfon_subscriber/core/util/preference_util.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import '../../domain/entity/tenant_entity.dart';
@@ -18,6 +19,7 @@ class TenantBloc extends Bloc<TenantEvent, TenantState> {
     emit(state.copyWith(status: TenantLoadStatus.loading));
 
     final savedCode = (await PreferenceUtils.getTenantId())?.trim();
+    final savedName = await PreferenceUtils.getTenantName();
     final result = await _repository.getTenants();
 
     result.fold(
@@ -32,7 +34,7 @@ class TenantBloc extends Bloc<TenantEvent, TenantState> {
           status: TenantLoadStatus.loaded,
           allTenants: list,
           filteredTenants: list,
-          selectedTenant: _matchSaved(list, savedCode),
+          selectedTenant: _matchSaved(list, savedCode, savedName),
         ),
       ),
     );
@@ -40,10 +42,16 @@ class TenantBloc extends Bloc<TenantEvent, TenantState> {
 
   /// Pre-selects the tenant already saved on this device, so reopening the
   /// picker shows the current choice instead of an empty selection.
-  TenantEntity? _matchSaved(List<TenantEntity> tenants, String? savedCode) {
+  TenantEntity? _matchSaved(
+    List<TenantEntity> tenants,
+    String? savedCode,
+    String? savedName,
+  ) {
     if (savedCode == null || savedCode.isEmpty) return null;
     for (final tenant in tenants) {
-      if (tenant.code.trim().toUpperCase() == savedCode.toUpperCase()) {
+      // RailWire states can share a code (NE2), so the name must match too.
+      if (tenant.code.trim().toUpperCase() == savedCode.toUpperCase() &&
+          (!ApiUrls.isRailwire || tenant.name == savedName)) {
         return tenant;
       }
     }
