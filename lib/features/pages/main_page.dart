@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/constant/app_brand.dart';
 import 'package:kfon_subscriber/core/constant/mis_constant.dart';
 import 'package:url_launcher/url_launcher.dart';
@@ -166,10 +167,7 @@ class _MainPageState extends State<MainPage> {
           hoverElevation: 0,
           highlightElevation: 0,
           onPressed: () => _showHelpOptions(context),
-          child: const Padding(
-            padding: EdgeInsets.all(16.0),
-            child: Image(image: AssetImage(AppAssets.headphone)),
-          ),
+          child: SvgPicture.asset(AppAssets.helpdesk, width: 28, height: 28),
         ),
       ),
       floatingActionButtonLocation: const _RaisedCenterDockedLocation(9),

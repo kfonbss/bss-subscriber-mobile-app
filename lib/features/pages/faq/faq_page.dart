@@ -84,7 +84,6 @@ class FaqPage extends StatelessWidget {
     ];
 
     return CommonAppBar(
-      onBackPressed: () => Navigator.pop(context),
       title: l10n.faqs,
       body: SingleChildScrollView(
         padding: EdgeInsets.only(bottom: 50.h),

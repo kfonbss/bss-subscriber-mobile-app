@@ -59,7 +59,6 @@ class AppAssets {
   static const String arrowRight = 'assets/icons/arrow-right.svg';
   static const String calendar = 'assets/icons/calendar.svg';
   static const String revenueIcon = 'assets/icons/revenue_icon.svg';
-  static const String subscriberAvatar = 'assets/icons/subscriber_avatar.svg';
   static const String cafAvatar = 'assets/images/caf_avatar.svg';
   static const String invoiceList = 'assets/icons/invoice_list.svg';
   static const String location = 'assets/icons/location.svg';
@@ -86,6 +85,17 @@ class AppAssets {
 
   static const String kLogoAsset = 'assets/images/railwire_logo.png';
   static const String kWhitLogoAsset = 'assets/images/railwire_white.png';
+  static const String kHomeLogoAsset = 'assets/images/railwire_logo_home.png';
+  static const String homeLeftEllipse = 'assets/images/left_bg_ellipsis.png';
+  static const String homeRightEllipse = 'assets/images/right_bg_ellipsis.png';
+  static const String homePromoBanner = 'assets/images/dummy-banner.png';
+  static const String serviceSpeedTest = 'assets/icons/speed_test.svg';
+  static const String serviceRwPlay = 'assets/icons/rw_play.svg';
+  static const String serviceSecure = 'assets/icons/secure.svg';
+  static const String serviceMyRouter = 'assets/icons/my_router.svg';
+  static const String serviceComplaint = 'assets/icons/complaint.svg';
+  static const String serviceRefer = 'assets/icons/refer.svg';
+  static const String serviceMore = 'assets/icons/more.svg';
   static const String introRoundLogo = 'assets/images/intro_round_logo.png';
   static const String logoTransparent = 'assets/images/logo_transparent.png';
 
@@ -120,6 +130,7 @@ class AppAssets {
   static const String introScreenBackground =
       'assets/images/intro_screen_background.svg';
   static const String headphone = 'assets/bottomNaviBarIcons/headphone.png';
+  static const String helpdesk = 'assets/images/helpdesk.svg';
   static const String glob = 'assets/icons/glob.svg';
   static const String deleteImage1 = 'assets/images/delete_image__1.png';
   static const String offerPromo = 'assets/icons/offer_promo.png';

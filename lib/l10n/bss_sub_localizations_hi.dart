@@ -2656,4 +2656,68 @@ class BssSubLocalizationsHi extends BssSubLocalizations {
 
   @override
   String get insufficientBalance => 'अपर्याप्त बैलेंस';
+
+  @override
+  String get lastTransaction => 'अंतिम लेन-देन';
+
+  @override
+  String gbUsedOfTotal(String total) {
+    return '/ $total GB उपयोग किया';
+  }
+
+  @override
+  String gbLeft(String value) {
+    return '$value GB शेष';
+  }
+
+  @override
+  String get planLabel => 'प्लान';
+
+  @override
+  String plusPacks(String count) {
+    return '+$count पैक';
+  }
+
+  @override
+  String get homeServices => 'सेवाएं';
+
+  @override
+  String get viewAll => 'सभी देखें';
+
+  @override
+  String get rwPlay => 'RW Play';
+
+  @override
+  String get secure => 'सुरक्षित';
+
+  @override
+  String get myRouter => 'मेरा राउटर';
+
+  @override
+  String get addOns => 'ऐड-ऑन';
+
+  @override
+  String get complaint => 'शिकायत';
+
+  @override
+  String get refer => 'रेफ़र करें';
+
+  @override
+  String get more => 'और';
+
+  @override
+  String get referEarnTitle => 'दोस्त जुड़ें, आप कमाएं!';
+
+  @override
+  String referEarnSubtitle(String amount) {
+    return 'आप दोनों को ₹$amount वॉलेट क्रेडिट मिलेगा';
+  }
+
+  @override
+  String get inviteNow => 'अभी आमंत्रित करें';
+
+  @override
+  String daysLowercase(String days) {
+    return '$days दिन';
+  }
 }

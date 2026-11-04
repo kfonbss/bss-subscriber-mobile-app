@@ -2663,4 +2663,68 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
 
   @override
   String get insufficientBalance => 'Insufficient Balance';
+
+  @override
+  String get lastTransaction => 'Last transaction';
+
+  @override
+  String gbUsedOfTotal(String total) {
+    return '/ $total GB used';
+  }
+
+  @override
+  String gbLeft(String value) {
+    return '$value GB left';
+  }
+
+  @override
+  String get planLabel => 'Plan';
+
+  @override
+  String plusPacks(String count) {
+    return '+$count Pack';
+  }
+
+  @override
+  String get homeServices => 'Services';
+
+  @override
+  String get viewAll => 'View all';
+
+  @override
+  String get rwPlay => 'RW Play';
+
+  @override
+  String get secure => 'Secure';
+
+  @override
+  String get myRouter => 'My Router';
+
+  @override
+  String get addOns => 'Add-ons';
+
+  @override
+  String get complaint => 'Complaint';
+
+  @override
+  String get refer => 'Refer';
+
+  @override
+  String get more => 'More';
+
+  @override
+  String get referEarnTitle => 'Friends Join, You Earn!';
+
+  @override
+  String referEarnSubtitle(String amount) {
+    return 'You both get ₹$amount wallet credit';
+  }
+
+  @override
+  String get inviteNow => 'Invite Now';
+
+  @override
+  String daysLowercase(String days) {
+    return '$days days';
+  }
 }

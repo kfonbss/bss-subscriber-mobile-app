@@ -4951,6 +4951,114 @@ abstract class BssSubLocalizations {
   /// In en, this message translates to:
   /// **'Insufficient Balance'**
   String get insufficientBalance;
+
+  /// No description provided for @lastTransaction.
+  ///
+  /// In en, this message translates to:
+  /// **'Last transaction'**
+  String get lastTransaction;
+
+  /// No description provided for @gbUsedOfTotal.
+  ///
+  /// In en, this message translates to:
+  /// **'/ {total} GB used'**
+  String gbUsedOfTotal(String total);
+
+  /// No description provided for @gbLeft.
+  ///
+  /// In en, this message translates to:
+  /// **'{value} GB left'**
+  String gbLeft(String value);
+
+  /// No description provided for @planLabel.
+  ///
+  /// In en, this message translates to:
+  /// **'Plan'**
+  String get planLabel;
+
+  /// No description provided for @plusPacks.
+  ///
+  /// In en, this message translates to:
+  /// **'+{count} Pack'**
+  String plusPacks(String count);
+
+  /// No description provided for @homeServices.
+  ///
+  /// In en, this message translates to:
+  /// **'Services'**
+  String get homeServices;
+
+  /// No description provided for @viewAll.
+  ///
+  /// In en, this message translates to:
+  /// **'View all'**
+  String get viewAll;
+
+  /// No description provided for @rwPlay.
+  ///
+  /// In en, this message translates to:
+  /// **'RW Play'**
+  String get rwPlay;
+
+  /// No description provided for @secure.
+  ///
+  /// In en, this message translates to:
+  /// **'Secure'**
+  String get secure;
+
+  /// No description provided for @myRouter.
+  ///
+  /// In en, this message translates to:
+  /// **'My Router'**
+  String get myRouter;
+
+  /// No description provided for @addOns.
+  ///
+  /// In en, this message translates to:
+  /// **'Add-ons'**
+  String get addOns;
+
+  /// No description provided for @complaint.
+  ///
+  /// In en, this message translates to:
+  /// **'Complaint'**
+  String get complaint;
+
+  /// No description provided for @refer.
+  ///
+  /// In en, this message translates to:
+  /// **'Refer'**
+  String get refer;
+
+  /// No description provided for @more.
+  ///
+  /// In en, this message translates to:
+  /// **'More'**
+  String get more;
+
+  /// No description provided for @referEarnTitle.
+  ///
+  /// In en, this message translates to:
+  /// **'Friends Join, You Earn!'**
+  String get referEarnTitle;
+
+  /// No description provided for @referEarnSubtitle.
+  ///
+  /// In en, this message translates to:
+  /// **'You both get ₹{amount} wallet credit'**
+  String referEarnSubtitle(String amount);
+
+  /// No description provided for @inviteNow.
+  ///
+  /// In en, this message translates to:
+  /// **'Invite Now'**
+  String get inviteNow;
+
+  /// No description provided for @daysLowercase.
+  ///
+  /// In en, this message translates to:
+  /// **'{days} days'**
+  String daysLowercase(String days);
 }
 
 class _BssSubLocalizationsDelegate
