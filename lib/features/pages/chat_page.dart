@@ -197,16 +197,19 @@ class _ChatPageState extends State<ChatPage> {
                               borderRadius: BorderRadius.circular(38),
                             ),
                           ),
-                          child: InkWell(
-                            onTap: () {},
-                            child: Center(
-                              child: SvgPicture.asset(
-                                AppAssets.chatSend,
-                                width: 12.w,
-                                height: 12.h,
-                                colorFilter: const ColorFilter.mode(
-                                  Colors.white,
-                                  BlendMode.srcIn,
+                          child: Material(
+                            type: MaterialType.transparency,
+                            child: InkWell(
+                              onTap: () {},
+                              child: Center(
+                                child: SvgPicture.asset(
+                                  AppAssets.chatSend,
+                                  width: 12.w,
+                                  height: 12.h,
+                                  colorFilter: const ColorFilter.mode(
+                                    Colors.white,
+                                    BlendMode.srcIn,
+                                  ),
                                 ),
                               ),
                             ),

@@ -18,9 +18,6 @@ class SelfCarePage extends StatelessWidget {
   // Sizer ratios are fixed after MaterialApp.builder — compute once.
   // Using static final (not const) because fontSize uses Sizer extension (.sp).
 
-  // One const BorderRadius shared across all four InkWells.
-  static const _inkWellRadius = BorderRadius.all(Radius.circular(12));
-
   @override
   Widget build(BuildContext context) {
     final l10n = context.bssSubL10n;
@@ -36,7 +33,9 @@ class SelfCarePage extends StatelessWidget {
         ),
         child: Column(
           children: [
-            InkWell(
+            _SelfCareCard(
+              heading: l10n.restartModemRefreshConnection,
+              icon: AppAssets.restartModem,
               onTap:
                   () => Navigator.push(
                     context,
@@ -44,13 +43,11 @@ class SelfCarePage extends StatelessWidget {
                       builder: (context) => const RestartModemPage(),
                     ),
                   ),
-              borderRadius: _inkWellRadius,
-              child: _SelfCareCard(
-                heading: l10n.restartModemRefreshConnection,
-                icon: AppAssets.restartModem,
-              ),
             ),
-            InkWell(
+            _SelfCareCard(
+              heading: l10n.networkHealthCheck,
+              subHeading: l10n.pingSpeedTest,
+              icon: AppAssets.networkHealth,
               onTap:
                   () => Navigator.push(
                     context,
@@ -58,14 +55,11 @@ class SelfCarePage extends StatelessWidget {
                       builder: (context) => const SpeedTestPage(),
                     ),
                   ),
-              borderRadius: _inkWellRadius,
-              child: _SelfCareCard(
-                heading: l10n.networkHealthCheck,
-                subHeading: l10n.pingSpeedTest,
-                icon: AppAssets.networkHealth,
-              ),
             ),
-            InkWell(
+            _SelfCareCard(
+              heading: l10n.deviceManagement,
+              subHeading: l10n.manageYourConnectedDevices,
+              icon: AppAssets.deviceManagement,
               onTap:
                   () => Navigator.push(
                     context,
@@ -73,14 +67,10 @@ class SelfCarePage extends StatelessWidget {
                       builder: (context) => const ConnectedDevicesPage(),
                     ),
                   ),
-              borderRadius: _inkWellRadius,
-              child: _SelfCareCard(
-                heading: l10n.deviceManagement,
-                subHeading: l10n.manageYourConnectedDevices,
-                icon: AppAssets.deviceManagement,
-              ),
             ),
-            InkWell(
+            _SelfCareCard(
+              heading: l10n.changeSsidWifiPassword,
+              icon: AppAssets.changeSsid,
               onTap:
                   () => Navigator.push(
                     context,
@@ -94,11 +84,6 @@ class SelfCarePage extends StatelessWidget {
                           ),
                     ),
                   ),
-              borderRadius: _inkWellRadius,
-              child: _SelfCareCard(
-                heading: l10n.changeSsidWifiPassword,
-                icon: AppAssets.changeSsid,
-              ),
             ),
           ],
         ),
@@ -114,95 +99,103 @@ class _SelfCareCard extends StatelessWidget {
   final String heading;
   final String? subHeading;
   final String icon;
+  final VoidCallback onTap;
 
   const _SelfCareCard({
     required this.heading,
     this.subHeading,
     required this.icon,
+    required this.onTap,
   });
 
   @override
   Widget build(BuildContext context) {
     // Design: 1px #EAEAEA border, radius 12, no shadow; 19 gap between cards.
+    // The InkWell sits inside the card so the ripple draws on the card itself
+    // (clipped to its corners) and the gap below doesn't react to taps.
     return Card(
       margin: const EdgeInsets.only(bottom: 19),
       color: Colors.white,
       elevation: 0,
+      clipBehavior: Clip.antiAlias,
       shape: const RoundedRectangleBorder(
         side: BorderSide(color: AppColor.kinputFiledLightBorder),
         borderRadius: BorderRadius.all(Radius.circular(12)),
       ),
-      child: Padding(
-        padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.center,
-          mainAxisAlignment: MainAxisAlignment.spaceBetween,
-          children: [
-            Expanded(
-              child: Row(
-                spacing: 16,
-                children: [
-                  Container(
-                    // Design: 53 circle, 10 padding → 24 icon.
-                    width: 53.w,
-                    height: 53.w,
-                    padding: EdgeInsets.all(10.w),
-                    decoration: ShapeDecoration(
-                      color: AppColor.kPrimaryTint,
-                      shape: RoundedRectangleBorder(
-                        borderRadius: BorderRadius.all(Radius.circular(40)),
-                      ),
-                    ),
-                    child: Center(
-                      child: SvgPicture.asset(
-                        icon,
-                        colorFilter: ColorFilter.mode(
-                          AppColor.kPrimaryColor,
-                          BlendMode.srcIn,
+      child: InkWell(
+        onTap: onTap,
+        child: Padding(
+          padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 16),
+          child: Row(
+            crossAxisAlignment: CrossAxisAlignment.center,
+            mainAxisAlignment: MainAxisAlignment.spaceBetween,
+            children: [
+              Expanded(
+                child: Row(
+                  spacing: 16,
+                  children: [
+                    Container(
+                      // Design: 53 circle, 10 padding → 24 icon.
+                      width: 53.w,
+                      height: 53.w,
+                      padding: EdgeInsets.all(10.w),
+                      decoration: ShapeDecoration(
+                        color: AppColor.kPrimaryTint,
+                        shape: RoundedRectangleBorder(
+                          borderRadius: BorderRadius.all(Radius.circular(40)),
                         ),
                       ),
-                    ),
-                  ),
-                  Expanded(
-                    child: Column(
-                      mainAxisAlignment: MainAxisAlignment.center,
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        Text(
-                          heading,
-                          style: TextStyle(
-                            color: AppColor.kTextSecondaryDark,
-                            fontSize: 14.sp,
-                            fontFamily: 'GeneralSans',
-                            fontWeight: FontWeight.w600,
-                            height: 1.50,
+                      child: Center(
+                        child: SvgPicture.asset(
+                          icon,
+                          colorFilter: ColorFilter.mode(
+                            AppColor.kPrimaryColor,
+                            BlendMode.srcIn,
                           ),
                         ),
-                        if (subHeading != null) ...[
-                          SizedBox(height: 4.h),
+                      ),
+                    ),
+                    Expanded(
+                      child: Column(
+                        mainAxisAlignment: MainAxisAlignment.center,
+                        crossAxisAlignment: CrossAxisAlignment.start,
+                        children: [
                           Text(
-                            subHeading!,
+                            heading,
                             style: TextStyle(
-                              color: AppColor.kBlack70,
-                              fontSize: 12.sp,
+                              color: AppColor.kTextSecondaryDark,
+                              fontSize: 14.sp,
                               fontFamily: 'GeneralSans',
-                              fontWeight: FontWeight.w400,
-                              height: 1.30,
+                              fontWeight: FontWeight.w600,
+                              height: 1.50,
                             ),
                           ),
+                          if (subHeading != null) ...[
+                            SizedBox(height: 4.h),
+                            Text(
+                              subHeading!,
+                              style: TextStyle(
+                                color: AppColor.kBlack70,
+                                fontSize: 12.sp,
+                                fontFamily: 'GeneralSans',
+                                fontWeight: FontWeight.w400,
+                                height: 1.30,
+                              ),
+                            ),
+                          ],
                         ],
-                      ],
+                      ),
                     ),
-                  ),
-                ],
+                  ],
+                ),
               ),
-            ),
-            const Icon(
-              Icons.arrow_forward_ios_rounded,
-              color: AppColor.kMediumGrey,
-              size: 16.0,
-            ),
-          ],
+              const Icon(
+                Icons.arrow_forward_ios_rounded,
+                color: AppColor.kMediumGrey,
+                size: 16.0,
+              ),
+            ],
+          ),
         ),
       ),
     );

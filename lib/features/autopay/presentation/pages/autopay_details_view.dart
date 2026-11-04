@@ -156,36 +156,41 @@ class AutopayDetailsView extends StatelessWidget {
   }
 
   Widget _buildRemoveButton(BuildContext context) {
-    return InkWell(
-      onTap: onRemove,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        width: double.infinity,
-        padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
-        decoration: BoxDecoration(
-          color: AppColor.kRemoveButtonBg,
-          border: Border.all(color: AppColor.kRemoveButtonBorder),
+    return Container(
+      width: double.infinity,
+      decoration: BoxDecoration(
+        color: AppColor.kRemoveButtonBg,
+        border: Border.all(color: AppColor.kRemoveButtonBorder),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onRemove,
           borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: [
-            Icon(
-              Icons.link_off_rounded,
-              size: 16.sp,
-              color: AppColor.kRemoveButtonText,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 10.h),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                Icon(
+                  Icons.link_off_rounded,
+                  size: 16.sp,
+                  color: AppColor.kRemoveButtonText,
+                ),
+                SizedBox(width: 8.w),
+                Text(
+                  context.bssSubL10n.removeFromAutoPay,
+                  style: autopayText(
+                    12,
+                    FontWeight.w600,
+                    AppColor.kRemoveButtonText,
+                    height: 1.33,
+                  ),
+                ),
+              ],
             ),
-            SizedBox(width: 8.w),
-            Text(
-              context.bssSubL10n.removeFromAutoPay,
-              style: autopayText(
-                12,
-                FontWeight.w600,
-                AppColor.kRemoveButtonText,
-                height: 1.33,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

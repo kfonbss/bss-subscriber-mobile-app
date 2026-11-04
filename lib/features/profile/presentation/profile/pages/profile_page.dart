@@ -186,20 +186,20 @@ class _ProfilePageState extends State<ProfilePage> {
             SizedBox(height: 24.h),
             Text(l10n.account, style: _sectionHeadingStyle),
             SizedBox(height: 17.h),
-            InkWell(
+            _ProfileListItem(
+              image: AppAssets.accountInformation,
+              label: l10n.accountInformation,
+              decoration: _listItemDecoration,
               onTap:
                   () => Navigator.pushNamed(
                     context,
                     AppRoutes.accountInformationPage,
                   ),
-              borderRadius: const BorderRadius.all(Radius.circular(12)),
-              child: _ProfileListItem(
-                image: AppAssets.accountInformation,
-                label: l10n.accountInformation,
-                decoration: _listItemDecoration,
-              ),
             ),
-            InkWell(
+            _ProfileListItem(
+              image: AppAssets.securitySettings,
+              label: l10n.securitySettings,
+              decoration: _listItemDecoration,
               onTap:
                   () => Navigator.push(
                     context,
@@ -213,14 +213,11 @@ class _ProfilePageState extends State<ProfilePage> {
                           ),
                     ),
                   ),
-              borderRadius: const BorderRadius.all(Radius.circular(12)),
-              child: _ProfileListItem(
-                image: AppAssets.securitySettings,
-                label: l10n.securitySettings,
-                decoration: _listItemDecoration,
-              ),
             ),
-            InkWell(
+            _ProfileListItem(
+              image: AppAssets.myTickets,
+              label: l10n.myTickets,
+              decoration: _listItemDecoration,
               onTap:
                   () => Navigator.push(
                     context,
@@ -228,14 +225,11 @@ class _ProfilePageState extends State<ProfilePage> {
                       builder: (context) => const TicketsPage(),
                     ),
                   ),
-              borderRadius: const BorderRadius.all(Radius.circular(12)),
-              child: _ProfileListItem(
-                image: AppAssets.myTickets,
-                label: l10n.myTickets,
-                decoration: _listItemDecoration,
-              ),
             ),
-            InkWell(
+            _ProfileListItem(
+              image: AppAssets.myRechargesIcon,
+              label: l10n.futureRecharges,
+              decoration: _listItemDecoration,
               onTap:
                   () => Navigator.push(
                     context,
@@ -243,31 +237,19 @@ class _ProfilePageState extends State<ProfilePage> {
                       builder: (context) => const FutureRechargePage(),
                     ),
                   ),
-              borderRadius: const BorderRadius.all(Radius.circular(12)),
-              child: _ProfileListItem(
-                image: AppAssets.myRechargesIcon,
-                label: l10n.futureRecharges,
-                decoration: _listItemDecoration,
-              ),
             ),
-            InkWell(
+            _ProfileListItem(
+              image: AppAssets.settings,
+              label: l10n.settings,
+              decoration: _listItemDecoration,
               onTap: () => Navigator.pushNamed(context, AppRoutes.settingsPage),
-              borderRadius: const BorderRadius.all(Radius.circular(12)),
-              child: _ProfileListItem(
-                image: AppAssets.settings,
-                label: l10n.settings,
-                decoration: _listItemDecoration,
-              ),
             ),
-            InkWell(
+            _ProfileListItem(
+              image: AppAssets.logout,
+              label: l10n.logout,
+              decoration: _listItemDecoration,
+              textColor: AppColor.kLogoutRed,
               onTap: () => DialogUtil().showLogoutDialog(context),
-              borderRadius: const BorderRadius.all(Radius.circular(12)),
-              child: _ProfileListItem(
-                image: AppAssets.logout,
-                label: l10n.logout,
-                decoration: _listItemDecoration,
-                textColor: AppColor.kLogoutRed,
-              ),
             ),
           ],
         ),
@@ -283,74 +265,91 @@ class _ProfileListItem extends StatelessWidget {
   final String label;
   final BoxDecoration decoration;
   final Color? textColor;
+  final VoidCallback onTap;
 
   const _ProfileListItem({
     required this.image,
     required this.label,
     required this.decoration,
+    required this.onTap,
     this.textColor,
   });
+
+  static const _inkRadius = BorderRadius.all(Radius.circular(12));
 
   @override
   Widget build(BuildContext context) {
     final isLogout = textColor != null;
 
+    // The InkWell sits on a transparent Material inside the white box so the
+    // ripple shows on the item, and the bottom margin doesn't react to taps.
     return Container(
       margin: EdgeInsets.only(bottom: 17.h),
-      padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
       height: 70.h,
       decoration: decoration,
-      child: Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        crossAxisAlignment: CrossAxisAlignment.center,
-        children: [
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.center,
-            mainAxisSize: MainAxisSize.min,
-            children: [
-              Container(
-                width: 38.w,
-                height: 38.h,
-                padding: EdgeInsets.all(9),
-                decoration: BoxDecoration(
-                  shape: BoxShape.circle,
-                  color:
-                      isLogout
-                          ? AppColor.kLogoutIconBg
-                          : AppColor.kIconBackground,
-                ),
-                child: Center(
-                  child: SvgPicture.asset(
-                    image,
-                    colorFilter: ColorFilter.mode(
-                      isLogout ? AppColor.kLogoutRed : AppColor.kPrimaryColor,
-                      BlendMode.srcIn,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: _inkRadius,
+          child: Padding(
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 16.h),
+            child: Row(
+              mainAxisAlignment: MainAxisAlignment.spaceBetween,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                Row(
+                  crossAxisAlignment: CrossAxisAlignment.center,
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Container(
+                      width: 38.w,
+                      height: 38.h,
+                      padding: EdgeInsets.all(9),
+                      decoration: BoxDecoration(
+                        shape: BoxShape.circle,
+                        color:
+                            isLogout
+                                ? AppColor.kLogoutIconBg
+                                : AppColor.kIconBackground,
+                      ),
+                      child: Center(
+                        child: SvgPicture.asset(
+                          image,
+                          colorFilter: ColorFilter.mode(
+                            isLogout
+                                ? AppColor.kLogoutRed
+                                : AppColor.kPrimaryColor,
+                            BlendMode.srcIn,
+                          ),
+                        ),
+                      ),
                     ),
-                  ),
+                    SizedBox(width: 12.w),
+                    Text(
+                      label,
+                      style: TextStyle(
+                        fontFamily: 'GeneralSans',
+                        fontWeight: FontWeight.w600,
+                        fontSize: 14.sp,
+                        height: 1.3,
+                        color:
+                            isLogout
+                                ? AppColor.kLogoutRed
+                                : AppColor.kTextSecondaryDark,
+                      ),
+                    ),
+                  ],
                 ),
-              ),
-              SizedBox(width: 12.w),
-              Text(
-                label,
-                style: TextStyle(
-                  fontFamily: 'GeneralSans',
-                  fontWeight: FontWeight.w600,
-                  fontSize: 14.sp,
-                  height: 1.3,
-                  color:
-                      isLogout
-                          ? AppColor.kLogoutRed
-                          : AppColor.kTextSecondaryDark,
+                Icon(
+                  Icons.arrow_forward_ios,
+                  size: 16.sp,
+                  color: AppColor.kSlateGrey,
                 ),
-              ),
-            ],
+              ],
+            ),
           ),
-          Icon(
-            Icons.arrow_forward_ios,
-            size: 16.sp,
-            color: AppColor.kSlateGrey,
-          ),
-        ],
+        ),
       ),
     );
   }

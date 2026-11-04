@@ -250,55 +250,61 @@ class _TicketFilterBottomSheetState extends State<TicketFilterBottomSheet> {
       children: [
         _fieldLabel(label),
         SizedBox(height: 8.h),
-        InkWell(
-          onTap: onTap,
-          child: Container(
-            height: 48.h,
-            padding: const EdgeInsets.symmetric(horizontal: 16),
-            decoration: BoxDecoration(
-              color: Colors.white,
+        Container(
+          height: 48.h,
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(12),
+            border: Border.all(color: AppColor.kinputFiledLightBorder),
+          ),
+          child: Material(
+            color: Colors.transparent,
+            child: InkWell(
+              onTap: onTap,
               borderRadius: BorderRadius.circular(12),
-              border: Border.all(color: AppColor.kinputFiledLightBorder),
-            ),
-            child: Row(
-              children: [
-                Expanded(
-                  child: Text(
-                    value,
-                    style: TextStyle(
-                      fontFamily: 'GeneralSans',
-                      fontSize: 14,
-                      color:
-                          isPlaceholder
-                              ? AppColor.kTextFiledPlaceholderColor
-                              : AppColor.kTextSecondaryDark,
-                    ),
-                  ),
-                ),
-                if (onClear != null && !isPlaceholder)
-                  GestureDetector(
-                    onTap: onClear,
-                    behavior: HitTestBehavior.opaque,
-                    child: const Padding(
-                      padding: EdgeInsets.only(left: 8),
-                      child: Icon(
-                        Icons.close_rounded,
-                        size: 18,
-                        color: AppColor.kTextSecondary,
+              child: Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: Row(
+                  children: [
+                    Expanded(
+                      child: Text(
+                        value,
+                        style: TextStyle(
+                          fontFamily: 'GeneralSans',
+                          fontSize: 14,
+                          color:
+                              isPlaceholder
+                                  ? AppColor.kTextFiledPlaceholderColor
+                                  : AppColor.kTextSecondaryDark,
+                        ),
                       ),
                     ),
-                  )
-                else
-                  SvgPicture.asset(
-                    AppAssets.calendar,
-                    width: 20.w,
-                    height: 20.h,
-                    colorFilter: const ColorFilter.mode(
-                      AppColor.kCoolGrey,
-                      BlendMode.srcIn,
-                    ),
-                  ),
-              ],
+                    if (onClear != null && !isPlaceholder)
+                      GestureDetector(
+                        onTap: onClear,
+                        behavior: HitTestBehavior.opaque,
+                        child: const Padding(
+                          padding: EdgeInsets.only(left: 8),
+                          child: Icon(
+                            Icons.close_rounded,
+                            size: 18,
+                            color: AppColor.kTextSecondary,
+                          ),
+                        ),
+                      )
+                    else
+                      SvgPicture.asset(
+                        AppAssets.calendar,
+                        width: 20.w,
+                        height: 20.h,
+                        colorFilter: const ColorFilter.mode(
+                          AppColor.kCoolGrey,
+                          BlendMode.srcIn,
+                        ),
+                      ),
+                  ],
+                ),
+              ),
             ),
           ),
         ),

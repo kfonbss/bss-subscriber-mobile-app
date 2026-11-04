@@ -186,52 +186,58 @@ class _DataUsageViewState extends State<DataUsageView> {
                               onPeriodChanged: _onPeriodChanged,
                             ),
                             SizedBox(height: 24.h),
-                            InkWell(
-                              onTap: () {
-                                Navigator.push(
-                                  context,
-                                  MaterialPageRoute(
-                                    builder: (_) => const RestartModemPage(),
-                                  ),
-                                );
-                              },
-                              borderRadius: _cardRadius,
-                              child: Container(
-                                decoration: AppStyles.boxDecorationMedium,
-                                padding: const EdgeInsets.symmetric(
-                                  horizontal: 16,
-                                  vertical: 12,
-                                ),
-                                child: Row(
-                                  children: [
-                                    CircleAvatar(
-                                      minRadius: 24,
-                                      maxRadius: 24,
-                                      backgroundColor: _modemAvatarBg,
-                                      child: SvgPicture.asset(
-                                        AppAssets.modemRestart,
-                                        colorFilter: _modemIconColorFilter,
-                                        width: 22.w,
-                                        height: 22.h,
+                            Container(
+                              decoration: AppStyles.boxDecorationMedium,
+                              child: Material(
+                                color: Colors.transparent,
+                                child: InkWell(
+                                  onTap: () {
+                                    Navigator.push(
+                                      context,
+                                      MaterialPageRoute(
+                                        builder:
+                                            (_) => const RestartModemPage(),
                                       ),
+                                    );
+                                  },
+                                  borderRadius: _cardRadius,
+                                  child: Padding(
+                                    padding: const EdgeInsets.symmetric(
+                                      horizontal: 16,
+                                      vertical: 12,
                                     ),
-                                    SizedBox(width: 12.w),
-                                    Expanded(
-                                      child: Text(
-                                        context.bssSubL10n.restartModem,
-                                        style: Theme.of(
-                                          context,
-                                        ).textTheme.labelLarge?.copyWith(
-                                          fontWeight: FontWeight.w600,
+                                    child: Row(
+                                      children: [
+                                        CircleAvatar(
+                                          minRadius: 24,
+                                          maxRadius: 24,
+                                          backgroundColor: _modemAvatarBg,
+                                          child: SvgPicture.asset(
+                                            AppAssets.modemRestart,
+                                            colorFilter: _modemIconColorFilter,
+                                            width: 22.w,
+                                            height: 22.h,
+                                          ),
                                         ),
-                                      ),
+                                        SizedBox(width: 12.w),
+                                        Expanded(
+                                          child: Text(
+                                            context.bssSubL10n.restartModem,
+                                            style: Theme.of(
+                                              context,
+                                            ).textTheme.labelLarge?.copyWith(
+                                              fontWeight: FontWeight.w600,
+                                            ),
+                                          ),
+                                        ),
+                                        const Icon(
+                                          Icons.arrow_forward_ios,
+                                          size: 16,
+                                          color: AppColor.kLabelGrey,
+                                        ),
+                                      ],
                                     ),
-                                    const Icon(
-                                      Icons.arrow_forward_ios,
-                                      size: 16,
-                                      color: AppColor.kLabelGrey,
-                                    ),
-                                  ],
+                                  ),
                                 ),
                               ),
                             ),

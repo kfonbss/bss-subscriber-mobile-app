@@ -568,26 +568,31 @@ class _WalletCard extends StatelessWidget {
                 ],
               ),
             ),
-            InkWell(
-              onTap:
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute<void>(
-                      builder: (_) => const AutopayPage(),
+            Container(
+              height: 22.h,
+              decoration: _autoPayDecoration,
+              child: Material(
+                color: Colors.transparent,
+                child: InkWell(
+                  onTap:
+                      () => Navigator.push(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (_) => const AutopayPage(),
+                        ),
+                      ),
+                  borderRadius: const BorderRadius.all(Radius.circular(50)),
+                  child: Padding(
+                    padding: EdgeInsets.only(left: 8.w, right: 2.w),
+                    child: Row(
+                      mainAxisSize: MainAxisSize.min,
+                      children: [
+                        Text(context.bssSubL10n.autoPay, style: _autoPayStyle),
+                        SizedBox(width: 4.w),
+                        const _SwitchIndicator(value: _dummyAutoPayEnabled),
+                      ],
                     ),
                   ),
-              borderRadius: const BorderRadius.all(Radius.circular(50)),
-              child: Container(
-                height: 22.h,
-                padding: EdgeInsets.only(left: 8.w, right: 2.w),
-                decoration: _autoPayDecoration,
-                child: Row(
-                  mainAxisSize: MainAxisSize.min,
-                  children: [
-                    Text(context.bssSubL10n.autoPay, style: _autoPayStyle),
-                    SizedBox(width: 4.w),
-                    const _SwitchIndicator(value: _dummyAutoPayEnabled),
-                  ],
                 ),
               ),
             ),
@@ -1063,9 +1068,10 @@ class _QuickActionsState extends State<_QuickActions> {
   late List<_ActionItem> _actions;
 
   // Precomputed — shared across all action items.
+  static const _tileRadius = BorderRadius.all(Radius.circular(16));
   static const _tileDecoration = BoxDecoration(
     color: Colors.white,
-    borderRadius: BorderRadius.all(Radius.circular(16)),
+    borderRadius: _tileRadius,
     boxShadow: [BoxShadow(color: AppColor.kCardShadow, blurRadius: 16)],
   );
 
@@ -1125,44 +1131,48 @@ class _QuickActionsState extends State<_QuickActions> {
             _actions
                 .map(
                   (a) => Expanded(
-                    child: GestureDetector(
-                      onTap: a.onTap,
-                      child: Container(
-                        height: 100.h,
-                        decoration: _tileDecoration,
-                        child: Column(
-                          // Design: circle starts 16 below the tile top.
-                          mainAxisAlignment: MainAxisAlignment.start,
-                          children: [
-                            SizedBox(height: 16.h),
-                            Container(
-                              width: 46.w,
-                              height: 46.w,
-                              decoration: BoxDecoration(
-                                color: a.color,
-                                shape: BoxShape.circle,
-                                boxShadow: _circleShadow,
-                              ),
-                              child: Padding(
-                                padding: EdgeInsets.all(11.w),
-                                child: SvgPicture(
-                                  SvgAssetLoader(
-                                    a.icon,
-                                    colorMapper: _InvertedIconColorMapper(
-                                      iconColors: a.iconColors,
-                                      circleColor: a.color,
+                    child: Container(
+                      height: 100.h,
+                      decoration: _tileDecoration,
+                      child: Material(
+                        color: Colors.transparent,
+                        child: InkWell(
+                          onTap: a.onTap,
+                          borderRadius: _tileRadius,
+                          child: Column(
+                            // Design: circle starts 16 below the tile top.
+                            mainAxisAlignment: MainAxisAlignment.start,
+                            children: [
+                              SizedBox(height: 16.h),
+                              Container(
+                                width: 46.w,
+                                height: 46.w,
+                                decoration: BoxDecoration(
+                                  color: a.color,
+                                  shape: BoxShape.circle,
+                                  boxShadow: _circleShadow,
+                                ),
+                                child: Padding(
+                                  padding: EdgeInsets.all(11.w),
+                                  child: SvgPicture(
+                                    SvgAssetLoader(
+                                      a.icon,
+                                      colorMapper: _InvertedIconColorMapper(
+                                        iconColors: a.iconColors,
+                                        circleColor: a.color,
+                                      ),
                                     ),
                                   ),
                                 ),
                               ),
-                            ),
-                            SizedBox(height: 10.h),
-                            Text(
-                              a.label,
-                              style: _actionLabelStyle,
-                              textAlign: TextAlign.center,
-                            ),
-                          ],
+                              SizedBox(height: 10.h),
+                              Text(
+                                a.label,
+                                style: _actionLabelStyle,
+                                textAlign: TextAlign.center,
+                              ),
+                            ],
+                          ),
                         ),
                       ),
                     ),
@@ -1394,33 +1404,36 @@ class _PlanCard extends StatelessWidget {
           ),
           SizedBox(width: 8.w),
           // Previously the "Choose Plan" button.
-          InkWell(
-            customBorder: const CircleBorder(),
-            onTap:
-                () => Navigator.push(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder:
-                        (_) => BlocProvider(
-                          create:
-                              (_) => ChangePlanBloc(
-                                repository: sl<ChangePlanRepository>(),
+          Container(
+            width: 40.w,
+            height: 40.w,
+            decoration: _arrowDecoration,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                customBorder: const CircleBorder(),
+                onTap:
+                    () => Navigator.push(
+                      context,
+                      MaterialPageRoute<void>(
+                        builder:
+                            (_) => BlocProvider(
+                              create:
+                                  (_) => ChangePlanBloc(
+                                    repository: sl<ChangePlanRepository>(),
+                                  ),
+                              child: RechargePage(
+                                package: plan,
+                                isChangePlan: true,
                               ),
-                          child: RechargePage(
-                            package: plan,
-                            isChangePlan: true,
-                          ),
-                        ),
-                  ),
+                            ),
+                      ),
+                    ),
+                child: Icon(
+                  Icons.arrow_forward,
+                  size: 20.sp,
+                  color: AppColor.kTextSecondaryDark,
                 ),
-            child: Container(
-              width: 40.w,
-              height: 40.w,
-              decoration: _arrowDecoration,
-              child: Icon(
-                Icons.arrow_forward,
-                size: 20.sp,
-                color: AppColor.kTextSecondaryDark,
               ),
             ),
           ),
@@ -1637,9 +1650,9 @@ class _ServiceTile extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      behavior: HitTestBehavior.opaque,
+    return InkWell(
       onTap: item.onTap,
+      borderRadius: _radius,
       child: Column(
         children: [
           Container(
@@ -1764,15 +1777,22 @@ class _ReferBanner extends StatelessWidget {
           ),
           SizedBox(width: 8.w),
           // TODO: no referral flow yet.
-          InkWell(
-            onTap: () {},
-            borderRadius: const BorderRadius.all(Radius.circular(50)),
-            child: Container(
-              height: 24.h,
-              alignment: Alignment.center,
-              padding: EdgeInsets.symmetric(horizontal: 12.w),
-              decoration: _inviteDecoration,
-              child: Text(l10n.inviteNow, style: _inviteStyle),
+          Container(
+            height: 24.h,
+            decoration: _inviteDecoration,
+            child: Material(
+              color: Colors.transparent,
+              child: InkWell(
+                onTap: () {},
+                borderRadius: const BorderRadius.all(Radius.circular(50)),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(horizontal: 12.w),
+                  child: Center(
+                    widthFactor: 1,
+                    child: Text(l10n.inviteNow, style: _inviteStyle),
+                  ),
+                ),
+              ),
             ),
           ),
         ],

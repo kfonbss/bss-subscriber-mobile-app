@@ -192,38 +192,24 @@ class _TenantScreenState extends State<TenantScreen> {
                                   color: AppColor.kShimmerBase,
                                 ),
                               ),
-                              child: ListView.separated(
-                                shrinkWrap: true,
-                                physics: const NeverScrollableScrollPhysics(),
-                                itemCount: state.filteredTenants.length,
-                                separatorBuilder: (_, __) => Divider(
-                                  height: 1.h,
-                                  color: AppColor.kLightBorderGrey,
-                                  indent: 16.w,
-                                  endIndent: 16.w,
-                                ),
-                                itemBuilder: (_, i) {
-                                  final tenant = state.filteredTenants[i];
-                                  final isSelected =
-                                      state.selectedTenant?.id == tenant.id;
+                              child: Material(
+                                color: Colors.transparent,
+                                child: ListView.separated(
+                                  shrinkWrap: true,
+                                  physics: const NeverScrollableScrollPhysics(),
+                                  itemCount: state.filteredTenants.length,
+                                  separatorBuilder: (_, __) => Divider(
+                                    height: 1.h,
+                                    color: AppColor.kLightBorderGrey,
+                                    indent: 16.w,
+                                    endIndent: 16.w,
+                                  ),
+                                  itemBuilder: (_, i) {
+                                    final tenant = state.filteredTenants[i];
+                                    final isSelected =
+                                        state.selectedTenant?.id == tenant.id;
 
-                                  return InkWell(
-                                    onTap: () =>
-                                        _bloc.add(SelectTenant(tenant: tenant)),
-                                    borderRadius: BorderRadius.vertical(
-                                      top: i == 0
-                                          ? Radius.circular(12)
-                                          : Radius.zero,
-                                      bottom:
-                                          i == state.filteredTenants.length - 1
-                                          ? Radius.circular(12)
-                                          : Radius.zero,
-                                    ),
-                                    child: Container(
-                                      padding: EdgeInsets.symmetric(
-                                        horizontal: 16.w,
-                                        vertical: 16.h,
-                                      ),
+                                    return Container(
                                       decoration: BoxDecoration(
                                         color: isSelected
                                             ? Colors.white
@@ -240,34 +226,61 @@ class _TenantScreenState extends State<TenantScreen> {
                                               : Radius.zero,
                                         ),
                                       ),
-                                      child: Row(
-                                        children: [
-                                          Expanded(
-                                            child: Text(
-                                              tenant.name,
-                                              style: TextStyle(
-                                                fontSize: 15.sp,
-                                                fontWeight: isSelected
-                                                    ? FontWeight.w600
-                                                    : FontWeight.w400,
-                                                color: isSelected
-                                                    ? accent
-                                                    : Colors.black87,
-                                                fontFamily: 'GeneralSans',
-                                              ),
+                                      child: Material(
+                                        color: Colors.transparent,
+                                        child: InkWell(
+                                          onTap: () => _bloc.add(
+                                            SelectTenant(tenant: tenant),
+                                          ),
+                                          borderRadius: BorderRadius.vertical(
+                                            top: i == 0
+                                                ? Radius.circular(12)
+                                                : Radius.zero,
+                                            bottom:
+                                                i ==
+                                                    state
+                                                            .filteredTenants
+                                                            .length -
+                                                        1
+                                                ? Radius.circular(12)
+                                                : Radius.zero,
+                                          ),
+                                          child: Padding(
+                                            padding: EdgeInsets.symmetric(
+                                              horizontal: 16.w,
+                                              vertical: 16.h,
+                                            ),
+                                            child: Row(
+                                              children: [
+                                                Expanded(
+                                                  child: Text(
+                                                    tenant.name,
+                                                    style: TextStyle(
+                                                      fontSize: 15.sp,
+                                                      fontWeight: isSelected
+                                                          ? FontWeight.w600
+                                                          : FontWeight.w400,
+                                                      color: isSelected
+                                                          ? accent
+                                                          : Colors.black87,
+                                                      fontFamily: 'GeneralSans',
+                                                    ),
+                                                  ),
+                                                ),
+                                                if (isSelected)
+                                                  Icon(
+                                                    Icons.check_circle,
+                                                    color: accent,
+                                                    size: 20.sp,
+                                                  ),
+                                              ],
                                             ),
                                           ),
-                                          if (isSelected)
-                                            Icon(
-                                              Icons.check_circle,
-                                              color: accent,
-                                              size: 20.sp,
-                                            ),
-                                        ],
+                                        ),
                                       ),
-                                    ),
-                                  );
-                                },
+                                    );
+                                  },
+                                ),
                               ),
                             );
                           },

@@ -84,6 +84,7 @@ class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
     color: AppColor.kPrimaryColor,
     borderRadius: BorderRadius.all(Radius.circular(87.209)),
   );
+  static const _tabInkRadius = BorderRadius.all(Radius.circular(12));
   static const _unselectedIndicator = BoxDecoration(
     color: Colors.transparent,
     borderRadius: BorderRadius.all(Radius.circular(87.209)),
@@ -150,6 +151,8 @@ class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
     final isSelected = index == selectedIndex;
     return InkWell(
       onTap: () => widget.onChangedTab(index),
+      // Rounded ripple instead of a hard-edged rectangle.
+      borderRadius: _tabInkRadius,
       child: SizedBox(
         width: 49.w,
         child: Padding(

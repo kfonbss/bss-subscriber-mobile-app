@@ -73,9 +73,12 @@ class CommonAppBar extends StatelessWidget {
                     top: topBottomMargin,
                     bottom: topBottomMargin,
                   ),
+                  // The leading slot forces this box taller than wide, so a
+                  // borderRadius gives a tall pill; CircleBorder matches the
+                  // drawn circle (both use the shorter side, centred).
                   child: InkWell(
                     onTap: onBackPressed,
-                    borderRadius: BorderRadius.circular(containerSize / 2),
+                    customBorder: const CircleBorder(),
                     child: Container(
                       width: containerSize,
                       height: containerSize,

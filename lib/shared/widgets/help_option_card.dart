@@ -36,44 +36,49 @@ class HelpOptionCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return InkWell(
-      onTap: onTap,
-      borderRadius: _inkRadius,
-      child: Container(
-        width: containerWidth,
-        height: containerWidth,
-        padding: const EdgeInsets.all(8),
-        decoration: _cardDecoration,
-        child: Column(
-          mainAxisSize: MainAxisSize.min,
-          mainAxisAlignment: MainAxisAlignment.center,
-          crossAxisAlignment: CrossAxisAlignment.center,
-          children: [
-            SizedBox(
-              height: 32.h,
-              width: 32.w,
-              child: SvgPicture.asset(
-                icon,
-                height: 32.h,
-                width: 32.w,
-                fit: BoxFit.contain,
-                colorFilter: ColorFilter.mode(
-                  AppColor.kPrimaryColor,
-                  BlendMode.srcIn,
+    return Container(
+      width: containerWidth,
+      height: containerWidth,
+      decoration: _cardDecoration,
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap: onTap,
+          borderRadius: _inkRadius,
+          child: Padding(
+            padding: const EdgeInsets.all(8),
+            child: Column(
+              mainAxisSize: MainAxisSize.min,
+              mainAxisAlignment: MainAxisAlignment.center,
+              crossAxisAlignment: CrossAxisAlignment.center,
+              children: [
+                SizedBox(
+                  height: 32.h,
+                  width: 32.w,
+                  child: SvgPicture.asset(
+                    icon,
+                    height: 32.h,
+                    width: 32.w,
+                    fit: BoxFit.contain,
+                    colorFilter: ColorFilter.mode(
+                      AppColor.kPrimaryColor,
+                      BlendMode.srcIn,
+                    ),
+                  ),
                 ),
-              ),
+                SizedBox(height: 11.h),
+                FittedBox(
+                  fit: BoxFit.scaleDown,
+                  child: Text(
+                    label,
+                    textAlign: TextAlign.center,
+                    maxLines: 1,
+                    style: _labelStyle,
+                  ),
+                ),
+              ],
             ),
-            SizedBox(height: 11.h),
-            FittedBox(
-              fit: BoxFit.scaleDown,
-              child: Text(
-                label,
-                textAlign: TextAlign.center,
-                maxLines: 1,
-                style: _labelStyle,
-              ),
-            ),
-          ],
+          ),
         ),
       ),
     );

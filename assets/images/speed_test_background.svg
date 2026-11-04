@@ -5,9 +5,9 @@
 <rect width="375" height="176" fill="url(#paint0_linear_14152_129940)"/>
 </g>
 <defs>
-<linearGradient id="paint0_linear_14152_129940" x1="488.06" y1="-111.467" x2="-10.2462" y2="192.422" gradientUnits="userSpaceOnUse">
-<stop offset="0.0935708" stop-color="#9A1E46" stop-opacity="0"/>
-<stop offset="0.862953" stop-color="#009DE2"/>
+<linearGradient id="paint0_linear_14152_129940" x1="384.08" y1="31.74" x2="-9.08" y2="144.26" gradientUnits="userSpaceOnUse">
+<stop offset="0" stop-color="#3A46A3" stop-opacity="0.2226"/>
+<stop offset="0.8478" stop-color="#3A46A3"/>
 </linearGradient>
 <clipPath id="clip0_14152_129940">
 <rect width="375" height="191" fill="white"/>

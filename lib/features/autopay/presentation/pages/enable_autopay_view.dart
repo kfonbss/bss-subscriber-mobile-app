@@ -315,25 +315,30 @@ class _EnableAutopayViewState extends State<EnableAutopayView> {
             runSpacing: 6.h,
             children: [
               for (final handle in _upiHandles)
-                InkWell(
-                  onTap: enabled ? () => _applyHandle(handle) : null,
-                  borderRadius: BorderRadius.circular(6),
-                  child: Container(
-                    padding: EdgeInsets.symmetric(
-                      horizontal: 8.w,
-                      vertical: 4.h,
-                    ),
-                    decoration: BoxDecoration(
-                      color: AppColor.kStone100,
-                      border: Border.all(color: AppColor.kStone200),
+                Container(
+                  decoration: BoxDecoration(
+                    color: AppColor.kStone100,
+                    border: Border.all(color: AppColor.kStone200),
+                    borderRadius: BorderRadius.circular(6),
+                  ),
+                  child: Material(
+                    color: Colors.transparent,
+                    child: InkWell(
+                      onTap: enabled ? () => _applyHandle(handle) : null,
                       borderRadius: BorderRadius.circular(6),
-                    ),
-                    child: Text(
-                      handle,
-                      style: autopayText(
-                        11,
-                        FontWeight.w500,
-                        AppColor.kStone600,
+                      child: Padding(
+                        padding: EdgeInsets.symmetric(
+                          horizontal: 8.w,
+                          vertical: 4.h,
+                        ),
+                        child: Text(
+                          handle,
+                          style: autopayText(
+                            11,
+                            FontWeight.w500,
+                            AppColor.kStone600,
+                          ),
+                        ),
                       ),
                     ),
                   ),
@@ -357,68 +362,73 @@ class _EnableAutopayViewState extends State<EnableAutopayView> {
     final primary = AppColor.kPrimaryColor;
     final style = autopayText(12, FontWeight.w400, AppColor.kStone700);
 
-    return InkWell(
-      onTap:
-          enabled && !widget.isSubmitting
-              ? () => setState(() => _agreed = !_agreed)
-              : null,
-      borderRadius: BorderRadius.circular(12),
-      child: Container(
-        padding: EdgeInsets.all(12.w),
-        decoration: BoxDecoration(
-          color: AppColor.kNeutralBgAlpha70,
-          border: Border.all(color: AppColor.kStone300),
+    return Container(
+      decoration: BoxDecoration(
+        color: AppColor.kNeutralBgAlpha70,
+        border: Border.all(color: AppColor.kStone300),
+        borderRadius: BorderRadius.circular(12),
+      ),
+      child: Material(
+        color: Colors.transparent,
+        child: InkWell(
+          onTap:
+              enabled && !widget.isSubmitting
+                  ? () => setState(() => _agreed = !_agreed)
+                  : null,
           borderRadius: BorderRadius.circular(12),
-        ),
-        child: Row(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            AnimatedContainer(
-              duration: const Duration(milliseconds: 150),
-              width: 18.w,
-              height: 18.w,
-              decoration: BoxDecoration(
-                color: _agreed ? primary : Colors.white,
-                border: Border.all(
-                  color: _agreed ? primary : AppColor.kStone300,
-                ),
-                borderRadius: BorderRadius.circular(4),
-              ),
-              child:
-                  _agreed
-                      ? Icon(Icons.check, size: 14.sp, color: Colors.white)
-                      : null,
-            ),
-            SizedBox(width: 10.w),
-            Expanded(
-              child: Text.rich(
-                TextSpan(
-                  style: style,
-                  children: [
-                    TextSpan(text: '${l10n.autopayAgreePrefix} '),
-                    TextSpan(
-                      text: l10n.termsAndConditionsTitle,
-                      recognizer: _termsRecognizer,
-                      style: style.copyWith(
-                        color: primary,
-                        decoration: TextDecoration.underline,
-                        decorationColor: primary,
-                      ),
+          child: Padding(
+            padding: EdgeInsets.all(12.w),
+            child: Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                AnimatedContainer(
+                  duration: const Duration(milliseconds: 150),
+                  width: 18.w,
+                  height: 18.w,
+                  decoration: BoxDecoration(
+                    color: _agreed ? primary : Colors.white,
+                    border: Border.all(
+                      color: _agreed ? primary : AppColor.kStone300,
                     ),
-                    TextSpan(text: ' ${l10n.autopayAgreeMiddle} '),
-                    TextSpan(
-                      text: formatAutopayAmount(widget.quote.totalCharge),
-                      style: style.copyWith(
-                        color: AppColor.kStone900,
-                        fontWeight: FontWeight.w600,
-                      ),
-                    ),
-                    TextSpan(text: ' ${l10n.autopayAgreeSuffix}'),
-                  ],
+                    borderRadius: BorderRadius.circular(4),
+                  ),
+                  child:
+                      _agreed
+                          ? Icon(Icons.check, size: 14.sp, color: Colors.white)
+                          : null,
                 ),
-              ),
+                SizedBox(width: 10.w),
+                Expanded(
+                  child: Text.rich(
+                    TextSpan(
+                      style: style,
+                      children: [
+                        TextSpan(text: '${l10n.autopayAgreePrefix} '),
+                        TextSpan(
+                          text: l10n.termsAndConditionsTitle,
+                          recognizer: _termsRecognizer,
+                          style: style.copyWith(
+                            color: primary,
+                            decoration: TextDecoration.underline,
+                            decorationColor: primary,
+                          ),
+                        ),
+                        TextSpan(text: ' ${l10n.autopayAgreeMiddle} '),
+                        TextSpan(
+                          text: formatAutopayAmount(widget.quote.totalCharge),
+                          style: style.copyWith(
+                            color: AppColor.kStone900,
+                            fontWeight: FontWeight.w600,
+                          ),
+                        ),
+                        TextSpan(text: ' ${l10n.autopayAgreeSuffix}'),
+                      ],
+                    ),
+                  ),
+                ),
+              ],
             ),
-          ],
+          ),
         ),
       ),
     );
