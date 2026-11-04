@@ -6,15 +6,20 @@ class AppColor {
   // =================
   static Color get kPrimaryColor => primaryFor(AppBrand.isLd ? 'LD' : null);
 
+  // TODO(brand): temporary — every tenant uses the LD navy. Set to false to
+  // bring back per-tenant primaries.
+  static const bool _sharedPrimary = true;
+
   /// Primary colour for a given tenant code, without switching the app's
   /// current tenant (used to preview the colour on the tenant screen).
   static Color primaryFor(String? tenantId) =>
-      AppBrand.isLdTenant(tenantId)
+      _sharedPrimary || AppBrand.isLdTenant(tenantId)
           ? const Color(0xFF26307A)
           : const Color(0xFF8D0247);
 
   /// Tenant screen background before any tenant is chosen.
-  static const Color kTenantScreenBackground = Color(0xFF2D3142);
+  static Color get kTenantScreenBackground =>
+      _sharedPrimary ? primaryFor(null) : const Color(0xFF2D3142);
 
   // Opacity versions of kPrimaryColor (follow the tenant automatically)
 
@@ -167,6 +172,12 @@ class AppColor {
   static const Color kMaterialBlue = Color(0xFF2196F3);
   static const Color kTeal = Color(0xFF00A896);
   static const Color kTealAccent = Color(0xFF14B8A6);
+  static const Color kUsageSegmentTeal = Color(0xFF55BAAC);
+  static const Color kUsageLeftTeal = Color(0xFF479F98);
+  static const Color kMutedSlate = Color(0xFF6B7389);
+  static const Color kReferGradientStart = Color(0xFFFFECB5);
+  static const Color kReferGradientEnd = Color(0xFFF9D9C8);
+  static const Color kReferSubtitleBrown = Color(0xFF75654D);
   static const Color kEmeraldGreen = Color(0xFF10B981);
   static const Color kDeepEmerald = Color(0xFF047857);
   static const Color kJungleGreen = Color(0xFF008F67);

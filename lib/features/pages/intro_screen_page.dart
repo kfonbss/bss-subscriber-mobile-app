@@ -38,46 +38,54 @@ class _IntroScreenPageState extends State<IntroScreenPage> {
       body: Stack(
         children: [
           SvgPicture.asset(AppAssets.introScreenBackground, fit: BoxFit.cover),
-          PageView(
-            controller: _pageController,
-            children: <Widget>[
-              IntroScreenLayout(
-                index: 0,
-                imageName: AppAssets.introOne,
-                heading: context.bssSubL10n.stayConnectedAlways,
-                description: context.bssSubL10n.experienceLightningFast(AppBrand.appName),
-                nextButtonCallback:
-                    () => _pageController.animateToPage(
-                      1,
-                      duration: duration,
-                      // Duration of the animation
-                      curve: Curves.easeIn,
-                    ),
-              ),
-              IntroScreenLayout(
-                index: 1,
-                imageName: AppAssets.introTwo,
-                heading: context.bssSubL10n.bridgingDigitalDivide,
-                description: context.bssSubL10n.appEmpowersCitizen(AppBrand.appName),
-                nextButtonCallback:
-                    () => _pageController.animateToPage(
-                      2,
-                      duration: duration,
-                      curve: Curves.easeIn,
-                    ),
-              ),
-              IntroScreenLayout(
-                index: 2,
-                imageName: AppAssets.introThree,
-                heading: context.bssSubL10n.internetWorksForYou,
-                description: context.bssSubL10n.enjoyHighSpeed,
-                nextButtonCallback: () {
-                  // Tenant is already chosen by now, so finish at login.
-                  PreferenceUtils.setIntroScreenStatus(false);
-                  Navigator.pushReplacementNamed(context, AppRoutes.login);
-                },
-              ),
-            ],
+          // Background stays full-bleed; content keeps clear of the status
+          // bar and the home indicator / navigation buttons.
+          SafeArea(
+            child: PageView(
+              controller: _pageController,
+              children: <Widget>[
+                IntroScreenLayout(
+                  index: 0,
+                  imageName: AppAssets.introOne,
+                  heading: context.bssSubL10n.stayConnectedAlways,
+                  description: context.bssSubL10n.experienceLightningFast(
+                    AppBrand.appName,
+                  ),
+                  nextButtonCallback:
+                      () => _pageController.animateToPage(
+                        1,
+                        duration: duration,
+                        // Duration of the animation
+                        curve: Curves.easeIn,
+                      ),
+                ),
+                IntroScreenLayout(
+                  index: 1,
+                  imageName: AppAssets.introTwo,
+                  heading: context.bssSubL10n.bridgingDigitalDivide,
+                  description: context.bssSubL10n.appEmpowersCitizen(
+                    AppBrand.appName,
+                  ),
+                  nextButtonCallback:
+                      () => _pageController.animateToPage(
+                        2,
+                        duration: duration,
+                        curve: Curves.easeIn,
+                      ),
+                ),
+                IntroScreenLayout(
+                  index: 2,
+                  imageName: AppAssets.introThree,
+                  heading: context.bssSubL10n.internetWorksForYou,
+                  description: context.bssSubL10n.enjoyHighSpeed,
+                  nextButtonCallback: () {
+                    // Tenant is already chosen by now, so finish at login.
+                    PreferenceUtils.setIntroScreenStatus(false);
+                    Navigator.pushReplacementNamed(context, AppRoutes.login);
+                  },
+                ),
+              ],
+            ),
           ),
         ],
       ),

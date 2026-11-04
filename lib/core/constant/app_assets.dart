@@ -96,6 +96,7 @@ class AppAssets {
   static const String serviceComplaint = 'assets/icons/complaint.svg';
   static const String serviceRefer = 'assets/icons/refer.svg';
   static const String serviceMore = 'assets/icons/more.svg';
+  static const String gift = 'assets/icons/gift.svg';
   static const String introRoundLogo = 'assets/images/intro_round_logo.png';
   static const String logoTransparent = 'assets/images/logo_transparent.png';
 

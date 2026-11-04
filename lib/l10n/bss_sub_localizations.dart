@@ -5036,6 +5036,18 @@ abstract class BssSubLocalizations {
   /// **'More'**
   String get more;
 
+  /// No description provided for @restart.
+  ///
+  /// In en, this message translates to:
+  /// **'Restart'**
+  String get restart;
+
+  /// No description provided for @wifi.
+  ///
+  /// In en, this message translates to:
+  /// **'Wi-Fi'**
+  String get wifi;
+
   /// No description provided for @referEarnTitle.
   ///
   /// In en, this message translates to:

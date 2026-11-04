@@ -44,6 +44,12 @@ class _RaisedCenterDockedLocation extends FloatingActionButtonLocation {
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
 
+  static const selfCareTab = 1;
+
+  /// Switches the bottom-nav tab from a screen inside [MainPage].
+  static void openTab(BuildContext context, int index) =>
+      context.findAncestorStateOfType<_MainPageState>()?._selectTab(index);
+
   @override
   State<MainPage> createState() => _MainPageState();
 }
@@ -68,6 +74,17 @@ class _MainPageState extends State<MainPage> {
       content: context.bssSubL10n.pressBackAgainToExit,
       duration: _exitWindow,
     );
+  }
+
+  void _selectTab(int i) {
+    _currentIndex.value = i;
+    // Returning to Home is a calm point to ask for feedback.
+    if (i == 0) {
+      RatingPromptCoordinator.maybeShow(
+        context,
+        isBusy: () => context.read<HomeBloc>().state is HomeLoading,
+      );
+    }
   }
 
   static const _pages = <Widget>[
@@ -136,17 +153,13 @@ class _MainPageState extends State<MainPage> {
   Widget _buildScaffold(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor.kMainBackgroundColor,
-      bottomNavigationBar: TabBarMaterialWidget(
-        onChangedTab: (i) {
-          _currentIndex.value = i;
-          // Returning to Home is a calm point to ask for feedback.
-          if (i == 0) {
-            RatingPromptCoordinator.maybeShow(
-              context,
-              isBusy: () => context.read<HomeBloc>().state is HomeLoading,
-            );
-          }
-        },
+      bottomNavigationBar: ValueListenableBuilder<int>(
+        valueListenable: _currentIndex,
+        builder:
+            (_, index, __) => TabBarMaterialWidget(
+              selectedIndex: index,
+              onChangedTab: _selectTab,
+            ),
       ),
       floatingActionButton: DecoratedBox(
         decoration: const BoxDecoration(

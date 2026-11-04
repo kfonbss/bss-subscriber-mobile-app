@@ -31,6 +31,9 @@ import 'package:kfon_subscriber/features/home/presentation/bloc/home_bloc.dart';
 import 'package:kfon_subscriber/features/home/presentation/bloc/home_event.dart';
 import 'package:kfon_subscriber/features/home/presentation/bloc/home_state.dart';
 import 'package:kfon_subscriber/features/home/presentation/components/home_shimmer.dart';
+import 'package:kfon_subscriber/features/profile/presentation/pages/security_settings_page.dart';
+import 'package:kfon_subscriber/features/pages/main_page.dart';
+import 'package:kfon_subscriber/features/self_care/presentation/pages/connected_devices_page.dart';
 import 'package:kfon_subscriber/features/self_care/presentation/pages/speed_test_page.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/pages/tickets_page.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
@@ -206,7 +209,8 @@ class _HomePageState extends State<HomePage> {
           child: BlocBuilder<HomeBloc, HomeState>(
             bloc: bloc,
             buildWhen:
-                (prev, curr) => curr is GetDataSuccess || curr is GetDataFailure,
+                (prev, curr) =>
+                    curr is GetDataSuccess || curr is GetDataFailure,
             builder: (context, state) {
               if (state is GetDataFailure) {
                 return CustomScrollView(
@@ -216,7 +220,8 @@ class _HomePageState extends State<HomePage> {
                       child: RetryWidget(
                         errorMessage: state.errorMessage,
                         onRetry:
-                            () => bloc.add(const GetHomeData(loadPackage: true)),
+                            () =>
+                                bloc.add(const GetHomeData(loadPackage: true)),
                       ),
                     ),
                   ],
@@ -227,6 +232,41 @@ class _HomePageState extends State<HomePage> {
                 final PackageDetailsEntity? pkg = home.packageDetails;
                 final String subscriberId = home.subscriberId;
                 final String packageId = pkg?.packageId ?? '';
+                // Recharge and the Top-Up service open the same sheet.
+                void openRecharge() {
+                  _showRechargeSheet(
+                    context,
+                    PackageInfoEntity(
+                      id: packageId,
+                      packageName: pkg!.packageName,
+                      freeValidity: 0,
+                      initialFreeValidity: 0,
+                      renewalFee: pkg.renewalFee,
+                      allocatedVolume: pkg.availableVolumeGb,
+                      fallbackSpeed: '0UL',
+                      subPackageCount: 0,
+                      renewPeriod: pkg.validity,
+                      speedInKbps: pkg.speedMbps * 1024.toInt(),
+                      createCorrespondingTermPlan:
+                          pkg.packageInfoEntity.createCorrespondingTermPlan,
+                      speedProfile: pkg.packageInfoEntity.speedProfile,
+                      status: pkg.packageInfoEntity.status,
+                      fbSpeedInKbps: pkg.packageInfoEntity.fbSpeedInKbps,
+                      editable: pkg.packageInfoEntity.editable,
+                      amount: pkg.packageInfoEntity.amount,
+                      originalAmount: pkg.packageInfoEntity.originalAmount,
+                      discountAmount: pkg.packageInfoEntity.discountAmount,
+                      savedAmount: pkg.packageInfoEntity.savedAmount,
+                      speed: pkg.packageInfoEntity.speed,
+                      validity: pkg.packageInfoEntity.validity,
+                      volumeType: pkg.packageInfoEntity.volumeType,
+                      volumeValue: pkg.packageInfoEntity.volumeValue,
+                      planTypeName: pkg.packageInfoEntity.planTypeName,
+                      packageType: pkg.packageInfoEntity.packageType,
+                    ),
+                  );
+                }
+
                 return CustomScrollView(
                   slivers: [
                     _buildSliverAppBar(
@@ -308,53 +348,13 @@ class _HomePageState extends State<HomePage> {
                             crossAxisAlignment: CrossAxisAlignment.start,
                             children: [
                               if (pkg != null)
-                                _ComboCard(pkg: pkg, subscriberId: subscriberId),
+                                _ComboCard(
+                                  pkg: pkg,
+                                  subscriberId: subscriberId,
+                                ),
                               SizedBox(height: 17.h),
                               _QuickActions(
-                                onRechargeTap: () {
-                                  _showRechargeSheet(
-                                    context,
-                                    PackageInfoEntity(
-                                      id: packageId,
-                                      packageName: pkg!.packageName,
-                                      freeValidity: 0,
-                                      initialFreeValidity: 0,
-                                      renewalFee: pkg.renewalFee,
-                                      allocatedVolume: pkg.availableVolumeGb,
-                                      fallbackSpeed: '0UL',
-                                      subPackageCount: 0,
-                                      renewPeriod: pkg.validity,
-                                      speedInKbps: pkg.speedMbps * 1024.toInt(),
-                                      createCorrespondingTermPlan:
-                                          pkg
-                                              .packageInfoEntity
-                                              .createCorrespondingTermPlan,
-                                      speedProfile:
-                                          pkg.packageInfoEntity.speedProfile,
-                                      status: pkg.packageInfoEntity.status,
-                                      fbSpeedInKbps:
-                                          pkg.packageInfoEntity.fbSpeedInKbps,
-                                      editable: pkg.packageInfoEntity.editable,
-                                      amount: pkg.packageInfoEntity.amount,
-                                      originalAmount:
-                                          pkg.packageInfoEntity.originalAmount,
-                                      discountAmount:
-                                          pkg.packageInfoEntity.discountAmount,
-                                      savedAmount:
-                                          pkg.packageInfoEntity.savedAmount,
-                                      speed: pkg.packageInfoEntity.speed,
-                                      validity: pkg.packageInfoEntity.validity,
-                                      volumeType:
-                                          pkg.packageInfoEntity.volumeType,
-                                      volumeValue:
-                                          pkg.packageInfoEntity.volumeValue,
-                                      planTypeName:
-                                          pkg.packageInfoEntity.planTypeName,
-                                      packageType:
-                                          pkg.packageInfoEntity.packageType,
-                                    ),
-                                  );
-                                },
+                                onRechargeTap: openRecharge,
                                 onTransactionsTap:
                                     () => Navigator.pushNamed(
                                       context,
@@ -369,13 +369,26 @@ class _HomePageState extends State<HomePage> {
                               SizedBox(height: 16.h),
                               const _PromoBanner(),
                               SizedBox(height: 19.h),
-                              const _ServicesSection(),
+                              _ServicesSection(
+                                onTopUpTap: openRecharge,
+                                onUsageTap:
+                                    pkg == null
+                                        ? null
+                                        : () => _openDataUsage(
+                                          context,
+                                          pkg,
+                                          subscriberId,
+                                        ),
+                              ),
                               SizedBox(height: 20.h),
                               BlocBuilder<HomeBloc, HomeState>(
                                 bloc: bloc,
                                 buildWhen:
                                     (prev, curr) => curr is GetPlansSuccess,
-                                builder: (BuildContext context, HomeState state) {
+                                builder: (
+                                  BuildContext context,
+                                  HomeState state,
+                                ) {
                                   return state is GetPlansSuccess &&
                                           state.packageEntities.isNotEmpty
                                       ? _PlanChangeSection(
@@ -468,7 +481,7 @@ class _WalletCard extends StatelessWidget {
   static final _dateFmt = DateFormat('dd MMM yyyy');
 
   static const _cardDecoration = BoxDecoration(
-    color: Color(0xD9FFFFFF),
+    color: AppColor.kWhite80,
     borderRadius: BorderRadius.all(Radius.circular(16)),
   );
   static const _amountDecoration = BoxDecoration(
@@ -614,6 +627,37 @@ class _SwitchIndicator extends StatelessWidget {
   }
 }
 
+/// Data usage screen (the old "View usage"), opened from the plan card's
+/// usage bar and the Usage service.
+void _openDataUsage(
+  BuildContext context,
+  PackageDetailsEntity pkg,
+  String subscriberId,
+) {
+  Navigator.push(
+    context,
+    MaterialPageRoute<void>(
+      builder:
+          (_) => DataUsageView(
+            subscriberUuid: subscriberId,
+            entity: ActivePackagesDetailsEntity(
+              packageId: pkg.packageId,
+              activeAddOns: [],
+              activeUntil: pkg.activeUntil,
+              availableVolumeGb: pkg.availableVolumeGb,
+              daysLeft: pkg.daysLeft,
+              packageName: pkg.packageName,
+              packageType: pkg.packageType,
+              renewalFee: pkg.renewalFee,
+              speedMbps: pkg.speedMbps,
+              totalPackageCount: pkg.totalPackageCount,
+              totalVolumeGb: pkg.totalVolumeGb,
+            ),
+          ),
+    ),
+  );
+}
+
 // ─── Combo Card ──────────────────────────────────────────────────────────────
 
 class _ComboCard extends StatelessWidget {
@@ -641,14 +685,16 @@ class _ComboCard extends StatelessWidget {
     fontWeight: FontWeight.w500,
     height: 1.3,
     fontSize: 16.sp,
+    letterSpacing: 0,
     color: AppColor.kTextPrimary,
   );
   static final _activeUntilStyle = TextStyle(
-    color: AppColor.kTextPrimary80,
+    color: AppColor.kTextPrimary,
     fontSize: 10.sp,
     fontFamily: 'GeneralSans',
     fontWeight: FontWeight.w500,
     height: 1.6,
+    letterSpacing: 0,
   );
   static final _daysLeftTextStyle = TextStyle(
     fontFamily: 'GeneralSans',
@@ -732,29 +778,7 @@ class _ComboCard extends StatelessWidget {
           // Opens data usage (previously the "View usage" button).
           GestureDetector(
             behavior: HitTestBehavior.opaque,
-            onTap:
-                () => Navigator.push(
-                  context,
-                  MaterialPageRoute<void>(
-                    builder:
-                        (_) => DataUsageView(
-                          subscriberUuid: subscriberId,
-                          entity: ActivePackagesDetailsEntity(
-                            packageId: pkg.packageId,
-                            activeAddOns: [],
-                            activeUntil: pkg.activeUntil,
-                            availableVolumeGb: pkg.availableVolumeGb,
-                            daysLeft: pkg.daysLeft,
-                            packageName: pkg.packageName,
-                            packageType: pkg.packageType,
-                            renewalFee: pkg.renewalFee,
-                            speedMbps: pkg.speedMbps,
-                            totalPackageCount: pkg.totalPackageCount,
-                            totalVolumeGb: pkg.totalVolumeGb,
-                          ),
-                        ),
-                  ),
-                ),
+            onTap: () => _openDataUsage(context, pkg, subscriberId),
             child: _UsageBar(pkg: pkg),
           ),
           SizedBox(height: 20.h),
@@ -789,7 +813,7 @@ class _ComboCard extends StatelessWidget {
               SizedBox(width: 8.w),
               SecondaryButton(
                 height: 24.h,
-                borderRadius: 8,
+                borderRadius: 10,
                 padding: EdgeInsets.symmetric(horizontal: 20.w),
                 textStyle: _packLabelStyle,
                 label: l10n.plusPacks(
@@ -821,28 +845,30 @@ class _UsageBar extends StatelessWidget {
   const _UsageBar({required this.pkg});
 
   static const _segments = 10;
-  static const _segmentRadius = BorderRadius.all(Radius.circular(4));
+  static const _segmentRadius = BorderRadius.all(Radius.circular(3));
 
-  static final _usedStyle = TextStyle(
+  // Design: Figtree 14.5/17 bold, then 8.2/17 regular.
+  static final _usedStyle = GoogleFonts.figtree(
     color: AppColor.kTextSecondaryDark,
-    fontSize: 16.sp,
-    fontFamily: 'GeneralSans',
-    fontWeight: FontWeight.w600,
-    height: 1.3,
+    fontSize: 14.5.sp,
+    fontWeight: FontWeight.w700,
+    height: 17 / 14.5,
+    letterSpacing: 0,
   );
-  static final _totalStyle = TextStyle(
+  static final _totalStyle = GoogleFonts.figtree(
     color: AppColor.kHintGrey,
-    fontSize: 8.sp,
-    fontFamily: 'GeneralSans',
+    fontSize: 8.2.sp,
     fontWeight: FontWeight.w400,
-    height: 1.3,
+    height: 17 / 8.2,
+    letterSpacing: 0,
   );
-  static final _leftStyle = TextStyle(
-    color: AppColor.kTealAccent,
+  // Design: Figtree 8/11.
+  static final _leftStyle = GoogleFonts.figtree(
+    color: AppColor.kUsageLeftTeal,
     fontSize: 8.sp,
-    fontFamily: 'GeneralSans',
-    fontWeight: FontWeight.w500,
-    height: 1.3,
+    fontWeight: FontWeight.w600,
+    height: 11 / 8,
+    letterSpacing: 0,
   );
 
   @override
@@ -869,7 +895,8 @@ class _UsageBar extends StatelessWidget {
                           style: _usedStyle,
                         ),
                         TextSpan(
-                          text: ' ${l10n.gbUsedOfTotal(total.toStringAsFixed(0))}',
+                          text:
+                              ' ${l10n.gbUsedOfTotal(total.toStringAsFixed(0))}',
                           style: _totalStyle,
                         ),
                       ],
@@ -885,17 +912,18 @@ class _UsageBar extends StatelessWidget {
           ],
         ),
         SizedBox(height: 6.h),
+        // Design: 10 segments of 27.6 × 10 with 3 gaps.
         Row(
           spacing: 3.w,
           children: List.generate(
             _segments,
             (i) => Expanded(
               child: Container(
-                height: 8.h,
+                height: 10.h,
                 decoration: BoxDecoration(
                   color:
                       i < filled
-                          ? AppColor.kTealAccent
+                          ? AppColor.kUsageSegmentTeal
                           : AppColor.kMainBackgroundColor,
                   borderRadius: _segmentRadius,
                 ),
@@ -1047,6 +1075,7 @@ class _QuickActionsState extends State<_QuickActions> {
     fontWeight: FontWeight.w500,
     fontSize: 12.sp,
     height: 1.5,
+    letterSpacing: 0,
   );
   static const _circleShadow = [
     BoxShadow(color: AppColor.kBlack9, blurRadius: 4, offset: Offset(0, 4)),
@@ -1128,7 +1157,11 @@ class _QuickActionsState extends State<_QuickActions> {
                               ),
                             ),
                             SizedBox(height: 10.h),
-                            Text(a.label, style: _actionLabelStyle),
+                            Text(
+                              a.label,
+                              style: _actionLabelStyle,
+                              textAlign: TextAlign.center,
+                            ),
                           ],
                         ),
                       ),
@@ -1183,6 +1216,8 @@ class _PlanChangeSection extends StatelessWidget {
     fontSize: 16.sp,
     fontFamily: 'GeneralSans',
     fontWeight: FontWeight.w600,
+    height: 1,
+    letterSpacing: 0,
     color: AppColor.kHeadingDark,
   );
 
@@ -1191,6 +1226,8 @@ class _PlanChangeSection extends StatelessWidget {
     fontSize: 14.sp,
     fontFamily: 'GeneralSans',
     fontWeight: FontWeight.w500,
+    height: 1,
+    letterSpacing: 0,
   );
 
   @override
@@ -1267,30 +1304,34 @@ class _PlanCard extends StatelessWidget {
   static TextStyle get _priceStyle => TextStyle(
     color: AppColor.kPrimaryColor,
     fontFamily: 'GeneralSans',
-    fontWeight: FontWeight.w700,
-    fontSize: 16.sp,
-    height: 1.2,
+    fontWeight: FontWeight.w600,
+    fontSize: 18.sp,
+    height: 1,
+    letterSpacing: 0,
   );
   static final _daysStyle = TextStyle(
-    color: AppColor.kLabelGrey,
+    color: AppColor.kMutedSlate,
     fontFamily: 'GeneralSans',
     fontWeight: FontWeight.w400,
     fontSize: 10.sp,
-    height: 1.3,
+    height: 1,
+    letterSpacing: 0,
   );
   static final _packageNameStyle = TextStyle(
     fontFamily: 'GeneralSans',
     fontWeight: FontWeight.w600,
-    height: 1.3,
+    height: 1,
+    letterSpacing: -0.2,
     fontSize: 13.sp,
     color: AppColor.kTextSecondaryDark,
   );
   static final _specsStyle = TextStyle(
     fontFamily: 'GeneralSans',
     fontWeight: FontWeight.w400,
-    height: 1.3,
-    fontSize: 9.sp,
-    color: AppColor.kHintGrey,
+    height: 1,
+    letterSpacing: 0,
+    fontSize: 10.sp,
+    color: AppColor.kMutedSlate,
   );
 
   @override
@@ -1399,11 +1440,8 @@ class _DashedDivider extends StatelessWidget {
       spacing: 2.h,
       children: List.generate(
         9,
-        (_) => Container(
-          width: 1,
-          height: 2.h,
-          color: AppColor.kCardBorderBeige,
-        ),
+        (_) =>
+            Container(width: 1, height: 2.h, color: AppColor.kCardBorderBeige),
       ),
     );
   }
@@ -1432,7 +1470,12 @@ class _ServiceItem {
 }
 
 class _ServicesSection extends StatefulWidget {
-  const _ServicesSection();
+  final VoidCallback onTopUpTap;
+
+  /// Null when there is no active plan to show usage for.
+  final VoidCallback? onUsageTap;
+
+  const _ServicesSection({required this.onTopUpTap, this.onUsageTap});
 
   @override
   State<_ServicesSection> createState() => _ServicesSectionState();
@@ -1445,24 +1488,25 @@ class _ServicesSectionState extends State<_ServicesSection> {
     fontSize: 16.sp,
     fontFamily: 'GeneralSans',
     fontWeight: FontWeight.w600,
-    height: 1.3,
-    color: AppColor.kTextSecondaryDark,
+    height: 1,
+    letterSpacing: 0,
+    color: AppColor.kHeadingDark,
   );
   static TextStyle get _viewAllStyle => TextStyle(
     color: AppColor.kPrimaryColor,
     fontSize: 14.sp,
     fontFamily: 'GeneralSans',
     fontWeight: FontWeight.w500,
+    height: 1,
+    letterSpacing: 0,
   );
   static const _boxDecoration = BoxDecoration(
     borderRadius: BorderRadius.all(Radius.circular(16)),
     border: Border.fromBorderSide(BorderSide(color: AppColor.kTotalDivider)),
   );
 
-  void _push(Widget page) => Navigator.push(
-    context,
-    MaterialPageRoute<void>(builder: (_) => page),
-  );
+  void _push(Widget page) =>
+      Navigator.push(context, MaterialPageRoute<void>(builder: (_) => page));
 
   @override
   void didChangeDependencies() {
@@ -1476,26 +1520,36 @@ class _ServicesSectionState extends State<_ServicesSection> {
         onTap: () => _push(const SpeedTestPage()),
       ),
       _ServiceItem(
-        title: l10n.rwPlay,
-        iconAsset: AppAssets.serviceRwPlay,
-        colors: const [Color(0xFF96638C), Color(0xFF8B5E83)],
+        title: l10n.restart,
+        // TODO(assets): no Restart icon yet.
+        fallbackIcon: Icons.power_settings_new_rounded,
+        colors: const [Color(0xFFFFA33A), Color(0xFFF07F12)],
+        onTap: () => _push(const RestartModemPage()),
       ),
       _ServiceItem(
-        title: l10n.secure,
-        iconAsset: AppAssets.serviceSecure,
-        colors: const [Color(0xFF728B54), Color(0xFF647D45)],
+        title: l10n.wifi,
+        // TODO(assets): no Wi-Fi icon yet.
+        fallbackIcon: Icons.wifi_rounded,
+        colors: const [Color(0xFF5BBEF5), Color(0xFF2A8FE0)],
+        onTap:
+            () => _push(
+              const SecuritySettingsPage(
+                types: [PasswordChangeEnum.ssid, PasswordChangeEnum.wifi],
+              ),
+            ),
       ),
       _ServiceItem(
         title: l10n.myRouter,
         iconAsset: AppAssets.serviceMyRouter,
         colors: const [Color(0xFFF2660C), Color(0xFFCF4A06)],
-        onTap: () => _push(const RestartModemPage()),
+        onTap: () => _push(const ConnectedDevicesPage()),
       ),
       _ServiceItem(
-        title: l10n.addOns,
-        // TODO(assets): no Add-ons icon yet.
-        fallbackIcon: Icons.add_rounded,
+        title: l10n.topUp,
+        // TODO(assets): no Top-Up icon yet.
+        fallbackIcon: Icons.add_circle_outline_rounded,
         colors: const [Color(0xFF9474FF), Color(0xFF6A3FF0)],
+        onTap: () => widget.onTopUpTap(),
       ),
       _ServiceItem(
         title: l10n.complaint,
@@ -1504,14 +1558,17 @@ class _ServicesSectionState extends State<_ServicesSection> {
         onTap: () => _push(const TicketsPage()),
       ),
       _ServiceItem(
-        title: l10n.refer,
-        iconAsset: AppAssets.serviceRefer,
-        colors: const [Color(0xFFE55F9F), Color(0xFFC92A7A)],
+        title: l10n.usage,
+        // TODO(assets): no Usage icon yet.
+        fallbackIcon: Icons.bar_chart_rounded,
+        colors: const [Color(0xFF34C1A8), Color(0xFF15957F)],
+        onTap: () => widget.onUsageTap?.call(),
       ),
       _ServiceItem(
         title: l10n.more,
         iconAsset: AppAssets.serviceMore,
         colors: const [Color(0xFF66708A), Color(0xFF444C62)],
+        onTap: () => MainPage.openTab(context, MainPage.selfCareTab),
       ),
     ];
   }
@@ -1636,9 +1693,9 @@ class _ReferBanner extends StatelessWidget {
 
   static const _decoration = BoxDecoration(
     borderRadius: BorderRadius.all(Radius.circular(16)),
-    border: Border.fromBorderSide(BorderSide(color: AppColor.kPeachBorder)),
+    border: Border.fromBorderSide(BorderSide(color: AppColor.kBlack10)),
     gradient: LinearGradient(
-      colors: [Color(0xFFFCE7B0), Color(0xFFF8D9C9)],
+      colors: [AppColor.kReferGradientStart, AppColor.kReferGradientEnd],
     ),
   );
   static const _giftDecoration = BoxDecoration(
@@ -1650,24 +1707,25 @@ class _ReferBanner extends StatelessWidget {
     borderRadius: BorderRadius.all(Radius.circular(50)),
   );
 
-  static final _titleStyle = TextStyle(
-    fontFamily: 'GeneralSans',
-    fontWeight: FontWeight.w600,
-    height: 1.3,
+  // Design: Figtree 14/13 bold, then 10/11 regular.
+  static final _titleStyle = GoogleFonts.figtree(
+    fontWeight: FontWeight.w700,
+    height: 13 / 14,
+    letterSpacing: 0,
     fontSize: 14.sp,
     color: AppColor.kTextSecondaryDark,
   );
-  static final _subtitleStyle = TextStyle(
-    fontFamily: 'GeneralSans',
+  static final _subtitleStyle = GoogleFonts.figtree(
     fontWeight: FontWeight.w400,
-    height: 1.3,
+    height: 11 / 10,
+    letterSpacing: 0,
     fontSize: 10.sp,
-    color: AppColor.kLabelGrey,
+    color: AppColor.kReferSubtitleBrown,
   );
-  static final _inviteStyle = TextStyle(
-    fontFamily: 'GeneralSans',
+  static final _inviteStyle = GoogleFonts.figtree(
     fontWeight: FontWeight.w500,
-    height: 1.3,
+    height: 11 / 10,
+    letterSpacing: 0,
     fontSize: 10.sp,
     color: Colors.white,
   );
@@ -1686,11 +1744,8 @@ class _ReferBanner extends StatelessWidget {
             width: 36.w,
             height: 36.w,
             decoration: _giftDecoration,
-            child: Icon(
-              Icons.card_giftcard_outlined,
-              size: 20.sp,
-              color: AppColor.kQuickTransactions,
-            ),
+            alignment: Alignment.center,
+            child: SvgPicture.asset(AppAssets.gift, width: 17.w, height: 17.w),
           ),
           SizedBox(width: 10.w),
           Expanded(

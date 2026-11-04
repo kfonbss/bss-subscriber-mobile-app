@@ -6,6 +6,7 @@ import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/util/preference_util.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/features/pages/intro_screen_page.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/login_background.dart';
 import 'package:kfon_subscriber/shared/widgets/no_data_found.dart';
@@ -330,7 +331,19 @@ class _TenantScreenState extends State<TenantScreen> {
                                         appUrl: tenant.appUrl,
                                       );
                                       AppBrand.setTenant(tenant.code);
+                                      final showIntro = await PreferenceUtils
+                                          .showIntroScreen();
                                       if (!context.mounted) return;
+                                      if (showIntro) {
+                                        Navigator.pushReplacement(
+                                          context,
+                                          MaterialPageRoute(
+                                            builder: (_) =>
+                                                const IntroScreenPage(),
+                                          ),
+                                        );
+                                        return;
+                                      }
                                       Navigator.pushReplacementNamed(
                                         context,
                                         AppRoutes.login,

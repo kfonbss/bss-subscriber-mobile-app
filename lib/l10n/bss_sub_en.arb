@@ -1189,6 +1189,8 @@
   "complaint": "Complaint",
   "refer": "Refer",
   "more": "More",
+  "restart": "Restart",
+  "wifi": "Wi-Fi",
   "referEarnTitle": "Friends Join, You Earn!",
   "referEarnSubtitle": "You both get ₹{amount} wallet credit",
   "@referEarnSubtitle": { "placeholders": { "amount": { "type": "String" } } },

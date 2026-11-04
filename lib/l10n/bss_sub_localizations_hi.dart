@@ -2706,6 +2706,12 @@ class BssSubLocalizationsHi extends BssSubLocalizations {
   String get more => 'और';
 
   @override
+  String get restart => 'रीस्टार्ट';
+
+  @override
+  String get wifi => 'वाई-फाई';
+
+  @override
   String get referEarnTitle => 'दोस्त जुड़ें, आप कमाएं!';
 
   @override

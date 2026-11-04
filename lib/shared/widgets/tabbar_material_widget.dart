@@ -45,16 +45,22 @@ class _CurvedNotchShape extends NotchedShape {
 }
 
 class TabBarMaterialWidget extends StatefulWidget {
+  /// Owned by the parent so other screens can switch tabs too.
+  final int selectedIndex;
   final ValueChanged<int> onChangedTab;
 
-  const TabBarMaterialWidget({super.key, required this.onChangedTab});
+  const TabBarMaterialWidget({
+    super.key,
+    required this.selectedIndex,
+    required this.onChangedTab,
+  });
 
   @override
   State<TabBarMaterialWidget> createState() => _TabBarMaterialWidgetState();
 }
 
 class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
-  int selectedIndex = 0;
+  int get selectedIndex => widget.selectedIndex;
 
   // ── Static styles & decorations — allocated once, shared across all rebuilds
   // Design: 10 / line 17.44, letter spacing 0.0872; selected is semibold.
@@ -143,10 +149,7 @@ class _TabBarMaterialWidgetState extends State<TabBarMaterialWidget> {
   }) {
     final isSelected = index == selectedIndex;
     return InkWell(
-      onTap: () => setState(() {
-        selectedIndex = index;
-        widget.onChangedTab(index);
-      }),
+      onTap: () => widget.onChangedTab(index),
       child: SizedBox(
         width: 49.w,
         child: Padding(

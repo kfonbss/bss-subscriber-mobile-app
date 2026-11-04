@@ -105,6 +105,7 @@ class _ChangePasswordPageState extends State<ChangePasswordPage> {
             ),
             Column(
               spacing: 16,
+              crossAxisAlignment: CrossAxisAlignment.stretch,
               children: [
                 PrimaryButton(
                   label: l10n.updatePassword,

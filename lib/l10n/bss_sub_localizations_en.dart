@@ -2713,6 +2713,12 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get more => 'More';
 
   @override
+  String get restart => 'Restart';
+
+  @override
+  String get wifi => 'Wi-Fi';
+
+  @override
   String get referEarnTitle => 'Friends Join, You Earn!';
 
   @override
