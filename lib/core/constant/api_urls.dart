@@ -109,6 +109,10 @@ class ApiUrls {
       '$userRoleMapingService/mobile/forgot-password/verify-otp';
   static const String resetForgotPasswordURL =
       '$userRoleMapingService/mobile/forgot-password/reset';
+
+  /// Security settings → change BSS portal password (logged-in user).
+  static const String changePortalPasswordURL =
+      '$userRoleMapingService/mobile/change-password';
   static const String refreshTokenURL = '$userRoleMapingService/mobile/refresh';
   static const String logoutURL = '$userRoleMapingService/mobile/logout';
   //profile

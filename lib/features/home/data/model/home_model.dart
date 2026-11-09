@@ -130,6 +130,25 @@ class PackageDetailsModel {
   );
 }
 
+class LastTransactionModel {
+  final double amount;
+  final String paidOn;
+
+  const LastTransactionModel({required this.amount, required this.paidOn});
+
+  factory LastTransactionModel.fromJson(Map<String, dynamic> json) {
+    return LastTransactionModel(
+      amount: (json['amount'] as num?)?.toDouble() ?? 0.0,
+      paidOn: json['paidOn']?.toString() ?? '',
+    );
+  }
+
+  Map<String, dynamic> toJson() => {'amount': amount, 'paidOn': paidOn};
+
+  LastTransactionEntity toEntity() =>
+      LastTransactionEntity(amount: amount, paidOn: DateTime.tryParse(paidOn));
+}
+
 class HomeModel {
   final String firstName;
   final String username;
@@ -137,6 +156,7 @@ class HomeModel {
   final String lastUpdated;
   final PackageDetailsModel? packageDetails;
   final String subscriberId;
+  final LastTransactionModel? lastTransaction;
 
   const HomeModel({
     required this.firstName,
@@ -145,6 +165,7 @@ class HomeModel {
     required this.lastUpdated,
     required this.subscriberId,
     this.packageDetails,
+    this.lastTransaction,
   });
 
   factory HomeModel.fromJson(Map<String, dynamic> json) {
@@ -160,6 +181,13 @@ class HomeModel {
                 json['packageDetails'] as Map<String, dynamic>,
               )
               : null,
+      // Absent or null (no transactions yet / older API) → null.
+      lastTransaction:
+          json['lastTransaction'] is Map<String, dynamic>
+              ? LastTransactionModel.fromJson(
+                json['lastTransaction'] as Map<String, dynamic>,
+              )
+              : null,
     );
   }
 
@@ -168,6 +196,7 @@ class HomeModel {
     'lastUpdated': lastUpdated,
     'subscriberId': subscriberId,
     'packageDetails': packageDetails?.toJson(),
+    'lastTransaction': lastTransaction?.toJson(),
   };
 
   HomeEntity toEntity() => HomeEntity(
@@ -177,5 +206,6 @@ class HomeModel {
     subscriberId: subscriberId,
     lastUpdated: DateTime.tryParse(lastUpdated) ?? DateTime.now(),
     packageDetails: packageDetails?.toEntity(),
+    lastTransaction: lastTransaction?.toEntity(),
   );
 }

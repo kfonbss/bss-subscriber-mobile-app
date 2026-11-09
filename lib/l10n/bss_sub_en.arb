@@ -1073,6 +1073,8 @@
   "pleaseEnterValidMobileNumber": "Please enter valid 10-digit mobile number",
   "pleaseEnterPassword": "Please enter password",
   "passwordMinLength": "Password must be at least 6 characters",
+  "newPasswordMinLength": "Password must be at least 8 characters long",
+  "passwordUppercaseRequired": "Password must contain at least one uppercase letter (A-Z)",
   "pleaseEnterEmailAddress": "Please enter email address",
   "pleaseEnterValidEmailAddress": "Please enter a valid email address",
   "pleaseConfirmPassword": "Please confirm your password",

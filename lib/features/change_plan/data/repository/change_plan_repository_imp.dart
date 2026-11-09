@@ -178,6 +178,7 @@ class ChangePlanRepositoryImp extends ChangePlanRepository {
     String? subscriptionType,
     String? packageType,
     String? search,
+    int? speedMbps,
   }) async {
     final queryParameters = <String, dynamic>{
       'page': page,
@@ -198,6 +199,7 @@ class ChangePlanRepositoryImp extends ChangePlanRepository {
 
       if (packageId.trim().isNotEmpty) 'packageId': packageId.trim(),
       if (search != null && search.trim().isNotEmpty) 'search': search.trim(),
+      if (speedMbps != null) 'speedMbps': speedMbps,
     };
     final dioClient = sl<DioClient>();
     final APIResponse response = await dioClient.post(
@@ -250,7 +252,7 @@ class ChangePlanRepositoryImp extends ChangePlanRepository {
     try {
       final APIResponse response = await sl<DioClient>().get(
         ApiUrls.paymentGateways,
-        queryParameters: {'userType':'subscriber'}
+        queryParameters: {'userType': 'subscriber'},
       );
 
       if (response.isSuccess) {

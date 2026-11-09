@@ -72,8 +72,8 @@ class SeasonalPlanTile extends StatelessWidget {
               ],
               border:
                   isSelected
-                      ? Border.all(color: AppColor.kPrimaryColor, width: 1.w)
-                      : null,
+                      ? Border.all(color: AppColor.kPrimaryColor, width: 1.5)
+                      : Border.all(color: Colors.transparent, width: 1.5),
             ),
             child: Column(
               children: [
@@ -203,45 +203,18 @@ class SeasonalPlanTile extends StatelessWidget {
                             ),
                           ),
                         if (showStrikethrough) SizedBox(height: 4.h),
-                        if (isSelected)
-                          Container(
-                            height: 30.h,
-                            alignment: Alignment.center,
-                            padding: EdgeInsets.symmetric(horizontal: 10.w),
-                            decoration: BoxDecoration(
-                              color: AppColor.kPrimaryColor,
-                              borderRadius: BorderRadius.circular(8),
-                            ),
-                            child: Text(
-                              '₹ ${package.price.toStringAsFixed(2)}',
-                              maxLines: 1,
-                              softWrap: false,
-                              style: TextStyle(
-                                fontFamily: 'General Sans',
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w600,
-                                height: 1.3,
-                                color: Colors.white,
-                              ),
-                            ),
-                          )
-                        else
-                          Container(
-                            height: 30.h,
-                            alignment: Alignment.centerRight,
-                            child: Text(
-                              '₹ ${package.price.toStringAsFixed(2)}',
-                              maxLines: 1,
-                              softWrap: false,
-                              style: TextStyle(
-                                fontFamily: 'General Sans',
-                                fontSize: 16.sp,
-                                fontWeight: FontWeight.w600,
-                                height: 1.3,
-                                color: AppColor.kTextSecondaryDark,
-                              ),
-                            ),
+                        Text(
+                          '₹ ${package.price.toStringAsFixed(2)}',
+                          maxLines: 1,
+                          softWrap: false,
+                          style: TextStyle(
+                            fontFamily: 'General Sans',
+                            fontSize: 18.sp,
+                            fontWeight: FontWeight.w600,
+                            height: 1.3,
+                            color: AppColor.kTextSecondaryDark,
                           ),
+                        ),
                       ],
                     ),
                   ],
@@ -321,13 +294,19 @@ class SeasonalPlanTile extends StatelessWidget {
 
                 // Plan details
                 Container(
-                  padding: const EdgeInsets.all(12),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 12,
+                    vertical: 14,
+                  ),
                   decoration: BoxDecoration(
                     color: AppColor.kSecondaryBackgroundColor,
                     borderRadius: BorderRadius.circular(8),
                   ),
                   child: Row(
                     children: [
+                      Expanded(
+                        child: _planDetail(context, l10n.data, package.data),
+                      ),
                       Expanded(
                         child: _planDetail(context, l10n.speed, package.speed),
                       ),
@@ -337,9 +316,6 @@ class SeasonalPlanTile extends StatelessWidget {
                           l10n.validity,
                           '${package.validity} Days',
                         ),
-                      ),
-                      Expanded(
-                        child: _planDetail(context, l10n.volume, package.data),
                       ),
                     ],
                   ),
@@ -357,9 +333,14 @@ class SeasonalPlanTile extends StatelessWidget {
                 alignment: Alignment.center,
                 decoration: BoxDecoration(
                   shape: BoxShape.circle,
+                  color: Colors.white,
+                  border: Border.all(color: AppColor.kPrimaryColor, width: 1.5),
+                ),
+                child: Icon(
+                  Icons.check_rounded,
+                  size: 15,
                   color: AppColor.kPrimaryColor,
                 ),
-                child: Icon(Icons.check, size: 16, color: Colors.white),
               ),
             ),
         ],
@@ -387,7 +368,7 @@ class SeasonalPlanTile extends StatelessWidget {
           style: TextStyle(
             fontFamily: 'General Sans',
             fontSize: 14.sp,
-            fontWeight: FontWeight.w500,
+            fontWeight: FontWeight.w400,
             height: 1.3,
             color: AppColor.kTextSecondaryDark,
           ),

@@ -74,6 +74,19 @@ class PackageDetailsEntity extends Equatable {
   ];
 }
 
+/// The subscriber's most recent payment, shown on the home wallet card.
+class LastTransactionEntity extends Equatable {
+  final double amount;
+
+  /// `null` when the API sends no (or an unparseable) date.
+  final DateTime? paidOn;
+
+  const LastTransactionEntity({required this.amount, this.paidOn});
+
+  @override
+  List<Object?> get props => [amount, paidOn];
+}
+
 class HomeEntity extends Equatable {
   final String firstName;
   final String username;
@@ -82,6 +95,9 @@ class HomeEntity extends Equatable {
   final String subscriberId;
   final PackageDetailsEntity? packageDetails;
 
+  /// `null` when the subscriber has no transactions yet.
+  final LastTransactionEntity? lastTransaction;
+
   const HomeEntity({
     required this.username,
     required this.firstName,
@@ -89,6 +105,7 @@ class HomeEntity extends Equatable {
     required this.lastUpdated,
     required this.subscriberId,
     this.packageDetails,
+    this.lastTransaction,
   });
 
   @override
@@ -99,5 +116,6 @@ class HomeEntity extends Equatable {
     subscriberId,
     username,
     firstName,
+    lastTransaction,
   ];
 }

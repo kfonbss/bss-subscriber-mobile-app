@@ -111,6 +111,16 @@ class _CommonPasswordTextFieldState extends State<CommonPasswordTextField> {
               ),
               borderRadius: BorderRadius.all(Radius.circular(12.0)),
             ),
+            // Same rounded shape in the error state — only the colour changes
+            // (Flutter's default error border is square).
+            errorBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: AppColor.kFailedRed, width: 1.0),
+              borderRadius: BorderRadius.all(Radius.circular(12.0)),
+            ),
+            focusedErrorBorder: OutlineInputBorder(
+              borderSide: BorderSide(color: AppColor.kFailedRed, width: 1.5),
+              borderRadius: BorderRadius.all(Radius.circular(12.0)),
+            ),
           ),
           obscureText: obscureText,
           onChanged: (String newText) {

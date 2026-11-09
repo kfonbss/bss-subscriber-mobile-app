@@ -4,9 +4,16 @@ import 'package:kfon_subscriber/core/error/failure.dart';
 import 'package:kfon_subscriber/core/network/railwire_api.dart';
 import 'package:kfon_subscriber/features/profile/domain/entity/account_information_entity.dart';
 import 'package:kfon_subscriber/features/profile/domain/entity/profile_entity.dart';
+import 'package:kfon_subscriber/features/profile/domain/params/change_password_params.dart';
 import 'package:kfon_subscriber/features/profile/domain/repository/profile_repository.dart';
 
 class RailwireProfileRepositoryImp extends ProfileRepository {
+  /// RailWire has no change-password API.
+  @override
+  Future<Either<Failure, void>> changePortalPassword(
+    ChangePasswordParams params,
+  ) async => Left(RailwireApi.unavailable);
+
   Future<Either<Failure, Map<String, dynamic>>> _userProfile() =>
       RailwireApi.post(
         ApiUrls.railwireUserProfileURL,

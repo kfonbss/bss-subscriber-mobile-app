@@ -2401,6 +2401,13 @@ class BssSubLocalizationsHi extends BssSubLocalizations {
   String get passwordMinLength => 'पासवर्ड कम से कम 6 अक्षरों का होना चाहिए';
 
   @override
+  String get newPasswordMinLength => 'पासवर्ड कम से कम 8 अक्षरों का होना चाहिए';
+
+  @override
+  String get passwordUppercaseRequired =>
+      'पासवर्ड में कम से कम एक बड़ा अक्षर (A-Z) होना चाहिए';
+
+  @override
   String get pleaseEnterEmailAddress => 'कृपया ईमेल पता दर्ज करें';
 
   @override

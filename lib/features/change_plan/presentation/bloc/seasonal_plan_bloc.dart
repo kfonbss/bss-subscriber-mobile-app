@@ -22,6 +22,7 @@ class SeasonalPlanBloc extends Bloc<SeasonalPlanEvent, SeasonalPlanState> {
     on<LoadMoreSeasonalPackages>(_onLoadMoreSeasonalPackages);
     on<SearchSeasonalPackages>(_onSearchSeasonalPackages);
     on<ApplySeasonalPlanFilters>(_onApplySeasonalPlanFilters);
+    on<ApplySpeedFilter>(_onApplySpeedFilter);
     on<SelectSeasonalPackage>(_onSelectSeasonalPackage);
 
     // Discount
@@ -206,6 +207,8 @@ class SeasonalPlanBloc extends Bloc<SeasonalPlanEvent, SeasonalPlanState> {
 
       packageType: state.packageTypeFilter,
 
+      speedMbps: state.speedFilter,
+
       search: _apiSearch(event.search ?? state.searchQuery),
     );
 
@@ -242,6 +245,7 @@ class SeasonalPlanBloc extends Bloc<SeasonalPlanEvent, SeasonalPlanState> {
                     : null,
           ),
         );
+        _topUpFilteredList(event.subscriberId, event.currentPackageId);
       },
     );
   }
@@ -277,6 +281,8 @@ class SeasonalPlanBloc extends Bloc<SeasonalPlanEvent, SeasonalPlanState> {
 
       packageType: state.packageTypeFilter,
 
+      speedMbps: state.speedFilter,
+
       search: _apiSearch(state.searchQuery),
     );
 
@@ -306,6 +312,7 @@ class SeasonalPlanBloc extends Bloc<SeasonalPlanEvent, SeasonalPlanState> {
             hasMore: !pageData.last,
           ),
         );
+        _topUpFilteredList(event.subscriberId, event.currentPackageId);
       },
     );
   }
@@ -344,6 +351,21 @@ class SeasonalPlanBloc extends Bloc<SeasonalPlanEvent, SeasonalPlanState> {
         packageTypeFilter: event.packageType,
       ),
     );
+
+    add(
+      LoadSeasonalPackages(
+        subscriberId: event.subscriberId,
+        currentPackageId: event.currentPackageId,
+        reset: true,
+      ),
+    );
+  }
+
+  Future<void> _onApplySpeedFilter(
+    ApplySpeedFilter event,
+    Emitter<SeasonalPlanState> emit,
+  ) async {
+    emit(state.copyWith(speedFilter: event.speedMbps));
 
     add(
       LoadSeasonalPackages(
@@ -475,6 +497,40 @@ class SeasonalPlanBloc extends Bloc<SeasonalPlanEvent, SeasonalPlanState> {
     List<PackageEntity> packages,
     String currentPackageId,
   ) {
-    return packages.where((e) => e.packageId != currentPackageId).toList();
+    final speed = state.speedFilter;
+    return packages
+        .where((e) => e.packageId != currentPackageId)
+        .where((e) => speed == null || _speedMbps(e.speed) == speed)
+        .toList();
   }
+
+  /// Parses a display speed such as "30 Mbps", "30", "1 Gbps" or "512 Kbps"
+  /// to whole Mbps. Returns null when it cannot be read.
+  static int? _speedMbps(String raw) {
+    final match = RegExp(r'(\d+(?:\.\d+)?)').firstMatch(raw);
+    if (match == null) return null;
+    final value = double.parse(match.group(1)!);
+    final lower = raw.toLowerCase();
+    if (lower.contains('gbps')) return (value * 1000).round();
+    if (lower.contains('kbps')) return (value / 1024).round();
+    return value.round();
+  }
+
+  /// The API may not filter by speed, so we filter on the client. When a
+  /// page leaves too few matches to fill the screen the scroll listener never
+  /// fires, so keep pulling pages until there are enough or none are left.
+  void _topUpFilteredList(String subscriberId, String currentPackageId) {
+    if (state.speedFilter != null &&
+        state.hasMore &&
+        state.packages.length < _minFilteredItems) {
+      add(
+        LoadMoreSeasonalPackages(
+          subscriberId: subscriberId,
+          currentPackageId: currentPackageId,
+        ),
+      );
+    }
+  }
+
+  static const _minFilteredItems = 6;
 }

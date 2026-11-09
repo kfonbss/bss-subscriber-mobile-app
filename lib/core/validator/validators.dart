@@ -77,6 +77,28 @@ class Validators {
     return null;
   }
 
+  /// New password (change password): required, at least 8 characters and
+  /// at least one uppercase letter (A-Z).
+  static String? validateNewPassword(
+    String? value, {
+    BssSubLocalizations? l10n,
+  }) {
+    final strings = l10n ?? appL10n;
+    if (value == null || value.trim().isEmpty) {
+      return strings.pleaseEnterPassword;
+    }
+
+    if (value.length < 8) {
+      return strings.newPasswordMinLength;
+    }
+
+    if (!RegExp(r'[A-Z]').hasMatch(value)) {
+      return strings.passwordUppercaseRequired;
+    }
+
+    return null;
+  }
+
   /// Generic min length validator
   static String? validateMinLength(
     String? value,

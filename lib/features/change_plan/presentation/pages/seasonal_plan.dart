@@ -6,6 +6,7 @@ import 'package:kfon_subscriber/features/change_plan/presentation/bloc/seasonal_
 import 'package:kfon_subscriber/features/change_plan/presentation/bloc/seasonal_plan_event.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/bloc/seasonal_plan_state.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/pages/components/seasonal_plan_tile.dart';
+import 'package:kfon_subscriber/features/change_plan/presentation/pages/components/speed_filter_sheet.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/pages/recharge_page.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/service_locator.dart';
@@ -118,90 +119,98 @@ class _SeasonalPlanViewState extends State<_SeasonalPlanView> {
       return const SizedBox.shrink();
     }
 
-    return Container(
-      padding: EdgeInsets.all(4.w),
-      margin: const EdgeInsets.symmetric(horizontal: 16),
-      decoration: BoxDecoration(
-        color: AppColor.kSecondaryBackgroundColor,
-        borderRadius: BorderRadius.circular(10),
-      ),
-      height: 48.h,
+    return SizedBox(
+      height: 40.h,
       child: ListView.separated(
+        padding: const EdgeInsets.symmetric(horizontal: 16),
         scrollDirection: Axis.horizontal,
         itemCount: tabs.length,
-        separatorBuilder: (context, index) => SizedBox(width: 6.w),
+        separatorBuilder: (context, index) => SizedBox(width: 8.w),
         itemBuilder: (context, index) {
           final t = tabs[index];
           final active = state.selectedTab == t;
 
           final serviceTypes = state.targetKindsForTab(t);
+          final fg = active ? Colors.white : AppColor.kTextSecondary;
 
-          return GestureDetector(
-            onTap: () {
-              final bloc = context.read<SeasonalPlanBloc>();
+          return Material(
+            color: active ? AppColor.kPrimaryColor : Colors.white,
+            shape: const StadiumBorder(),
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: () {
+                final bloc = context.read<SeasonalPlanBloc>();
 
-              if (serviceTypes.isNotEmpty) {
-                _showServiceTypesBottomSheet(
-                  context,
-                  bloc: bloc,
-                  tab: t,
-                  serviceTypes: serviceTypes,
-                  selectedServiceType:
-                      bloc.state.selectedTargetKind ?? serviceTypes.first,
-                );
-                return;
-              }
-              bloc.add(
-                SelectPackageTab(
-                  tab: t,
-                  subscriberId: widget.subscriberUuid,
-                  packageId: widget.currentPackageId,
-                ),
-              );
-            },
-            child: Container(
-              padding: const EdgeInsets.symmetric(horizontal: 16),
-              alignment: Alignment.center,
-              decoration: BoxDecoration(
-                color:
-                    active ? AppColor.kTabActiveBackground : Colors.transparent,
-                borderRadius: BorderRadius.circular(8),
-                border:
-                    active ? Border.all(color: AppColor.kDaysLeftYellow) : null,
-              ),
-              child: Row(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Text(
-                    t.localizedName(context),
-                    style: TextStyle(
-                      fontSize: 13.sp,
-                      fontWeight: active ? FontWeight.w500 : FontWeight.w400,
-                      color:
-                          active
-                              ? AppColor.kTextSecondaryDark
-                              : AppColor.kTextSecondary,
-                      fontFamily: 'General Sans',
-                    ),
+                if (serviceTypes.isNotEmpty) {
+                  _showServiceTypesBottomSheet(
+                    context,
+                    bloc: bloc,
+                    tab: t,
+                    serviceTypes: serviceTypes,
+                    selectedServiceType:
+                        bloc.state.selectedTargetKind ?? serviceTypes.first,
+                  );
+                  return;
+                }
+                bloc.add(
+                  SelectPackageTab(
+                    tab: t,
+                    subscriberId: widget.subscriberUuid,
+                    packageId: widget.currentPackageId,
                   ),
-
-                  if (serviceTypes.isNotEmpty) ...[
-                    SizedBox(width: 4.w),
-                    Icon(
-                      Icons.keyboard_arrow_down_rounded,
-                      size: 18,
-                      color:
-                          active
-                              ? AppColor.kTextSecondaryDark
-                              : AppColor.kTextSecondary,
+                );
+              },
+              child: Padding(
+                padding: EdgeInsets.symmetric(horizontal: 16.w),
+                child: Row(
+                  mainAxisSize: MainAxisSize.min,
+                  children: [
+                    Text(
+                      t.localizedName(context),
+                      style: TextStyle(
+                        fontSize: 14.sp,
+                        fontWeight: active ? FontWeight.w500 : FontWeight.w400,
+                        height: 1.3,
+                        color: fg,
+                        fontFamily: 'General Sans',
+                      ),
                     ),
+                    if (serviceTypes.isNotEmpty) ...[
+                      SizedBox(width: 4.w),
+                      Icon(
+                        Icons.keyboard_arrow_down_rounded,
+                        size: 18,
+                        color: fg,
+                      ),
+                    ],
                   ],
-                ],
+                ),
               ),
             ),
           );
         },
       ),
+    );
+  }
+
+  void _showSpeedFilter() {
+    final bloc = context.read<SeasonalPlanBloc>();
+    showAppModalBottomSheet<void>(
+      context: context,
+      builder:
+          (_) => SpeedFilterSheet(
+            currentSpeed: bloc.state.speedFilter,
+            onApply: (speed) {
+              if (speed == bloc.state.speedFilter) return;
+              bloc.add(
+                ApplySpeedFilter(
+                  speedMbps: speed,
+                  currentPackageId: widget.currentPackageId,
+                  subscriberId: widget.subscriberUuid,
+                ),
+              );
+            },
+          ),
     );
   }
 
@@ -343,32 +352,6 @@ class _SeasonalPlanViewState extends State<_SeasonalPlanView> {
           Column(
             children: [
               // ---------------------------------------------------------------
-              // SEARCH
-              // ---------------------------------------------------------------
-              Padding(
-                padding: const EdgeInsets.symmetric(horizontal: 16),
-                child: SubscriberSearchField(
-                  controller: _searchController,
-                  hintText: l10n.searchPackage,
-                  onChanged: (query) {
-                    context.read<SeasonalPlanBloc>().add(
-                      SearchSeasonalPackages(
-                        query: query,
-                        currentPackageId: widget.currentPackageId,
-                        subscriberId: widget.subscriberUuid,
-                      ),
-                    );
-                  },
-                  // onFilterPressed:
-                  // _showSeasonalFilters,
-                  // filterIconColor:
-                  // AppColor.kSecondaryColor,
-                ),
-              ),
-
-              SizedBox(height: 16.h),
-
-              // ---------------------------------------------------------------
               // PACKAGE TABS + TARGET KIND
               // ---------------------------------------------------------------
               BlocBuilder<SeasonalPlanBloc, SeasonalPlanState>(
@@ -380,6 +363,38 @@ class _SeasonalPlanViewState extends State<_SeasonalPlanView> {
                 builder: (context, state) {
                   return _buildPackageTabs(context, state);
                 },
+              ),
+
+              SizedBox(height: 20.h),
+
+              // ---------------------------------------------------------------
+              // SEARCH + SPEED FILTER
+              // ---------------------------------------------------------------
+              Padding(
+                padding: const EdgeInsets.symmetric(horizontal: 16),
+                child: BlocBuilder<SeasonalPlanBloc, SeasonalPlanState>(
+                  buildWhen:
+                      (previous, current) =>
+                          previous.speedFilter != current.speedFilter,
+                  builder: (context, state) {
+                    return SubscriberSearchField(
+                      controller: _searchController,
+                      hintText: l10n.searchPackage,
+                      backgroundColor: Colors.white,
+                      onChanged: (query) {
+                        context.read<SeasonalPlanBloc>().add(
+                          SearchSeasonalPackages(
+                            query: query,
+                            currentPackageId: widget.currentPackageId,
+                            subscriberId: widget.subscriberUuid,
+                          ),
+                        );
+                      },
+                      onFilterPressed: _showSpeedFilter,
+                      filterIconColor: AppColor.kPrimaryColor,
+                    );
+                  },
+                ),
               ),
 
               SizedBox(height: 12.h),
@@ -421,6 +436,15 @@ class _SeasonalPlanViewState extends State<_SeasonalPlanView> {
                     // NO DATA
                     // ---------------------------------------------------------
 
+                    // Speed filter is applied on the client; while more
+                    // pages are still being pulled, keep showing the shimmer.
+                    if (state.packages.isEmpty &&
+                        state.speedFilter != null &&
+                        state.hasMore &&
+                        state.status != SeasonalPlanStatus.error) {
+                      return ListShimmer(itemHeight: 150.h);
+                    }
+
                     if (state.status == SeasonalPlanStatus.success &&
                         state.packages.isEmpty) {
                       return NoDataFound(
@@ -435,7 +459,12 @@ class _SeasonalPlanViewState extends State<_SeasonalPlanView> {
                     return ListView.separated(
                       controller: _scrollController,
 
-                      padding: EdgeInsets.only(left: 16, right: 10, bottom: 90),
+                      padding: EdgeInsets.only(
+                        left: 16,
+                        right: 9,
+                        top: 4,
+                        bottom: 100,
+                      ),
 
                       itemCount:
                           state.packages.length +
@@ -484,7 +513,7 @@ class _SeasonalPlanViewState extends State<_SeasonalPlanView> {
                       },
 
                       separatorBuilder: (context, index) {
-                        return SizedBox(height: 10.h);
+                        return SizedBox(height: 8.h);
                       },
                     );
                   },
@@ -504,9 +533,9 @@ class _SeasonalPlanViewState extends State<_SeasonalPlanView> {
                   begin: Alignment.topCenter,
                   end: Alignment.bottomCenter,
                   colors: [
-                    Colors.white.withValues(alpha: 0.0),
-                    Colors.white.withValues(alpha: 0.9),
-                    Colors.white,
+                    AppColor.kMainBackgroundColor.withValues(alpha: 0.0),
+                    AppColor.kMainBackgroundColor.withValues(alpha: 0.9),
+                    AppColor.kMainBackgroundColor,
                   ],
                   stops: const [0.0, 0.2, 0.4],
                 ),
@@ -517,13 +546,13 @@ class _SeasonalPlanViewState extends State<_SeasonalPlanView> {
                   return PrimaryButton(
                     label: l10n.changePackage,
                     isLoading: false,
-                    borderRadius: 16,
+                    borderRadius: 12,
                     height: 52.h,
                     textStyle: TextStyle(
                       fontFamily: 'General Sans',
-                      fontSize: 14.sp,
+                      fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
-                      height: 1.3.h,
+                      height: 1.3,
                     ),
                     onClicked:
                         state.selectedPackage == null

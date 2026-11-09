@@ -4508,6 +4508,18 @@ abstract class BssSubLocalizations {
   /// **'Password must be at least 6 characters'**
   String get passwordMinLength;
 
+  /// No description provided for @newPasswordMinLength.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must be at least 8 characters long'**
+  String get newPasswordMinLength;
+
+  /// No description provided for @passwordUppercaseRequired.
+  ///
+  /// In en, this message translates to:
+  /// **'Password must contain at least one uppercase letter (A-Z)'**
+  String get passwordUppercaseRequired;
+
   /// No description provided for @pleaseEnterEmailAddress.
   ///
   /// In en, this message translates to:

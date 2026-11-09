@@ -30,6 +30,7 @@ abstract class ChangePlanRepository {
     String? subscriptionType,
     String? packageType,
     String? search,
+    int? speedMbps,
   });
 
   Future<Either<Failure, RechargeChangePlanResponseEntity>> rechargeChangePlan(

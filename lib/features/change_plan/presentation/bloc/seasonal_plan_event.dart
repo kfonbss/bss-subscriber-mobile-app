@@ -181,6 +181,21 @@ class ApplySeasonalPlanFilters extends SeasonalPlanEvent {
   ];
 }
 
+class ApplySpeedFilter extends SeasonalPlanEvent {
+  final int? speedMbps;
+  final String currentPackageId;
+  final String subscriberId;
+
+  const ApplySpeedFilter({
+    required this.speedMbps,
+    required this.currentPackageId,
+    required this.subscriberId,
+  });
+
+  @override
+  List<Object?> get props => [speedMbps, currentPackageId, subscriberId];
+}
+
 class SelectSeasonalPackage extends SeasonalPlanEvent {
   final PackageEntity selectedPackage;
 

@@ -2409,6 +2409,14 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get passwordMinLength => 'Password must be at least 6 characters';
 
   @override
+  String get newPasswordMinLength =>
+      'Password must be at least 8 characters long';
+
+  @override
+  String get passwordUppercaseRequired =>
+      'Password must contain at least one uppercase letter (A-Z)';
+
+  @override
   String get pleaseEnterEmailAddress => 'Please enter email address';
 
   @override

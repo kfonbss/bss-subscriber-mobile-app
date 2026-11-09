@@ -47,16 +47,19 @@ class AuthHeader extends StatelessWidget {
     fontSize: Sizer.isTablet ? 24.sp : 32.sp,
     fontWeight: FontWeight.w600,
     color: Colors.white,
-    fontFamily: 'General Sans',
-    height: 1.30.h,
+    // Family name must match pubspec.yaml ('GeneralSans').
+    fontFamily: 'GeneralSans',
+    // Figma: line-height 130% — a multiplier, so not screen-scaled.
+    height: 1.30,
+    // Figma: -2% of 32px.
     letterSpacing: -0.64,
   );
   static final _descriptionStyle = TextStyle(
     color: Colors.white,
     fontSize: 14.sp,
     fontWeight: FontWeight.w500,
-    fontFamily: 'General Sans',
-    height: 1.65.h,
+    fontFamily: 'GeneralSans',
+    height: 1.65,
     letterSpacing: -0.14,
   );
 

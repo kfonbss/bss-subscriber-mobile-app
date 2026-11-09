@@ -7,6 +7,9 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:intl/intl.dart';
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
+import 'package:kfon_subscriber/core/util/extensions.dart';
+import 'package:kfon_subscriber/features/autopay/domain/entity/autopay_entity.dart';
+import 'package:kfon_subscriber/features/autopay/domain/repository/autopay_repository.dart';
 import 'package:kfon_subscriber/features/autopay/presentation/pages/autopay_page.dart';
 import 'package:kfon_subscriber/features/notfication/presentation/widgets/notification_bell_button.dart';
 import 'package:kfon_subscriber/shared/widgets/common_text_button.dart';
@@ -27,6 +30,7 @@ import 'package:kfon_subscriber/features/change_plan/presentation/pages/seasonal
 import 'package:kfon_subscriber/features/data_usage/presentation/pages/data_usage_view.dart';
 import 'package:kfon_subscriber/features/data_usage/presentation/pages/restart_modem_page.dart';
 import 'package:kfon_subscriber/features/home/domain/entity/home_entity.dart';
+import 'package:kfon_subscriber/features/home/presentation/bloc/home_autopay_cubit.dart';
 import 'package:kfon_subscriber/features/home/presentation/bloc/home_bloc.dart';
 import 'package:kfon_subscriber/features/home/presentation/bloc/home_event.dart';
 import 'package:kfon_subscriber/features/home/presentation/bloc/home_state.dart';
@@ -49,6 +53,9 @@ class HomePage extends StatefulWidget {
 
 class _HomePageState extends State<HomePage> {
   late final HomeBloc bloc;
+  final HomeAutopayCubit _autopayCubit = HomeAutopayCubit(
+    repository: sl<AutopayRepository>(),
+  );
   final DialogUtil _dialogUtil = DialogUtil();
 
   @override
@@ -56,6 +63,13 @@ class _HomePageState extends State<HomePage> {
     super.initState();
     bloc = context.read<HomeBloc>();
     bloc.add(const GetHomeData(loadPackage: true));
+    _autopayCubit.load();
+  }
+
+  @override
+  void dispose() {
+    _autopayCubit.close();
+    super.dispose();
   }
 
   void _showRechargeSheet(
@@ -83,7 +97,7 @@ class _HomePageState extends State<HomePage> {
       (s) => s is GetDataSuccess || s is GetDataFailure,
     );
     bloc.add(const GetHomeData(loadPackage: true));
-    return done;
+    return Future.wait([done, _autopayCubit.load()]);
   }
 
   double get _statusBarHeight => MediaQuery.paddingOf(context).top;
@@ -176,6 +190,13 @@ class _HomePageState extends State<HomePage> {
 
   @override
   Widget build(BuildContext context) {
+    return BlocProvider.value(
+      value: _autopayCubit,
+      child: _buildScaffold(context),
+    );
+  }
+
+  Widget _buildScaffold(BuildContext context) {
     return Scaffold(
       backgroundColor: AppColor.kMainBackgroundColor,
       body: BlocListener<HomeBloc, HomeState>(
@@ -468,10 +489,8 @@ class _WalletCard extends StatelessWidget {
 
   const _WalletCard({required this.home});
 
-  // TODO(BE): dummy values until the API returns the last transaction amount
-  // and the autopay status.
-  static const double _dummyLastTransaction = 699;
-  static const bool _dummyAutoPayEnabled = true;
+  /// Shown in place of the amount when there's no transaction yet.
+  static const String _noAmount = '₹ —';
 
   static final _amountFmt = NumberFormat.currency(
     locale: 'en_IN',
@@ -530,6 +549,7 @@ class _WalletCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final formattedDate = _dateFmt.format(home.lastUpdated);
+    final lastTxn = home.lastTransaction;
 
     // Design: 48 tall card at y=134, 16 above the combo card.
     return Padding(
@@ -544,7 +564,7 @@ class _WalletCard extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 6.w, vertical: 4.h),
               decoration: _amountDecoration,
               child: Text(
-                _amountFmt.format(_dummyLastTransaction),
+                lastTxn == null ? _noAmount : _amountFmt.format(lastTxn.amount),
                 style: _amountStyle,
               ),
             ),
@@ -574,24 +594,41 @@ class _WalletCard extends StatelessWidget {
               child: Material(
                 color: Colors.transparent,
                 child: InkWell(
-                  onTap:
-                      () => Navigator.push(
-                        context,
-                        MaterialPageRoute<void>(
-                          builder: (_) => const AutopayPage(),
-                        ),
+                  onTap: () async {
+                    final autopayCubit = context.read<HomeAutopayCubit>();
+                    await Navigator.push(
+                      context,
+                      MaterialPageRoute<void>(
+                        builder: (_) => const AutopayPage(),
                       ),
+                    );
+                    // The user may have enabled or removed Autopay there.
+                    autopayCubit.load();
+                  },
                   borderRadius: const BorderRadius.all(Radius.circular(50)),
-                  child: Padding(
-                    padding: EdgeInsets.only(left: 8.w, right: 2.w),
-                    child: Row(
-                      mainAxisSize: MainAxisSize.min,
-                      children: [
-                        Text(context.bssSubL10n.autoPay, style: _autoPayStyle),
-                        SizedBox(width: 4.w),
-                        const _SwitchIndicator(value: _dummyAutoPayEnabled),
-                      ],
-                    ),
+                  child: BlocBuilder<HomeAutopayCubit, AutopayStatus?>(
+                    builder: (context, status) {
+                      // Unknown status: show just the label, never a guess.
+                      return Padding(
+                        padding: EdgeInsets.only(
+                          left: 8.w,
+                          right: status == null ? 8.w : 2.w,
+                        ),
+                        child: Row(
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            Text(
+                              context.bssSubL10n.autoPay,
+                              style: _autoPayStyle,
+                            ),
+                            if (status != null) ...[
+                              SizedBox(width: 4.w),
+                              _SwitchIndicator(value: status.isEnabled),
+                            ],
+                          ],
+                        ),
+                      );
+                    },
                   ),
                 ),
               ),
@@ -672,6 +709,12 @@ class _ComboCard extends StatelessWidget {
   const _ComboCard({required this.pkg, required this.subscriberId});
 
   static final _activeUntilFmt = DateFormat('MMM dd, yyyy');
+
+  /// Display-only: adds a zero-width space after `-`, `_` and `/` so names
+  /// like "FUP40Mbps-2Mbps 1000GB" wrap after the hyphen instead of
+  /// mid-word (Unicode forbids a break between "-" and a digit).
+  static String _wrappablePlanName(String name) =>
+      name.replaceAllMapped(RegExp(r'[-_/]'), (m) => '${m[0]}​');
 
   // Static decorations — no new object created per build.
   static const _cardDecoration = BoxDecoration(
@@ -755,7 +798,15 @@ class _ComboCard extends StatelessWidget {
                         crossAxisAlignment: CrossAxisAlignment.start,
                         mainAxisSize: MainAxisSize.min,
                         children: [
-                          Text(pkg.packageName, style: _packageNameStyle),
+                          // Audit: cap at 2 lines, wrap at spaces, then
+                          // ellipsis so long names don't push the card down.
+                          Text(
+                            _wrappablePlanName(pkg.packageName),
+                            maxLines: 2,
+                            softWrap: true,
+                            overflow: TextOverflow.ellipsis,
+                            style: _packageNameStyle,
+                          ),
                           Text(
                             l10n.activeUntilDate(activeUntilStr),
                             style: _activeUntilStyle,
@@ -1369,7 +1420,11 @@ class _PlanCard extends StatelessWidget {
                 FittedBox(
                   fit: BoxFit.scaleDown,
                   alignment: Alignment.centerLeft,
-                  child: Text('₹${plan.renewalFee}', style: _priceStyle),
+                  // 299.0 → ₹299; paisa kept: 299.5 → ₹299.50.
+                  child: Text(
+                    '₹${plan.renewalFee.formatAmount}',
+                    style: _priceStyle,
+                  ),
                 ),
                 Text(
                   l10n.daysLowercase('${plan.renewPeriod}'),

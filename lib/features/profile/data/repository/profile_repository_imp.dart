@@ -6,6 +6,7 @@ import 'package:kfon_subscriber/features/profile/data/model/account_information_
 import 'package:kfon_subscriber/features/profile/data/model/profile_model.dart';
 import 'package:kfon_subscriber/features/profile/domain/entity/account_information_entity.dart';
 import 'package:kfon_subscriber/features/profile/domain/entity/profile_entity.dart';
+import 'package:kfon_subscriber/features/profile/domain/params/change_password_params.dart';
 import 'package:kfon_subscriber/features/profile/domain/repository/profile_repository.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 
@@ -30,6 +31,21 @@ class ProfileRepositoryImp extends ProfileRepository {
     if (response.isSuccess) {
       final accountInfo = AccountInformationModel.fromJson(response.data);
       return Right(accountInfo);
+    } else {
+      return Left(response.failure);
+    }
+  }
+
+  @override
+  Future<Either<Failure, void>> changePortalPassword(
+    ChangePasswordParams params,
+  ) async {
+    final response = await sl<DioClient>().post(
+      ApiUrls.changePortalPasswordURL,
+      data: params.toMap(),
+    );
+    if (response.isSuccess) {
+      return const Right(null);
     } else {
       return Left(response.failure);
     }

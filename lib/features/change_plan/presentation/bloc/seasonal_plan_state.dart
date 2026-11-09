@@ -30,6 +30,9 @@ class SeasonalPlanState extends Equatable {
 
   final String? packageTypeFilter;
 
+  /// Speed filter (Mbps) picked from the speed filter sheet; null = any.
+  final int? speedFilter;
+
   final int currentPage;
 
   final int totalPages;
@@ -70,6 +73,7 @@ class SeasonalPlanState extends Equatable {
     this.searchQuery = '',
     this.subscriptionTypeFilter,
     this.packageTypeFilter,
+    this.speedFilter,
     this.currentPage = 0,
     this.totalPages = 0,
     this.hasMore = true,
@@ -154,6 +158,7 @@ class SeasonalPlanState extends Equatable {
     String? searchQuery,
     Object? subscriptionTypeFilter = _sentinel,
     Object? packageTypeFilter = _sentinel,
+    Object? speedFilter = _sentinel,
     int? currentPage,
     int? totalPages,
     bool? hasMore,
@@ -187,6 +192,11 @@ class SeasonalPlanState extends Equatable {
           identical(packageTypeFilter, _sentinel)
               ? this.packageTypeFilter
               : packageTypeFilter as String?,
+
+      speedFilter:
+          identical(speedFilter, _sentinel)
+              ? this.speedFilter
+              : speedFilter as int?,
 
       currentPage: currentPage ?? this.currentPage,
       totalPages: totalPages ?? this.totalPages,
@@ -232,6 +242,7 @@ class SeasonalPlanState extends Equatable {
     searchQuery,
     subscriptionTypeFilter,
     packageTypeFilter,
+    speedFilter,
     currentPage,
     totalPages,
     hasMore,
