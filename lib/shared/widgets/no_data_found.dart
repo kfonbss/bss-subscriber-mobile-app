@@ -1,6 +1,7 @@
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
 import 'package:kfon_subscriber/shared/widgets/tenant_recolored_image.dart';
 import 'package:flutter/material.dart';
+import 'package:kfon_subscriber/core/util/sizer.dart';
 
 class NoDataFound extends StatelessWidget {
   const NoDataFound({
@@ -37,9 +38,12 @@ class NoDataFound extends StatelessWidget {
                 ),
                 Text(
                   errorMessage,
+                  textAlign: TextAlign.center,
                   style: TextStyle(
+                    fontFamily: 'GeneralSans',
                     color: textColor ?? Colors.black,
-                    fontSize: 14,
+                    fontSize: 16.sp,
+                    height: 1.3,
                   ),
                 ),
               ],

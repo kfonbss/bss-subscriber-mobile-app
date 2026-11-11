@@ -49,6 +49,8 @@ class _ProfilePageState extends State<ProfilePage> {
     fontWeight: FontWeight.w500,
     fontSize: 9.sp,
     height: 1.6,
+    // Explicit 0: otherwise the theme's default letter spacing is inherited.
+    letterSpacing: 0,
     color: AppColor.kProfileActiveGreen,
   );
   // BorderRadius.all(Radius.circular(21)) is const; .circular(21) is not.
@@ -60,6 +62,17 @@ class _ProfilePageState extends State<ProfilePage> {
     horizontal: 6.w,
     vertical: 2.h,
   );
+
+  /// "ACTIVE" / "active" / "in_active" → "Active" / "In Active".
+  static String _capitalCase(String value) => value
+      .replaceAll('_', ' ')
+      .trim()
+      .split(RegExp(r'\s+'))
+      .map(
+        (w) =>
+            w.isEmpty ? w : w[0].toUpperCase() + w.substring(1).toLowerCase(),
+      )
+      .join(' ');
 
   // ── Section heading ───────────────────────────────────────────────────────
   static final _sectionHeadingStyle = TextStyle(
@@ -160,7 +173,10 @@ class _ProfilePageState extends State<ProfilePage> {
                                 Container(
                                   padding: _statusBadgePadding,
                                   decoration: _statusBadgeDecoration,
-                                  child: Text(status, style: _statusStyle),
+                                  child: Text(
+                                    _capitalCase(status),
+                                    style: _statusStyle,
+                                  ),
                                 ),
                             ],
                           ),

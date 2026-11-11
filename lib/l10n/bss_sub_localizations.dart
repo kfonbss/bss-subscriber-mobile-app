@@ -2096,6 +2096,12 @@ abstract class BssSubLocalizations {
   /// **'Please enter a valid amount'**
   String get pleaseEnterAValidAmount;
 
+  /// No description provided for @noPaymentGatewaysAvailable.
+  ///
+  /// In en, this message translates to:
+  /// **'No payment gateways available right now'**
+  String get noPaymentGatewaysAvailable;
+
   /// No description provided for @pleaseSelectAPaymentGateway.
   ///
   /// In en, this message translates to:

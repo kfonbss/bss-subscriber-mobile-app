@@ -37,7 +37,7 @@ class VerificationSuccessSheet extends StatelessWidget {
               fontSize: 18.sp,
               fontWeight: FontWeight.w600,
               color: AppColor.kTextSecondaryDark,
-              fontFamily: 'General Sans',
+              fontFamily: 'GeneralSans',
               height: 1.3.h,
             ),
           ),
@@ -52,7 +52,7 @@ class VerificationSuccessSheet extends StatelessWidget {
               fontSize: 12.sp,
               fontWeight: FontWeight.w400,
               color: AppColor.kTextFiledPlaceholderColor,
-              fontFamily: 'General Sans',
+              fontFamily: 'GeneralSans',
               height: 1.6.h,
             ),
           ),
@@ -70,7 +70,7 @@ class VerificationSuccessSheet extends StatelessWidget {
               textStyle: TextStyle(
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w600,
-                fontFamily: 'General Sans',
+                fontFamily: 'GeneralSans',
                 height: 1.3.h,
               ),
               onClicked: () {

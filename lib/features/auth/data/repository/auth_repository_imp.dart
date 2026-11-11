@@ -32,6 +32,7 @@ class AuthRepositoryImp extends AuthRepository {
       return Left(response.failure);
     }
   }
+
   @override
   Future<Either<Failure, AuthEntity>> resendOTP(String token) async {
     APIResponse response = await sl<DioClient>().post(
@@ -96,7 +97,7 @@ class AuthRepositoryImp extends AuthRepository {
       return Right(
         OtpResponseEntity(
           otpRefId: data['token'] as String,
-          userRole: _resolveAllowedRole(
+          userRole: resolveAllowedUserRole(
             (data['roleNames'] as List<dynamic>?)
                     ?.map((e) => e.toString())
                     .toList() ??
@@ -108,20 +109,7 @@ class AuthRepositoryImp extends AuthRepository {
       return Left(response.failure);
     }
   }
-  static UserRole? _resolveAllowedRole(List<dynamic> roleNames) {
-    for (final raw in roleNames) {
-      final normalized = raw.toString().trim().toLowerCase().replaceAll(
-        '-',
-        '_',
-      );
-      for (final role in UserRole.values) {
-        if (role.name.toLowerCase() == normalized) {
-          return role;
-        }
-      }
-    }
-    return null;
-  }
+
   @override
   Future<Either<Failure, void>> resetForgotPassword(
     ResetPasswordParams params,

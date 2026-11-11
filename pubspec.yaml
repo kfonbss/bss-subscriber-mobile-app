@@ -119,6 +119,7 @@ flutter:
   assets:
    - assets/env/
    - assets/images/
+   - assets/images/kfon/
    - assets/icons/
    - assets/bottomNaviBarIcons/
   #   - images/a_dot_ham.jpeg

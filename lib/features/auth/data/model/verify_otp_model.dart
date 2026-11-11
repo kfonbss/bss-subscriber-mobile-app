@@ -2,6 +2,23 @@ import 'package:kfon_subscriber/features/auth/domain/entity/verify_otp_entity.da
 
 enum UserRole { sub, other }
 
+/// Role names the backend may send for a subscriber. RailWire/BSS sends
+/// `SUB`; the KFON tenant sends `subscriber`.
+const _subscriberRoleAliases = {'sub', 'subscriber'};
+
+/// Resolves the first role in [roleNames] this app allows, case-insensitive
+/// (`-` treated as `_`). Returns `null` when none is allowed.
+UserRole? resolveAllowedUserRole(List<dynamic> roleNames) {
+  for (final raw in roleNames) {
+    final normalized = raw.toString().trim().toLowerCase().replaceAll('-', '_');
+    if (_subscriberRoleAliases.contains(normalized)) return UserRole.sub;
+    for (final role in UserRole.values) {
+      if (role.name == normalized) return role;
+    }
+  }
+  return null;
+}
+
 class VerifyOtpModel {
   final String userId;
   final String username;
@@ -78,26 +95,8 @@ class VerifyOtpModel {
       mobileNumber: mobileNumber,
       refreshToken: refreshToken,
       expiresIn: expiresIn,
-      userRole: _resolveAllowedRole(roleNames),
+      userRole: resolveAllowedUserRole(roleNames),
       lnpSubUserType: lnpSubUserType,
     );
-  }
-
-  /// Resolves the first role from [roleNames] that maps to an allowed
-  /// [UserRole] (LNP / AGNP), comparing case-insensitively. Returns `null`
-  /// when the user has no permitted role for this app.
-  static UserRole? _resolveAllowedRole(List<dynamic> roleNames) {
-    for (final raw in roleNames) {
-      final normalized = raw.toString().trim().toLowerCase().replaceAll(
-        '-',
-        '_',
-      );
-      for (final role in UserRole.values) {
-        if (role.name.toLowerCase() == normalized) {
-          return role;
-        }
-      }
-    }
-    return null;
   }
 }

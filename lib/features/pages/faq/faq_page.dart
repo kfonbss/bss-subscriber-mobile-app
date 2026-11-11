@@ -21,7 +21,7 @@ class FaqPage extends StatelessWidget {
         Text(
           title,
           style: TextStyle(
-            fontFamily: 'General Sans',
+            fontFamily: 'GeneralSans',
             color: const Color(0xFF0F1121),
             fontSize: 16.sp,
             fontWeight: FontWeight.w600,

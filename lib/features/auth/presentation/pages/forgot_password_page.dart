@@ -1,3 +1,4 @@
+import 'package:kfon_subscriber/features/auth/presentation/components/website_pill.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
@@ -133,6 +134,7 @@ class _ForgotPasswordPageState extends State<ForgotPasswordPage> {
                   ),
                 ],
               ),
+              const BottomWebsitePill(),
               //place backbutton same as app bar backbutton
               Positioned(
                 top: 50,

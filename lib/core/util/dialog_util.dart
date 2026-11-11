@@ -66,7 +66,7 @@ class DialogUtil {
                       l10n.sessionExpired,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontFamily: 'General Sans',
+                        fontFamily: 'GeneralSans',
                         color: AppColor.kTextSecondaryDark,
                         fontSize: 18.sp,
                         fontWeight: FontWeight.w600,
@@ -80,7 +80,7 @@ class DialogUtil {
                         l10n.yourSessionHasExpiredPleaseLogIn,
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontFamily: 'General Sans',
+                          fontFamily: 'GeneralSans',
                           color: AppColor.kDarkBlue,
                           fontSize: 13.sp,
                           fontWeight: FontWeight.w500,
@@ -97,7 +97,7 @@ class DialogUtil {
                       backgroundColor: AppColor.kPrimaryColor,
                       onClicked: onLogin,
                       textStyle: TextStyle(
-                        fontFamily: 'General Sans',
+                        fontFamily: 'GeneralSans',
                         color: Colors.white,
                         fontSize: 16.sp,
                         fontWeight: FontWeight.w600,
@@ -120,7 +120,7 @@ class DialogUtil {
   }) {
     final l10n = context.bssSubL10n;
     final buttonTextStyle = TextStyle(
-      fontFamily: 'General Sans',
+      fontFamily: 'GeneralSans',
       fontSize: 16.sp,
       fontWeight: FontWeight.w600,
     );
@@ -159,7 +159,7 @@ class DialogUtil {
                       l10n.insufficientBalance,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontFamily: 'General Sans',
+                        fontFamily: 'GeneralSans',
                         color: AppColor.kTextSecondaryDark,
                         fontSize: 18.sp,
                         fontWeight: FontWeight.w600,
@@ -171,7 +171,7 @@ class DialogUtil {
                       title,
                       textAlign: TextAlign.center,
                       style: TextStyle(
-                        fontFamily: 'General Sans',
+                        fontFamily: 'GeneralSans',
                         color: AppColor.kDarkBlue,
                         fontSize: 13.sp,
                         fontWeight: FontWeight.w500,
@@ -332,7 +332,7 @@ class DialogUtil {
                           l10n.areYouSureLogout,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontFamily: 'General Sans',
+                            fontFamily: 'GeneralSans',
                             color: const Color(0xFF0F1121),
                             fontSize: context.isTablet ? 18.0.sp * 1.2 : 18.sp,
                             fontWeight: FontWeight.w600,
@@ -348,7 +348,7 @@ class DialogUtil {
                           l10n.willReturnToLoginScreen,
                           textAlign: TextAlign.center,
                           style: TextStyle(
-                            fontFamily: 'General Sans',
+                            fontFamily: 'GeneralSans',
                             color: const Color(0xFF67697A),
                             fontSize: context.isTablet ? 12.0.sp * 1.2 : 12.sp,
                             fontWeight: FontWeight.w600,
@@ -400,7 +400,7 @@ class DialogUtil {
                                 );
                               },
                               textStyle: TextStyle(
-                                fontFamily: 'General Sans',
+                                fontFamily: 'GeneralSans',
                                 fontSize:
                                     context.isTablet ? 14.0.sp * 1.2 : 14.sp,
                                 fontWeight: FontWeight.w600,
@@ -422,7 +422,7 @@ class DialogUtil {
                           height: buttonHeight,
                           onClicked: () => Navigator.of(context).pop(),
                           textStyle: TextStyle(
-                            fontFamily: 'General Sans',
+                            fontFamily: 'GeneralSans',
                             fontSize: context.isTablet ? 14.0.sp * 1.2 : 14.sp,
                             fontWeight: FontWeight.w600,
                             height: 1.2999999523162842.h,

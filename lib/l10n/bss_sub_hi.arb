@@ -546,6 +546,7 @@
   "processToPay": "भुगतान के लिए आगे बढ़ें",
   "pleaseEnterAnAmount": "कृपया राशि दर्ज करें",
   "pleaseEnterAValidAmount": "कृपया एक मान्य राशि दर्ज करें",
+  "noPaymentGatewaysAvailable": "अभी कोई भुगतान गेटवे उपलब्ध नहीं है",
   "pleaseSelectAPaymentGateway": "कृपया एक भुगतान गेटवे चुनें",
   "paymentCancelled": "भुगतान रद्द कर दिया गया",
   "topUpSuccessful": "टॉप-अप सफल!",

@@ -44,7 +44,7 @@ class AboutAppPage extends StatelessWidget {
                 Text(
                   title,
                   style: TextStyle(
-                    fontFamily: 'General Sans',
+                    fontFamily: 'GeneralSans',
                     color: const Color(0xFF0F1121),
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w600,
@@ -63,7 +63,7 @@ class AboutAppPage extends StatelessWidget {
                   Text(
                     value,
                     style: TextStyle(
-                      fontFamily: 'General Sans',
+                      fontFamily: 'GeneralSans',
                       color: AppColor.kPrimaryColor,
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w400,
@@ -89,7 +89,7 @@ class AboutAppPage extends StatelessWidget {
         Text(
           title,
           style: TextStyle(
-            fontFamily: 'General Sans',
+            fontFamily: 'GeneralSans',
             color: const Color(0xFF0F1121),
             fontSize: 16.sp,
             fontWeight: FontWeight.w600,
@@ -247,7 +247,7 @@ class AboutAppPage extends StatelessWidget {
             Text(
               context.bssSubL10n.contactUs,
               style: TextStyle(
-                fontFamily: 'General Sans',
+                fontFamily: 'GeneralSans',
                 color: const Color(0xFF0F1121),
                 fontSize: 18.sp,
                 fontWeight: FontWeight.w600,
@@ -258,7 +258,7 @@ class AboutAppPage extends StatelessWidget {
             Text(
               contactText,
               style: TextStyle(
-                fontFamily: 'General Sans',
+                fontFamily: 'GeneralSans',
                 color: const Color(0xFF5C5C5C),
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w400,
@@ -273,7 +273,7 @@ class AboutAppPage extends StatelessWidget {
                 borderRadius: 12,
                 onClicked: () => Navigator.pop(context),
                 textStyle: TextStyle(
-                  fontFamily: 'General Sans',
+                  fontFamily: 'GeneralSans',
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w600,
                   height: 1.3.h,

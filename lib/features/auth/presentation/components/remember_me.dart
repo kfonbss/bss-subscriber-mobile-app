@@ -50,7 +50,7 @@ class _RememberMeState extends State<RememberMe> {
         fontSize: 14.sp,
         fontWeight: FontWeight.w500,
         color: Colors.white,
-        fontFamily: 'General Sans',
+        fontFamily: 'GeneralSans',
         height: 1.30.h,
       ),
     );

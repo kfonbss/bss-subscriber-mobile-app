@@ -1,3 +1,4 @@
+import 'package:kfon_subscriber/core/constant/app_brand.dart';
 import 'package:flutter_secure_storage/flutter_secure_storage.dart';
 
 class PreferenceUtils {
@@ -21,15 +22,14 @@ class PreferenceUtils {
   static const _keyTenantAppUrl = 'tenantAppUrl';
 
   static Future<void> saveLoginCredentials(
-      String userName,
-      String password,
-      ) async {
+    String userName,
+    String password,
+  ) async {
     await Future.wait([
       _storage.write(key: _keyUsername, value: userName),
       _storage.write(key: _keyPassword, value: password),
     ]);
   }
-
 
   static Future<void> clearLoginCredentials() async {
     await Future.wait([
@@ -51,7 +51,6 @@ class PreferenceUtils {
   static Future<void> setLanguageCode(String code) async =>
       await _storage.write(key: _keyLanguageCode, value: code);
 
-
   static Future<String?> getAccessToken() async =>
       await _storage.read(key: _keyAccessToken);
 
@@ -64,7 +63,11 @@ class PreferenceUtils {
     return false;
   }
 
-  static Future<void> setTenant(String tenantId,String tenantName,{String? appUrl}) async {
+  static Future<void> setTenant(
+    String tenantId,
+    String tenantName, {
+    String? appUrl,
+  }) async {
     await Future.wait([
       _storage.write(key: _keyTenantId, value: tenantId),
       _storage.write(key: _keyTenantName, value: tenantName),
@@ -72,18 +75,25 @@ class PreferenceUtils {
     ]);
   }
 
+  /// KFON builds (`BRAND=kfon`) have a single fixed tenant, so the circle
+  /// picker is skipped and every caller (login, X-Tenant-ID header, PDF
+  /// downloads, startup routing) gets [AppBrand.kfonTenantId]. RailWire
+  /// builds read the circle the user picked, as before.
   static Future<String?> getTenantId() async =>
-      await _storage.read(key: _keyTenantId);
+      AppBrand.isKfon
+          ? AppBrand.kfonTenantId
+          : await _storage.read(key: _keyTenantId);
 
   static Future<String?> getTenantName() async =>
-      await _storage.read(key: _keyTenantName);
+      AppBrand.isKfon
+          ? AppBrand.kfonTenantId
+          : await _storage.read(key: _keyTenantName);
 
   static Future<String?> getTenantAppUrl() async =>
       await _storage.read(key: _keyTenantAppUrl);
 
   static Future<void> setIntroScreenStatus(bool status) async =>
       await _storage.write(key: _introScreenStatus, value: status.toString());
-
 
   /// Returns the expiry timestamp in milliseconds since epoch
   static Future<int?> getTokenExpiryAt() async {
@@ -127,7 +137,10 @@ class PreferenceUtils {
   }) async {
     await Future.wait([
       _storage.write(key: _keyRailwireToken, value: token),
-      _storage.write(key: _keyRailwireTokenExpiryAt, value: expiryAt.toString()),
+      _storage.write(
+        key: _keyRailwireTokenExpiryAt,
+        value: expiryAt.toString(),
+      ),
     ]);
   }
 
@@ -152,10 +165,13 @@ class PreferenceUtils {
     return now + bufferSeconds * 1000 >= expiryAt;
   }
 
-  static Future<void> setUserDetails({required String userId,required String userName}) async {
+  static Future<void> setUserDetails({
+    required String userId,
+    required String userName,
+  }) async {
     await Future.wait([
       _storage.write(key: _keyUserId, value: userId),
-      _storage.write(key: _keyUsername, value: userName)
+      _storage.write(key: _keyUsername, value: userName),
     ]);
   }
 
@@ -179,7 +195,7 @@ class PreferenceUtils {
   static Future<void> setRatingTracking(String json) async =>
       await _storage.write(key: _keyRatingTracking, value: json);
 
-  static Future<void> clearAll(bool clearLogin) async{
+  static Future<void> clearAll(bool clearLogin) async {
     await Future.wait([
       _storage.delete(key: _keyAccessToken),
       _storage.delete(key: _keyRefreshToken),
@@ -191,8 +207,6 @@ class PreferenceUtils {
         _storage.delete(key: _keyUsername),
         _storage.delete(key: _keyPassword),
       ],
-
     ]);
-
-}
+  }
 }

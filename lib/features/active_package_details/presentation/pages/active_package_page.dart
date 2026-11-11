@@ -74,26 +74,29 @@ class _ActivePackagePageState extends State<ActivePackagePage> {
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       PackageInfoCard(entity: state.entity),
-                      SizedBox(height: 24.h),
-                      Text(
-                        context.bssSubL10n.activeAddOns,
-                        style: _sectionHeadingStyle,
-                      ),
-                      SizedBox(height: 16.h),
-                      Column(
-                        spacing: 16.h,
-                        children: [
-                          for (final addOn in state.entity.activeAddOns)
-                            _AddOnTile(
-                              title: context.bssSubL10n.addonServiceTitle(
-                                addOn.serviceTypeName,
-                                addOn.packageValue,
+                      // Hide the whole Add-ons section when there are none.
+                      if (state.entity.activeAddOns.isNotEmpty) ...[
+                        SizedBox(height: 24.h),
+                        Text(
+                          context.bssSubL10n.activeAddOns,
+                          style: _sectionHeadingStyle,
+                        ),
+                        SizedBox(height: 16.h),
+                        Column(
+                          spacing: 16.h,
+                          children: [
+                            for (final addOn in state.entity.activeAddOns)
+                              _AddOnTile(
+                                title: context.bssSubL10n.addonServiceTitle(
+                                  addOn.serviceTypeName,
+                                  addOn.packageValue,
+                                ),
+                                subtitle: addOn.label,
+                                isActive: addOn.isActive,
                               ),
-                              subtitle: addOn.label,
-                              isActive: addOn.isActive,
-                            ),
-                        ],
-                      ),
+                          ],
+                        ),
+                      ],
                     ],
                   )
                   : AppShimmer(

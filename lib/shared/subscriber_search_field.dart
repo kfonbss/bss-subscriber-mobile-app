@@ -3,7 +3,6 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
-import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 
 class SubscriberSearchField extends StatelessWidget {
   final ValueChanged<String> onChanged;
@@ -37,7 +36,7 @@ class SubscriberSearchField extends StatelessWidget {
           FocusManager.instance.primaryFocus?.unfocus();
         },
         style: TextStyle(
-          fontFamily: 'General Sans',
+          fontFamily: 'GeneralSans',
           fontSize: 14.sp,
           fontWeight: FontWeight.w400,
         ),
@@ -46,7 +45,7 @@ class SubscriberSearchField extends StatelessWidget {
           hintStyle: TextStyle(
             color: AppColor.kTextSecondaryLight,
             fontWeight: FontWeight.w400,
-            fontFamily: 'General Sans',
+            fontFamily: 'GeneralSans',
             fontSize: 14.sp,
           ),
           prefixIconConstraints: BoxConstraints(

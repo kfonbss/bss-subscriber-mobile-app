@@ -1,6 +1,7 @@
 import 'package:flutter/foundation.dart';
 import 'package:flutter/widgets.dart';
 import 'package:flutter_svg/flutter_svg.dart';
+import 'package:kfon_subscriber/core/constant/app_brand.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 
 /// Recolours the brand colour inside SVG assets to [AppColor.kPrimaryColor],
@@ -28,6 +29,11 @@ class TenantSvgColorMapper extends ColorMapper {
     0xFF1095C5, // main blue (home_background.svg)
   };
 
+  /// Navy drawn into the artwork for RailWire (gradient over the View Usage /
+  /// Speed Test header in speed_test_background.svg). RailWire keeps it as
+  /// designed; other brands (KFON) recolour it to their primary.
+  static const Set<int> _railwireNavyColors = {0xFF3A46A3};
+
   /// Tints of the brand colour: source colour -> amount of white mixed in.
   static const Map<int, double> _brandTints = {
     0xFF28A0CB: 0.1, // ring in home_background.svg = #1095C5 + 10% white
@@ -45,7 +51,9 @@ class TenantSvgColorMapper extends ColorMapper {
     // Compare RGB only, so colours with alpha still match; keep their alpha.
     final rgb = color.toARGB32() | 0xFF000000;
     final alpha = (color.a * 255).round();
-    if (_brandColors.contains(rgb) || extraColors.contains(rgb)) {
+    if (_brandColors.contains(rgb) ||
+        extraColors.contains(rgb) ||
+        (!AppBrand.isRailWire && _railwireNavyColors.contains(rgb))) {
       return _primary.withAlpha(alpha);
     }
     final tint = _brandTints[rgb];

@@ -22,6 +22,11 @@ class SeasonalPlanTile extends StatelessWidget {
     required this.onTap,
   });
 
+  /// Adds a zero-width space after - _ / so names like "BOD_500GB/Month"
+  /// can wrap there too (matches the home plan card).
+  static String _wrappablePlanName(String name) =>
+      name.replaceAllMapped(RegExp(r'[-_/]'), (m) => '${m[0]}\u200B');
+
   static String _formatRupee(double amount, {int decimals = 2}) {
     return '₹${amount.toStringAsFixed(decimals)}';
   }
@@ -78,7 +83,7 @@ class SeasonalPlanTile extends StatelessWidget {
             child: Column(
               children: [
                 Row(
-                  crossAxisAlignment: CrossAxisAlignment.center,
+                  crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
                     // Figma: 30px #F2EFE7 circle with a primary globe.
                     Container(
@@ -102,16 +107,20 @@ class SeasonalPlanTile extends StatelessWidget {
                       child: Column(
                         crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
+                          // Same as the home plan card: wrap to 2 lines (also
+                          // after - _ /) before ellipsis, so long names stay
+                          // readable instead of being cut after one line.
                           Text(
-                            package.packageName,
+                            _wrappablePlanName(package.packageName),
                             style: TextStyle(
-                              fontFamily: 'General Sans',
+                              fontFamily: 'GeneralSans',
                               fontSize: 16.sp,
                               fontWeight: FontWeight.w500,
                               height: 1.3,
                               color: AppColor.kTextSecondaryDark,
                             ),
-                            maxLines: 1,
+                            maxLines: 2,
+                            softWrap: true,
                             overflow: TextOverflow.ellipsis,
                           ),
                           if (_metaText(package).isNotEmpty) ...[
@@ -182,6 +191,7 @@ class SeasonalPlanTile extends StatelessWidget {
                         ],
                       ),
                     ),
+                    SizedBox(width: 8.w),
                     // Right price block: list price on new line above current price
                     Column(
                       crossAxisAlignment: CrossAxisAlignment.end,
@@ -208,7 +218,7 @@ class SeasonalPlanTile extends StatelessWidget {
                           maxLines: 1,
                           softWrap: false,
                           style: TextStyle(
-                            fontFamily: 'General Sans',
+                            fontFamily: 'GeneralSans',
                             fontSize: 18.sp,
                             fontWeight: FontWeight.w600,
                             height: 1.3,
@@ -244,7 +254,7 @@ class SeasonalPlanTile extends StatelessWidget {
                               child: Text(
                                 offerLabel,
                                 style: TextStyle(
-                                  fontFamily: 'General Sans',
+                                  fontFamily: 'GeneralSans',
                                   fontSize: 9.5.sp,
                                   fontWeight: FontWeight.w600,
                                   height: 1.h,
@@ -261,7 +271,7 @@ class SeasonalPlanTile extends StatelessWidget {
                               maxLines: 1,
                               overflow: TextOverflow.ellipsis,
                               style: TextStyle(
-                                fontFamily: 'General Sans',
+                                fontFamily: 'GeneralSans',
                                 fontSize: 10.sp,
                                 fontWeight: FontWeight.w500,
                                 height: 1.h,
@@ -276,7 +286,7 @@ class SeasonalPlanTile extends StatelessWidget {
                               saveText,
                               maxLines: 1,
                               style: TextStyle(
-                                fontFamily: 'General Sans',
+                                fontFamily: 'GeneralSans',
                                 fontSize: 10.sp,
                                 fontWeight: FontWeight.w600,
                                 height: 1.h,
@@ -355,7 +365,7 @@ class SeasonalPlanTile extends StatelessWidget {
         Text(
           label,
           style: TextStyle(
-            fontFamily: 'General Sans',
+            fontFamily: 'GeneralSans',
             fontSize: 10.sp,
             fontWeight: FontWeight.w400,
             height: 1.3,
@@ -366,7 +376,7 @@ class SeasonalPlanTile extends StatelessWidget {
         Text(
           value,
           style: TextStyle(
-            fontFamily: 'General Sans',
+            fontFamily: 'GeneralSans',
             fontSize: 14.sp,
             fontWeight: FontWeight.w400,
             height: 1.3,

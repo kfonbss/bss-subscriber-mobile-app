@@ -20,7 +20,7 @@ class FieldLabel extends StatelessWidget {
           fontWeight: FontWeight.w600,
           color: const Color(0xFF0F1121),
           height: 1.3.h,
-          fontFamily: 'General Sans',
+          fontFamily: 'GeneralSans',
         ),
         children: [
           if (isMandatory)

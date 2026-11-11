@@ -36,7 +36,7 @@ class CommonTextButton extends StatelessWidget {
             TextStyle(
               fontSize: 14.sp,
               fontWeight: FontWeight.w500,
-              fontFamily: 'General Sans',
+              fontFamily: 'GeneralSans',
             ),
       ),
     );

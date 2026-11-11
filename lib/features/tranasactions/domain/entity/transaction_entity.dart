@@ -16,6 +16,10 @@ class TransactionEntity {
   /// Empty string if the API did not return a URL for this transaction.
   final String fileId;
 
+  /// Invoice id from the API; empty when no invoice was generated (e.g. a
+  /// pending advance recharge). The download button shows only when set.
+  final String invoiceId;
+
   const TransactionEntity({
     required this.transactionId,
     required this.bssNo,
@@ -29,7 +33,10 @@ class TransactionEntity {
     required this.paymentGateway,
     required this.responseMessage,
     required this.fileId,
+    this.invoiceId = '',
   });
+
+  bool get hasInvoice => invoiceId.isNotEmpty && fileId.isNotEmpty;
 }
 
 /// Entity wrapping a paginated list of transactions.

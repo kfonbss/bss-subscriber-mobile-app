@@ -131,7 +131,7 @@ class _SeasonalPlanViewState extends State<_SeasonalPlanView> {
           final active = state.selectedTab == t;
 
           final serviceTypes = state.targetKindsForTab(t);
-          final fg = active ? Colors.white : AppColor.kTextSecondary;
+          final fg = active ? Colors.white : AppColor.kSlateGrey;
 
           return Material(
             color: active ? AppColor.kPrimaryColor : Colors.white,
@@ -168,11 +168,12 @@ class _SeasonalPlanViewState extends State<_SeasonalPlanView> {
                     Text(
                       t.localizedName(context),
                       style: TextStyle(
-                        fontSize: 14.sp,
-                        fontWeight: active ? FontWeight.w500 : FontWeight.w400,
+                        fontSize: 12.sp,
+                        fontWeight: FontWeight.w500,
                         height: 1.3,
+                        letterSpacing: 0,
                         color: fg,
-                        fontFamily: 'General Sans',
+                        fontFamily: 'GeneralSans',
                       ),
                     ),
                     if (serviceTypes.isNotEmpty) ...[
@@ -240,7 +241,7 @@ class _SeasonalPlanViewState extends State<_SeasonalPlanView> {
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
                       color: AppColor.kTextSecondaryDark,
-                      fontFamily: 'General Sans',
+                      fontFamily: 'GeneralSans',
                     ),
                   ),
                   IconButton(
@@ -270,7 +271,7 @@ class _SeasonalPlanViewState extends State<_SeasonalPlanView> {
                       contentPadding: EdgeInsets.zero,
 
                       title: Text(
-                        item,
+                        item.replaceAll('_', ' '),
                         style: TextStyle(
                           fontSize: 14.sp,
                           fontWeight:
@@ -279,7 +280,7 @@ class _SeasonalPlanViewState extends State<_SeasonalPlanView> {
                               isSelected
                                   ? AppColor.kTextSecondaryDark
                                   : AppColor.kTextSecondary,
-                          fontFamily: 'General Sans',
+                          fontFamily: 'GeneralSans',
                         ),
                       ),
 
@@ -549,7 +550,7 @@ class _SeasonalPlanViewState extends State<_SeasonalPlanView> {
                     borderRadius: 12,
                     height: 52.h,
                     textStyle: TextStyle(
-                      fontFamily: 'General Sans',
+                      fontFamily: 'GeneralSans',
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
                       height: 1.3,

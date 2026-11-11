@@ -257,6 +257,12 @@ class _InvoiceCard extends StatelessWidget {
               AppAssets.invoiceList,
               width: 20.w,
               height: 20.w,
+              // The SVG ships with a hard-coded blue (#1095C5); tint it to
+              // the tenant primary.
+              colorFilter: ColorFilter.mode(
+                AppColor.kPrimaryColor,
+                BlendMode.srcIn,
+              ),
             ),
           ),
 

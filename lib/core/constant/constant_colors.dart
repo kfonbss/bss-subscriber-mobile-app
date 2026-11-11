@@ -12,14 +12,22 @@ class AppColor {
 
   /// Primary colour for a given tenant code, without switching the app's
   /// current tenant (used to preview the colour on the tenant screen).
-  static Color primaryFor(String? tenantId) =>
-      _sharedPrimary || AppBrand.isLdTenant(tenantId)
-          ? const Color(0xFF26307A)
-          : const Color(0xFF8D0247);
+  static Color primaryFor(String? tenantId) {
+    // KFON build (`BRAND=kfon`) always uses the KFON maroon.
+    if (AppBrand.isKfon) return _kfonPrimary;
+    return _sharedPrimary || AppBrand.isLdTenant(tenantId)
+        ? _railwirePrimary
+        : _railwirePrimary;
+  }
+
+  static const Color _kfonPrimary = Color(0xFF8D0247);
+  static const Color _railwirePrimary = Color(0xFF26307A);
 
   /// Tenant screen background before any tenant is chosen.
   static Color get kTenantScreenBackground =>
-      _sharedPrimary ? primaryFor(null) : const Color(0xFF2D3142);
+      AppBrand.isKfon || _sharedPrimary
+          ? primaryFor(null)
+          : const Color(0xFF2D3142);
 
   // Opacity versions of kPrimaryColor (follow the tenant automatically)
 

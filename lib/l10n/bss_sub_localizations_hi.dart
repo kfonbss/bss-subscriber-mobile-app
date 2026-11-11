@@ -1101,6 +1101,10 @@ class BssSubLocalizationsHi extends BssSubLocalizations {
   String get pleaseEnterAValidAmount => 'कृपया एक मान्य राशि दर्ज करें';
 
   @override
+  String get noPaymentGatewaysAvailable =>
+      'अभी कोई भुगतान गेटवे उपलब्ध नहीं है';
+
+  @override
   String get pleaseSelectAPaymentGateway => 'कृपया एक भुगतान गेटवे चुनें';
 
   @override

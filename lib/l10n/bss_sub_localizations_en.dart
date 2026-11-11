@@ -1095,6 +1095,10 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String get pleaseEnterAValidAmount => 'Please enter a valid amount';
 
   @override
+  String get noPaymentGatewaysAvailable =>
+      'No payment gateways available right now';
+
+  @override
   String get pleaseSelectAPaymentGateway => 'Please select a payment gateway';
 
   @override

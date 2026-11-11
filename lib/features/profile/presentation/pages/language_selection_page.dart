@@ -82,7 +82,7 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
       borderColor: const Color(0xFFF3F3FA),
       contentPadding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 14.h),
       textStyle: TextStyle(
-        fontFamily: 'General Sans',
+        fontFamily: 'GeneralSans',
         color: const Color(0xFF0F1121),
         fontSize: 12.sp,
         fontWeight: FontWeight.w400,
@@ -90,7 +90,7 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
         letterSpacing: 0,
       ),
       hintStyle: TextStyle(
-        fontFamily: 'General Sans',
+        fontFamily: 'GeneralSans',
         color: const Color(0xFF67697A),
         fontSize: 12.sp,
         fontWeight: FontWeight.w400,
@@ -152,7 +152,7 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
                   child: Text(
                     language.name,
                     style: TextStyle(
-                      fontFamily: 'General Sans',
+                      fontFamily: 'GeneralSans',
                       color: const Color(0xFF0F1121),
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w600,
@@ -201,7 +201,7 @@ class _LanguageSelectionPageState extends State<LanguageSelectionPage> {
                   Text(
                     l10n.languageChoice,
                     style: TextStyle(
-                      fontFamily: 'General Sans',
+                      fontFamily: 'GeneralSans',
                       color: const Color(0xFF0F1121),
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w600,

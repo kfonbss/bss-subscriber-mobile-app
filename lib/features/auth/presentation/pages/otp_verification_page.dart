@@ -1,3 +1,4 @@
+import 'package:kfon_subscriber/features/auth/presentation/components/website_pill.dart';
 import 'package:kfon_subscriber/shared/widgets/common_text_button.dart';
 import 'dart:async';
 
@@ -193,7 +194,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                           fontSize: 14.sp,
                           fontWeight: FontWeight.w500,
                           color: Colors.white,
-                          fontFamily: 'General Sans',
+                          fontFamily: 'GeneralSans',
                           height: 1.65.h,
                           letterSpacing: -0.14,
                         ),
@@ -221,7 +222,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w500,
                                 color: Colors.white,
-                                fontFamily: 'General Sans',
+                                fontFamily: 'GeneralSans',
                                 height: 1.65.h,
                                 letterSpacing: -0.14,
                               ),
@@ -233,7 +234,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                                 fontSize: 14.sp,
                                 fontWeight: FontWeight.w600,
                                 color: Colors.white,
-                                fontFamily: 'General Sans',
+                                fontFamily: 'GeneralSans',
                                 height: 1.65.h,
                                 letterSpacing: -0.14,
                               ),
@@ -245,6 +246,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                     ],
                   ),
                 ),
+                const BottomWebsitePill(),
               ],
             ),
           );

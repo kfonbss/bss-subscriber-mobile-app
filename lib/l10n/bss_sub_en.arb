@@ -480,6 +480,7 @@
   "processToPay": "Process to Pay",
   "pleaseEnterAnAmount": "Please enter an amount",
   "pleaseEnterAValidAmount": "Please enter a valid amount",
+  "noPaymentGatewaysAvailable": "No payment gateways available right now",
   "pleaseSelectAPaymentGateway": "Please select a payment gateway",
   "paymentCancelled": "Payment was cancelled",
   "topUpSuccessful": "Top-Up Successful!",

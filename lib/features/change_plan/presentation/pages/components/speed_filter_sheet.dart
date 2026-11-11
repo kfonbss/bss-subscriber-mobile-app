@@ -46,7 +46,7 @@ class _SpeedFilterSheetState extends State<SpeedFilterSheet> {
             l10n.filterBySpeed,
             textAlign: TextAlign.center,
             style: TextStyle(
-              fontFamily: 'General Sans',
+              fontFamily: 'GeneralSans',
               fontSize: 16.sp,
               fontWeight: FontWeight.w600,
               height: 1.3,
@@ -128,7 +128,7 @@ class _SpeedFilterSheetState extends State<SpeedFilterSheet> {
               Text(
                 context.bssSubL10n.mbps(speed),
                 style: TextStyle(
-                  fontFamily: 'General Sans',
+                  fontFamily: 'GeneralSans',
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w400,
                   height: 1.3,

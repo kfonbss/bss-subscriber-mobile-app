@@ -1,3 +1,4 @@
+import 'package:kfon_subscriber/core/constant/app_brand.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 
 class AppAssets {
@@ -83,9 +84,19 @@ class AppAssets {
   static const String myEarnings = 'assets/icons/my_earnings.png';
   static const String ticketStar = 'assets/icons/ticket_star.png';
 
-  static const String kLogoAsset = 'assets/images/railwire_logo.png';
-  static const String kWhitLogoAsset = 'assets/images/railwire_white.png';
-  static const String kHomeLogoAsset = 'assets/images/railwire_logo_home.png';
+  // Brand logos switch with `--dart-define=BRAND=kfon` (see AppBrand).
+  static const String kLogoAsset =
+      AppBrand.isKfon
+          ? 'assets/images/kfon/kfon_logo.jpg'
+          : 'assets/images/railwire_logo.png';
+  static const String kWhitLogoAsset =
+      AppBrand.isKfon
+          ? 'assets/images/kfon/kfon_white.png'
+          : 'assets/images/railwire_white.png';
+  static const String kHomeLogoAsset =
+      AppBrand.isKfon
+          ? 'assets/images/kfon/kfon_white.png'
+          : 'assets/images/railwire_logo_home.png';
   static const String homeLeftEllipse = 'assets/images/left_bg_ellipsis.png';
   static const String homeRightEllipse = 'assets/images/right_bg_ellipsis.png';
   static const String homePromoBanner = 'assets/images/dummy-banner.png';
@@ -97,7 +108,10 @@ class AppAssets {
   static const String serviceRefer = 'assets/icons/refer.svg';
   static const String serviceMore = 'assets/icons/more.svg';
   static const String gift = 'assets/icons/gift.svg';
-  static const String introRoundLogo = 'assets/images/intro_round_logo.png';
+  static const String introRoundLogo =
+      AppBrand.isKfon
+          ? 'assets/images/kfon/kfon_round.png'
+          : 'assets/images/intro_round_logo.png';
   static const String logoTransparent = 'assets/images/logo_transparent.png';
 
   static const String homeBackground = 'assets/images/home_background.svg';

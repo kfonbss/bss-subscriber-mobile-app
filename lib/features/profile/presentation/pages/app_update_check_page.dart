@@ -209,7 +209,7 @@ class _AppUpdateCheckPageState extends State<AppUpdateCheckPage> {
                   Text(
                     title,
                     style: TextStyle(
-                      fontFamily: 'General Sans',
+                      fontFamily: 'GeneralSans',
                       color: const Color(0xFF0F1121),
                       fontSize: 14.sp,
                       fontWeight: FontWeight.w600,
@@ -221,7 +221,7 @@ class _AppUpdateCheckPageState extends State<AppUpdateCheckPage> {
                   Text(
                     subtitle,
                     style: TextStyle(
-                      fontFamily: 'General Sans',
+                      fontFamily: 'GeneralSans',
                       color: Colors.black.withOpacity(0.7),
                       fontSize: 12.sp,
                       fontWeight: FontWeight.w400,
@@ -257,7 +257,7 @@ class _AppUpdateCheckPageState extends State<AppUpdateCheckPage> {
                   Text(
                     l10n.currentVersion,
                     style: TextStyle(
-                      fontFamily: 'General Sans',
+                      fontFamily: 'GeneralSans',
                       color: const Color(0xFF0F1121),
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
@@ -284,7 +284,7 @@ class _AppUpdateCheckPageState extends State<AppUpdateCheckPage> {
                   Text(
                     l10n.updateStatus,
                     style: TextStyle(
-                      fontFamily: 'General Sans',
+                      fontFamily: 'GeneralSans',
                       color: const Color(0xFF0F1121),
                       fontSize: 16.sp,
                       fontWeight: FontWeight.w600,
@@ -322,7 +322,7 @@ class _AppUpdateCheckPageState extends State<AppUpdateCheckPage> {
                                     .yourAppIsUpToDateWeWillNotifyYouWhenANewVersionIsAvailable),
                         textAlign: TextAlign.center,
                         style: TextStyle(
-                          fontFamily: 'General Sans',
+                          fontFamily: 'GeneralSans',
                           color: Colors.black.withOpacity(0.7),
                           fontSize: 12.sp,
                           fontWeight: FontWeight.w400,

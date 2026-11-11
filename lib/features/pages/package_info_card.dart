@@ -25,9 +25,12 @@ class PackageInfoCard extends StatelessWidget {
     borderRadius: BorderRadius.all(Radius.circular(50)),
   );
 
-  static const _packCountDecoration = BoxDecoration(
-    color: AppColor.kSpeedBoxGrey,
-    borderRadius: BorderRadius.all(Radius.circular(80)),
+  // Same outlined look as the home "+N Pack" button: white, 1px primary
+  // border, primary text. A getter so the primary follows the tenant.
+  static BoxDecoration get _packCountDecoration => BoxDecoration(
+    color: Colors.white,
+    borderRadius: const BorderRadius.all(Radius.circular(80)),
+    border: Border.all(color: AppColor.kPrimaryColor, width: 1),
   );
 
   @override
@@ -94,8 +97,10 @@ class PackageInfoCard extends StatelessWidget {
               padding: EdgeInsets.symmetric(horizontal: 8.w),
               child: Column(
                 children: [
+                  // Top-aligned so a plan name that wraps grows downwards
+                  // while the icon and "+N Pack" pill stay at the top.
                   Row(
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Container(
                         width: 38.w,
@@ -142,8 +147,12 @@ class PackageInfoCard extends StatelessWidget {
                           ],
                         ),
                       ),
+                      SizedBox(width: 8.w),
+                      // Design: 68×24, radius 80, 1px border, 10 side padding.
+                      // 68 is a minimum so "+ 12 Pack" still fits.
                       Container(
                         height: 24.h,
+                        constraints: BoxConstraints(minWidth: 68.w),
                         alignment: Alignment.center,
                         padding: EdgeInsets.symmetric(horizontal: 10.w),
                         decoration: _packCountDecoration,
@@ -155,8 +164,8 @@ class PackageInfoCard extends StatelessWidget {
                             fontFamily: 'GeneralSans',
                             fontSize: 12.sp,
                             fontWeight: FontWeight.w500,
-                            height: 1.60,
-                            color: AppColor.kBlack80,
+                            height: 1.3,
+                            color: AppColor.kPrimaryColor,
                           ),
                         ),
                       ),

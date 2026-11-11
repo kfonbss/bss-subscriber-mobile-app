@@ -67,7 +67,7 @@ class CommonCheckBox extends StatelessWidget {
                     fontSize: 14.sp,
                     color: AppColor.kBlackHeadingColor,
                     fontWeight: FontWeight.w500,
-                    fontFamily: 'General Sans',
+                    fontFamily: 'GeneralSans',
                   ),
             ),
           ),

@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:flutter_svg/flutter_svg.dart';
 import 'package:intl/intl.dart';
+import 'package:kfon_subscriber/core/constant/app_assets.dart';
 import 'package:kfon_subscriber/core/constant/app_brand.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/pdf_downloader/pdf_preview_and_download.dart';
@@ -189,9 +191,9 @@ class _TransactionHistoryViewState extends State<_TransactionHistoryView> {
                         paymentGateway: txn.paymentGateway,
                         responseMessage: txn.responseMessage,
                         onDownloadInvoice:
-                            txn.fileId.isEmpty
-                                ? null
-                                : () => _openInvoice(context, txn.fileId),
+                            txn.hasInvoice
+                                ? () => _openInvoice(context, txn.fileId)
+                                : null,
                       );
                     },
                   );
@@ -346,13 +348,17 @@ class _FilterBar extends StatelessWidget {
                   width: 36.w,
                   height: 36.w,
                   child: Center(
-                    child: Icon(
-                      Icons.calendar_today_rounded,
-                      size: 18.w,
-                      color:
-                          filter.hasDateRange
-                              ? primary
-                              : AppColor.kTextSecondaryDark,
+                    // Same calendar asset as the My Tickets filter sheet.
+                    child: SvgPicture.asset(
+                      AppAssets.calendar,
+                      width: 20.w,
+                      height: 20.w,
+                      colorFilter: ColorFilter.mode(
+                        filter.hasDateRange
+                            ? primary
+                            : AppColor.kTextSecondaryDark,
+                        BlendMode.srcIn,
+                      ),
                     ),
                   ),
                 ),
@@ -851,10 +857,14 @@ class _DateFilterSheetState extends State<_DateFilterSheet> {
                                 ),
                               ),
                               if (option == _DateOption.custom)
-                                Icon(
-                                  Icons.edit_calendar_rounded,
-                                  size: 18.w,
-                                  color: AppColor.kLabelGrey,
+                                SvgPicture.asset(
+                                  AppAssets.calendar,
+                                  width: 20.w,
+                                  height: 20.w,
+                                  colorFilter: const ColorFilter.mode(
+                                    AppColor.kCoolGrey,
+                                    BlendMode.srcIn,
+                                  ),
                                 ),
                             ],
                           ),
@@ -1131,17 +1141,17 @@ class _TransactionCard extends StatelessWidget {
               ],
             ),
           ),
-          // if (onDownloadInvoice != null) ...[
-          //   SizedBox(height: 12.h),
-          //   SizedBox(
-          //     width: double.infinity,
-          //     child: OutlinedButton(
-          //       onPressed: onDownloadInvoice,
-          //       style: _downloadStyle,
-          //       child: Text(l10n.downloadInvoice, style: _downloadLabelStyle),
-          //     ),
-          //   ),
-          // ],
+          if (onDownloadInvoice != null) ...[
+            SizedBox(height: 12.h),
+            SizedBox(
+              width: double.infinity,
+              child: OutlinedButton(
+                onPressed: onDownloadInvoice,
+                style: _downloadStyle,
+                child: Text(l10n.downloadInvoice, style: _downloadLabelStyle),
+              ),
+            ),
+          ],
         ],
       ),
     );

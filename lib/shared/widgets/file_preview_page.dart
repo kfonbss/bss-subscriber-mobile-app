@@ -146,7 +146,7 @@ class _FilePreviewPageState extends State<FilePreviewPage> {
                   fontWeight: FontWeight.w600,
                   height: 1.3.h,
                   color: AppColor.kPrimaryColor,
-                  fontFamily: 'General Sans',
+                  fontFamily: 'GeneralSans',
                 ),
                 onClicked: () => Navigator.pop(context),
               ),
@@ -195,7 +195,7 @@ class _FilePreviewPageState extends State<FilePreviewPage> {
                 color: Color(0xFF67697A),
                 fontSize: 16.sp,
                 fontWeight: FontWeight.w600,
-                fontFamily: 'General Sans',
+                fontFamily: 'GeneralSans',
               ),
               textAlign: TextAlign.center,
             ),
@@ -205,7 +205,7 @@ class _FilePreviewPageState extends State<FilePreviewPage> {
               style: TextStyle(
                 color: Color(0xFF67697A),
                 fontSize: 13.sp,
-                fontFamily: 'General Sans',
+                fontFamily: 'GeneralSans',
               ),
               textAlign: TextAlign.center,
               maxLines: 3,
@@ -394,7 +394,7 @@ class _SmartFileViewerState extends State<SmartFileViewer> {
               style: TextStyle(
                 color: Color(0xFF67697A),
                 fontSize: 13.sp,
-                fontFamily: 'General Sans',
+                fontFamily: 'GeneralSans',
               ),
               textAlign: TextAlign.center,
               maxLines: 3,
@@ -441,7 +441,7 @@ class _SmartFileViewerState extends State<SmartFileViewer> {
                 style: TextStyle(
                   fontSize: 16.sp,
                   fontWeight: FontWeight.w600,
-                  fontFamily: 'General Sans',
+                  fontFamily: 'GeneralSans',
                 ),
               ),
               SizedBox(height: 16.h),
@@ -456,7 +456,7 @@ class _SmartFileViewerState extends State<SmartFileViewer> {
                 ),
                 textStyle: TextStyle(
                   color: Colors.white,
-                  fontFamily: 'General Sans',
+                  fontFamily: 'GeneralSans',
                 ),
                 onClicked: () async {
                   final uri = Uri.parse(url);
@@ -524,7 +524,7 @@ class _SmartFileViewerState extends State<SmartFileViewer> {
         style: TextStyle(
           color: Color(0xFF67697A),
           fontSize: 14.sp,
-          fontFamily: 'General Sans',
+          fontFamily: 'GeneralSans',
         ),
       ),
     );

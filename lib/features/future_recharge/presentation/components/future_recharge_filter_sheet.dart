@@ -143,6 +143,12 @@ class _FutureRechargeFilterSheetState extends State<FutureRechargeFilterSheet> {
                 ),
               ),
               TextButton(
+                // No built-in padding, so "Clear All" ends on the content edge.
+                style: TextButton.styleFrom(
+                  padding: EdgeInsets.zero,
+                  minimumSize: Size.zero,
+                  tapTargetSize: MaterialTapTargetSize.shrinkWrap,
+                ),
                 onPressed:
                     () => setState(() {
                       _selectedType = RechargeTypeFilter.all;
@@ -154,6 +160,8 @@ class _FutureRechargeFilterSheetState extends State<FutureRechargeFilterSheet> {
                   context.bssSubL10n.clearAll,
                   style: TextStyle(
                     fontSize: 13.sp,
+                    fontWeight: FontWeight.w500,
+                    height: 1.3,
                     color: AppColor.kClearAllColor,
                     fontFamily: 'GeneralSans',
                   ),
@@ -204,7 +212,9 @@ class _FutureRechargeFilterSheetState extends State<FutureRechargeFilterSheet> {
                                 isSelected
                                     ? AppColor.kPrimaryColor
                                     : AppColor.kShimmerBase,
-                            width: isSelected ? 1.5 : 1,
+                            // Same width in both states so the chip doesn't
+                            // grow when selected.
+                            width: 1.5,
                           ),
                         ),
                         child: Text(
@@ -332,9 +342,12 @@ class _FutureRechargeFilterSheetState extends State<FutureRechargeFilterSheet> {
                 isLoading: false,
                 borderRadius: 12,
                 height: 48.h,
+                // Fixed width: without it the label touched the button edges.
+                width: 120.w,
                 textStyle: TextStyle(
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w600,
+                  height: 1.3,
                   fontFamily: 'GeneralSans',
                 ),
                 onClicked: () {
@@ -361,6 +374,8 @@ class _FutureRechargeFilterSheetState extends State<FutureRechargeFilterSheet> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             IconButton(
+              padding: EdgeInsets.zero,
+              constraints: BoxConstraints.tightFor(width: 32.w, height: 32.w),
               icon: const Icon(Icons.chevron_left),
               onPressed:
                   _curYear > 2000 ? () => setState(() => _curYear--) : null,
@@ -375,6 +390,8 @@ class _FutureRechargeFilterSheetState extends State<FutureRechargeFilterSheet> {
               ),
             ),
             IconButton(
+              padding: EdgeInsets.zero,
+              constraints: BoxConstraints.tightFor(width: 32.w, height: 32.w),
               icon: const Icon(Icons.chevron_right),
               onPressed:
                   _curYear < DateTime.now().year
@@ -453,6 +470,8 @@ class _FutureRechargeFilterSheetState extends State<FutureRechargeFilterSheet> {
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             IconButton(
+              padding: EdgeInsets.zero,
+              constraints: BoxConstraints.tightFor(width: 32.w, height: 32.w),
               icon: const Icon(Icons.chevron_left),
               onPressed:
                   _decadeStart > 2000
@@ -469,6 +488,8 @@ class _FutureRechargeFilterSheetState extends State<FutureRechargeFilterSheet> {
               ),
             ),
             IconButton(
+              padding: EdgeInsets.zero,
+              constraints: BoxConstraints.tightFor(width: 32.w, height: 32.w),
               icon: const Icon(Icons.chevron_right),
               onPressed:
                   _decadeStart < maxDecade

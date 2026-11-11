@@ -449,7 +449,7 @@ class _TicketCard extends StatelessWidget {
                         color: AppColor.kTextSecondaryDark,
                         fontSize: 14.sp,
                         fontWeight: FontWeight.w500,
-                        fontFamily: 'General Sans',
+                        fontFamily: 'GeneralSans',
                         height: 1.3.h,
                       ),
                     ),
@@ -460,7 +460,7 @@ class _TicketCard extends StatelessWidget {
                         color: AppColor.kTextSecondaryDark,
                         fontSize: 11.sp,
                         fontWeight: FontWeight.w400,
-                        fontFamily: 'General Sans',
+                        fontFamily: 'GeneralSans',
                         height: 1.3.h,
                       ),
                     ),
@@ -471,7 +471,7 @@ class _TicketCard extends StatelessWidget {
                         color: AppColor.kHintGrey,
                         fontSize: 10.sp,
                         fontWeight: FontWeight.w500,
-                        fontFamily: 'General Sans',
+                        fontFamily: 'GeneralSans',
                         height: 1.3.h,
                       ),
                     ),
@@ -496,7 +496,7 @@ class _TicketCard extends StatelessWidget {
                     style: TextStyle(
                       color: AppColor.kTextSecondary,
                       fontSize: 10.sp,
-                      fontFamily: 'General Sans',
+                      fontFamily: 'GeneralSans',
                       fontWeight: FontWeight.w400,
                       height: 1.3.h,
                     ),
@@ -543,7 +543,7 @@ class _TicketCard extends StatelessWidget {
                         Text(
                           _getPriorityText(),
                           style: TextStyle(
-                            fontFamily: 'General Sans',
+                            fontFamily: 'GeneralSans',
                             color: _getPriorityColor(),
                             fontSize: 12.sp,
                             fontWeight: FontWeight.w500,
@@ -583,7 +583,7 @@ class _TicketCard extends StatelessWidget {
                   _getStatusText(context).toUpperCase(),
                   textAlign: TextAlign.center,
                   style: TextStyle(
-                    fontFamily: 'General Sans',
+                    fontFamily: 'GeneralSans',
                     color: _getStatusColor(),
                     fontSize: 14.sp,
                     fontWeight: FontWeight.w500,

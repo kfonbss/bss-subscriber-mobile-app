@@ -173,7 +173,7 @@ class CommonTextField extends StatelessWidget {
                 fontSize: 14.sp,
                 fontWeight: FontWeight.w400,
                 color: const Color(0xFF0F1121),
-                fontFamily: 'General Sans',
+                fontFamily: 'GeneralSans',
               ),
           decoration: InputDecoration(
             hintText: hintText,
@@ -184,7 +184,7 @@ class CommonTextField extends StatelessWidget {
                   fontSize: 14.sp,
                   fontWeight: FontWeight.w400,
                   color: const Color(0xFFA5A5A5),
-                  fontFamily: 'General Sans',
+                  fontFamily: 'GeneralSans',
                 ),
             prefixIcon: prefixIcon,
             suffixIcon: suffixIcon,

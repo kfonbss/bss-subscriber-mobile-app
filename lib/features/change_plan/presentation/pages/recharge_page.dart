@@ -892,7 +892,8 @@ class _RechargePageState extends State<RechargePage> {
         );
 
     return _whiteCard(
-      padding: EdgeInsets.all(15.w),
+      // Same inset as Package Details so the card titles line up.
+      padding: EdgeInsets.all(17.w),
       borderColor: AppColor.kSlate100,
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
@@ -1060,17 +1061,14 @@ class _RechargePageState extends State<RechargePage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
       children: [
-        // Design: heading inset 4 like the section labels, 12 above content.
-        Padding(
-          padding: EdgeInsets.symmetric(horizontal: 4.w),
-          child: Text(
-            l10n.selectPaymentGateway,
-            style: _textStyle(
-              16,
-              FontWeight.w600,
-              AppColor.kTextSecondaryDark,
-              height: 1.3,
-            ),
+        // Flush with the card edges above/below (was inset 4).
+        Text(
+          l10n.selectPaymentGateway,
+          style: _textStyle(
+            16,
+            FontWeight.w600,
+            AppColor.kTextSecondaryDark,
+            height: 1.3,
           ),
         ),
         SizedBox(height: 12.h),
@@ -1089,7 +1087,7 @@ class _RechargePageState extends State<RechargePage> {
 
   Widget _sectionLabel(String text) {
     return Padding(
-      padding: EdgeInsets.symmetric(horizontal: 4.w),
+      padding: EdgeInsets.zero,
       child: Text(
         text,
         style: _textStyle(
@@ -1169,10 +1167,8 @@ class _RechargePageState extends State<RechargePage> {
             ),
           ),
           _pill(
-            color:AppColor.kDiscountGreenBg,
-            border: Border.all(
-              color:AppColor.kSufficientBorder,
-            ),
+            color: AppColor.kDiscountGreenBg,
+            border: Border.all(color: AppColor.kSufficientBorder),
             padding: EdgeInsets.symmetric(horizontal: 9.w, vertical: 3.h),
             child: Text(
               sufficient ? l10n.sufficient : l10n.insufficient,
@@ -1239,6 +1235,28 @@ class _RechargePageState extends State<RechargePage> {
         );
       case GatewayStatus.loaded:
         final gateways = state.gateways;
+        if (gateways.isEmpty) {
+          // Without this the heading sat above an empty gap.
+          return Container(
+            width: double.infinity,
+            padding: EdgeInsets.symmetric(horizontal: 16.w, vertical: 20.h),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              border: Border.all(color: AppColor.kCardBorderBeige),
+              borderRadius: BorderRadius.circular(16),
+            ),
+            child: Text(
+              context.bssSubL10n.noPaymentGatewaysAvailable,
+              textAlign: TextAlign.center,
+              style: _textStyle(
+                14,
+                FontWeight.w500,
+                AppColor.kTextSecondary,
+                height: 1.3,
+              ),
+            ),
+          );
+        }
         // Two cards per row, as in the design.
         return Column(
           children: [
@@ -1321,9 +1339,6 @@ class _RechargePageState extends State<RechargePage> {
       ),
     );
   }
-
-
-
 
   /// [onTap] null = option unavailable (shown dimmed, not tappable).
   Widget _selectableCard({

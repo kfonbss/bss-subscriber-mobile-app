@@ -56,7 +56,7 @@ class _ChatPageState extends State<ChatPage> {
                           ? AppColor.kLightSkyBlue
                           : AppColor.kStoneGrey,
                       fontSize: 12,
-                      fontFamily: 'General Sans',
+                      fontFamily: 'GeneralSans',
                       fontWeight: FontWeight.w700,
                     ),
                   ),
@@ -65,7 +65,7 @@ class _ChatPageState extends State<ChatPage> {
               style: TextStyle(
                 color: isOwnMessage ? Colors.white : AppColor.kCharcoalDark,
                 fontSize: 14,
-                fontFamily: 'General Sans',
+                fontFamily: 'GeneralSans',
                 fontWeight: FontWeight.w400,
                 height: 1.43,
               ),
@@ -167,7 +167,7 @@ class _ChatPageState extends State<ChatPage> {
                                     hintStyle: TextStyle(
                                       color: AppColor.kCharcoalDark,
                                       fontSize: 14,
-                                      fontFamily: 'General Sans',
+                                      fontFamily: 'GeneralSans',
                                       fontWeight: FontWeight.w400,
                                       height: 1.43,
                                     ),
@@ -177,7 +177,7 @@ class _ChatPageState extends State<ChatPage> {
                                   style: TextStyle(
                                     color: AppColor.kCharcoalDark,
                                     fontSize: 14,
-                                    fontFamily: 'General Sans',
+                                    fontFamily: 'GeneralSans',
                                     fontWeight: FontWeight.w400,
                                     height: 1.43,
                                   ),
