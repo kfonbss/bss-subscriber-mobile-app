@@ -291,6 +291,13 @@ class _DetailsCard extends StatelessWidget {
                 (index) => Row(
                   spacing: 20,
                   mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                  // Top-align text values so the label sits on the first line
+                  // of multi-line values (e.g. Address); keep widget values
+                  // (status dot, verified icon) vertically centred.
+                  crossAxisAlignment:
+                      data.values.elementAt(index) is String
+                          ? CrossAxisAlignment.start
+                          : CrossAxisAlignment.center,
                   children: [
                     Text(data.keys.elementAt(index), style: _labelStyle),
                     data.values.elementAt(index) is String
