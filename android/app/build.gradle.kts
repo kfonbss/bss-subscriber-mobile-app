@@ -50,3 +50,15 @@ dependencies {
 flutter {
     source = "../.."
 }
+
+// App name (@string/app_name) and native splash follow the brand
+// (AppBrand / --dart-define=BRAND); applied before resources are packaged.
+val flutterSdkPath: String? = rootProject.file("local.properties").takeIf { it.exists() }
+    ?.readLines()?.firstOrNull { it.startsWith("flutter.sdk=") }?.substringAfter("=")
+val applyBrand = tasks.register<Exec>("applyBrand") {
+    workingDir = rootProject.projectDir.parentFile
+    commandLine("bash", "tool/apply_brand.sh")
+    environment("DART_DEFINES", (project.findProperty("dart-defines") as String?) ?: "")
+    flutterSdkPath?.let { environment("FLUTTER_ROOT", it) }
+}
+tasks.matching { it.name == "preBuild" }.configureEach { dependsOn(applyBrand) }

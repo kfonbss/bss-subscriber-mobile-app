@@ -27,6 +27,10 @@ import 'package:kfon_subscriber/features/notfication/domain/respository/notifica
 import 'package:kfon_subscriber/features/profile/data/repository/profile_repository_imp.dart';
 import 'package:kfon_subscriber/features/profile/data/repository/railwire_profile_repository_imp.dart';
 import 'package:kfon_subscriber/features/profile/domain/repository/profile_repository.dart';
+import 'package:kfon_subscriber/features/self_care/data/repository/connected_devices_repository_imp.dart';
+import 'package:kfon_subscriber/features/self_care/data/repository/speed_test_repository_imp.dart';
+import 'package:kfon_subscriber/features/self_care/domain/repository/connected_devices_repository.dart';
+import 'package:kfon_subscriber/features/self_care/domain/repository/speed_test_repository.dart';
 import 'package:kfon_subscriber/features/ticket/data/repository/ticket_repository_imp.dart';
 import 'package:kfon_subscriber/features/ticket/data/repository/railwire_ticket_repository_imp.dart';
 import 'package:kfon_subscriber/features/ticket/domain/repository/ticket_repository.dart';
@@ -98,6 +102,10 @@ void setUpServiceLocator() {
   );
   sl.registerLazySingleton<TenantRepository>(() => TenantRepositoryImpl());
   sl.registerLazySingleton<AutopayRepository>(() => AutopayRepositoryImp());
+  sl.registerLazySingleton<SpeedTestRepository>(() => SpeedTestRepositoryImp());
+  sl.registerLazySingleton<ConnectedDevicesRepository>(
+    () => ConnectedDevicesRepositoryImp(),
+  );
   sl.registerLazySingleton<NotificationRepository>(
     () =>
         ApiUrls.isRailwire

@@ -1,0 +1,13 @@
+# Native splash for the KFON brand.
+# Don't run flutter_native_splash directly; use: tool/apply_brand.sh kfon
+# Colour must match AppColor._kfonPrimary (lib/core/constant/constant_colors.dart).
+flutter_native_splash:
+  android: true
+  ios: true
+  web: true
+  color: "#8D0247"
+  image: assets/images/kfon/kfon_splash_logo.png
+
+  android_12:
+    color: "#8D0247"
+    image: assets/images/kfon/kfon_splash_logo_android.png

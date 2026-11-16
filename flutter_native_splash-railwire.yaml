@@ -1,0 +1,13 @@
+# Native splash for the RailWire brand.
+# Don't run flutter_native_splash directly; use: tool/apply_brand.sh railwire
+# Colour must match AppColor._railwirePrimary (lib/core/constant/constant_colors.dart).
+flutter_native_splash:
+  android: true
+  ios: true
+  web: true
+  color: "#26307A"
+  image: assets/images/splash_logo.png
+
+  android_12:
+    color: "#26307A"
+    image: assets/images/splash_logo_android.png

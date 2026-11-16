@@ -2,11 +2,17 @@ import 'dart:async';
 import 'dart:math';
 
 import 'package:flutter/material.dart';
+import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:google_fonts/google_fonts.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
+import 'package:kfon_subscriber/features/self_care/domain/entity/speed_test_entity.dart';
+import 'package:kfon_subscriber/features/self_care/domain/repository/speed_test_repository.dart';
+import 'package:kfon_subscriber/features/self_care/presentation/bloc/speed_test_bloc.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
+import 'package:kfon_subscriber/service_locator.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
 import 'package:kfon_subscriber/shared/widgets/tenant_svg_color_mapper.dart';
 import 'package:syncfusion_flutter_gauges/gauges.dart';
@@ -22,52 +28,100 @@ class SpeedTestPage extends StatefulWidget {
 }
 
 class _SpeedTestPageState extends State<SpeedTestPage> {
-  // Dummy speed-test state (no live test service is wired yet).
   static const _tickInterval = Duration(milliseconds: 100);
-  static const _totalTicks = 50;
+  static const _settleTicks = 8;
+  static const _placeholder = '--';
   final _random = Random();
+  late final SpeedTestBloc _bloc;
   Timer? _timer;
   bool _isRunning = false;
-  double _gaugeSpeed = 80;
-  int _upload = 30;
-  int _download = 30;
-  int _ping = 30;
+  double _gaugeSpeed = 0;
+  SpeedTestEntity? _result;
+
+  @override
+  void initState() {
+    super.initState();
+    _bloc = SpeedTestBloc(repository: sl<SpeedTestRepository>());
+  }
 
   @override
   void dispose() {
     _timer?.cancel();
+    _bloc.close();
     super.dispose();
   }
 
   void _startSpeedTest() {
     if (_isRunning) return;
-    final target = 40 + _random.nextInt(81).toDouble();
-    var tick = 0;
     setState(() {
       _isRunning = true;
       _gaugeSpeed = 0;
     });
-    _timer = Timer.periodic(_tickInterval, (timer) {
+    _startMeasuringAnimation();
+    _bloc.add(const RunSpeedTest());
+  }
+
+  /// Keeps the needle moving while the API measures the connection, since
+  /// the server only returns the final numbers.
+  void _startMeasuringAnimation() {
+    _timer?.cancel();
+    var tick = 0;
+    _timer = Timer.periodic(_tickInterval, (_) {
       tick++;
-      if (tick >= _totalTicks) {
-        timer.cancel();
-        if (!mounted) return;
-        setState(() {
-          _isRunning = false;
-          _gaugeSpeed = target;
-          _download = target.round();
-          _upload = (target * (0.5 + _random.nextDouble() * 0.4)).round();
-          _ping = 5 + _random.nextInt(40);
-        });
-        return;
-      }
-      final progress = tick / _totalTicks;
+      final rise = (tick / 20).clamp(0.0, 1.0);
       final jitter = (_random.nextDouble() - 0.5) * 20;
       setState(() {
-        _gaugeSpeed = (target * sin(progress * pi / 2) + jitter).clamp(0, 140);
+        _gaugeSpeed = (60 * sin(rise * pi / 2) + jitter).clamp(0, 140);
       });
     });
   }
+
+  /// Eases the needle from where it is to [target].
+  void _settleGauge(double target) {
+    _timer?.cancel();
+    final from = _gaugeSpeed;
+    var tick = 0;
+    _timer = Timer.periodic(_tickInterval, (timer) {
+      tick++;
+      final t = Curves.easeOut.transform(tick / _settleTicks);
+      setState(() => _gaugeSpeed = from + (target - from) * t);
+      if (tick >= _settleTicks) timer.cancel();
+    });
+  }
+
+  void _onSpeedTestState(BuildContext context, SpeedTestState state) {
+    switch (state.status) {
+      case SpeedTestStatus.loaded:
+        final result = state.result!;
+        setState(() {
+          _isRunning = false;
+          _result = result;
+        });
+        _settleGauge(result.downloadMbps.clamp(0, 140).toDouble());
+      case SpeedTestStatus.error:
+        setState(() => _isRunning = false);
+        _settleGauge(_result?.downloadMbps.clamp(0, 140).toDouble() ?? 0);
+        DialogUtil().showCustomSnackbar(
+          context: context,
+          content: state.error ?? 'Speed test failed',
+          isError: true,
+        );
+      case SpeedTestStatus.initial:
+      case SpeedTestStatus.loading:
+        break;
+    }
+  }
+
+  /// 1 decimal below 100 (e.g. 45.3), whole numbers above; no trailing ".0".
+  static String _formatSpeed(double? value) {
+    if (value == null) return _placeholder;
+    if (value >= 100) return value.round().toString();
+    final fixed = value.toStringAsFixed(1);
+    return fixed.endsWith('.0') ? fixed.substring(0, fixed.length - 2) : fixed;
+  }
+
+  static String _orPlaceholder(String? value) =>
+      (value == null || value.isEmpty) ? _placeholder : value;
 
   // ── Static decorations ───────────────────────────────────────────────────────
   static const _resultsCardDecoration = BoxDecoration(
@@ -151,187 +205,204 @@ class _SpeedTestPageState extends State<SpeedTestPage> {
       extendBodyBehindAppBar: true,
       circleColor: Colors.white,
       titleColor: Colors.white,
-      body: Column(
-        children: [
-          Stack(
-            alignment: Alignment.topCenter,
-            clipBehavior: Clip.none,
-            children: <Widget>[
-              SizedBox(
-                width: double.infinity,
-                height: _headerHeight,
-                child: SvgPicture(
-                  SvgAssetLoader(
-                    AppAssets.speedTestBackground,
-                    colorMapper: TenantSvgColorMapper(),
+      body: BlocListener<SpeedTestBloc, SpeedTestState>(
+        bloc: _bloc,
+        listener: _onSpeedTestState,
+        child: Column(
+          children: [
+            Stack(
+              alignment: Alignment.topCenter,
+              clipBehavior: Clip.none,
+              children: <Widget>[
+                SizedBox(
+                  width: double.infinity,
+                  height: _headerHeight,
+                  child: SvgPicture(
+                    SvgAssetLoader(
+                      AppAssets.speedTestBackground,
+                      colorMapper: TenantSvgColorMapper(),
+                    ),
+                    fit: BoxFit.fill,
                   ),
-                  fit: BoxFit.fill,
                 ),
-              ),
-              Padding(
-                padding: EdgeInsets.only(
-                  left: 20,
-                  right: 20,
-                  top: _headerEdge - _serverCardHeight / 2,
-                ),
-                child: Card(
-                  // No default 4 margin, so the card is the full 335 wide.
-                  margin: EdgeInsets.zero,
-                  shape: const RoundedRectangleBorder(
-                    borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                Padding(
+                  padding: EdgeInsets.only(
+                    left: 20,
+                    right: 20,
+                    top: _headerEdge - _serverCardHeight / 2,
                   ),
-                  color: Colors.white,
-                  elevation: 4.0,
-                  child: Container(
-                    height: _serverCardHeight,
-                    padding: const EdgeInsets.all(16),
-                    child: Row(
-                      mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                      crossAxisAlignment: CrossAxisAlignment.center,
-                      children: [
-                        _ServerLocItem(
-                          heading: l10n.server,
-                          data: 'railwire.in',
-                          icon: AppAssets.glob,
+                  child: Card(
+                    // No default 4 margin, so the card is the full 335 wide.
+                    margin: EdgeInsets.zero,
+                    shape: const RoundedRectangleBorder(
+                      borderRadius: BorderRadius.all(Radius.circular(16.0)),
+                    ),
+                    color: Colors.white,
+                    elevation: 4.0,
+                    child: Container(
+                      height: _serverCardHeight,
+                      padding: const EdgeInsets.all(16),
+                      child: Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        crossAxisAlignment: CrossAxisAlignment.center,
+                        children: [
+                          _ServerLocItem(
+                            heading: l10n.server,
+                            data: _orPlaceholder(_result?.server),
+                            icon: AppAssets.glob,
+                          ),
+                          _ServerLocItem(
+                            heading: l10n.location,
+                            data: _orPlaceholder(_result?.location),
+                            icon: AppAssets.location,
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                ),
+              ],
+            ),
+            Expanded(
+              child: Padding(
+                padding: EdgeInsets.fromLTRB(
+                  20,
+                  _serverCardHeight / 2 - (_headerHeight - _headerEdge),
+                  20,
+                  0,
+                ),
+                child: SfRadialGauge(
+                  axes: <RadialAxis>[
+                    RadialAxis(
+                      minimum: 0,
+                      maximum: 8,
+                      interval: 1,
+                      // Labels are drawn by _scaleAnnotations (edge-anchored
+                      // for an even gap to the arc, 140 included).
+                      showLabels: false,
+                      showTicks: false,
+                      startAngle: _gaugeStartAngle,
+                      endAngle: _gaugeEndAngle,
+                      canScaleToFit: true,
+                      annotations: _scaleAnnotations,
+                      pointers: <GaugePointer>[
+                        NeedlePointer(
+                          tailStyle: TailStyle(
+                            color: AppColor.kFailedRed,
+                            borderWidth: 10,
+                          ),
+                          value: gaugeValue,
+                          needleColor: AppColor.kPrimaryColor,
+                          knobStyle: KnobStyle(
+                            color: AppColor.kPrimaryColor,
+                            borderWidth: 0,
+                          ),
+                          gradient: LinearGradient(
+                            colors: [
+                              AppColor.kPrimaryColor,
+                              AppColor.kSecondaryBackgroundColor,
+                            ],
+                          ),
                         ),
-                        _ServerLocItem(
-                          heading: l10n.location,
-                          data: 'Ernakulam',
-                          icon: AppAssets.location,
+                        RangePointer(
+                          value: gaugeValue,
+                          cornerStyle: CornerStyle.bothCurve,
+                          // Same factor as the axis line so the progress
+                          // arc and track are equally thick.
+                          width: _gaugeArcThickness,
+                          color: AppColor.kPrimaryColor,
+                          sizeUnit: GaugeSizeUnit.factor,
                         ),
                       ],
-                    ),
-                  ),
-                ),
-              ),
-            ],
-          ),
-          Expanded(
-            child: Padding(
-              padding: EdgeInsets.fromLTRB(
-                20,
-                _serverCardHeight / 2 - (_headerHeight - _headerEdge),
-                20,
-                0,
-              ),
-              child: SfRadialGauge(
-                axes: <RadialAxis>[
-                  RadialAxis(
-                    minimum: 0,
-                    maximum: 8,
-                    interval: 1,
-                    // Labels are drawn by _scaleAnnotations (edge-anchored
-                    // for an even gap to the arc, 140 included).
-                    showLabels: false,
-                    showTicks: false,
-                    startAngle: _gaugeStartAngle,
-                    endAngle: _gaugeEndAngle,
-                    canScaleToFit: true,
-                    annotations: _scaleAnnotations,
-                    pointers: <GaugePointer>[
-                      NeedlePointer(
-                        tailStyle: TailStyle(
-                          color: AppColor.kFailedRed,
-                          borderWidth: 10,
-                        ),
-                        value: gaugeValue,
-                        needleColor: AppColor.kPrimaryColor,
-                        knobStyle: KnobStyle(
-                          color: AppColor.kPrimaryColor,
-                          borderWidth: 0,
-                        ),
-                        gradient: LinearGradient(
-                          colors: [
-                            AppColor.kPrimaryColor,
-                            AppColor.kSecondaryBackgroundColor,
-                          ],
-                        ),
-                      ),
-                      RangePointer(
-                        value: gaugeValue,
+                      axisLineStyle: AxisLineStyle(
+                        thickness: _gaugeArcThickness,
                         cornerStyle: CornerStyle.bothCurve,
-                        // Same factor as the axis line so the progress
-                        // arc and track are equally thick.
-                        width: _gaugeArcThickness,
-                        color: AppColor.kPrimaryColor,
-                        sizeUnit: GaugeSizeUnit.factor,
-                      ),
-                    ],
-                    axisLineStyle: AxisLineStyle(
-                      thickness: _gaugeArcThickness,
-                      cornerStyle: CornerStyle.bothCurve,
-                      color: Colors.white,
-                      thicknessUnit: GaugeSizeUnit.factor,
-                    ),
-                  ),
-                ],
-              ),
-            ),
-          ),
-          Column(
-            children: [
-              // Design: 68 tall, content 16 inside, #EAEAEA border.
-              // minHeight (not a fixed height) so large text scales grow
-              // the card instead of clipping it.
-              Container(
-                constraints: BoxConstraints(minHeight: 68.h),
-                margin: const EdgeInsets.symmetric(horizontal: 20),
-                padding: const EdgeInsets.symmetric(
-                  horizontal: 16,
-                  vertical: 12,
-                ),
-                decoration: _resultsCardDecoration,
-                child: Row(
-                  mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                  crossAxisAlignment: CrossAxisAlignment.center,
-                  children: [
-                    Flexible(
-                      child: _SpeedResultItem(
-                        heading: l10n.uploadSpeed,
-                        data: l10n.mbPerSecond('$_upload'),
-                        icon: AppAssets.upload,
-                      ),
-                    ),
-                    Flexible(
-                      child: _SpeedResultItem(
-                        heading: l10n.downloadSpeed,
-                        data: l10n.mbPerSecond('$_download'),
-                        icon: AppAssets.download,
-                      ),
-                    ),
-                    Flexible(
-                      child: _SpeedResultItem(
-                        heading: l10n.ping,
-                        data: l10n.msValue('$_ping'),
-                        icon: AppAssets.ping,
+                        color: Colors.white,
+                        thicknessUnit: GaugeSizeUnit.factor,
                       ),
                     ),
                   ],
                 ),
               ),
-              // Design: results card ends at 596, button at 694–746.
-              Padding(
-                padding: EdgeInsets.fromLTRB(20, 98.h, 20, 32.h + bottomInset),
-                child: SizedBox(
-                  width: double.infinity,
-                  child: PrimaryButton(
-                    label: l10n.startSpeedTest,
-                    isLoading: _isRunning,
-                    onClicked: _startSpeedTest,
-                    borderRadius: 10,
-                    height: 52.h,
-                    textStyle: TextStyle(
-                      fontSize: 14.sp,
-                      fontFamily: 'GeneralSans',
-                      fontWeight: FontWeight.w600,
-                      height: 1.3,
+            ),
+            Column(
+              children: [
+                // Design: 68 tall, content 16 inside, #EAEAEA border.
+                // minHeight (not a fixed height) so large text scales grow
+                // the card instead of clipping it.
+                Container(
+                  constraints: BoxConstraints(minHeight: 68.h),
+                  margin: const EdgeInsets.symmetric(horizontal: 20),
+                  padding: const EdgeInsets.symmetric(
+                    horizontal: 16,
+                    vertical: 12,
+                  ),
+                  decoration: _resultsCardDecoration,
+                  child: Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                    crossAxisAlignment: CrossAxisAlignment.center,
+                    children: [
+                      Flexible(
+                        child: _SpeedResultItem(
+                          heading: l10n.uploadSpeed,
+                          data: l10n.mbPerSecond(
+                            _formatSpeed(_result?.uploadMbps),
+                          ),
+                          icon: AppAssets.upload,
+                        ),
+                      ),
+                      Flexible(
+                        child: _SpeedResultItem(
+                          heading: l10n.downloadSpeed,
+                          data: l10n.mbPerSecond(
+                            _formatSpeed(_result?.downloadMbps),
+                          ),
+                          icon: AppAssets.download,
+                        ),
+                      ),
+                      Flexible(
+                        child: _SpeedResultItem(
+                          heading: l10n.ping,
+                          data: l10n.msValue(
+                            _result == null
+                                ? _placeholder
+                                : _result!.latencyMs.round().toString(),
+                          ),
+                          icon: AppAssets.ping,
+                        ),
+                      ),
+                    ],
+                  ),
+                ),
+                // Design: results card ends at 596, button at 694–746.
+                Padding(
+                  padding: EdgeInsets.fromLTRB(
+                    20,
+                    98.h,
+                    20,
+                    32.h + bottomInset,
+                  ),
+                  child: SizedBox(
+                    width: double.infinity,
+                    child: PrimaryButton(
+                      label: l10n.startSpeedTest,
+                      isLoading: _isRunning,
+                      onClicked: _startSpeedTest,
+                      borderRadius: 10,
+                      height: 52.h,
+                      textStyle: TextStyle(
+                        fontSize: 14.sp,
+                        fontFamily: 'GeneralSans',
+                        fontWeight: FontWeight.w600,
+                        height: 1.3,
+                      ),
                     ),
                   ),
                 ),
-              ),
-            ],
-          ),
-        ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }

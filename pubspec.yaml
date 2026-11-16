@@ -78,16 +78,8 @@ dependency_overrides:
   package_info_plus: ^8.1.2
 
 
-flutter_native_splash:
-  android: true
-  ios: true
-  web: true
-  color: "#26307A"
-  image: assets/images/splash_logo.png
-
-  android_12:
-    color: "#26307A"
-    image: assets/images/splash_logo_android.png
+# Native splash is configured per brand in flutter_native_splash-<brand>.yaml.
+# Regenerate after switching brand: tool/apply_brand.sh
 
 
 

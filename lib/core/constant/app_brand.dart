@@ -11,7 +11,7 @@ class AppBrand {
   /// value, builds RailWire.
   static const String brand = String.fromEnvironment(
     'BRAND',
-    defaultValue: 'railwire' //'kfon', //'railwire',
+    defaultValue: 'kfon' //'kfon', //'railwire',
   );
 
   static const bool isKfon = brand == 'kfon';

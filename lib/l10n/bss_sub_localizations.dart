@@ -425,8 +425,26 @@ abstract class BssSubLocalizations {
   /// No description provided for @daysLeft.
   ///
   /// In en, this message translates to:
-  /// **'{days} Days left'**
-  String daysLeft(String days);
+  /// **'{days, plural, =1{1 Day left} other{{days} Days left}}'**
+  String daysLeft(int days);
+
+  /// No description provided for @planExpired.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired'**
+  String get planExpired;
+
+  /// No description provided for @planExpiresToday.
+  ///
+  /// In en, this message translates to:
+  /// **'Expires today'**
+  String get planExpiresToday;
+
+  /// No description provided for @expiredOnDate.
+  ///
+  /// In en, this message translates to:
+  /// **'Expired on {date}'**
+  String expiredOnDate(String date);
 
   /// No description provided for @amount.
   ///
@@ -1615,6 +1633,36 @@ abstract class BssSubLocalizations {
   /// In en, this message translates to:
   /// **'last sync: {time}'**
   String lastSync(String time);
+
+  /// No description provided for @justNow.
+  ///
+  /// In en, this message translates to:
+  /// **'just now'**
+  String get justNow;
+
+  /// No description provided for @minutesAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 min ago} other{{count} mins ago}}'**
+  String minutesAgo(int count);
+
+  /// No description provided for @hoursAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 hour ago} other{{count} hours ago}}'**
+  String hoursAgo(int count);
+
+  /// No description provided for @daysAgo.
+  ///
+  /// In en, this message translates to:
+  /// **'{count, plural, =1{1 day ago} other{{count} days ago}}'**
+  String daysAgo(int count);
+
+  /// No description provided for @noConnectedDevices.
+  ///
+  /// In en, this message translates to:
+  /// **'No devices are connected right now'**
+  String get noConnectedDevices;
 
   /// No description provided for @selfCareTools.
   ///

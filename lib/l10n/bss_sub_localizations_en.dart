@@ -193,8 +193,25 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   }
 
   @override
-  String daysLeft(String days) {
-    return '$days Days left';
+  String daysLeft(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days Days left',
+      one: '1 Day left',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get planExpired => 'Expired';
+
+  @override
+  String get planExpiresToday => 'Expires today';
+
+  @override
+  String expiredOnDate(String date) {
+    return 'Expired on $date';
   }
 
   @override
@@ -841,6 +858,45 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String lastSync(String time) {
     return 'last sync: $time';
   }
+
+  @override
+  String get justNow => 'just now';
+
+  @override
+  String minutesAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count mins ago',
+      one: '1 min ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count hours ago',
+      one: '1 hour ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String daysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count days ago',
+      one: '1 day ago',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noConnectedDevices => 'No devices are connected right now';
 
   @override
   String get selfCareTools => 'Self-Care/Tools';

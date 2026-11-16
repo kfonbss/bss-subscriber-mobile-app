@@ -1,6 +1,6 @@
 {
-    "name": "kfon_subscriber",
-    "short_name": "kfon_subscriber",
+    "name": "RailWire Subscriber",
+    "short_name": "RailWire Subscriber",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",

@@ -72,6 +72,10 @@ class ApiUrls {
       '$subscriberManagementService/mobile/subscriber/home';
   static String subscriberDataUsageURL({required String subscriberUuid}) =>
       '$subscriberManagementService/mobile/subscribers/$subscriberUuid/data-usage';
+  static String speedTestURL({required String subscriberUuid}) =>
+      '$subscriberManagementService/mobile/subscribers/$subscriberUuid/speed-test';
+  static String connectedDevicesURL({required String subscriberUuid}) =>
+      '$subscriberManagementService/mobile/subscribers/$subscriberUuid/connected-devices';
   // static const String listPackagesURL =
   //     '$packageManagementService/mobile/packages';
   static String get packageTabURL =>

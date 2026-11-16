@@ -127,10 +127,20 @@
       }
     }
   },
-  "daysLeft": "{days} दिन शेष",
+  "daysLeft": "{days, plural, other{{days} दिन शेष}}",
   "@daysLeft": {
     "placeholders": {
       "days": {
+        "type": "int"
+      }
+    }
+  },
+  "planExpired": "समाप्त",
+  "planExpiresToday": "आज समाप्त",
+  "expiredOnDate": "{date} को समाप्त",
+  "@expiredOnDate": {
+    "placeholders": {
+      "date": {
         "type": "String"
       }
     }
@@ -438,6 +448,14 @@
   "deviceManagement": "डिवाइस प्रबंधन",
   "connectedDevices": "कनेक्ट किए गए डिवाइस",
   "lastSync": "अंतिम सिंक: {time}",
+  "justNow": "अभी",
+  "minutesAgo": "{count, plural, other{{count} मिनट पहले}}",
+  "@minutesAgo": { "placeholders": { "count": { "type": "int" } } },
+  "hoursAgo": "{count, plural, other{{count} घंटे पहले}}",
+  "@hoursAgo": { "placeholders": { "count": { "type": "int" } } },
+  "daysAgo": "{count, plural, other{{count} दिन पहले}}",
+  "@daysAgo": { "placeholders": { "count": { "type": "int" } } },
+  "noConnectedDevices": "अभी कोई डिवाइस कनेक्ट नहीं है",
   "@lastSync": {
     "placeholders": {
       "time": {

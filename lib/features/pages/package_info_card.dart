@@ -4,6 +4,7 @@ import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/active_package_details/domain/entity/active_packages_details_entity.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
+import 'package:kfon_subscriber/shared/widgets/plan_validity_badge.dart';
 
 class PackageInfoCard extends StatelessWidget {
   final ActivePackagesDetailsEntity? entity;
@@ -20,11 +21,6 @@ class PackageInfoCard extends StatelessWidget {
     borderRadius: BorderRadius.all(Radius.circular(12)),
   );
 
-  static const _daysLeftDecoration = BoxDecoration(
-    color: AppColor.kAutopayButtonColor,
-    borderRadius: BorderRadius.all(Radius.circular(50)),
-  );
-
   // Same outlined look as the home "+N Pack" button: white, 1px primary
   // border, primary text. A getter so the primary follows the tenant.
   static BoxDecoration get _packCountDecoration => BoxDecoration(
@@ -32,6 +28,17 @@ class PackageInfoCard extends StatelessWidget {
     borderRadius: const BorderRadius.all(Radius.circular(80)),
     border: Border.all(color: AppColor.kPrimaryColor, width: 1),
   );
+
+  static final _dateFmt = DateFormat('MMM dd, yyyy');
+
+  /// "Active until …", or "Expired on …" once the plan has lapsed.
+  static String _validityText(BuildContext context, DateTime activeUntil) {
+    final l10n = context.bssSubL10n;
+    final date = _dateFmt.format(activeUntil);
+    return PlanValidityBadge.isExpired(activeUntil)
+        ? l10n.expiredOnDate(date)
+        : l10n.activeUntilDate(date);
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -72,22 +79,7 @@ class PackageInfoCard extends StatelessWidget {
                     ),
                   ),
                   const Spacer(),
-                  Container(
-                    height: 28.h,
-                    alignment: Alignment.center,
-                    padding: EdgeInsets.symmetric(horizontal: 16.w),
-                    decoration: _daysLeftDecoration,
-                    child: Text(
-                      context.bssSubL10n.daysLeft('${entity!.daysLeft}'),
-                      style: TextStyle(
-                        fontFamily: 'GeneralSans',
-                        fontSize: 12.sp,
-                        fontWeight: FontWeight.w600,
-                        height: 1.30,
-                        color: AppColor.kTextSecondaryDark,
-                      ),
-                    ),
-                  ),
+                  PlanValidityBadge(activeUntil: entity!.activeUntil),
                 ],
               ),
             ),
@@ -131,11 +123,7 @@ class PackageInfoCard extends StatelessWidget {
                               ),
                             ),
                             Text(
-                              context.bssSubL10n.activeUntilDate(
-                                DateFormat(
-                                  'MMM dd, yyyy',
-                                ).format(entity!.activeUntil),
-                              ),
+                              _validityText(context, entity!.activeUntil),
                               style: TextStyle(
                                 fontFamily: 'GeneralSans',
                                 fontSize: 10.sp,

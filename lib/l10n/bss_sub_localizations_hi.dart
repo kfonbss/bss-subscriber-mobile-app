@@ -195,8 +195,24 @@ class BssSubLocalizationsHi extends BssSubLocalizations {
   }
 
   @override
-  String daysLeft(String days) {
-    return '$days दिन शेष';
+  String daysLeft(int days) {
+    String _temp0 = intl.Intl.pluralLogic(
+      days,
+      locale: localeName,
+      other: '$days दिन शेष',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get planExpired => 'समाप्त';
+
+  @override
+  String get planExpiresToday => 'आज समाप्त';
+
+  @override
+  String expiredOnDate(String date) {
+    return '$date को समाप्त';
   }
 
   @override
@@ -847,6 +863,42 @@ class BssSubLocalizationsHi extends BssSubLocalizations {
   String lastSync(String time) {
     return 'अंतिम सिंक: $time';
   }
+
+  @override
+  String get justNow => 'अभी';
+
+  @override
+  String minutesAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count मिनट पहले',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String hoursAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count घंटे पहले',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String daysAgo(int count) {
+    String _temp0 = intl.Intl.pluralLogic(
+      count,
+      locale: localeName,
+      other: '$count दिन पहले',
+    );
+    return '$_temp0';
+  }
+
+  @override
+  String get noConnectedDevices => 'अभी कोई डिवाइस कनेक्ट नहीं है';
 
   @override
   String get selfCareTools => 'सेल्फ-केयर/उपकरण';

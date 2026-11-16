@@ -40,6 +40,7 @@ import 'package:kfon_subscriber/features/pages/main_page.dart';
 import 'package:kfon_subscriber/features/self_care/presentation/pages/connected_devices_page.dart';
 import 'package:kfon_subscriber/features/self_care/presentation/pages/speed_test_page.dart';
 import 'package:kfon_subscriber/features/ticket/presentation/pages/tickets_page.dart';
+import 'package:kfon_subscriber/shared/widgets/plan_validity_badge.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
 import 'package:kfon_subscriber/service_locator.dart';
@@ -723,11 +724,6 @@ class _ComboCard extends StatelessWidget {
     boxShadow: [BoxShadow(color: AppColor.kCardShadow, blurRadius: 16)],
   );
 
-  static const _daysLeftDecoration = BoxDecoration(
-    color: AppColor.kAutopayButtonColor,
-    borderRadius: BorderRadius.all(Radius.circular(50)),
-  );
-
   static final _packageNameStyle = TextStyle(
     fontFamily: 'GeneralSans',
     fontWeight: FontWeight.w500,
@@ -743,13 +739,6 @@ class _ComboCard extends StatelessWidget {
     fontWeight: FontWeight.w500,
     height: 1.6,
     letterSpacing: 0,
-  );
-  static final _daysLeftTextStyle = TextStyle(
-    fontFamily: 'GeneralSans',
-    fontWeight: FontWeight.w600,
-    height: 1.3,
-    fontSize: 12.sp,
-    color: AppColor.kTextSecondaryDark,
   );
   static final _packLabelStyle = TextStyle(
     fontSize: 12.sp,
@@ -808,7 +797,9 @@ class _ComboCard extends StatelessWidget {
                             style: _packageNameStyle,
                           ),
                           Text(
-                            l10n.activeUntilDate(activeUntilStr),
+                            PlanValidityBadge.isExpired(pkg.activeUntil)
+                                ? l10n.expiredOnDate(activeUntilStr)
+                                : l10n.activeUntilDate(activeUntilStr),
                             style: _activeUntilStyle,
                           ),
                         ],
@@ -818,16 +809,7 @@ class _ComboCard extends StatelessWidget {
                 ),
               ),
               SizedBox(width: 8.w),
-              Container(
-                height: 28.h,
-                alignment: Alignment.center,
-                padding: EdgeInsets.symmetric(horizontal: 16.w),
-                decoration: _daysLeftDecoration,
-                child: Text(
-                  l10n.daysLeft(pkg.daysLeft.toString()),
-                  style: _daysLeftTextStyle,
-                ),
-              ),
+              PlanValidityBadge(activeUntil: pkg.activeUntil),
             ],
           ),
           SizedBox(height: 18.h),
