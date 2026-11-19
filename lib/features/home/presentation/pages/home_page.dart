@@ -18,6 +18,7 @@ import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/constant/constant_dimensions.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/util/dialog_util.dart';
+import 'package:kfon_subscriber/core/util/railwire_new_api.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/active_package_details/domain/entity/active_packages_details_entity.dart';
 import 'package:kfon_subscriber/features/active_package_details/presentation/pages/active_package_page.dart';
@@ -35,6 +36,8 @@ import 'package:kfon_subscriber/features/home/presentation/bloc/home_bloc.dart';
 import 'package:kfon_subscriber/features/home/presentation/bloc/home_event.dart';
 import 'package:kfon_subscriber/features/home/presentation/bloc/home_state.dart';
 import 'package:kfon_subscriber/features/home/presentation/components/home_shimmer.dart';
+import 'package:kfon_subscriber/features/home/presentation/components/railwire_promo_banner.dart';
+import 'package:kfon_subscriber/core/constant/api_urls.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/security_settings_page.dart';
 import 'package:kfon_subscriber/features/pages/main_page.dart';
 import 'package:kfon_subscriber/features/self_care/presentation/pages/connected_devices_page.dart';
@@ -389,7 +392,11 @@ class _HomePageState extends State<HomePage> {
                                     ),
                               ),
                               SizedBox(height: 16.h),
-                              const _PromoBanner(),
+                              ApiUrls.isRailwire
+                                  ? const RailwirePromoBanner(
+                                    fallback: _PromoBanner(),
+                                  )
+                                  : const _PromoBanner(),
                               SizedBox(height: 19.h),
                               _ServicesSection(
                                 onTopUpTap: openRecharge,
@@ -589,6 +596,8 @@ class _WalletCard extends StatelessWidget {
                 ],
               ),
             ),
+            // RailWire has no Autopay API yet, so the pill is hidden.
+            if (!ApiUrls.isRailwire)
             Container(
               height: 22.h,
               decoration: _autoPayDecoration,
@@ -1558,6 +1567,12 @@ class _ServicesSectionState extends State<_ServicesSection> {
   void _push(Widget page) =>
       Navigator.push(context, MaterialPageRoute<void>(builder: (_) => page));
 
+  /// [_push] for a page RailWire has no API for yet.
+  void _pushNeedsNewApi(Widget page) {
+    if (RailwireNewApi.blocked(context)) return;
+    _push(page);
+  }
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -1567,14 +1582,14 @@ class _ServicesSectionState extends State<_ServicesSection> {
         title: l10n.speedTest,
         iconAsset: AppAssets.serviceSpeedTest,
         colors: const [Color(0xFF0E8FD2), Color(0xFF026DA7)],
-        onTap: () => _push(const SpeedTestPage()),
+        onTap: () => _pushNeedsNewApi(const SpeedTestPage()),
       ),
       _ServiceItem(
         title: l10n.restart,
         // TODO(assets): no Restart icon yet.
         fallbackIcon: Icons.power_settings_new_rounded,
         colors: const [Color(0xFFFFA33A), Color(0xFFF07F12)],
-        onTap: () => _push(const RestartModemPage()),
+        onTap: () => _pushNeedsNewApi(const RestartModemPage()),
       ),
       _ServiceItem(
         title: l10n.wifi,
@@ -1592,7 +1607,7 @@ class _ServicesSectionState extends State<_ServicesSection> {
         title: l10n.myRouter,
         iconAsset: AppAssets.serviceMyRouter,
         colors: const [Color(0xFFF2660C), Color(0xFFCF4A06)],
-        onTap: () => _push(const ConnectedDevicesPage()),
+        onTap: () => _pushNeedsNewApi(const ConnectedDevicesPage()),
       ),
       _ServiceItem(
         title: l10n.topUp,

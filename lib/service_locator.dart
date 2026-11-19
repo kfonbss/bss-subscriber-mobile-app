@@ -9,6 +9,8 @@ import 'package:kfon_subscriber/features/auth/data/repository/tenant_repository_
 import 'package:kfon_subscriber/features/auth/domain/repository/railwire_auth_repository.dart';
 import 'package:kfon_subscriber/features/auth/domain/repository/tenant_repository.dart';
 import 'package:kfon_subscriber/features/change_plan/data/repository/change_plan_repository_imp.dart';
+import 'package:kfon_subscriber/features/change_plan/data/repository/railwire_change_plan_repository_imp.dart';
+import 'package:kfon_subscriber/features/change_plan/data/source/railwire_online_amount_source.dart';
 import 'package:kfon_subscriber/features/change_plan/domain/repository/change_plan_repository.dart';
 import 'package:kfon_subscriber/features/data_usage/data/repository/data_usage_repository_imp.dart';
 import 'package:kfon_subscriber/features/data_usage/data/repository/railwire_data_usage_repository_imp.dart';
@@ -54,6 +56,13 @@ void setUpServiceLocator() {
   // DioClient is needed immediately — keep eager
   sl.registerSingleton<DioClient>(DioClient());
 
+  // RailWire only: shared by its Home and Change plan repositories.
+  if (ApiUrls.isRailwire) {
+    sl.registerLazySingleton<RailwireOnlineAmountSource>(
+      () => RailwireOnlineAmountSource(),
+    );
+  }
+
   // Repositories — DioClient injected via constructor, not looked up inside methods
   sl.registerLazySingleton<AuthRepository>(() => AuthRepositoryImp());
   sl.registerLazySingleton<RailwireAuthRepository>(
@@ -61,7 +70,9 @@ void setUpServiceLocator() {
   );
   sl.registerLazySingleton<HomeRepository>(
     () =>
-        ApiUrls.isRailwire ? RailwireHomeRepositoryImp() : HomeRepositoryImp(),
+        ApiUrls.isRailwire
+            ? RailwireHomeRepositoryImp(onlineAmount: sl())
+            : HomeRepositoryImp(),
   );
   sl.registerLazySingleton<DataUsageRepository>(
     () =>
@@ -70,7 +81,10 @@ void setUpServiceLocator() {
             : DataUsageRepositoryImp(),
   );
   sl.registerLazySingleton<ChangePlanRepository>(
-    () => ChangePlanRepositoryImp(),
+    () =>
+        ApiUrls.isRailwire
+            ? RailwireChangePlanRepositoryImp(onlineAmount: sl())
+            : ChangePlanRepositoryImp(),
   );
   sl.registerLazySingleton<ProfileRepository>(
     () =>

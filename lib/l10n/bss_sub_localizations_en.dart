@@ -2608,6 +2608,21 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
       'This account belongs to a different circle. Please select your circle and try again.';
 
   @override
+  String get noRegisteredMobileNumber =>
+      'No mobile number is registered for this account. Please contact support.';
+
+  @override
+  String get paymentNotConfirmed =>
+      'the payment status could not be confirmed yet. If money was debited, please check Transactions after a few minutes.';
+
+  @override
+  String get currentPasswordIncorrect => 'Current password is incorrect.';
+
+  @override
+  String get changePlanPaymentUnavailable =>
+      'a plan change can only be paid from your balance. Select the wallet, or contact support if your balance isn\'t enough.';
+
+  @override
   String get invalidResponse => 'Invalid response';
 
   @override
@@ -2801,4 +2816,7 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
   String daysLowercase(String days) {
     return '$days days';
   }
+
+  @override
+  String get newApiNeeded => 'New API needed';
 }

@@ -5,6 +5,7 @@ import 'package:kfon_subscriber/features/change_plan/domain/entity/recharge_chan
 import 'package:kfon_subscriber/features/change_plan/presentation/bloc/discount_state.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/pages/components/atom_pay_checkout.dart';
 import 'package:kfon_subscriber/features/change_plan/presentation/pages/components/razorpay_checkout.dart';
+import 'package:kfon_subscriber/features/change_plan/presentation/pages/components/url_redirect_checkout.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:url_launcher/url_launcher.dart';
 import 'package:webview_flutter_android/webview_flutter_android.dart';
@@ -12,10 +13,12 @@ import 'package:webview_flutter_plus/webview_flutter_plus.dart';
 
 /// Completes a recharge payment and pops with a [PaymentOutcome].
 ///
-/// Only two gateways are supported:
+/// Supported gateways:
 /// - Razorpay → native SDK ([RazorpayCheckout]).
 /// - Atom → Atom's checkout script in a WebView ([AtomPayCheckout]); the
 ///   result is read from the page the backend redirects to.
+/// - A gateway page URL (RailWire's Atom) → loaded in a WebView
+///   ([UrlRedirectCheckout]); the backend's status check decides the result.
 class PaymentWebViewPage extends StatefulWidget {
   final RechargeChangePlanRedirectEntity redirectEntity;
 
@@ -41,7 +44,9 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
   void initState() {
     super.initState();
     final redirect = widget.redirectEntity;
-    if (RazorpayCheckout.supports(redirect)) {
+    if (UrlRedirectCheckout.supports(redirect)) {
+      _initializeUrlCheckout();
+    } else if (RazorpayCheckout.supports(redirect)) {
       _runNativeCheckout(RazorpayCheckout.open(redirect));
     } else if (AtomPayCheckout.supports(redirect)) {
       _initializeAtomCheckout();
@@ -215,6 +220,62 @@ class _PaymentWebViewPageState extends State<PaymentWebViewPage> {
       baseUrl:
           returnUri == null ? null : '${returnUri.scheme}://${returnUri.host}',
     );
+  }
+
+  /// Loads the gateway's page. Reaching the return host ends the payment, and
+  /// popping [RechargeStatus.paymentSuccess] then runs the status check, which
+  /// decides whether it actually succeeded.
+  Future<void> _initializeUrlCheckout() async {
+    final redirect = widget.redirectEntity;
+    _controller = WebViewControllerPlus();
+    await _controller.setJavaScriptMode(JavaScriptMode.unrestricted);
+    await _controller.setBackgroundColor(Colors.white);
+
+    final platform = _controller.platform;
+    final cookieManager = WebViewCookieManager().platform;
+    if (platform is AndroidWebViewController &&
+        cookieManager is AndroidWebViewCookieManager) {
+      await cookieManager.setAcceptThirdPartyCookies(platform, true);
+    }
+
+    void finishIfReturned(String url) {
+      if (UrlRedirectCheckout.isReturn(url, redirect)) {
+        _finish(RechargeStatus.paymentSuccess);
+      }
+    }
+
+    await _controller.setNavigationDelegate(
+      NavigationDelegate(
+        // The return is often a form POST, which Android doesn't pass to
+        // onNavigationRequest, so the page start is checked too.
+        onPageStarted: (String url) {
+          if (mounted) setState(() => _isLoading = true);
+          finishIfReturned(url);
+        },
+        onPageFinished: (String url) {
+          if (mounted) setState(() => _isLoading = false);
+        },
+        onNavigationRequest: (NavigationRequest request) {
+          final uri = Uri.tryParse(request.url);
+          if (uri != null &&
+              uri.scheme.isNotEmpty &&
+              !const {'http', 'https', 'about', 'data'}.contains(uri.scheme)) {
+            _openExternalApp(request.url);
+            return NavigationDecision.prevent;
+          }
+          if (UrlRedirectCheckout.isReturn(request.url, redirect)) {
+            _finish(RechargeStatus.paymentSuccess);
+            return NavigationDecision.prevent;
+          }
+          return NavigationDecision.navigate;
+        },
+        // Never proceed past an SSL error on a payment page.
+        onSslAuthError: (SslAuthError error) => error.cancel(),
+      ),
+    );
+
+    if (mounted) setState(() => _isInitialized = true);
+    await _controller.loadRequest(Uri.parse(redirect.actionUrl!));
   }
 
   void _showInitError() {

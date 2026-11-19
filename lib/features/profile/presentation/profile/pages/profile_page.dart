@@ -4,6 +4,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/util/dialog_util.dart';
+import 'package:kfon_subscriber/core/util/railwire_new_api.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/future_recharge/presentation/pages/future_recharge_page.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/security_settings_page.dart';
@@ -247,12 +248,15 @@ class _ProfilePageState extends State<ProfilePage> {
               label: l10n.futureRecharges,
               decoration: _listItemDecoration,
               onTap:
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute(
-                      builder: (context) => const FutureRechargePage(),
-                    ),
-                  ),
+                  () =>
+                      RailwireNewApi.blocked(context)
+                          ? null
+                          : Navigator.push(
+                            context,
+                            MaterialPageRoute(
+                              builder: (context) => const FutureRechargePage(),
+                            ),
+                          ),
             ),
             _ProfileListItem(
               image: AppAssets.settings,

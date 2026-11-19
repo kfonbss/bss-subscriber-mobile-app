@@ -13,6 +13,7 @@ import 'package:kfon_subscriber/core/util/preference_util.dart';
 import 'package:kfon_subscriber/features/active_package_details/data/repository/railwire_package_details_repository_imp.dart';
 import 'package:kfon_subscriber/features/data_usage/data/repository/railwire_data_usage_repository_imp.dart';
 import 'package:kfon_subscriber/features/data_usage/domain/params/get_subscriber_data_usage_params.dart';
+import 'package:kfon_subscriber/features/change_plan/data/source/railwire_online_amount_source.dart';
 import 'package:kfon_subscriber/features/home/data/repository/railwire_home_repository_imp.dart';
 import 'package:kfon_subscriber/features/invoice_list/data/repository/railwire_invoice_repository_imp.dart';
 import 'package:kfon_subscriber/features/profile/data/repository/railwire_profile_repository_imp.dart';
@@ -173,7 +174,7 @@ void main() {
       'expiry': expiry.toIso8601String(),
     });
 
-    final home = _right(await RailwireHomeRepositoryImp().getHomePageData());
+    final home = _right(await RailwireHomeRepositoryImp(onlineAmount: RailwireOnlineAmountSource()).getHomePageData());
 
     expect(home.firstName, 'Asha');
     expect(home.username, 'kl.asha');
@@ -188,7 +189,7 @@ void main() {
     client.responses['Newsubapp_api/userprofile'] = _ok(_profile);
     client.responses['Newsubapp_api/currentpackage'] = _denied;
 
-    final result = await RailwireHomeRepositoryImp().getHomePageData();
+    final result = await RailwireHomeRepositoryImp(onlineAmount: RailwireOnlineAmountSource()).getHomePageData();
 
     expect(result.fold((l) => l.message, (_) => ''), 'Invalid parameters!');
   });

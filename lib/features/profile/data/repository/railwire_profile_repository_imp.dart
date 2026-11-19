@@ -6,13 +6,52 @@ import 'package:kfon_subscriber/features/profile/domain/entity/account_informati
 import 'package:kfon_subscriber/features/profile/domain/entity/profile_entity.dart';
 import 'package:kfon_subscriber/features/profile/domain/params/change_password_params.dart';
 import 'package:kfon_subscriber/features/profile/domain/repository/profile_repository.dart';
+import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 
 class RailwireProfileRepositoryImp extends ProfileRepository {
-  /// RailWire has no change-password API.
+  /// The portal password `changepasswordfor` value. Whether other values exist
+  /// (e.g. the internet password) is an open question with the PHP team.
+  static const _portalPassword = 'Bill';
+
+  /// `subscriber_update_password` doesn't check the current password, so it's
+  /// checked first by logging in with it.
   @override
   Future<Either<Failure, void>> changePortalPassword(
     ChangePasswordParams params,
-  ) async => Left(RailwireApi.unavailable);
+  ) async {
+    final check = await RailwireApi.post(
+      ApiUrls.railwireUserLoginURL,
+      (session) => {
+        'username': session.username,
+        'password': params.oldPassword,
+      },
+      sensitive: true,
+    );
+    final checkFailure = check.fold<Failure?>(
+      (failure) => failure,
+      (_) => null,
+    );
+    if (checkFailure != null) {
+      // The API refusing the login means a wrong password; anything else
+      // (no network, timeout) is shown as it is.
+      return Left(
+        checkFailure is ServerFailure
+            ? ValidationFailure(appL10n.currentPasswordIncorrect)
+            : checkFailure,
+      );
+    }
+
+    final result = await RailwireApi.post(
+      ApiUrls.railwireUpdatePasswordURL,
+      (session) => {
+        ...session.byUsername,
+        'changepasswordfor': _portalPassword,
+        'newpassword': params.newPassword,
+      },
+      sensitive: true,
+    );
+    return result.map((_) {});
+  }
 
   Future<Either<Failure, Map<String, dynamic>>> _userProfile() =>
       RailwireApi.post(

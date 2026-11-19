@@ -3,9 +3,8 @@ import 'package:kfon_subscriber/core/error/failure.dart';
 import 'package:kfon_subscriber/features/auth/domain/entity/railwire_user_entity.dart';
 
 abstract class RailwireAuthRepository {
-  /// TEMPORARY: the OTP test number is unavailable, so [login] saves the user
-  /// itself and the OTP step is skipped. Set to true to restore the OTP step.
-  static const loginOtpEnabled = false;
+  /// With false, [login] saves the user itself and the OTP step is skipped.
+  static const loginOtpEnabled = true;
 
   /// Checks the password. With [loginOtpEnabled], the user is only saved once
   /// [verifyLoginOtp] succeeds; otherwise [login] saves it.
@@ -16,6 +15,10 @@ abstract class RailwireAuthRepository {
 
   /// Sends the login OTP and returns the mobile number it went to.
   Future<Either<Failure, String>> sendLoginOtp();
+
+  /// The `current_otp` the last [sendLoginOtp] returned, or empty. Only for
+  /// prefilling the OTP screen in debug builds.
+  String get lastSentOtp;
 
   /// Verifies [otp] and saves the user from the last successful [login].
   Future<Either<Failure, Unit>> verifyLoginOtp(String otp);

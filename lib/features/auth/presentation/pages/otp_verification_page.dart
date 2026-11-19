@@ -2,6 +2,11 @@ import 'package:kfon_subscriber/features/auth/presentation/components/website_pi
 import 'package:kfon_subscriber/shared/widgets/common_text_button.dart';
 import 'dart:async';
 
+import 'package:flutter/foundation.dart';
+import 'package:kfon_subscriber/core/constant/api_urls.dart';
+import 'package:kfon_subscriber/features/auth/domain/repository/railwire_auth_repository.dart';
+import 'package:kfon_subscriber/service_locator.dart';
+
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_event.dart';
@@ -46,7 +51,17 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
   @override
   void initState() {
     super.initState();
+    _otp = _railwireDebugOtp;
     _startTimer();
+  }
+
+  /// RailWire's `sendotplogin` returns the OTP, so debug builds prefill it.
+  String get _railwireDebugOtp {
+    if (!ApiUrls.isRailwire || !kDebugMode || widget.isFromForgotPassword) {
+      return '';
+    }
+    final otp = sl<RailwireAuthRepository>().lastSentOtp;
+    return otp.length == 6 ? otp : '';
   }
 
   @override
@@ -130,6 +145,14 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
               dragHandlePadding: EdgeInsets.only(top: 8.h, bottom: 22.h),
               builder: (context) => VerificationSuccessSheet(),
             );
+          } else if (state is OtpResendSuccess) {
+            final otp = _railwireDebugOtp;
+            if (otp.isNotEmpty) {
+              setState(() {
+                _otp = otp;
+                _otpWidgetKey++;
+              });
+            }
           } else if (state is ForgotPasswordOtpVerified) {
             Navigator.pushReplacementNamed(context, AppRoutes.newPassword);
           } else if (state is OtpVerificationFailed) {
@@ -173,6 +196,7 @@ class _OtpVerificationPageState extends State<OtpVerificationPage> {
                       OtpInputField(
                         key: ValueKey(_otpWidgetKey),
                         length: 6,
+                        initialValue: _otp,
                         onCompleted: (otp) {
                           setState(() {
                             _otp = otp;

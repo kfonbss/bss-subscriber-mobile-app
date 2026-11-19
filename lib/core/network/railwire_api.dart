@@ -68,10 +68,35 @@ class RailwireApi {
   /// POSTs [body] and returns the `data` object of the
   /// `{STATUS, data: {status, Message}}` response. A failure can be
   /// `{STATUS: false, msg}` or a false `data.status`. Some APIs have no `data`,
-  /// so their payload is the response itself.
+  /// so their payload is the response itself. [sensitive] keeps the body (e.g.
+  /// a password) out of the request log.
   static Future<Either<Failure, Map<String, dynamic>>> post(
     String url,
-    Map<String, dynamic> Function(RailwireSession session) body,
+    Map<String, dynamic> Function(RailwireSession session) body, {
+    bool sensitive = false,
+  }) async {
+    try {
+      final session = await RailwireSession.current();
+      if (session == null) {
+        return Left(AuthFailure(appL10n.yourSessionHasExpiredPleaseLogIn));
+      }
+
+      final json = await sl<DioClient>().postRailwire(
+        url,
+        data: body(session),
+        sensitive: sensitive,
+      );
+      return _data(json);
+    } catch (e) {
+      return Left(APIResponse.fromError(e).failure);
+    }
+  }
+
+  /// [post] for the few GET APIs that take parameters. [params] go both in the
+  /// query and as a JSON body, as the API documents a body on a GET.
+  static Future<Either<Failure, Map<String, dynamic>>> get(
+    String url,
+    Map<String, dynamic> Function(RailwireSession session) params,
   ) async {
     try {
       final session = await RailwireSession.current();
@@ -79,19 +104,30 @@ class RailwireApi {
         return Left(AuthFailure(appL10n.yourSessionHasExpiredPleaseLogIn));
       }
 
-      final json = await sl<DioClient>().postRailwire(url, data: body(session));
-      if (json['STATUS'] != true) return Left(_failure(json['msg']));
-
-      final data = json['data'];
-      if (data == null) return Right(json);
-      if (data is! Map<String, dynamic>) {
-        return Left(ServerFailure(appL10n.invalidResponse));
-      }
-      if (data['status'] != true) return Left(_failure(data['Message']));
-      return Right(data);
+      final values = params(session);
+      final json = await sl<DioClient>().getRailwire(
+        url,
+        queryParameters: values,
+        data: values,
+      );
+      return _data(json);
     } catch (e) {
       return Left(APIResponse.fromError(e).failure);
     }
+  }
+
+  static Either<Failure, Map<String, dynamic>> _data(
+    Map<String, dynamic> json,
+  ) {
+    if (json['STATUS'] != true) return Left(_failure(json['msg']));
+
+    final data = json['data'];
+    if (data == null) return Right(json);
+    if (data is! Map<String, dynamic>) {
+      return Left(ServerFailure(appL10n.invalidResponse));
+    }
+    if (data['status'] != true) return Left(_failure(data['Message']));
+    return Right(data);
   }
 
   static Failure _failure(dynamic message) {

@@ -5,6 +5,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:intl/intl.dart';
 import 'package:kfon_subscriber/core/constant/app_styles.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/util/railwire_new_api.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/active_package_details/domain/entity/active_packages_details_entity.dart';
 import 'package:kfon_subscriber/features/data_usage/domain/entity/data_usage_entity.dart';
@@ -192,6 +193,7 @@ class _DataUsageViewState extends State<DataUsageView> {
                                 color: Colors.transparent,
                                 child: InkWell(
                                   onTap: () {
+                                    if (RailwireNewApi.blocked(context)) return;
                                     Navigator.push(
                                       context,
                                       MaterialPageRoute(

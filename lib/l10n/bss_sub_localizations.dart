@@ -4802,6 +4802,30 @@ abstract class BssSubLocalizations {
   /// **'This account belongs to a different circle. Please select your circle and try again.'**
   String get accountBelongsToAnotherCircle;
 
+  /// No description provided for @noRegisteredMobileNumber.
+  ///
+  /// In en, this message translates to:
+  /// **'No mobile number is registered for this account. Please contact support.'**
+  String get noRegisteredMobileNumber;
+
+  /// No description provided for @paymentNotConfirmed.
+  ///
+  /// In en, this message translates to:
+  /// **'the payment status could not be confirmed yet. If money was debited, please check Transactions after a few minutes.'**
+  String get paymentNotConfirmed;
+
+  /// No description provided for @currentPasswordIncorrect.
+  ///
+  /// In en, this message translates to:
+  /// **'Current password is incorrect.'**
+  String get currentPasswordIncorrect;
+
+  /// No description provided for @changePlanPaymentUnavailable.
+  ///
+  /// In en, this message translates to:
+  /// **'a plan change can only be paid from your balance. Select the wallet, or contact support if your balance isn\'t enough.'**
+  String get changePlanPaymentUnavailable;
+
   /// No description provided for @invalidResponse.
   ///
   /// In en, this message translates to:
@@ -5137,6 +5161,12 @@ abstract class BssSubLocalizations {
   /// In en, this message translates to:
   /// **'{days} days'**
   String daysLowercase(String days);
+
+  /// No description provided for @newApiNeeded.
+  ///
+  /// In en, this message translates to:
+  /// **'New API needed'**
+  String get newApiNeeded;
 }
 
 class _BssSubLocalizationsDelegate

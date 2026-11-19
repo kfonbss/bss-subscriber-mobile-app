@@ -7,6 +7,7 @@ import 'package:kfon_subscriber/core/constant/api_urls.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/constant/app_styles.dart';
 import 'package:kfon_subscriber/core/util/preference_util.dart';
+import 'package:kfon_subscriber/core/util/railwire_new_api.dart';
 import 'package:kfon_subscriber/core/validator/validators.dart';
 import 'package:kfon_subscriber/features/auth/presentation/components/remember_me.dart';
 import 'package:kfon_subscriber/features/auth/presentation/components/selected_tenant_card.dart';
@@ -250,11 +251,15 @@ class _LoginPageState extends State<LoginPage> {
                                   ),
                                   CommonTextButton(
                                     label: context.bssSubL10n.forgotPassword,
-                                    onPressed:
-                                        () => Navigator.pushNamed(
-                                          context,
-                                          AppRoutes.forgotPassword,
-                                        ),
+                                    onPressed: () {
+                                      if (RailwireNewApi.blocked(context)) {
+                                        return;
+                                      }
+                                      Navigator.pushNamed(
+                                        context,
+                                        AppRoutes.forgotPassword,
+                                      );
+                                    },
                                     textStyle: TextStyle(
                                       fontSize: 14.0.sp,
                                       fontWeight: FontWeight.w500,

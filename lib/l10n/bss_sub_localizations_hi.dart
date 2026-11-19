@@ -2597,6 +2597,21 @@ class BssSubLocalizationsHi extends BssSubLocalizations {
       'यह खाता किसी अन्य सर्कल का है। कृपया अपना सर्कल चुनकर पुनः प्रयास करें।';
 
   @override
+  String get noRegisteredMobileNumber =>
+      'इस खाते के लिए कोई मोबाइल नंबर पंजीकृत नहीं है। कृपया सहायता टीम से संपर्क करें।';
+
+  @override
+  String get paymentNotConfirmed =>
+      'भुगतान की स्थिति अभी पुष्टि नहीं हो सकी। यदि राशि कट गई है, तो कुछ मिनट बाद लेन-देन देखें।';
+
+  @override
+  String get currentPasswordIncorrect => 'वर्तमान पासवर्ड गलत है।';
+
+  @override
+  String get changePlanPaymentUnavailable =>
+      'प्लान बदलाव का भुगतान केवल आपके बैलेंस से हो सकता है। वॉलेट चुनें, या बैलेंस कम होने पर सहायता टीम से संपर्क करें।';
+
+  @override
   String get invalidResponse => 'अमान्य प्रतिक्रिया';
 
   @override
@@ -2789,4 +2804,7 @@ class BssSubLocalizationsHi extends BssSubLocalizations {
   String daysLowercase(String days) {
     return '$days दिन';
   }
+
+  @override
+  String get newApiNeeded => 'नया API आवश्यक है';
 }

@@ -1,4 +1,5 @@
 import 'package:flutter_bloc/flutter_bloc.dart';
+import 'package:kfon_subscriber/core/constant/api_urls.dart';
 import 'package:kfon_subscriber/features/autopay/domain/entity/autopay_entity.dart';
 import 'package:kfon_subscriber/features/autopay/domain/repository/autopay_repository.dart';
 
@@ -18,6 +19,8 @@ class HomeAutopayCubit extends Cubit<AutopayStatus?> {
   int _requestId = 0;
 
   Future<void> load() async {
+    // RailWire has no Autopay API yet; the pill is hidden there.
+    if (ApiUrls.isRailwire) return;
     final requestId = ++_requestId;
     final result = await repository.getStatus();
     if (isClosed || requestId != _requestId) return;

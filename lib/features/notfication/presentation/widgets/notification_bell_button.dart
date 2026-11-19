@@ -1,5 +1,6 @@
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
+import 'package:kfon_subscriber/core/util/railwire_new_api.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/notfication/domain/respository/notification_repository.dart';
 import 'package:kfon_subscriber/service_locator.dart';
@@ -42,6 +43,7 @@ class _NotificationBellButtonState extends State<NotificationBellButton> {
   }
 
   Future<void> _openNotifications() async {
+    if (RailwireNewApi.blocked(context)) return;
     await Navigator.pushNamed(context, AppRoutes.notificationPage);
     _loadUnreadCount();
   }

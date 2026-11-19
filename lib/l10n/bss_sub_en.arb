@@ -1146,6 +1146,10 @@
   "failedToLoadPreview": "Failed to load preview",
   "noAccessContactSupport": "You do not have access to this app. Please contact support.",
   "accountBelongsToAnotherCircle": "This account belongs to a different circle. Please select your circle and try again.",
+  "noRegisteredMobileNumber": "No mobile number is registered for this account. Please contact support.",
+  "paymentNotConfirmed": "the payment status could not be confirmed yet. If money was debited, please check Transactions after a few minutes.",
+  "currentPasswordIncorrect": "Current password is incorrect.",
+  "changePlanPaymentUnavailable": "a plan change can only be paid from your balance. Select the wallet, or contact support if your balance isn't enough.",
   "invalidResponse": "Invalid response",
   "fileUrlNotFound": "File URL not found",
   "customerTypeCouldNotBeResolved": "Customer type could not be resolved. Please try again.",
@@ -1211,5 +1215,6 @@
   "@referEarnSubtitle": { "placeholders": { "amount": { "type": "String" } } },
   "inviteNow": "Invite Now",
   "daysLowercase": "{days} days",
-  "@daysLowercase": { "placeholders": { "days": { "type": "String" } } }
+  "@daysLowercase": { "placeholders": { "days": { "type": "String" } } },
+  "newApiNeeded": "New API needed"
 }

@@ -1191,6 +1191,10 @@
   "failedToLoadPreview": "पूर्वावलोकन लोड करने में विफल",
   "noAccessContactSupport": "आपको इस ऐप तक पहुंच प्राप्त नहीं है। कृपया सहायता टीम से संपर्क करें।",
   "accountBelongsToAnotherCircle": "यह खाता किसी अन्य सर्कल का है। कृपया अपना सर्कल चुनकर पुनः प्रयास करें।",
+  "noRegisteredMobileNumber": "इस खाते के लिए कोई मोबाइल नंबर पंजीकृत नहीं है। कृपया सहायता टीम से संपर्क करें।",
+  "paymentNotConfirmed": "भुगतान की स्थिति अभी पुष्टि नहीं हो सकी। यदि राशि कट गई है, तो कुछ मिनट बाद लेन-देन देखें।",
+  "currentPasswordIncorrect": "वर्तमान पासवर्ड गलत है।",
+  "changePlanPaymentUnavailable": "प्लान बदलाव का भुगतान केवल आपके बैलेंस से हो सकता है। वॉलेट चुनें, या बैलेंस कम होने पर सहायता टीम से संपर्क करें।",
   "invalidResponse": "अमान्य प्रतिक्रिया",
   "fileUrlNotFound": "फ़ाइल URL नहीं मिला",
   "customerTypeCouldNotBeResolved": "ग्राहक प्रकार का समाधान नहीं हो सका। कृपया पुनः प्रयास करें।",
@@ -1246,5 +1250,6 @@
   "referEarnTitle": "दोस्त जुड़ें, आप कमाएं!",
   "referEarnSubtitle": "आप दोनों को ₹{amount} वॉलेट क्रेडिट मिलेगा",
   "inviteNow": "अभी आमंत्रित करें",
-  "daysLowercase": "{days} दिन"
+  "daysLowercase": "{days} दिन",
+  "newApiNeeded": "नया API आवश्यक है"
 }

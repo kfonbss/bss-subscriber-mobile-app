@@ -55,10 +55,19 @@ class DioClient {
   // RAILWIRE GET METHOD
   // RailWire sends JSON as text/html in its own shape, so it's decoded here
   // rather than through [APIResponse]. Errors are left to the caller.
-  Future<Map<String, dynamic>> getRailwire(String url) async {
+  Future<Map<String, dynamic>> getRailwire(
+    String url, {
+    Map<String, dynamic>? queryParameters,
+    dynamic data,
+  }) async {
     final Response<String> response = await _dio.get<String>(
       url,
-      options: Options(responseType: ResponseType.plain),
+      queryParameters: queryParameters,
+      data: data,
+      options: Options(
+        responseType: ResponseType.plain,
+        contentType: data == null ? null : Headers.jsonContentType,
+      ),
     );
     return jsonDecode(response.data ?? '') as Map<String, dynamic>;
   }

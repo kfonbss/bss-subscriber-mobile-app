@@ -14,12 +14,16 @@ import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/service_locator.dart';
 
 class RailwireAuthRepositoryImp extends RailwireAuthRepository {
-  /// TEMPORARY (OTP testing): every login OTP goes to this number instead of
-  /// the subscriber's. Replace with the subscriber's mobile number to remove.
-  static const otpTestMobileNumber = '8281412765';
-
   /// The `userlogin` data, saved once the OTP is verified.
   Map<String, dynamic>? _pendingUser;
+
+  /// The `mobileno` from `userlogin`, which the login OTP is sent to.
+  String _otpMobile = '';
+
+  String _lastSentOtp = '';
+
+  @override
+  String get lastSentOtp => _lastSentOtp;
 
   /// `verifyotplogin` needs the state `sendotplogin` reported for the number.
   String _otpStateCode = '';
@@ -30,6 +34,8 @@ class RailwireAuthRepositoryImp extends RailwireAuthRepository {
     required String password,
   }) async {
     _pendingUser = null;
+    _otpMobile = '';
+    _lastSentOtp = '';
     try {
       final json = await sl<DioClient>().postRailwire(
         ApiUrls.railwireUserLoginURL,
@@ -47,7 +53,11 @@ class RailwireAuthRepositoryImp extends RailwireAuthRepository {
         }
 
         if (RailwireAuthRepository.loginOtpEnabled) {
+          if (user.mobileNo.trim().isEmpty) {
+            return Left(ValidationFailure(appL10n.noRegisteredMobileNumber));
+          }
           _pendingUser = data;
+          _otpMobile = user.mobileNo.trim();
         } else {
           await PreferenceUtils.setRailwireUser(jsonEncode(data));
         }
@@ -64,15 +74,20 @@ class RailwireAuthRepositoryImp extends RailwireAuthRepository {
     try {
       final json = await sl<DioClient>().postRailwire(
         ApiUrls.railwireSendLoginOtpURL,
-        data: {'mblno': otpTestMobileNumber},
+        data: {'mblno': _otpMobile},
       );
       return _data(json).fold(Left.new, (data) async {
-        final stateCode = data['state_code']?.toString() ?? '';
+        _lastSentOtp = data['current_otp']?.toString().trim() ?? '';
+        // `verifyotplogin` needs `stcode` (e.g. ka.railwire.co.in); with
+        // `state_code` (e.g. KA) it fails with "check given URL".
+        final stcode = data['stcode']?.toString().trim() ?? '';
+        final stateCode =
+            stcode.isNotEmpty ? stcode : data['state_code']?.toString() ?? '';
         _otpStateCode =
             stateCode.isNotEmpty
                 ? stateCode
                 : await PreferenceUtils.getTenantId() ?? '';
-        return const Right(otpTestMobileNumber);
+        return Right(_otpMobile);
       });
     } catch (e) {
       return Left(APIResponse.fromError(e).failure);
@@ -87,15 +102,13 @@ class RailwireAuthRepositoryImp extends RailwireAuthRepository {
       final json = await sl<DioClient>().postRailwire(
         ApiUrls.railwireVerifyLoginOtpURL,
         data: {
-          'eamil_or_mblno': otpTestMobileNumber,
+          'eamil_or_mblno': _otpMobile,
           'stcode': _otpStateCode,
           'otp_number': otp,
         },
         sensitive: true,
       );
       return _data(json).fold(Left.new, (_) async {
-        // The response describes the test number's account, so the user who
-        // entered the password is the one saved.
         await PreferenceUtils.setRailwireUser(jsonEncode(user));
         _pendingUser = null;
         return const Right(unit);

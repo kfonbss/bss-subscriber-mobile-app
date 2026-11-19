@@ -2,6 +2,7 @@ import 'package:dartz/dartz.dart';
 import 'package:kfon_subscriber/core/constant/api_urls.dart';
 import 'package:kfon_subscriber/core/error/failure.dart';
 import 'package:kfon_subscriber/core/network/railwire_api.dart';
+import 'package:kfon_subscriber/features/active_package_details/data/model/railwire_data_usage_model.dart';
 import 'package:kfon_subscriber/features/active_package_details/data/model/railwire_package_model.dart';
 import 'package:kfon_subscriber/features/active_package_details/domain/entity/active_packages_details_entity.dart';
 import 'package:kfon_subscriber/features/active_package_details/domain/repository/package_details_repository.dart';
@@ -11,10 +12,14 @@ class RailwirePackageDetailsRepositoryImp extends PackageDetailsRepository {
   Future<Either<Failure, ActivePackagesDetailsEntity>> getPackageDetails(
     String subscriberUuid,
   ) async {
-    final result = await RailwireApi.post(
-      ApiUrls.railwireCurrentPackageURL,
-      (session) => session.bySubscriberId,
-    );
+    final (result, usage) =
+        await (
+          RailwireApi.post(
+            ApiUrls.railwireCurrentPackageURL,
+            (session) => session.bySubscriberId,
+          ),
+          RailwireDataUsageModel.fetch(),
+        ).wait;
     return result.map((data) {
       final package = RailwirePackageModel.fromJson(data);
       return ActivePackagesDetailsEntity(
@@ -26,8 +31,8 @@ class RailwirePackageDetailsRepositoryImp extends PackageDetailsRepository {
         activeUntil: package.activeUntil,
         renewalFee: 0,
         totalPackageCount: 0,
-        availableVolumeGb: 0,
-        totalVolumeGb: 0,
+        availableVolumeGb: usage.availableVolumeGb,
+        totalVolumeGb: usage.totalVolumeGb,
         activeAddOns: const [],
       );
     });

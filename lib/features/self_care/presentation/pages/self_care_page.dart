@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/util/railwire_new_api.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/data_usage/presentation/pages/restart_modem_page.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/security_settings_page.dart';
@@ -37,36 +38,46 @@ class SelfCarePage extends StatelessWidget {
               heading: l10n.restartModemRefreshConnection,
               icon: AppAssets.restartModem,
               onTap:
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute<void>(
-                      builder: (context) => const RestartModemPage(),
-                    ),
-                  ),
+                  () =>
+                      RailwireNewApi.blocked(context)
+                          ? null
+                          : Navigator.push(
+                            context,
+                            MaterialPageRoute<void>(
+                              builder: (context) => const RestartModemPage(),
+                            ),
+                          ),
             ),
             _SelfCareCard(
               heading: l10n.networkHealthCheck,
               subHeading: l10n.pingSpeedTest,
               icon: AppAssets.networkHealth,
               onTap:
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute<void>(
-                      builder: (context) => const SpeedTestPage(),
-                    ),
-                  ),
+                  () =>
+                      RailwireNewApi.blocked(context)
+                          ? null
+                          : Navigator.push(
+                            context,
+                            MaterialPageRoute<void>(
+                              builder: (context) => const SpeedTestPage(),
+                            ),
+                          ),
             ),
             _SelfCareCard(
               heading: l10n.deviceManagement,
               subHeading: l10n.manageYourConnectedDevices,
               icon: AppAssets.deviceManagement,
               onTap:
-                  () => Navigator.push(
-                    context,
-                    MaterialPageRoute<void>(
-                      builder: (context) => const ConnectedDevicesPage(),
-                    ),
-                  ),
+                  () =>
+                      RailwireNewApi.blocked(context)
+                          ? null
+                          : Navigator.push(
+                            context,
+                            MaterialPageRoute<void>(
+                              builder:
+                                  (context) => const ConnectedDevicesPage(),
+                            ),
+                          ),
             ),
             _SelfCareCard(
               heading: l10n.changeSsidWifiPassword,

@@ -3,6 +3,7 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/core/constant/app_assets.dart';
+import 'package:kfon_subscriber/core/util/railwire_new_api.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 
 /// Reusable attachment upload field with dashed border.
@@ -52,7 +53,10 @@ class AttachmentUploadField extends StatelessWidget {
             Text(isMandatory ? '$label*' : label, style: _kLabelStyle),
             SizedBox(height: 8.h),
             GestureDetector(
-              onTap: onTap,
+              onTap: () {
+                if (RailwireNewApi.blocked(context)) return;
+                onTap();
+              },
               child: Container(
                 height: height,
                 decoration: BoxDecoration(

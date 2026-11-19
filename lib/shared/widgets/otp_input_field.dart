@@ -8,11 +8,15 @@ class OtpInputField extends StatefulWidget {
   final Function(String) onCompleted;
   final Function(String)? onChanged;
 
+  /// Fills the boxes on first build when it has exactly [length] characters.
+  final String initialValue;
+
   const OtpInputField({
     super.key,
     this.length = 6,
     required this.onCompleted,
     this.onChanged,
+    this.initialValue = '',
   });
 
   @override
@@ -27,9 +31,12 @@ class _OtpInputFieldState extends State<OtpInputField> {
   @override
   void initState() {
     super.initState();
+    final initial =
+        widget.initialValue.length == widget.length ? widget.initialValue : '';
     _controllers = List.generate(
       widget.length,
-      (index) => TextEditingController(),
+      (index) =>
+          TextEditingController(text: initial.isEmpty ? '' : initial[index]),
     );
     _focusNodes = List.generate(widget.length, (index) => FocusNode());
     _keyboardListenerFocusNodes = List.generate(

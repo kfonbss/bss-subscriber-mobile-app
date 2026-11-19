@@ -26,7 +26,10 @@ class _FakeClient extends DioClient {
   }
 }
 
-Map<String, dynamic> _success({String stcode = 'ka.railwire.test'}) => {
+Map<String, dynamic> _success({
+  String stcode = 'ka.railwire.test',
+  String mobileno = '9100240047',
+}) => {
   'STATUS': true,
   'data': {
     'status': true,
@@ -34,6 +37,7 @@ Map<String, dynamic> _success({String stcode = 'ka.railwire.test'}) => {
     'stcode': stcode,
     'username': 'ka.user',
     'subscriberid': '1001',
+    'mobileno': mobileno,
   },
 };
 
@@ -74,24 +78,45 @@ void main() {
       'data': {'status': true, 'Message': '', ...data},
     };
 
-    Future<_FakeClient> otpClient(Map<String, dynamic> response) async {
-      await login(_success());
+    Future<_FakeClient> otpClient(
+      Map<String, dynamic> response, {
+      String mobileno = '9100240047',
+    }) async {
+      await login(_success(mobileno: mobileno));
       final client = _FakeClient(response);
       await sl.unregister<DioClient>();
       sl.registerSingleton<DioClient>(client);
       return client;
     }
 
-    test('is sent to the test number, not the account mobile', () async {
-      final client = await otpClient(ok({'state_code': 'AP'}));
+    test('is sent to the mobile number from userlogin', () async {
+      final client = await otpClient(
+        ok({'state_code': 'AP'}),
+        mobileno: ' 9876543210 ',
+      );
 
       final result = await repository.sendLoginOtp();
 
-      expect(client.sentData, {'mblno': '8281412765'});
-      expect(result.fold((l) => l, (r) => r), '8281412765');
+      expect(client.sentData, {'mblno': '9876543210'});
+      expect(result.fold((l) => l, (r) => r), '9876543210');
     });
 
-    test('is verified against the test number and its state', () async {
+    test('keeps the returned current_otp for prefilling', () async {
+      await otpClient(ok({'state_code': 'KA', 'current_otp': '257609'}));
+
+      await repository.sendLoginOtp();
+
+      expect(repository.lastSentOtp, '257609');
+    });
+
+    test('a login without a mobile number is refused', () async {
+      final message = await login(_success(mobileno: ''));
+
+      expect(message, startsWith('No mobile number is registered'));
+      expect(await PreferenceUtils.getRailwireUser(), isNull);
+    });
+
+    test('is verified against the login mobile and its state', () async {
       final client = await otpClient(ok({'state_code': 'AP'}));
       await repository.sendLoginOtp();
 
@@ -99,12 +124,23 @@ void main() {
 
       expect(result.isRight(), isTrue);
       expect(client.sentData, {
-        'eamil_or_mblno': '8281412765',
+        'eamil_or_mblno': '9100240047',
         'stcode': 'AP',
         'otp_number': '1234',
       });
       expect(client.sentSensitive, isTrue);
       expect(await PreferenceUtils.getRailwireUser(), contains('1001'));
+    });
+
+    test('is verified with stcode when sendotplogin returns it', () async {
+      final client = await otpClient(
+        ok({'state_code': 'KA', 'stcode': 'ka.railwire.co.in'}),
+      );
+      await repository.sendLoginOtp();
+
+      await repository.verifyLoginOtp('1234');
+
+      expect((client.sentData as Map)['stcode'], 'ka.railwire.co.in');
     });
 
     test('falls back to the selected state when none is reported', () async {

@@ -4,11 +4,13 @@ import 'package:kfon_subscriber/shared/widgets/secondary_button.dart';
 import 'package:kfon_subscriber/shared/widgets/primary_button.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/core/util/dialog_util.dart';
+import 'package:kfon_subscriber/core/util/railwire_new_api.dart';
 import 'package:kfon_subscriber/shared/widgets/common_bottom_sheet.dart';
 import 'package:flutter/material.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 
 void showCallbackConfirmation(BuildContext context) {
+  if (RailwireNewApi.blocked(context)) return;
   final l10n = context.bssSubL10n;
   showAppModalBottomSheet(
     context: context,

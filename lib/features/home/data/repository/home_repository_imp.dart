@@ -11,7 +11,6 @@ import 'package:kfon_subscriber/features/home/domain/repository/home_repository.
 import 'package:kfon_subscriber/service_locator.dart';
 
 class HomeRepositoryImp extends HomeRepository {
-
   HomeRepositoryImp();
 
   @override

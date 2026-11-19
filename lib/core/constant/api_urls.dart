@@ -2,7 +2,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ApiUrls {
   /// Temporary development switch: true routes API calls through RailWire.
-  static const bool isRailwire = false;
+  static const bool isRailwire = true;
   static const String railwireBaseURL = 'https://apis.railwire.co.in/api/';
   static const String railwireLoginURL = 'auth/login';
   static const String railwireStateListURL = 'Newsubapp_api/state_list';
@@ -14,6 +14,30 @@ class ApiUrls {
   static const String railwireCurrentPackageURL =
       'Newsubapp_api/currentpackage';
   static const String railwireShowSessionURL = 'Newsubapp_api/showsession';
+  static const String railwireUserDataUsageURL = 'Newsubapp_api/userdatausage';
+  static const String railwireOnlineAmountURL = 'Newsubapp_api/onlineamount';
+  static const String railwirePrepareAtomURL =
+      'Newsubapp_api/prepare_atom_gate_way';
+  static const String railwireAtomTransCheckURL =
+      'Newsubapp_api/atom_trans_check';
+  static const String railwirePrepareRazorpayURL =
+      'Newsubapp_api/prepare_razorpay_gate_way';
+  static const String railwireRazorpayTransCheckURL =
+      'Newsubapp_api/razorpay_trans_check';
+  static const String railwireRazorpayResponseURL =
+      'Newsubapp_api/razorpayresponse';
+  static const String railwireUpdatePasswordURL =
+      'Newsubapp_api/subscriber_update_password';
+  static const String railwireFeedbackEntriesURL =
+      'Newsubapp_api/feedbackentries';
+  static const String railwireLastRechargeURL = 'Newsubapp_api/lastrechhistory';
+  static const String railwireFaqDetailsURL = 'Newsubapp_api/faqdetails';
+  static const String railwirePackageChangeURL =
+      'Newsubapp_api/Subpackagechange';
+  static const String railwireVerifyPlanChangeURL =
+      'Newsubapp_api/verifyplanchange';
+  static const String railwireApplyPlanURL =
+      'Newsubapp_api/applyplan_subscirber';
   static const String railwireInvoiceListURL = 'Newsubapp_api/invoicelist';
   static const String railwireInvoicePdfURL = 'Newsubapp_api/invoicepdf';
   static const String railwireRechargeHistoryURL =
