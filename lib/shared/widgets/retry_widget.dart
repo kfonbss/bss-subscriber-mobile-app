@@ -43,6 +43,8 @@ class RetryWidget extends StatelessWidget {
                 ),
                 Text(
                   errorMessage,
+                  // Long messages wrap; keep every line centred.
+                  textAlign: TextAlign.center,
                   style: TextStyle(color: textColor ?? Colors.black),
                 ),
                 SizedBox(height: 16.h),

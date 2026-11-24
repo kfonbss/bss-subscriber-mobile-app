@@ -2071,7 +2071,7 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
 
   @override
   String gbAvailableOfTotal(String available, String total) {
-    return '$available GB Available / $total GB';
+    return '$available Available / $total';
   }
 
   @override
@@ -2752,12 +2752,12 @@ class BssSubLocalizationsEn extends BssSubLocalizations {
 
   @override
   String gbUsedOfTotal(String total) {
-    return '/ $total GB used';
+    return '/ $total used';
   }
 
   @override
   String gbLeft(String value) {
-    return '$value GB left';
+    return '$value left';
   }
 
   @override

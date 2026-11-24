@@ -993,7 +993,7 @@
       }
     }
   },
-  "gbAvailableOfTotal": "{available} GB उपलब्ध / {total} GB",
+  "gbAvailableOfTotal": "{available} उपलब्ध / {total}",
   "@gbAvailableOfTotal": {
     "placeholders": {
       "available": {
@@ -1232,8 +1232,8 @@
   "login": "लॉग इन करें",
   "insufficientBalance": "अपर्याप्त बैलेंस",
   "lastTransaction": "अंतिम लेन-देन",
-  "gbUsedOfTotal": "/ {total} GB उपयोग किया",
-  "gbLeft": "{value} GB शेष",
+  "gbUsedOfTotal": "/ {total} उपयोग किया",
+  "gbLeft": "{value} शेष",
   "planLabel": "प्लान",
   "plusPacks": "+{count} पैक",
   "homeServices": "सेवाएं",

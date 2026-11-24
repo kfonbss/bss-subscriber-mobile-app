@@ -52,7 +52,7 @@ class PackageDetailsModel {
   final String activeUntil;
   final double renewalFee;
   final int totalPackageCount;
-  final double availableVolumeGb;
+  final double? availableVolumeGb;
   final int validity;
   final double totalVolumeGb;
   final PackageItemModel packageInfoModel;
@@ -88,7 +88,7 @@ class PackageDetailsModel {
       renewalFee: (json['renewalFee'] as num?)?.toDouble() ?? 0.0,
       totalPackageCount: json['totalPackageCount'] as int? ?? 0,
       validity: json['validity'] as int? ?? 0,
-      availableVolumeGb: (json['availableVolumeGb'] as num?)?.toDouble() ?? 0.0,
+      availableVolumeGb: (json['availableVolumeGb'] as num?)?.toDouble(),
       totalVolumeGb: (json['totalVolumeGb'] as num?)?.toDouble() ?? 0.0,
       activeAddOns:
           (json['activeAddOns'] as List<dynamic>?)

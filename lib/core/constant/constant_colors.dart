@@ -23,6 +23,10 @@ class AppColor {
   static const Color _kfonPrimary = Color(0xFF8D0247);
   static const Color _railwirePrimary = Color(0xFF26307A);
 
+  /// Speed test needle colour: RailWire blue / KFON maroon.
+  static Color get kSpeedNeedleColor =>
+      AppBrand.isKfon ? _kfonPrimary : const Color(0xFF009DE2);
+
   /// Tenant screen background before any tenant is chosen.
   static Color get kTenantScreenBackground =>
       AppBrand.isKfon || _sharedPrimary

@@ -35,7 +35,9 @@ class PackageDetailsEntity extends Equatable {
   final DateTime activeUntil;
   final double renewalFee;
   final int totalPackageCount;
-  final double availableVolumeGb;
+
+  /// Data left; null when the API doesn't send it (shown as "--").
+  final double? availableVolumeGb;
   final int validity;
   final double totalVolumeGb;
   final PackageInfoEntity packageInfoEntity;

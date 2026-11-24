@@ -23,7 +23,9 @@ class ActivePackagesDetailsEntity {
   final DateTime activeUntil;
   final double renewalFee;
   final int totalPackageCount;
-  final double availableVolumeGb;
+
+  /// Data left; null when the API doesn't send it (shown as "--").
+  final double? availableVolumeGb;
   final double totalVolumeGb;
   final List<AdOnEntity> activeAddOns;
 

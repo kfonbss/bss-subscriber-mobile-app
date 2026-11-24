@@ -3821,7 +3821,7 @@ abstract class BssSubLocalizations {
   /// No description provided for @gbAvailableOfTotal.
   ///
   /// In en, this message translates to:
-  /// **'{available} GB Available / {total} GB'**
+  /// **'{available} Available / {total}'**
   String gbAvailableOfTotal(String available, String total);
 
   /// No description provided for @preview.
@@ -5051,13 +5051,13 @@ abstract class BssSubLocalizations {
   /// No description provided for @gbUsedOfTotal.
   ///
   /// In en, this message translates to:
-  /// **'/ {total} GB used'**
+  /// **'/ {total} used'**
   String gbUsedOfTotal(String total);
 
   /// No description provided for @gbLeft.
   ///
   /// In en, this message translates to:
-  /// **'{value} GB left'**
+  /// **'{value} left'**
   String gbLeft(String value);
 
   /// No description provided for @planLabel.

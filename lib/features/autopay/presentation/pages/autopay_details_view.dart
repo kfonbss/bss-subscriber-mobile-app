@@ -80,6 +80,8 @@ class AutopayDetailsView extends StatelessWidget {
           child: PrimaryButton(
             label: l10n.goBack,
             isLoading: false,
+            // In a Column the button otherwise shrinks to its label.
+            width: double.infinity,
             onClicked: () => Navigator.of(context).pop(),
           ),
         ),

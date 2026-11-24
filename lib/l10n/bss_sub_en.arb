@@ -926,7 +926,7 @@
       }
     }
   },
-  "gbAvailableOfTotal": "{available} GB Available / {total} GB",
+  "gbAvailableOfTotal": "{available} Available / {total}",
   "@gbAvailableOfTotal": {
     "placeholders": {
       "available": {
@@ -1192,9 +1192,9 @@
   "login": "Login",
   "insufficientBalance": "Insufficient Balance",
   "lastTransaction": "Last transaction",
-  "gbUsedOfTotal": "/ {total} GB used",
+  "gbUsedOfTotal": "/ {total} used",
   "@gbUsedOfTotal": { "placeholders": { "total": { "type": "String" } } },
-  "gbLeft": "{value} GB left",
+  "gbLeft": "{value} left",
   "@gbLeft": { "placeholders": { "value": { "type": "String" } } },
   "planLabel": "Plan",
   "plusPacks": "+{count} Pack",

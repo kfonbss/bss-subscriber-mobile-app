@@ -15,16 +15,21 @@ class RailwirePlan {
   final String packageName;
   final double renewalFee;
 
+  /// E.g. "Fiber Ultra"; null until the API sends it.
+  final String? category;
+
   const RailwirePlan({
     required this.packageId,
     required this.packageName,
     required this.renewalFee,
+    this.category,
   });
 
   factory RailwirePlan.fromJson(Map<String, dynamic> json) => RailwirePlan(
     packageId: json['packageid']?.toString().trim() ?? '',
     packageName: json['packagename']?.toString().trim() ?? '',
     renewalFee: RailwireApi.toDouble(json['renewalfee']),
+    category: json['category']?.toString().trim(),
   );
 
   PackageInfoEntity toPackageInfo() =>
@@ -32,6 +37,7 @@ class RailwirePlan {
         'id': packageId,
         'packageName': packageName,
         'renewalFee': renewalFee,
+        'category': category,
       }).toEntity();
 
   PackageEntity toPackageEntity() => PackageEntity(

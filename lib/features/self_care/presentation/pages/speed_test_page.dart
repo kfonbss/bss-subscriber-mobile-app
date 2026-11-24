@@ -141,12 +141,31 @@ class _SpeedTestPageState extends State<SpeedTestPage> {
   // Gauge scale labels, evenly spaced along the arc (axis runs 0..8).
   static const _scaleLabels = [0, 10, 20, 40, 60, 80, 100, 120, 140];
 
-  // Gauge geometry: arc spans 150°..390° (clockwise from 3 o'clock) and is
-  // 0.2 of the radius thick. Labels keep a fixed gap inside the arc.
+  // Gauge geometry: arc spans 150°..390° (clockwise from 3 o'clock).
+  // Everything is a fraction of the radius, so the arc, needle and labels
+  // keep the same proportions on every screen. Reference: 375-wide screen,
+  // gauge 335 wide (radius 167.5), 24 stroke. From the design: labels sit
+  // well inside the arc and the needle stops short of them.
   static const _gaugeStartAngle = 150.0;
   static const _gaugeEndAngle = 390.0;
-  static const _gaugeArcThickness = 0.2;
-  static const _labelGap = 0.06;
+  static const _refRadius = 167.5;
+  static const _gaugeArcThickness = 24 / _refRadius;
+  static const _labelGap = 0.12;
+  static const _gaugeBottomGap = 24.0; // arc caps → results card
+  static const _resultsCardMinHeight = 68.0;
+  static const _buttonHeight = 52.0;
+  static const _buttonBottomGap = 32.0; // above the home indicator
+  static const _minButtonGap = 24.0; // results card → button, at least
+
+  /// Needle tip at 0.55 of the radius, a clear gap inside the labels'
+  /// inner edges (~0.65–0.70).
+  static const _needleLengthFactor = 0.55;
+
+  /// Head width keeps the Figma 26 × 138 proportion to the needle length.
+  static const _needleWidthFactor = _needleLengthFactor * 26 / 138;
+
+  /// Arc height for this sweep: r + r·sin30° = 0.75 × width.
+  static const _gaugeHeightToWidth = 0.75;
 
   static const _gaugeLabelStyle = TextStyle(
     color: Colors.black,
@@ -263,143 +282,188 @@ class _SpeedTestPageState extends State<SpeedTestPage> {
                 ),
               ],
             ),
+            // Gauge, results card and button share one height budget: the
+            // gauge gets full width (20 side margins) unless the screen is too
+            // short; the gap above the button absorbs any spare height and
+            // gives way first (down to _minButtonGap), so the gauge keeps its
+            // size and its gap to the results card.
             Expanded(
-              child: Padding(
-                padding: EdgeInsets.fromLTRB(
-                  20,
-                  _serverCardHeight / 2 - (_headerHeight - _headerEdge),
-                  20,
-                  0,
-                ),
-                child: SfRadialGauge(
-                  axes: <RadialAxis>[
-                    RadialAxis(
-                      minimum: 0,
-                      maximum: 8,
-                      interval: 1,
-                      // Labels are drawn by _scaleAnnotations (edge-anchored
-                      // for an even gap to the arc, 140 included).
-                      showLabels: false,
-                      showTicks: false,
-                      startAngle: _gaugeStartAngle,
-                      endAngle: _gaugeEndAngle,
-                      canScaleToFit: true,
-                      annotations: _scaleAnnotations,
-                      pointers: <GaugePointer>[
-                        NeedlePointer(
-                          tailStyle: TailStyle(
-                            color: AppColor.kFailedRed,
-                            borderWidth: 10,
-                          ),
-                          value: gaugeValue,
-                          needleColor: AppColor.kPrimaryColor,
-                          knobStyle: KnobStyle(
-                            color: AppColor.kPrimaryColor,
-                            borderWidth: 0,
-                          ),
-                          gradient: LinearGradient(
-                            colors: [
-                              AppColor.kPrimaryColor,
-                              AppColor.kSecondaryBackgroundColor,
-                            ],
-                          ),
-                        ),
-                        RangePointer(
-                          value: gaugeValue,
-                          cornerStyle: CornerStyle.bothCurve,
-                          // Same factor as the axis line so the progress
-                          // arc and track are equally thick.
-                          width: _gaugeArcThickness,
-                          color: AppColor.kPrimaryColor,
-                          sizeUnit: GaugeSizeUnit.factor,
-                        ),
-                      ],
-                      axisLineStyle: AxisLineStyle(
-                        thickness: _gaugeArcThickness,
-                        cornerStyle: CornerStyle.bothCurve,
-                        color: Colors.white,
-                        thicknessUnit: GaugeSizeUnit.factor,
-                      ),
+              child: LayoutBuilder(
+                builder: (context, constraints) {
+                  final topGap =
+                      _serverCardHeight / 2 - (_headerHeight - _headerEdge);
+                  final fixedBelow =
+                      _gaugeBottomGap.h +
+                      _resultsCardMinHeight.h +
+                      _minButtonGap.h +
+                      _buttonHeight.h +
+                      _buttonBottomGap.h +
+                      bottomInset;
+                  final gaugeWidth = max(
+                    0.0,
+                    min(
+                      constraints.maxWidth - 40,
+                      (constraints.maxHeight - topGap - fixedBelow) /
+                          _gaugeHeightToWidth,
                     ),
-                  ],
-                ),
-              ),
-            ),
-            Column(
-              children: [
-                // Design: 68 tall, content 16 inside, #EAEAEA border.
-                // minHeight (not a fixed height) so large text scales grow
-                // the card instead of clipping it.
-                Container(
-                  constraints: BoxConstraints(minHeight: 68.h),
-                  margin: const EdgeInsets.symmetric(horizontal: 20),
-                  padding: const EdgeInsets.symmetric(
-                    horizontal: 16,
-                    vertical: 12,
-                  ),
-                  decoration: _resultsCardDecoration,
-                  child: Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceBetween,
-                    crossAxisAlignment: CrossAxisAlignment.center,
+                  );
+                  final radius = gaugeWidth / 2;
+                  return Column(
                     children: [
-                      Flexible(
-                        child: _SpeedResultItem(
-                          heading: l10n.uploadSpeed,
-                          data: l10n.mbPerSecond(
-                            _formatSpeed(_result?.uploadMbps),
-                          ),
-                          icon: AppAssets.upload,
+                      SizedBox(height: topGap),
+                      SizedBox(
+                        width: gaugeWidth,
+                        height: gaugeWidth * _gaugeHeightToWidth,
+                        child: SfRadialGauge(
+                          axes: <RadialAxis>[
+                            RadialAxis(
+                              radiusFactor: 1,
+                              minimum: 0,
+                              maximum: 8,
+                              interval: 1,
+                              // Labels are drawn by _scaleAnnotations (edge-anchored
+                              // for an even gap to the arc, 140 included).
+                              showLabels: false,
+                              showTicks: false,
+                              startAngle: _gaugeStartAngle,
+                              endAngle: _gaugeEndAngle,
+                              canScaleToFit: true,
+                              annotations: _scaleAnnotations,
+                              pointers: <GaugePointer>[
+                                // Wedge needle: sharp tip, wide head at the centre.
+                                // Syncfusion draws it pointing up (tip = top,
+                                // centre = bottom) and its widths are reversed:
+                                // needleEndWidth is the centre end. Gradient runs
+                                // tip → head.
+                                NeedlePointer(
+                                  value: gaugeValue,
+                                  // Syncfusion's head comes out ~1.788 ×
+                                  // needleEndWidth wide (it mixes degrees into
+                                  // radians), hence the division.
+                                  needleLength: _needleLengthFactor,
+                                  lengthUnit: GaugeSizeUnit.factor,
+                                  needleStartWidth: 0,
+                                  needleEndWidth:
+                                      radius * _needleWidthFactor / 1.788,
+                                  needleColor: AppColor.kSpeedNeedleColor,
+                                  knobStyle: const KnobStyle(knobRadius: 0),
+                                  tailStyle: const TailStyle(
+                                    length: 0,
+                                    width: 0,
+                                  ),
+                                  gradient: LinearGradient(
+                                    begin: Alignment.topCenter,
+                                    end: Alignment.bottomCenter,
+                                    colors: [
+                                      AppColor.kSpeedNeedleColor,
+                                      AppColor.kSecondaryBackgroundColor,
+                                    ],
+                                    // Solid for most of the length; white only at
+                                    // the head end.
+                                    stops: const [0.75, 1.0],
+                                  ),
+                                ),
+                                RangePointer(
+                                  value: gaugeValue,
+                                  cornerStyle: CornerStyle.bothCurve,
+                                  // Same factor as the axis line so the progress
+                                  // arc and track are equally thick.
+                                  width: _gaugeArcThickness,
+                                  // Primary on both brands (RailWire navy, KFON maroon).
+                                  color: AppColor.kPrimaryColor,
+                                  sizeUnit: GaugeSizeUnit.factor,
+                                ),
+                              ],
+                              axisLineStyle: AxisLineStyle(
+                                thickness: _gaugeArcThickness,
+                                cornerStyle: CornerStyle.bothCurve,
+                                color: Colors.white,
+                                thicknessUnit: GaugeSizeUnit.factor,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Flexible(
-                        child: _SpeedResultItem(
-                          heading: l10n.downloadSpeed,
-                          data: l10n.mbPerSecond(
-                            _formatSpeed(_result?.downloadMbps),
-                          ),
-                          icon: AppAssets.download,
+                      SizedBox(height: _gaugeBottomGap.h),
+                      // Design: 68 tall, content 16 inside, #EAEAEA border.
+                      // minHeight (not a fixed height) so large text scales grow
+                      // the card instead of clipping it.
+                      Container(
+                        constraints: BoxConstraints(
+                          minHeight: _resultsCardMinHeight.h,
+                        ),
+                        margin: const EdgeInsets.symmetric(horizontal: 20),
+                        padding: const EdgeInsets.symmetric(
+                          horizontal: 16,
+                          vertical: 12,
+                        ),
+                        decoration: _resultsCardDecoration,
+                        child: Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                          crossAxisAlignment: CrossAxisAlignment.center,
+                          children: [
+                            Flexible(
+                              child: _SpeedResultItem(
+                                heading: l10n.uploadSpeed,
+                                data: l10n.mbPerSecond(
+                                  _formatSpeed(_result?.uploadMbps),
+                                ),
+                                icon: AppAssets.upload,
+                              ),
+                            ),
+                            Flexible(
+                              child: _SpeedResultItem(
+                                heading: l10n.downloadSpeed,
+                                data: l10n.mbPerSecond(
+                                  _formatSpeed(_result?.downloadMbps),
+                                ),
+                                icon: AppAssets.download,
+                              ),
+                            ),
+                            Flexible(
+                              child: _SpeedResultItem(
+                                heading: l10n.ping,
+                                data: l10n.msValue(
+                                  _result == null
+                                      ? _placeholder
+                                      : _result!.latencyMs.round().toString(),
+                                ),
+                                icon: AppAssets.ping,
+                              ),
+                            ),
+                          ],
                         ),
                       ),
-                      Flexible(
-                        child: _SpeedResultItem(
-                          heading: l10n.ping,
-                          data: l10n.msValue(
-                            _result == null
-                                ? _placeholder
-                                : _result!.latencyMs.round().toString(),
+                      // Spare height goes here (design ~98 on an 812 screen).
+                      const Spacer(),
+                      Padding(
+                        padding: EdgeInsets.fromLTRB(
+                          20,
+                          _minButtonGap.h,
+                          20,
+                          _buttonBottomGap.h + bottomInset,
+                        ),
+                        child: SizedBox(
+                          width: double.infinity,
+                          child: PrimaryButton(
+                            label: l10n.startSpeedTest,
+                            isLoading: _isRunning,
+                            onClicked: _startSpeedTest,
+                            borderRadius: 10,
+                            height: _buttonHeight.h,
+                            textStyle: TextStyle(
+                              fontSize: 14.sp,
+                              fontFamily: 'GeneralSans',
+                              fontWeight: FontWeight.w600,
+                              height: 1.3,
+                            ),
                           ),
-                          icon: AppAssets.ping,
                         ),
                       ),
                     ],
-                  ),
-                ),
-                // Design: results card ends at 596, button at 694–746.
-                Padding(
-                  padding: EdgeInsets.fromLTRB(
-                    20,
-                    98.h,
-                    20,
-                    32.h + bottomInset,
-                  ),
-                  child: SizedBox(
-                    width: double.infinity,
-                    child: PrimaryButton(
-                      label: l10n.startSpeedTest,
-                      isLoading: _isRunning,
-                      onClicked: _startSpeedTest,
-                      borderRadius: 10,
-                      height: 52.h,
-                      textStyle: TextStyle(
-                        fontSize: 14.sp,
-                        fontFamily: 'GeneralSans',
-                        fontWeight: FontWeight.w600,
-                        height: 1.3,
-                      ),
-                    ),
-                  ),
-                ),
-              ],
+                  );
+                },
+              ),
             ),
           ],
         ),

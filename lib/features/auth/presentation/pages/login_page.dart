@@ -15,6 +15,7 @@ import 'package:kfon_subscriber/shared/widgets/login_background.dart';
 import 'package:kfon_subscriber/shared/widgets/shimmer/shimmer_box.dart';
 import 'package:flutter/material.dart';
 import 'package:flutter/services.dart';
+import 'package:url_launcher/url_launcher.dart';
 import 'package:flutter_bloc/flutter_bloc.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_bloc.dart';
 import 'package:kfon_subscriber/features/auth/presentation/bloc/auth_event.dart';
@@ -87,6 +88,13 @@ class _LoginPageState extends State<LoginPage> {
         tenantId: AppBrand.isKfon ? AppBrand.kfonTenantId : tenantId,
         rememberMe: rememberMe,
       ),
+    );
+  }
+
+  Future<void> _openEnquiryForms() async {
+    await launchUrl(
+      Uri.parse(ApiUrls.enquiryFormsWebURL),
+      mode: LaunchMode.externalApplication,
     );
   }
 
@@ -299,7 +307,10 @@ class _LoginPageState extends State<LoginPage> {
                         crossAxisAlignment: CrossAxisAlignment.stretch,
                         children: [
                           SecondaryButton(
-                            label: context.bssSubL10n.lnpEnquiry,
+                            label:
+                                AppBrand.isKfon
+                                    ? context.bssSubL10n.lnpEnquiry
+                                    : context.bssSubL10n.enquiryForms,
                             borderRadius: 10,
                             backgroundColor: AppColor.kPrimaryColor,
                             borderColor: Colors.white,
@@ -308,7 +319,8 @@ class _LoginPageState extends State<LoginPage> {
                               vertical: Sizer.isTablet ? 18.0 : 17.0,
                               horizontal: Sizer.isTablet ? 30.0 : 28.0,
                             ),
-                            onClicked: () {},
+                            onClicked:
+                                AppBrand.isKfon ? () {} : _openEnquiryForms,
                             textStyle: TextStyle(
                               fontSize: Sizer.isTablet ? 15.0.sp : 14.0.sp,
                               fontWeight: FontWeight.w600,

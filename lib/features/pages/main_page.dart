@@ -44,6 +44,7 @@ class _RaisedCenterDockedLocation extends FloatingActionButtonLocation {
 class MainPage extends StatefulWidget {
   const MainPage({super.key});
 
+  static const homeTab = 0;
   static const selfCareTab = 1;
 
   /// Switches the bottom-nav tab from a screen inside [MainPage].
@@ -136,13 +137,18 @@ class _MainPageState extends State<MainPage> {
   Widget build(BuildContext context) {
     return ValueListenableBuilder<int>(
       valueListenable: _currentIndex,
-      // On Home the first back press is consumed here; other tabs keep the
-      // default back behaviour.
+      // System back never leaves MainPage directly: on other tabs it returns
+      // to Home; on Home it runs double-back-to-exit.
       builder:
           (_, index, child) => PopScope(
-            canPop: index != 0,
+            canPop: false,
             onPopInvokedWithResult: (didPop, _) {
-              if (!didPop) _onHomeBack();
+              if (didPop) return;
+              if (index == MainPage.homeTab) {
+                _onHomeBack();
+              } else {
+                _selectTab(MainPage.homeTab);
+              }
             },
             child: child!,
           ),

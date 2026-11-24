@@ -7,6 +7,7 @@ import 'package:kfon_subscriber/features/active_package_details/domain/repositor
 import 'package:kfon_subscriber/features/active_package_details/presentation/bloc/package_details_bloc.dart';
 import 'package:kfon_subscriber/features/active_package_details/presentation/bloc/package_details_event.dart';
 import 'package:kfon_subscriber/features/active_package_details/presentation/bloc/package_details_state.dart';
+import 'package:kfon_subscriber/features/data_usage/presentation/pages/data_usage_view.dart';
 import 'package:kfon_subscriber/features/pages/package_info_card.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
 import 'package:kfon_subscriber/shared/widgets/common_app_bar.dart';
@@ -73,7 +74,20 @@ class _ActivePackagePageState extends State<ActivePackagePage> {
                   ? Column(
                     crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      PackageInfoCard(entity: state.entity),
+                      PackageInfoCard(
+                        entity: state.entity,
+                        onViewUsage:
+                            () => Navigator.push(
+                              context,
+                              MaterialPageRoute<void>(
+                                builder:
+                                    (_) => DataUsageView(
+                                      subscriberUuid: widget.subscriberUuid,
+                                      entity: state.entity,
+                                    ),
+                              ),
+                            ),
+                      ),
                       // Hide the whole Add-ons section when there are none.
                       if (state.entity.activeAddOns.isNotEmpty) ...[
                         SizedBox(height: 24.h),

@@ -2,7 +2,7 @@ import 'package:flutter_dotenv/flutter_dotenv.dart';
 
 class ApiUrls {
   /// Temporary development switch: true routes API calls through RailWire.
-  static const bool isRailwire = true;
+  static const bool isRailwire = false;
   static const String railwireBaseURL = 'https://apis.railwire.co.in/api/';
   static const String railwireLoginURL = 'auth/login';
   static const String railwireStateListURL = 'Newsubapp_api/state_list';
@@ -71,6 +71,9 @@ class ApiUrls {
   static String bssCoreDmdmService = 'bss-core-dmdm-service/api';
   static const setNewPasswordURL =
       'bss-user-role-mapping-services/api/auth/forgot-password';
+  /// Public enquiry forms web page, opened from the login screen.
+  static const String enquiryFormsWebURL =
+      'https://rwbssqa.sritindia.com/enquiry/home';
   static const lnpEnquiryFormURL =
       'bss-enquiry-services/api/partner-enquiry/save';
   static const subscriptionEnquiryFormURL =

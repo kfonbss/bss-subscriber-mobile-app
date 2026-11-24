@@ -477,7 +477,7 @@ class _RechargePageState extends State<RechargePage> {
                         child: Row(
                           mainAxisSize: MainAxisSize.min,
                           children: [
-                            Icon(Icons.wifi, size: 14.sp, color: Colors.white),
+                            Icon(Icons.bolt, size: 14.sp, color: Colors.white),
                             SizedBox(width: 4.w),
                             Text(
                               category,

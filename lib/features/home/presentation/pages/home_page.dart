@@ -19,6 +19,7 @@ import 'package:kfon_subscriber/core/constant/constant_dimensions.dart';
 import 'package:kfon_subscriber/core/routes/app_routes.dart';
 import 'package:kfon_subscriber/core/util/dialog_util.dart';
 import 'package:kfon_subscriber/core/util/railwire_new_api.dart';
+import 'package:kfon_subscriber/core/util/data_volume_format.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/active_package_details/domain/entity/active_packages_details_entity.dart';
 import 'package:kfon_subscriber/features/active_package_details/presentation/pages/active_package_page.dart';
@@ -267,7 +268,7 @@ class _HomePageState extends State<HomePage> {
                       freeValidity: 0,
                       initialFreeValidity: 0,
                       renewalFee: pkg.renewalFee,
-                      allocatedVolume: pkg.availableVolumeGb,
+                      allocatedVolume: pkg.totalVolumeGb,
                       fallbackSpeed: '0UL',
                       subPackageCount: 0,
                       renewPeriod: pkg.validity,
@@ -288,6 +289,8 @@ class _HomePageState extends State<HomePage> {
                       volumeValue: pkg.packageInfoEntity.volumeValue,
                       planTypeName: pkg.packageInfoEntity.planTypeName,
                       packageType: pkg.packageInfoEntity.packageType,
+                      // Recharge card's top-right badge (e.g. "Fiber Ultra").
+                      category: pkg.packageInfoEntity.category,
                     ),
                   );
                 }
@@ -598,51 +601,51 @@ class _WalletCard extends StatelessWidget {
             ),
             // RailWire has no Autopay API yet, so the pill is hidden.
             if (!ApiUrls.isRailwire)
-            Container(
-              height: 22.h,
-              decoration: _autoPayDecoration,
-              child: Material(
-                color: Colors.transparent,
-                child: InkWell(
-                  onTap: () async {
-                    final autopayCubit = context.read<HomeAutopayCubit>();
-                    await Navigator.push(
-                      context,
-                      MaterialPageRoute<void>(
-                        builder: (_) => const AutopayPage(),
-                      ),
-                    );
-                    // The user may have enabled or removed Autopay there.
-                    autopayCubit.load();
-                  },
-                  borderRadius: const BorderRadius.all(Radius.circular(50)),
-                  child: BlocBuilder<HomeAutopayCubit, AutopayStatus?>(
-                    builder: (context, status) {
-                      // Unknown status: show just the label, never a guess.
-                      return Padding(
-                        padding: EdgeInsets.only(
-                          left: 8.w,
-                          right: status == null ? 8.w : 2.w,
-                        ),
-                        child: Row(
-                          mainAxisSize: MainAxisSize.min,
-                          children: [
-                            Text(
-                              context.bssSubL10n.autoPay,
-                              style: _autoPayStyle,
-                            ),
-                            if (status != null) ...[
-                              SizedBox(width: 4.w),
-                              _SwitchIndicator(value: status.isEnabled),
-                            ],
-                          ],
+              Container(
+                height: 22.h,
+                decoration: _autoPayDecoration,
+                child: Material(
+                  color: Colors.transparent,
+                  child: InkWell(
+                    onTap: () async {
+                      final autopayCubit = context.read<HomeAutopayCubit>();
+                      await Navigator.push(
+                        context,
+                        MaterialPageRoute<void>(
+                          builder: (_) => const AutopayPage(),
                         ),
                       );
+                      // The user may have enabled or removed Autopay there.
+                      autopayCubit.load();
                     },
+                    borderRadius: const BorderRadius.all(Radius.circular(50)),
+                    child: BlocBuilder<HomeAutopayCubit, AutopayStatus?>(
+                      builder: (context, status) {
+                        // Unknown status: show just the label, never a guess.
+                        return Padding(
+                          padding: EdgeInsets.only(
+                            left: 8.w,
+                            right: status == null ? 8.w : 2.w,
+                          ),
+                          child: Row(
+                            mainAxisSize: MainAxisSize.min,
+                            children: [
+                              Text(
+                                context.bssSubL10n.autoPay,
+                                style: _autoPayStyle,
+                              ),
+                              if (status != null) ...[
+                                SizedBox(width: 4.w),
+                                _SwitchIndicator(value: status.isEnabled),
+                              ],
+                            ],
+                          ),
+                        );
+                      },
+                    ),
                   ),
                 ),
               ),
-            ),
           ],
         ),
       ),
@@ -762,126 +765,132 @@ class _ComboCard extends StatelessWidget {
     final activeUntilStr = _activeUntilFmt.format(pkg.activeUntil);
     final dataStr =
         pkg.totalVolumeGb > 0
-            ? l10n.valueInGb(pkg.totalVolumeGb.toStringAsFixed(0))
+            ? formatDataVolume(pkg.totalVolumeGb)
             : l10n.unlimited;
 
     // Design: 16 padding; header row (38) · 18 · usage (36) · 20 · stats (24).
-    return Container(
-      margin: EdgeInsets.symmetric(horizontal: 20.w),
-      padding: EdgeInsets.all(16.w),
-      decoration: _cardDecoration,
-      child: Column(
-        children: [
-          // Top-aligned so a plan name that wraps grows downwards and the
-          // icon and days-left pill stay at the top.
-          Row(
-            crossAxisAlignment: CrossAxisAlignment.start,
-            children: [
-              Expanded(
-                child: Row(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    CircleAvatar(
-                      radius: 19.w,
-                      backgroundColor: AppColor.kPrimaryColor,
-                      child: Icon(
-                        Icons.language,
-                        size: 20.sp,
-                        color: Colors.white,
-                      ),
-                    ),
-                    SizedBox(width: 9.w),
-                    Expanded(
-                      child: Column(
-                        crossAxisAlignment: CrossAxisAlignment.start,
-                        mainAxisSize: MainAxisSize.min,
-                        children: [
-                          // Audit: cap at 2 lines, wrap at spaces, then
-                          // ellipsis so long names don't push the card down.
-                          Text(
-                            _wrappablePlanName(pkg.packageName),
-                            maxLines: 2,
-                            softWrap: true,
-                            overflow: TextOverflow.ellipsis,
-                            style: _packageNameStyle,
-                          ),
-                          Text(
-                            PlanValidityBadge.isExpired(pkg.activeUntil)
-                                ? l10n.expiredOnDate(activeUntilStr)
-                                : l10n.activeUntilDate(activeUntilStr),
-                            style: _activeUntilStyle,
-                          ),
-                        ],
-                      ),
-                    ),
-                  ],
-                ),
-              ),
-              SizedBox(width: 8.w),
-              PlanValidityBadge(activeUntil: pkg.activeUntil),
-            ],
-          ),
-          SizedBox(height: 18.h),
-          // Opens data usage (previously the "View usage" button).
-          GestureDetector(
-            behavior: HitTestBehavior.opaque,
-            onTap: () => _openDataUsage(context, pkg, subscriberId),
-            child: _UsageBar(pkg: pkg),
-          ),
-          SizedBox(height: 20.h),
-          Row(
-            children: [
-              Expanded(
-                child: FittedBox(
-                  fit: BoxFit.scaleDown,
-                  alignment: Alignment.centerLeft,
+    // Tapping the card opens Active Package (the "+N Pack" button is hidden
+    // when there are no add-ons). The usage bar keeps its own Data Usage tap.
+    return GestureDetector(
+      behavior: HitTestBehavior.opaque,
+      onTap: () => _openActivePackage(context),
+      child: Container(
+        margin: EdgeInsets.symmetric(horizontal: 20.w),
+        padding: EdgeInsets.all(16.w),
+        decoration: _cardDecoration,
+        child: Column(
+          children: [
+            // Top-aligned so a plan name that wraps grows downwards and the
+            // icon and days-left pill stay at the top.
+            Row(
+              crossAxisAlignment: CrossAxisAlignment.start,
+              children: [
+                Expanded(
                   child: Row(
-                    spacing: 10.w,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
-                      _Stat(
-                        icon: Icons.bar_chart_rounded,
-                        label: l10n.data,
-                        value: dataStr,
+                      CircleAvatar(
+                        radius: 19.w,
+                        backgroundColor: AppColor.kPrimaryColor,
+                        child: Icon(
+                          Icons.language,
+                          size: 20.sp,
+                          color: Colors.white,
+                        ),
                       ),
-                      _Stat(
-                        icon: Icons.speed_rounded,
-                        label: l10n.speed,
-                        value: l10n.mbps(pkg.speedMbps.round()),
-                      ),
-                      _Stat(
-                        icon: Icons.data_usage_rounded,
-                        label: l10n.planLabel,
-                        value: pkg.packageType,
+                      SizedBox(width: 9.w),
+                      Expanded(
+                        child: Column(
+                          crossAxisAlignment: CrossAxisAlignment.start,
+                          mainAxisSize: MainAxisSize.min,
+                          children: [
+                            // Audit: cap at 2 lines, wrap at spaces, then
+                            // ellipsis so long names don't push the card down.
+                            Text(
+                              _wrappablePlanName(pkg.packageName),
+                              maxLines: 2,
+                              softWrap: true,
+                              overflow: TextOverflow.ellipsis,
+                              style: _packageNameStyle,
+                            ),
+                            Text(
+                              PlanValidityBadge.isExpired(pkg.activeUntil)
+                                  ? l10n.expiredOnDate(activeUntilStr)
+                                  : l10n.activeUntilDate(activeUntilStr),
+                              style: _activeUntilStyle,
+                            ),
+                          ],
+                        ),
                       ),
                     ],
                   ),
                 ),
-              ),
-              SizedBox(width: 8.w),
-              SecondaryButton(
-                height: 24.h,
-                borderRadius: 10,
-                padding: EdgeInsets.symmetric(horizontal: 20.w),
-                textStyle: _packLabelStyle,
-                label: l10n.plusPacks(
-                  pkg.packageInfoEntity.subPackageCount.toString(),
-                ),
-                onClicked:
-                    () => Navigator.push(
-                      context,
-                      MaterialPageRoute<void>(
-                        builder:
-                            (_) =>
-                                ActivePackagePage(subscriberUuid: subscriberId),
-                      ),
+                SizedBox(width: 8.w),
+                PlanValidityBadge(activeUntil: pkg.activeUntil),
+              ],
+            ),
+            SizedBox(height: 18.h),
+            // Opens data usage (previously the "View usage" button).
+            GestureDetector(
+              behavior: HitTestBehavior.opaque,
+              onTap: () => _openDataUsage(context, pkg, subscriberId),
+              child: _UsageBar(pkg: pkg),
+            ),
+            SizedBox(height: 20.h),
+            Row(
+              children: [
+                Expanded(
+                  child: FittedBox(
+                    fit: BoxFit.scaleDown,
+                    alignment: Alignment.centerLeft,
+                    child: Row(
+                      spacing: 10.w,
+                      children: [
+                        _Stat(
+                          icon: Icons.bar_chart_rounded,
+                          label: l10n.data,
+                          value: dataStr,
+                        ),
+                        _Stat(
+                          icon: Icons.speed_rounded,
+                          label: l10n.speed,
+                          value: l10n.mbps(pkg.speedMbps.round()),
+                        ),
+                        _Stat(
+                          icon: Icons.data_usage_rounded,
+                          label: l10n.planLabel,
+                          value: pkg.packageType,
+                        ),
+                      ],
                     ),
-              ),
-            ],
-          ),
-        ],
+                  ),
+                ),
+                // "+N Pack" counts the active add-ons; hidden when none.
+                if (pkg.activeAddOns.isNotEmpty) ...[
+                  SizedBox(width: 8.w),
+                  SecondaryButton(
+                    height: 24.h,
+                    borderRadius: 10,
+                    padding: EdgeInsets.symmetric(horizontal: 20.w),
+                    textStyle: _packLabelStyle,
+                    label: l10n.plusPacks(pkg.activeAddOns.length.toString()),
+                    onClicked: () => _openActivePackage(context),
+                  ),
+                ],
+              ],
+            ),
+          ],
+        ),
       ),
     );
   }
+
+  void _openActivePackage(BuildContext context) => Navigator.push(
+    context,
+    MaterialPageRoute<void>(
+      builder: (_) => ActivePackagePage(subscriberUuid: subscriberId),
+    ),
+  );
 }
 
 // ─── Usage Bar ───────────────────────────────────────────────────────────────
@@ -923,9 +932,17 @@ class _UsageBar extends StatelessWidget {
     final l10n = context.bssSubL10n;
     final total = pkg.totalVolumeGb;
     final hasLimit = total > 0;
-    final used =
-        hasLimit ? (total - pkg.availableVolumeGb).clamp(0, total) : 0.0;
-    final filled = hasLimit ? (used / total * _segments).round() : 0;
+    // Remaining data missing from the API: treat it as the full plan (same as
+    // the web portal), so 0 used, everything left and a full bar.
+    final available =
+        hasLimit
+            ? (pkg.availableVolumeGb ?? total).clamp(0.0, total).toDouble()
+            : null;
+    final used = available != null ? total - available : null;
+    // Bar shows what's left: full on a fresh plan, one segment fewer per 10%
+    // used. Rounded up so any data left keeps at least one segment lit.
+    final filled =
+        available != null ? (available / total * _segments).ceil() : 0;
 
     return Column(
       children: [
@@ -934,28 +951,27 @@ class _UsageBar extends StatelessWidget {
           children: [
             Expanded(
               child: Text.rich(
-                hasLimit
-                    ? TextSpan(
+                !hasLimit
+                    ? TextSpan(text: l10n.unlimited, style: _usedStyle)
+                    : used == null
+                    ? TextSpan(text: formatDataVolume(total), style: _usedStyle)
+                    : TextSpan(
                       children: [
                         TextSpan(
-                          text: l10n.valueInGb(used.toStringAsFixed(0)),
+                          text: formatDataVolume(used),
                           style: _usedStyle,
                         ),
                         TextSpan(
                           text:
-                              ' ${l10n.gbUsedOfTotal(total.toStringAsFixed(0))}',
+                              ' ${l10n.gbUsedOfTotal(formatDataVolume(total))}',
                           style: _totalStyle,
                         ),
                       ],
-                    )
-                    : TextSpan(text: l10n.unlimited, style: _usedStyle),
+                    ),
               ),
             ),
-            if (hasLimit)
-              Text(
-                l10n.gbLeft(pkg.availableVolumeGb.toStringAsFixed(0)),
-                style: _leftStyle,
-              ),
+            if (available != null)
+              Text(l10n.gbLeft(formatDataVolume(available)), style: _leftStyle),
           ],
         ),
         SizedBox(height: 6.h),

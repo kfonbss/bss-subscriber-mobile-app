@@ -4,6 +4,7 @@ import 'package:kfon_subscriber/core/constant/constant_colors.dart';
 import 'package:kfon_subscriber/core/util/railwire_new_api.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/data_usage/presentation/pages/restart_modem_page.dart';
+import 'package:kfon_subscriber/features/pages/main_page.dart';
 import 'package:kfon_subscriber/features/profile/presentation/pages/security_settings_page.dart';
 import 'package:kfon_subscriber/features/self_care/presentation/pages/connected_devices_page.dart';
 import 'package:kfon_subscriber/features/self_care/presentation/pages/speed_test_page.dart';
@@ -25,6 +26,8 @@ class SelfCarePage extends StatelessWidget {
 
     return CommonAppBar(
       title: l10n.selfCareTools,
+      // Self Care is a bottom-nav tab, so "back" switches to the Home tab.
+      onBackPressed: () => MainPage.openTab(context, MainPage.homeTab),
       body: Padding(
         padding: const EdgeInsets.only(
           left: 20.0,

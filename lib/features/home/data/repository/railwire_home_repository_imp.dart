@@ -64,6 +64,7 @@ class RailwireHomeRepositoryImp extends HomeRepository {
                 PackageItemModel.fromJson({
                   'id': package.packageId,
                   'packageName': package.packageName,
+                  'category': package.category,
                 }).toEntity(),
             activeAddOns: const [],
           ),

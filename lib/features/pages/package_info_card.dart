@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:intl/intl.dart';
 import 'package:kfon_subscriber/core/constant/constant_colors.dart';
+import 'package:kfon_subscriber/core/util/data_volume_format.dart';
 import 'package:kfon_subscriber/core/util/sizer.dart';
 import 'package:kfon_subscriber/features/active_package_details/domain/entity/active_packages_details_entity.dart';
 import 'package:kfon_subscriber/l10n/l10n_ext.dart';
@@ -8,7 +9,12 @@ import 'package:kfon_subscriber/shared/widgets/plan_validity_badge.dart';
 
 class PackageInfoCard extends StatelessWidget {
   final ActivePackagesDetailsEntity? entity;
-  const PackageInfoCard({super.key, required this.entity});
+
+  /// Shows a "View Usage" link next to the data line when set. Left null
+  /// on the Data Usage screen itself.
+  final VoidCallback? onViewUsage;
+
+  const PackageInfoCard({super.key, required this.entity, this.onViewUsage});
 
   // Design: white, radius 16, no shadow.
   static const _cardDecoration = BoxDecoration(
@@ -135,34 +141,39 @@ class PackageInfoCard extends StatelessWidget {
                           ],
                         ),
                       ),
-                      SizedBox(width: 8.w),
-                      // Design: 68×24, radius 80, 1px border, 10 side padding.
-                      // 68 is a minimum so "+ 12 Pack" still fits.
-                      Container(
-                        height: 24.h,
-                        constraints: BoxConstraints(minWidth: 68.w),
-                        alignment: Alignment.center,
-                        padding: EdgeInsets.symmetric(horizontal: 10.w),
-                        decoration: _packCountDecoration,
-                        child: Text(
-                          context.bssSubL10n.plusPackCount(
-                            '${entity!.totalPackageCount}',
-                          ),
-                          style: TextStyle(
-                            fontFamily: 'GeneralSans',
-                            fontSize: 12.sp,
-                            fontWeight: FontWeight.w500,
-                            height: 1.3,
-                            color: AppColor.kPrimaryColor,
+                      // "+N Pack" counts the active add-ons; hidden when
+                      // there are none.
+                      if (entity!.activeAddOns.isNotEmpty) ...[
+                        SizedBox(width: 8.w),
+                        // Design: 68×24, radius 80, 1px border, 10 side padding.
+                        // 68 is a minimum so "+ 12 Pack" still fits.
+                        Container(
+                          height: 24.h,
+                          constraints: BoxConstraints(minWidth: 68.w),
+                          alignment: Alignment.center,
+                          padding: EdgeInsets.symmetric(horizontal: 10.w),
+                          decoration: _packCountDecoration,
+                          child: Text(
+                            context.bssSubL10n.plusPackCount(
+                              '${entity!.activeAddOns.length}',
+                            ),
+                            style: TextStyle(
+                              fontFamily: 'GeneralSans',
+                              fontSize: 12.sp,
+                              fontWeight: FontWeight.w500,
+                              height: 1.3,
+                              color: AppColor.kPrimaryColor,
+                            ),
                           ),
                         ),
-                      ),
+                      ],
                     ],
                   ),
                   SizedBox(height: 17.h),
                   _DataUsageBar(
-                    usedGB: entity!.availableVolumeGb,
+                    availableGB: entity!.availableVolumeGb,
                     totalGB: entity!.totalVolumeGb,
+                    onViewUsage: onViewUsage,
                   ),
                 ],
               ),
@@ -175,10 +186,17 @@ class PackageInfoCard extends StatelessWidget {
 }
 
 class _DataUsageBar extends StatelessWidget {
-  final double usedGB;
+  /// Data left (the API's `availableVolumeGb`), not data used. Null when
+  /// the API doesn't send it.
+  final double? availableGB;
   final double totalGB;
+  final VoidCallback? onViewUsage;
 
-  const _DataUsageBar({required this.usedGB, required this.totalGB});
+  const _DataUsageBar({
+    required this.availableGB,
+    required this.totalGB,
+    this.onViewUsage,
+  });
 
   // Shared across ClipRRect and both inner BoxDecorations.
   static const _barRadius = BorderRadius.all(Radius.circular(30));
@@ -191,8 +209,16 @@ class _DataUsageBar extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final availableGB = totalGB - usedGB;
-    final progress = usedGB / totalGB;
+    // Bar shows what's left, matching the "Available" label: full on a fresh
+    // plan, emptying as data is used. No total means no data cap: show
+    // "Unlimited" and an empty bar. Remaining data missing from the API:
+    // treat it as the full plan (same as the web portal) with a full bar.
+    final hasLimit = totalGB > 0;
+    final available =
+        hasLimit
+            ? (availableGB ?? totalGB).clamp(0.0, totalGB).toDouble()
+            : null;
+    final progress = available != null ? available / totalGB : 0.0;
 
     return Column(
       crossAxisAlignment: CrossAxisAlignment.start,
@@ -205,7 +231,7 @@ class _DataUsageBar extends StatelessWidget {
               children: [
                 Container(decoration: _trackDecoration),
                 FractionallySizedBox(
-                  widthFactor: progress.clamp(0.0, 1.0),
+                  widthFactor: progress,
                   child: Container(decoration: _fillDecoration),
                 ),
               ],
@@ -213,15 +239,54 @@ class _DataUsageBar extends StatelessWidget {
           ),
         ),
         SizedBox(height: 20.h),
-        Text(
-          context.bssSubL10n.gbAvailableOfTotal('$availableGB', '$totalGB'),
-          style: TextStyle(
-            fontFamily: 'GeneralSans',
-            fontSize: 14.sp,
-            fontWeight: FontWeight.w600,
-            height: 1.30,
-            color: AppColor.kTextPrimary,
-          ),
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.center,
+          children: [
+            Expanded(
+              child: Text(
+                !hasLimit
+                    ? context.bssSubL10n.unlimited
+                    : available == null
+                    ? formatDataVolume(totalGB)
+                    : context.bssSubL10n.gbAvailableOfTotal(
+                      formatDataVolume(available),
+                      formatDataVolume(totalGB),
+                    ),
+                style: TextStyle(
+                  fontFamily: 'GeneralSans',
+                  fontSize: 14.sp,
+                  fontWeight: FontWeight.w600,
+                  height: 1.30,
+                  color: AppColor.kTextPrimary,
+                ),
+              ),
+            ),
+            if (onViewUsage != null) ...[
+              SizedBox(width: 8.w),
+              // Design: plain primary-coloured text link, right-aligned.
+              InkWell(
+                onTap: onViewUsage,
+                borderRadius: const BorderRadius.all(Radius.circular(6)),
+                child: Padding(
+                  // Larger tap target without shifting the text.
+                  padding: EdgeInsets.symmetric(vertical: 4.h),
+                  child: Text(
+                    context.bssSubL10n.viewUsage,
+                    // Design: Medium 500, 12, line height 130%, no letter
+                    // spacing.
+                    style: TextStyle(
+                      fontFamily: 'GeneralSans',
+                      fontSize: 12.sp,
+                      fontWeight: FontWeight.w500,
+                      height: 1.30,
+                      letterSpacing: 0,
+                      color: AppColor.kPrimaryColor,
+                    ),
+                  ),
+                ),
+              ),
+            ],
+          ],
         ),
       ],
     );
